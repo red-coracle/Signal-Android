@@ -170,7 +170,7 @@ public class ConversationListFragment extends Fragment
 
   private void updateReminders() {
     reminderView.hide();
-    new AsyncTask<Context, Void, Optional<? extends Reminder>>() {
+    /*new AsyncTask<Context, Void, Optional<? extends Reminder>>() {
       @Override protected Optional<? extends Reminder> doInBackground(Context... params) {
         final Context context = params[0];
         if (ExpiredBuildReminder.isEligible()) {
@@ -195,7 +195,7 @@ public class ConversationListFragment extends Fragment
           reminderView.showReminder(reminder.get());
         }
       }
-    }.execute(getActivity());
+    }.execute(getActivity());*/
   }
 
   private void initializeListAdapter() {

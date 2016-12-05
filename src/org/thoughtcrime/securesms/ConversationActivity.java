@@ -915,7 +915,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   protected void updateInviteReminder(boolean seenInvite) {
-    Log.w(TAG, "updateInviteReminder(" + seenInvite+")");
+    /*Log.w(TAG, "updateInviteReminder(" + seenInvite+")");
     if (TextSecurePreferences.isPushRegistered(this) &&
         !isSecureText                                &&
         !seenInvite                                  &&
@@ -934,7 +934,8 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       reminderView.showReminder(reminder);
     } else {
       reminderView.hide();
-    }
+    }*/
+      reminderView.hide();
   }
 
   private void updateDefaultSubscriptionId(Optional<Integer> defaultSubscriptionId) {
