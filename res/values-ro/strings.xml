@@ -324,7 +324,7 @@ Vei pierde orice informație care se află în instalarea curentă de Signal și
   </plurals>
   <string name="InviteActivity_lets_switch_to_signal">Hai să folosim Signal: %1$s</string>
   <string name="InviteActivity_no_app_to_share_to">Se pare că nu ai aplicații cu care să poți partaja.</string>
-  <string name="InviteActivity_friends_dont_let_friends_text_unencrypted">Prietenii nu-și lasă prietenii să comunice necriptat.</string>
+  <string name="InviteActivity_friends_dont_let_friends_text_unencrypted">Prietenii nu-și lasă prietenii să converseze necriptat.</string>
   <!--KeyScanningActivity-->
   <string name="KeyScanningActivity_no_scanned_key_found_exclamation">Nu a fost găsită nici o cheie scanată!</string>
   <string name="KeyScanningActivity_install_barcode_Scanner">Instalez scanerul de coduri de bare?</string>
@@ -389,7 +389,7 @@ Vei pierde orice informație care se află în instalarea curentă de Signal și
   <string name="ExpirationDialog_your_messages_will_disappear_s_after_they_have_been_seen">Mesajele trimise și primite în această conversație vor dispărea după %s după ce au fost vizualizate.</string>
   <!--PassphrasePromptActivity-->
   <string name="PassphrasePromptActivity_enter_passphrase">Introdu parola</string>
-  <string name="PassphrasePromptActivity_watermark_content_description">Icoană Signal</string>
+  <string name="PassphrasePromptActivity_watermark_content_description">Pictogramă Signal</string>
   <string name="PassphrasePromptActivity_ok_button_content_description">Trimite parola</string>
   <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Parolă incorectă!</string>
   <!--PlayServicesProblemFragment-->
@@ -503,6 +503,7 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="ThreadRecord_disappearing_message_time_updated_to_s">Timpul setat pentru mesajele care dispar este %s</string>
   <string name="ThreadRecord_your_safety_number_with_s_has_changed">Numărul tău de siguranță pentru %s s-a schimbat.</string>
   <!--VerifyIdentityActivity-->
+  <string name="VerifyIdentityActivity_your_contact_is_running_an_old_version_of_signal">Contactul tău folosește o versiune mai veche de Signal. Roagă-l să-și actualizeze versiunea înainte de a verifica numărul tău de siguranță.</string>
   <string name="VerifyIdentityActivity_your_contact_is_running_a_newer_version_of_Signal">Contactul tău folosește o versiune mai nouă de Signal cu un format de cod QR incompatibil. Te rog actualizează-ți aplicația pentru a putea compara.</string>
   <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">Codul QR scanat nu este un număr de siguranță formatat corect. Te rog scanează din nou.</string>
   <string name="VerifyIdentityActivity_share_safety_number_via">Partajează numărul de siguranță via...</string>
@@ -564,11 +565,20 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="SingleRecipientNotificationBuilder_new_message">Mesaj nou</string>
   <!--attachment_type_selector-->
   <string name="attachment_type_selector__image">Imagine</string>
+  <string name="attachment_type_selector__image_description">Imagine</string>
   <string name="attachment_type_selector__audio">Audio</string>
+  <string name="attachment_type_selector__audio_description">Audio</string>
   <string name="attachment_type_selector__video">Video</string>
+  <string name="attachment_type_selector__video_description">Video</string>
   <string name="attachment_type_selector__contact">Contact</string>
+  <string name="attachment_type_selector__contact_description">Contact</string>
   <string name="attachment_type_selector__camera">Cameră</string>
+  <string name="attachment_type_selector__camera_description">Cameră</string>
   <string name="attachment_type_selector__location">Locație</string>
+  <string name="attachment_type_selector__location_description">Locație</string>
+  <string name="attachment_type_selector__gif">GIF</string>
+  <string name="attachment_type_selector__gif_description">Gif</string>
+  <string name="attachment_type_selector__drawer_description">Comutare panou atașamente</string>
   <!--change_passphrase_activity-->
   <string name="change_passphrase_activity__old_passphrase">Parola veche</string>
   <string name="change_passphrase_activity__new_passphrase">Parola nouă</string>
@@ -618,6 +628,10 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="conversation_item_received__download">Descarcă</string>
   <string name="conversation_item_received__contact_photo_description">Poză contact</string>
   <string name="conversation_item_received__downloading">Se descarcă</string>
+  <!--audio_view-->
+  <string name="audio_view__play_accessibility_description">Redare</string>
+  <string name="audio_view__pause_accessibility_description">Pauză</string>
+  <string name="audio_view__download_accessibility_description">Descarcă</string>
   <!--conversation_fragment_cab-->
   <string name="conversation_fragment_cab__batch_selection_mode">Mod selecţie multiplă</string>
   <string name="conversation_fragment_cab__batch_selection_amount">%s selectate</string>
@@ -1102,6 +1116,6 @@ SMS a eșuat.</string>
   <string name="trimmer__deleting_old_messages">Se șterg mesajele vechi...</string>
   <string name="trimmer__old_messages_successfully_deleted">Mesajele vechi au fost șterse cu succes</string>
   <!--transport_selection_list_item-->
-  <string name="transport_selection_list_item__transport_icon">Icoană transport</string>
+  <string name="transport_selection_list_item__transport_icon">Pictogramă transport</string>
   <!--EOF-->
 </resources>
