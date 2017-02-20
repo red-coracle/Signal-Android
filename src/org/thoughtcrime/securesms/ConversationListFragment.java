@@ -52,6 +52,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import org.thoughtcrime.securesms.ConversationListAdapter.ItemClickListener;
+import org.thoughtcrime.securesms.components.recyclerview.DeleteItemAnimator;
 import org.thoughtcrime.securesms.components.reminder.DefaultSmsReminder;
 import org.thoughtcrime.securesms.components.reminder.ExpiredBuildReminder;
 import org.thoughtcrime.securesms.components.reminder.OutdatedBuildReminder;
@@ -63,11 +64,8 @@ import org.thoughtcrime.securesms.components.reminder.ShareReminder;
 import org.thoughtcrime.securesms.components.reminder.SystemSmsImportReminder;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
-import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.database.MessagingDatabase.MarkedMessageInfo;
-import org.thoughtcrime.securesms.database.MessagingDatabase.SyncMessageId;
 import org.thoughtcrime.securesms.database.loaders.ConversationListLoader;
-import org.thoughtcrime.securesms.jobs.MultiDeviceReadUpdateJob;
 import org.thoughtcrime.securesms.notifications.MarkReadReceiver;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.recipients.Recipients;
@@ -125,6 +123,7 @@ public class ConversationListFragment extends Fragment
 
     list.setHasFixedSize(true);
     list.setLayoutManager(new LinearLayoutManager(getActivity()));
+    list.setItemAnimator(new DeleteItemAnimator());
 
     new ItemTouchHelper(new ArchiveListenerCallback()).attachToRecyclerView(list);
 
@@ -307,8 +306,8 @@ public class ConversationListFragment extends Fragment
                                      getListAdapter().getBatchSelections().size()));
   }
 
-  private void handleCreateConversation(long threadId, Recipients recipients, int distributionType) {
-    ((ConversationSelectedListener)getActivity()).onCreateConversation(threadId, recipients, distributionType);
+  private void handleCreateConversation(long threadId, Recipients recipients, int distributionType, long lastSeen) {
+    ((ConversationSelectedListener)getActivity()).onCreateConversation(threadId, recipients, distributionType, lastSeen);
   }
 
   @Override
@@ -330,7 +329,7 @@ public class ConversationListFragment extends Fragment
   public void onItemClick(ConversationListItem item) {
     if (actionMode == null) {
       handleCreateConversation(item.getThreadId(), item.getRecipients(),
-                               item.getDistributionType());
+                               item.getDistributionType(), item.getLastSeen());
     } else {
       ConversationListAdapter adapter = (ConversationListAdapter)list.getAdapter();
       adapter.toggleThreadInBatchSet(item.getThreadId());
@@ -361,7 +360,7 @@ public class ConversationListFragment extends Fragment
   }
 
   public interface ConversationSelectedListener {
-    void onCreateConversation(long threadId, Recipients recipients, int distributionType);
+    void onCreateConversation(long threadId, Recipients recipients, int distributionType, long lastSeen);
     void onSwitchToArchive();
 }
 
