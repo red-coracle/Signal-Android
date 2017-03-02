@@ -300,6 +300,21 @@ android {
     } else {
         buildTypes.release.signingConfig = null
     }
+
+    splits {
+        density {
+            enable true
+            reset()
+            include "xxhdpi"
+        }
+
+        abi {
+            enable true
+            reset()
+            include "armeabi-v7a"
+            universalApk false
+        }
+    }
 }
 
 tasks.whenTaskAdded { task ->
