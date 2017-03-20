@@ -19,9 +19,6 @@ package org.thoughtcrime.securesms;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.StrictMode;
-import android.os.StrictMode.ThreadPolicy;
-import android.os.StrictMode.VmPolicy;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
@@ -30,7 +27,6 @@ import com.google.android.gms.security.ProviderInstaller;
 import org.thoughtcrime.securesms.crypto.PRNGFixes;
 import org.thoughtcrime.securesms.dependencies.AxolotlStorageModule;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
-import org.thoughtcrime.securesms.dependencies.RedPhoneCommunicationModule;
 import org.thoughtcrime.securesms.dependencies.SignalCommunicationModule;
 import org.thoughtcrime.securesms.jobs.CreateSignedPreKeyJob;
 import org.thoughtcrime.securesms.jobs.GcmRefreshJob;
@@ -51,6 +47,8 @@ import org.whispersystems.jobqueue.dependencies.DependencyInjector;
 import org.whispersystems.jobqueue.requirements.NetworkRequirementProvider;
 import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
 import org.whispersystems.libsignal.util.AndroidSignalProtocolLogger;
+
+import java.util.concurrent.TimeUnit;
 
 import dagger.ObjectGraph;
 
@@ -137,13 +135,16 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
 
   private void initializeDependencyInjection() {
     this.objectGraph = ObjectGraph.create(new SignalCommunicationModule(this, new SignalServiceNetworkAccess(this)),
-                                          new RedPhoneCommunicationModule(this),
                                           new AxolotlStorageModule(this));
   }
 
   private void initializeGcmCheck() {
     if (TextSecurePreferences.isPushRegistered(this)) {
-      this.jobManager.add(new GcmRefreshJob(this));
+      long nextSetTime = TextSecurePreferences.getGcmRegistrationIdLastSetTime(this) + TimeUnit.HOURS.toMillis(6);
+
+      if (TextSecurePreferences.getGcmRegistrationId(this) == null || nextSetTime <= System.currentTimeMillis()) {
+        this.jobManager.add(new GcmRefreshJob(this));
+      }
     }
   }
 
@@ -167,7 +168,9 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
   }
 
   private void initializeSetVideoCapable() {
-    if (!TextSecurePreferences.isWebrtcCallingEnabled(this)) {
+    if (TextSecurePreferences.isPushRegistered(this) &&
+        !TextSecurePreferences.isWebrtcCallingEnabled(this))
+    {
       TextSecurePreferences.setWebrtcCallingEnabled(this, true);
       jobManager.add(new RefreshAttributesJob(this));
     }
