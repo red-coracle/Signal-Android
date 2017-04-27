@@ -91,6 +91,7 @@
   <string name="ConversationItem_click_to_approve_unencrypted_mms_dialog_title">Fallback do nieszyfrowanych wiadomości MMS?</string>
   <string name="ConversationItem_click_to_approve_unencrypted_dialog_message">Ta wiadomość <b>nie</b> będzie zaszyfrowana, ponieważ odbiorca nie jest już użytkownikiem Signal.\n\nWysłać wiadomość nieszyfrowaną?</string>
   <string name="ConversationItem_unable_to_open_media">Nie można znaleźć aplikacji, aby otworzyć tę zawartość.</string>
+  <string name="ConversationItem_copied_text">Skopiowano %s</string>
   <string name="ConversationItem_from_s">od %s</string>
   <string name="ConversationItem_to_s">do %s</string>
   <!--ConversationActivity-->
@@ -258,6 +259,8 @@
   <string name="DeviceListItem_linked_s">Zarejestrowano %s</string>
   <string name="DeviceListItem_last_active_s">Ostatnio aktywny %s</string>
   <string name="DeviceListItem_today">Dziś</string>
+  <!--DocumentView-->
+  <string name="DocumentView_unknown_file">Nieznany plik</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">Optymalizacja dla brakujących Usług Play</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Urządzenie nie wspiera Usług Play. Dotknij, aby wyłączyć systemową optymalizację baterii uniemożliwiającą odbieranie wiadomości w czasie braku aktywności.</string>
@@ -396,7 +399,7 @@ Stracisz wszystkie informacje obecnie zawarte w aplikacji Signal z wyjątkiem ty
   <string name="MessageRecord_s_called_you">%s dzwonił do Ciebie</string>
   <string name="MessageRecord_called_s">Zadzwoniono do %s</string>
   <string name="MessageRecord_missed_call_from">Nieodebrane połączenie od %s</string>
-  <string name="MessageRecord_s_is_on_signal_say_hey">%s używa Signal, przywitaj się!</string>
+  <string name="MessageRecord_s_joined_signal">%s dołączył(-a) do Signal!</string>
   <string name="MessageRecord_you_set_disappearing_message_time_to_s">Ustawiłeś zniknięcie wiadomości po: %1$s.</string>
   <string name="MessageRecord_s_set_disappearing_message_time_to_s">%1$s ustawił zniknięcie wiadomości po: %2$s.</string>
   <string name="MessageRecord_your_safety_number_with_s_has_changed">Twój numer bezpieczeństwa z %s zmienił się.</string>
@@ -492,6 +495,8 @@ Upewnij się, że to jest Twój numer! Zamierzamy zweryfikować go SMSem.
   <string name="RegistrationActivity_i_understand">Rozumiem</string>
   <string name="RegistrationActivity_play_services_error">Błąd Usług Play</string>
   <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Trwa aktualizacja Usług Sklepu Google Play lub są one niedostępne. Spróbuj ponownie.</string>
+  <string name="RegistrationActivity_more_information">Więcej informacji</string>
+  <string name="RegistrationActivity_less_information">Mniej informacji</string>
   <!--RegistrationProblemsActivity-->
   <string name="RegistrationProblemsActivity_possible_problems">Możliwe problemy</string>
   <!--RegistrationProgressActivity-->
@@ -514,7 +519,7 @@ Upewnij się, że to jest Twój numer! Zamierzamy zweryfikować go SMSem.
   <string name="RegistrationProgressActivity_too_many_requests">Zbyt wiele zapytań!</string>
   <string name="RegistrationProgressActivity_youve_already_requested_a_voice_call">Już zażądałeś połączenia głosowego. Możesz ponownie zażądać innego połączenia w ciągu następnych 20 minut.</string>
   <string name="RegistrationProgressActivity_registration_conflict">Konflikt rejestracji</string>
-  <string name="RegistrationProgressActivity_this_number_is_already_registered_on_a_different">Ten numer jest już zarejestrowany na innym serwerze Signal (CyanogenMod?). Musisz się wpierw wyrejestrować zanim będziesz mógł się tutaj zarejestrować.</string>
+  <string name="RegistrationProgressActivity_this_number_is_already_registered_on_a_different">Ten numer został zarejestrowany wcześniej na innym serwerze Signal. Musisz się najpierw wyrejestrować, aby tu dołączyć.</string>
   <!--RegistrationService-->
   <string name="RegistrationService_registration_complete">Rejestracja zakończona!</string>
   <string name="RegistrationService_signal_registration_has_successfully_completed">Rejestracja w Signal zakończona pomyślnie.</string>
@@ -541,7 +546,7 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="ThreadRecord_called_you">Oni zadzwonili</string>
   <string name="ThreadRecord_missed_call">Nieodebrane połączenie</string>
   <string name="ThreadRecord_media_message">Wiadomość multimedialna</string>
-  <string name="ThreadRecord_s_is_on_signal_say_hey">%s używa Signal, przywitaj się!</string>
+  <string name="ThreadRecord_s_joined_signal">%s dołączył(-a) do Signal!</string>
   <string name="ThreadRecord_disappearing_message_time_updated_to_s">Czas znikania wiadomości ustawiony na %s</string>
   <string name="ThreadRecord_your_safety_number_with_s_has_changed">Twój numer bezpieczeństwa z %s zmienił się.</string>
   <!--UpdateApkReadyListener-->
@@ -617,6 +622,8 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Szybka odpowiedź jest niedostępna kiedy Signal jest zablokowany!</string>
   <string name="QuickResponseService_problem_sending_message">Wystąpił błąd przy wysyłaniu wiadomości!</string>
+  <!--SaveAttachmentTask-->
+  <string name="SaveAttachmentTask_open_directory">Otwórz katalog</string>
   <!--SingleRecipientNotificationBuilder-->
   <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
   <string name="SingleRecipientNotificationBuilder_new_message">Nowa wiadomość</string>
@@ -629,12 +636,8 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <!--WebRtcCallControls-->
   <string name="WebRtcCallControls_tap_to_enable_your_video">Dotnij, aby włączyć wideo</string>
   <!--attachment_type_selector-->
-  <string name="attachment_type_selector__image">Obraz</string>
-  <string name="attachment_type_selector__image_description">Obraz</string>
   <string name="attachment_type_selector__audio">Audio</string>
   <string name="attachment_type_selector__audio_description">Dźwięk</string>
-  <string name="attachment_type_selector__video">Wideo</string>
-  <string name="attachment_type_selector__video_description">Wideo</string>
   <string name="attachment_type_selector__contact">Kontakt</string>
   <string name="attachment_type_selector__contact_description">Kontakt</string>
   <string name="attachment_type_selector__camera">Kamera</string>
@@ -643,6 +646,10 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="attachment_type_selector__location_description">Lokalizacja</string>
   <string name="attachment_type_selector__gif">GIF</string>
   <string name="attachment_type_selector__gif_description">Gif</string>
+  <string name="attachment_type_selector__gallery_description">Obraz lub film</string>
+  <string name="attachment_type_selector__file_description">Plik</string>
+  <string name="attachment_type_selector__gallery">Galeria</string>
+  <string name="attachment_type_selector__file">Plik</string>
   <string name="attachment_type_selector__drawer_description">Ukryj ekran załączników</string>
   <!--change_passphrase_activity-->
   <string name="change_passphrase_activity__old_passphrase">Stare hasło</string>
@@ -664,9 +671,9 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <!--conversation_title_view-->
   <string name="conversation_title_view__conversation_muted">Rozmowa jest wyciszona</string>
   <!--conversation_activity-->
-  <string name="conversation_activity__type_message_push">Wyślij wiadomość Signal</string>
-  <string name="conversation_activity__type_message_sms_insecure">Wyślij nieszyfrowany SMS</string>
-  <string name="conversation_activity__type_message_mms_insecure">Wyślij nieszyfrowany MMS</string>
+  <string name="conversation_activity__type_message_push">Wiadomość Signal</string>
+  <string name="conversation_activity__type_message_sms_insecure">Nieszyfrowany SMS</string>
+  <string name="conversation_activity__type_message_mms_insecure">Nieszyfrowany MMS</string>
   <string name="conversation_activity__from_sim_name">Od %1$s</string>
   <string name="conversation_activity__send">Wyślij</string>
   <string name="conversation_activity__remove">Usuń</string>
@@ -827,7 +834,7 @@ Weryfikuj swój numer telefonu, aby połączyć się z Signal.</string>
 NUMER TELEFONU</string>
   <string name="registration_activity__phone_number">NUMER TELEFONU</string>
   <string name="registration_activity__register">Rejestracja</string>
-  <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">Podczas rejestracji, niektóre informacje o kontakcie zostaną przesłane tymczasowo na serwer. Nie będą one zapisane.</string>
+  <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">Signal ułatwia komunikację używając Twój numer telefonu i książkę adresową. Znajomi i kontakty, którzy wiedzą, jak się z Tobą skontaktować przez telefon, będą mogli łatwo nawiązać kontakt przez Signal. \n\nPodczas rejestracji wysyłane są na serwer pewne informacje o kontaktach, lecz nie są one przechowywane.</string>
   <string name="registration_activity__powered_by_twilio">Wspierane przez twilio</string>
   <!--registration_problems-->
   <string name="registration_problems__some_possible_problems_include">Niektóre możliwe problemy:</string>
@@ -918,6 +925,14 @@ Upłynął czas oczekiwania na wiadomość weryfikacyjną SMS.</string>
   <string name="arrays__images">Zdjęcia</string>
   <string name="arrays__audio">Audio</string>
   <string name="arrays__video">Wideo</string>
+  <string name="arrays__documents">Dokumenty</string>
+  <string name="arrays__small">Mały</string>
+  <string name="arrays__normal">Normalnie</string>
+  <string name="arrays__large">Duży</string>
+  <string name="arrays__extra_large">Bardzo duży</string>
+  <string name="arrays__default">Domyślne</string>
+  <string name="arrays__high">Wysoki</string>
+  <string name="arrays__max">Maksymalny</string>
   <!--plurals.xml-->
   <plurals name="hours_ago">
     <item quantity="one">%d godzina</item>
@@ -961,7 +976,6 @@ Upłynął czas oczekiwania na wiadomość weryfikacyjną SMS.</string>
   <string name="preferences__pref_led_blink_custom_pattern_off_for">Wyłączony dla:</string>
   <string name="preferences__pref_led_blink_custom_pattern_set">Ustawiono niestandardowy wzór migających świateł LED!</string>
   <string name="preferences__sound">Dźwięk</string>
-  <string name="preferences__change_notification_sound">Zmień dźwięk powiadomienia</string>
   <string name="preferences__silent">Wycisz</string>
   <string name="preferences__in_conversation_notifications">Powiadomienia \"w konwersacji\"</string>
   <string name="preferences__play_inthread_notifications">Włącz dźwięk powiadomienia w aktywnej rozmowie</string>
@@ -1034,6 +1048,17 @@ Upłynął czas oczekiwania na wiadomość weryfikacyjną SMS.</string>
   <string name="preferences_advanced__enable_support_for_next_generation_video_and_voice_calls">Wsparcie dla rozmów wideo i audio następnej generacji, gdy jest aktywowane przez obu rozmówców. Funkcja jest w fazie testów.</string>
   <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Przekazuj połączenia do serwerów Signal, aby uniknąć ujawnienia swojego IP swoim kontaktom. Włączenie tej opcji pogorszy jakość połączenia.</string>
   <string name="preferences_advanced__always_relay_calls">Zawsze przekazuj połączenia</string>
+  <string name="preferences_app_protection__communication">Komunikacja</string>
+  <string name="preferences_chats__chats">Rozmowy</string>
+  <string name="preferences_notifications__message_notifications">Powiadomienia o wiadomościach</string>
+  <string name="preferences_notifications__events">Zdarzenia</string>
+  <string name="preferences_notifications__in_chat_sounds">Dźwięki podczas rozmowy</string>
+  <string name="preferences_notifications__show">Pokaż</string>
+  <string name="preferences_chats__show_invitation_prompts">Pokazuj zachętę do zaproszenia</string>
+  <string name="preferences_chats__display_invitation_prompts_for_contacts_without_signal">Pokazuj zachętę do zaproszenia kontaktów bez Signal</string>
+  <string name="preferences_chats__message_text_size">Rozmiar czcionki dla wiadomości</string>
+  <string name="preferences_events__contact_joined_signal">Kontakt dołączył do Signal</string>
+  <string name="preferences_notifications__priority">Priorytet</string>
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->

@@ -82,6 +82,7 @@
   <string name="ConversationItem_click_to_approve_unencrypted_mms_dialog_title">暗号化されないMMSに切り替えますか？</string>
   <string name="ConversationItem_click_to_approve_unencrypted_dialog_message">相手がSignalを使用していないので、このメッセージは暗号化<b>されません</b>。 通信安全上、問題のある方法でメッセージを送信しますか?</string>
   <string name="ConversationItem_unable_to_open_media">このメディアを開けるアプリが見つかりません。</string>
+  <string name="ConversationItem_copied_text">コピーされた %s</string>
   <string name="ConversationItem_from_s">%sから</string>
   <string name="ConversationItem_to_s">%sへ</string>
   <!--ConversationActivity-->
@@ -115,7 +116,7 @@
   <string name="ConversationActivity_transport_signal">Signal</string>
   <string name="ConversationActivity_lets_switch_to_signal">チャットアプリをSignalに変えましょう。%1$s</string>
   <string name="ConversationActivity_lets_use_this_to_chat">チャット・アプリ『Signal』を使いませんか？ %1$s</string>
-  <string name="ConversationActivity_error_leaving_group">グループ離脱でエラー</string>
+  <string name="ConversationActivity_error_leaving_group">グループ離脱エラー</string>
   <string name="ConversationActivity_mms_not_supported_title">MMSには対応していません</string>
   <string name="ConversationActivity_mms_not_supported_message">お使いの端末がMMSに対応していないため、このメッセージは送信できません。</string>
   <string name="ConversationActivity_specify_recipient">連絡先を選択してください</string>
@@ -210,6 +211,8 @@
   <string name="DeviceListItem_linked_s">%sを結び付けました</string>
   <string name="DeviceListItem_last_active_s">最終活動 %s</string>
   <string name="DeviceListItem_today">今日</string>
+  <!--DocumentView-->
+  <string name="DocumentView_unknown_file">不明なファイル</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">欠けているGoogle Play開発者サービスに最適化する</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">この端末はGoogle Play開発者サービスをサポートしていません。タップして，休眠中の通信を止めるバッテリー最適化機能を切ってください。</string>
@@ -221,7 +224,7 @@
   <string name="ExperienceUpgradeActivity_welcome_to_signal_excited">Signalにようこそ！</string>
   <string name="ExperienceUpgradeActivity_textsecure_is_now_signal">TextSecureはSignalに生まれ変わりました</string>
   <string name="ExperienceUpgradeActivity_textsecure_is_now_signal_long">TextSecureとRedPhoneは１つのアプリ「Signal」になりました。タップすると詳細が分かります。</string>
-  <string name="ExperienceUpgradeActivity_say_hello_to_video_calls">安全なビデオ通話に挨拶する</string>
+  <string name="ExperienceUpgradeActivity_say_hello_to_video_calls">安全なビデオ通話へようこそ！</string>
   <string name="ExperienceUpgradeActivity_signal_now_supports_secure_video_calls">安全なビデオ通話が可能になりました。通常通りに通話を開始してから，動画ボタンを押してください。</string>
   <string name="ExperienceUpgradeActivity_signal_now_supports_secure_video_calling">安全なビデオ通話が可能になりました</string>
   <string name="ExperienceUpgradeActivity_signal_now_supports_secure_video_calling_long">安全なビデオ通話が可能になりました。試すにはタップしてください。</string>
@@ -251,7 +254,7 @@
   <string name="GroupCreateActivity_contacts_dont_support_push">Signalユーザーでない人がいるため、このグループはMMSとなります。</string>
   <string name="GroupCreateActivity_youre_not_registered_for_signal">Signalに未登録なのでグループを利用できません。「詳細設定」で登録してください。</string>
   <string name="GroupCreateActivity_contacts_mms_exception">予期せぬエラーが発生したため、グループ作成に失敗しました。</string>
-  <string name="GroupCreateActivity_contacts_no_members">グループには誰か１人は必要です！</string>
+  <string name="GroupCreateActivity_contacts_no_members">グループには最低でも１人は必要です！</string>
   <string name="GroupCreateActivity_contacts_invalid_number">グループのメンバーで電話番号が正しくない人がいます。番号を修正するか、そのメンバーを削除してからやり直してください。</string>
   <string name="GroupCreateActivity_avatar_content_description">グループアバター</string>
   <string name="GroupCreateActivity_menu_apply_button">適用する</string>
@@ -334,10 +337,12 @@
   <!--MessageRecord-->
   <string name="MessageRecord_message_encrypted_with_a_legacy_protocol_version_that_is_no_longer_supported">受信したメッセージは古いSignalで暗号化されているので解読不能です。Signalを最新版にして再送するよう送信者にお願いしてください。</string>
   <string name="MessageRecord_left_group">グループを抜けました</string>
+  <string name="MessageRecord_you_updated_group">グループが更新されました</string>
+  <string name="MessageRecord_s_updated_group">%s がグループを更新しました</string>
   <string name="MessageRecord_s_called_you">%sから着信</string>
   <string name="MessageRecord_called_s">%sに発信</string>
   <string name="MessageRecord_missed_call_from">%sから不在着信</string>
-  <string name="MessageRecord_s_is_on_signal_say_hey">%sがSignalにいるので声を掛ける</string>
+  <string name="MessageRecord_s_joined_signal">%s が Signal に登録しました!</string>
   <string name="MessageRecord_you_set_disappearing_message_time_to_s">メッセージの消去時間を%1$sに設定しました</string>
   <string name="MessageRecord_s_set_disappearing_message_time_to_s">%1$sがメッセージの消去時間を%2$sに設定しました</string>
   <string name="MessageRecord_your_safety_number_with_s_has_changed">%sとの安全番号が変わりました</string>
@@ -430,6 +435,8 @@
   <string name="RegistrationActivity_i_understand">分かりました</string>
   <string name="RegistrationActivity_play_services_error">Google Play開発者サービスのエラー</string>
   <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play開発者サービスは更新中か一時的に使用不能です。再度試してください。</string>
+  <string name="RegistrationActivity_more_information">もっと見る</string>
+  <string name="RegistrationActivity_less_information">詳細を隠す</string>
   <!--RegistrationProblemsActivity-->
   <string name="RegistrationProblemsActivity_possible_problems">可能性のある原因</string>
   <!--RegistrationProgressActivity-->
@@ -452,7 +459,7 @@
   <string name="RegistrationProgressActivity_too_many_requests">リクエストが多すぎます</string>
   <string name="RegistrationProgressActivity_youve_already_requested_a_voice_call">検証用の通話はすでに申請済みです。再申請は20分待たなければ出来ません。</string>
   <string name="RegistrationProgressActivity_registration_conflict">登録不一致</string>
-  <string name="RegistrationProgressActivity_this_number_is_already_registered_on_a_different">この番号は既にSignalの別のサーバーに登録されています。そこでの登録を解除してから再度試してください。</string>
+  <string name="RegistrationProgressActivity_this_number_is_already_registered_on_a_different">この番号はすでに別のサーバーで登録されています。再登録するには一度登録を削除する必要があります。</string>
   <!--RegistrationService-->
   <string name="RegistrationService_registration_complete">登録完了</string>
   <string name="RegistrationService_signal_registration_has_successfully_completed">登録が完了しました</string>
@@ -470,6 +477,7 @@
   <string name="SmsMessageRecord_secure_session_reset_s">%sが安全な接触を設定し直しました。</string>
   <string name="SmsMessageRecord_duplicate_message">重複メッセージ</string>
   <!--ThreadRecord-->
+  <string name="ThreadRecord_group_updated">グループが更新されました</string>
   <string name="ThreadRecord_left_the_group">グループを抜けました</string>
   <string name="ThreadRecord_secure_session_reset">安全なセッションがリセットされました</string>
   <string name="ThreadRecord_draft">下書き:</string>
@@ -477,7 +485,7 @@
   <string name="ThreadRecord_called_you">着信がありました</string>
   <string name="ThreadRecord_missed_call">不在着信がありました</string>
   <string name="ThreadRecord_media_message">メディアでのメッセージ</string>
-  <string name="ThreadRecord_s_is_on_signal_say_hey">%sがSignalにいるので声を掛ける</string>
+  <string name="ThreadRecord_s_joined_signal">%s が Signal に登録しました！</string>
   <string name="ThreadRecord_disappearing_message_time_updated_to_s">メッセージの消去時間が%sに設定されました</string>
   <string name="ThreadRecord_your_safety_number_with_s_has_changed">%sとの安全番号が変わりました</string>
   <!--UpdateApkReadyListener-->
@@ -508,7 +516,7 @@
   <string name="MmsDatabase_mms_download_failed">MMSのダウンロード失敗！</string>
   <string name="MmsDatabase_downloading">ダウンロード中…</string>
   <string name="MmsDatabase_mms_pending_download">ダウンロードを続行するのに、MMS設定を行って下さい。</string>
-  <string name="MmsDatabase_error_decrypting_message">メッセージ復号化でエラー</string>
+  <string name="MmsDatabase_error_decrypting_message">メッセージ復号化エラー</string>
   <!--MmsMessageRecord-->
   <string name="MmsMessageRecord_decrypting_mms_please_wait">MMSを復号しています。お待ち下さい…</string>
   <string name="MmsMessageRecord_bad_encrypted_mms_message">MMSメッセージの暗号化が正しくありません</string>
@@ -553,6 +561,8 @@
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Signalのロック中はクイック・レスポンスは使えません</string>
   <string name="QuickResponseService_problem_sending_message">メッセージ送信で問題発生</string>
+  <!--SaveAttachmentTask-->
+  <string name="SaveAttachmentTask_open_directory">フォルダを開ける</string>
   <!--SingleRecipientNotificationBuilder-->
   <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
   <string name="SingleRecipientNotificationBuilder_new_message">新規メッセージ</string>
@@ -565,12 +575,8 @@
   <!--WebRtcCallControls-->
   <string name="WebRtcCallControls_tap_to_enable_your_video">タップして動画を有効する</string>
   <!--attachment_type_selector-->
-  <string name="attachment_type_selector__image">画像</string>
-  <string name="attachment_type_selector__image_description">画像</string>
   <string name="attachment_type_selector__audio">音声</string>
   <string name="attachment_type_selector__audio_description">音声</string>
-  <string name="attachment_type_selector__video">動画</string>
-  <string name="attachment_type_selector__video_description">動画</string>
   <string name="attachment_type_selector__contact">連絡先</string>
   <string name="attachment_type_selector__contact_description">連絡先</string>
   <string name="attachment_type_selector__camera">カメラ</string>
@@ -579,6 +585,10 @@
   <string name="attachment_type_selector__location_description">場所</string>
   <string name="attachment_type_selector__gif">GIF</string>
   <string name="attachment_type_selector__gif_description">Gif</string>
+  <string name="attachment_type_selector__gallery_description">画像・動画</string>
+  <string name="attachment_type_selector__file_description">ファイル</string>
+  <string name="attachment_type_selector__gallery">ギャラリー</string>
+  <string name="attachment_type_selector__file">ファイル</string>
   <string name="attachment_type_selector__drawer_description">添付引出しを切り替える</string>
   <!--change_passphrase_activity-->
   <string name="change_passphrase_activity__old_passphrase">既存のパスワード</string>
@@ -600,9 +610,9 @@
   <!--conversation_title_view-->
   <string name="conversation_title_view__conversation_muted">会話を消音</string>
   <!--conversation_activity-->
-  <string name="conversation_activity__type_message_push">プッシュ送信</string>
-  <string name="conversation_activity__type_message_sms_insecure">SMSを送信（通信安全性は確保されません）</string>
-  <string name="conversation_activity__type_message_mms_insecure">MMSを送信（通信安全性は確保されません）</string>
+  <string name="conversation_activity__type_message_push">メッセージ</string>
+  <string name="conversation_activity__type_message_sms_insecure">安全でないSMS</string>
+  <string name="conversation_activity__type_message_mms_insecure">安全でないMMS</string>
   <string name="conversation_activity__from_sim_name">%1$sから</string>
   <string name="conversation_activity__send">送信</string>
   <string name="conversation_activity__remove">削除</string>
@@ -709,6 +719,7 @@
   <!--message_recipients_list_item-->
   <string name="message_recipients_list_item__verify">確認</string>
   <string name="message_recipients_list_item__resend">再送</string>
+  <string name="message_recipients_list_item__resending">再送中...</string>
   <!--GroupUtil-->
   <plurals name="GroupUtil_joined_the_group">
     <item quantity="other">%1$sがグループに加わりました</item>
@@ -742,7 +753,7 @@
   <string name="registration_activity__your_country_code_and_phone_number">あなたの国番号と電話番号</string>
   <string name="registration_activity__phone_number">電話番号</string>
   <string name="registration_activity__register">登録</string>
-  <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">登録すると連絡先情報の一部がサーバーに送られますが、保存はしません。</string>
+  <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">Signalはあなたの連絡先の電話番号を利用して、より簡単なコミュニケーションを提供します。たとえば、あなたの友達が初めてSignalに登録した際、友達の連絡先にあなたの電話番号があると、友達があなたを簡単に見つけることが出来ます。\n\n登録の際、一部のデータがサーバーに送信されますが、これらのデータは保存されません。</string>
   <string name="registration_activity__powered_by_twilio">Powered by twilio</string>
   <!--registration_problems-->
   <string name="registration_problems__some_possible_problems_include">いくつかの問題の可能性があります
@@ -827,6 +838,14 @@
   <string name="arrays__images">画像</string>
   <string name="arrays__audio">音声</string>
   <string name="arrays__video">動画</string>
+  <string name="arrays__documents">文書</string>
+  <string name="arrays__small">小さい</string>
+  <string name="arrays__normal">普通</string>
+  <string name="arrays__large">大きい</string>
+  <string name="arrays__extra_large">非常に大きい</string>
+  <string name="arrays__default">デフォルト</string>
+  <string name="arrays__high">上に</string>
+  <string name="arrays__max">最大</string>
   <!--plurals.xml-->
   <plurals name="hours_ago">
     <item quantity="other">%d時間前</item>
@@ -867,7 +886,6 @@
   <string name="preferences__pref_led_blink_custom_pattern_off_for">消灯時間:</string>
   <string name="preferences__pref_led_blink_custom_pattern_set">オリジナルのLED点滅パターンが設定されました！</string>
   <string name="preferences__sound">着信音</string>
-  <string name="preferences__change_notification_sound">通知音を変更</string>
   <string name="preferences__silent">無音</string>
   <string name="preferences__in_conversation_notifications">チャット中の通知</string>
   <string name="preferences__play_inthread_notifications">チャットを表示している間も通知音を出す</string>
@@ -940,6 +958,18 @@
   <string name="preferences_advanced__enable_support_for_next_generation_video_and_voice_calls">次世代のビデオ音声通話を有効にする（相手も有効にした場合）。この機能はβ版です。</string>
   <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">すべての通話をSignalサーバーに中継して，IPアドレスが相手に漏れることを防ぐ。ただし通話の質は下がります。</string>
   <string name="preferences_advanced__always_relay_calls">いつも中継する</string>
+  <string name="preferences_app_protection__app_access">アプリのアクセス</string>
+  <string name="preferences_app_protection__communication">通信</string>
+  <string name="preferences_chats__chats">チャット</string>
+  <string name="preferences_notifications__message_notifications">メッセージの通知</string>
+  <string name="preferences_notifications__events">イベント</string>
+  <string name="preferences_notifications__in_chat_sounds">チャット着信音</string>
+  <string name="preferences_notifications__show">表示</string>
+  <string name="preferences_chats__show_invitation_prompts">招待状を表示</string>
+  <string name="preferences_chats__display_invitation_prompts_for_contacts_without_signal">Signalを持っていない連絡先に招待状を表示する</string>
+  <string name="preferences_chats__message_text_size">メッセージのフォントの大きさ</string>
+  <string name="preferences_events__contact_joined_signal">連絡先がSignalに参加しました</string>
+  <string name="preferences_notifications__priority">優先度</string>
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->

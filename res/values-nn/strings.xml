@@ -85,6 +85,7 @@
   <string name="ConversationItem_click_to_approve_unencrypted_mms_dialog_title">Vil du bruka ukryptert MMS som reserveløysing?</string>
   <string name="ConversationItem_click_to_approve_unencrypted_dialog_message">Denne meldinga vert <b>ikkje</b> kryptert, fordi mottakaren ikkje brukar Signal lenger.\n\nVil du senda ho ukryptert?</string>
   <string name="ConversationItem_unable_to_open_media">Fann inga program som kan opna dette innhaldet.</string>
+  <string name="ConversationItem_copied_text">Kopierte %s</string>
   <string name="ConversationItem_from_s">frå %s</string>
   <string name="ConversationItem_to_s">til %s</string>
   <!--ConversationActivity-->
@@ -226,6 +227,8 @@
   <string name="DeviceListItem_linked_s">%s er kopla til</string>
   <string name="DeviceListItem_last_active_s">Sist aktiv %s</string>
   <string name="DeviceListItem_today">I dag</string>
+  <!--DocumentView-->
+  <string name="DocumentView_unknown_file">Ukjend fil</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">Optimaliser for manglande Play-tenester</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Denne eininga støttar ikkje Play-tenester. Trykk for å skru av batterioptimaliseringane i systemet som hindrar Signal frå å henta meldingar når programmet ikkje er aktivt. </string>
@@ -364,7 +367,7 @@ fører dette til dupliserte meldingar.</string>
   <string name="MessageRecord_s_called_you">%s ringte deg</string>
   <string name="MessageRecord_called_s">Ringte %s</string>
   <string name="MessageRecord_missed_call_from">Tapt anrop frå %s</string>
-  <string name="MessageRecord_s_is_on_signal_say_hey">%s er på Signal. Sei hei!</string>
+  <string name="MessageRecord_s_joined_signal">%s blei med på Signal!</string>
   <string name="MessageRecord_you_set_disappearing_message_time_to_s">Du stilte inn at meldingar skal forsvinna etter %1$s.</string>
   <string name="MessageRecord_s_set_disappearing_message_time_to_s">%1$s lot meldingar forsvinna etter %2$s.</string>
   <string name="MessageRecord_your_safety_number_with_s_has_changed">Tryggleiksnummeret ditt med %s har endra seg.</string>
@@ -463,6 +466,8 @@ Viss du ikkje er ein erfaren brukar, ikkje køyrer ein tredjeparts Android-ROM, 
   <string name="RegistrationActivity_i_understand">Eg forstår</string>
   <string name="RegistrationActivity_play_services_error">Feil med Play-tenester</string>
   <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play-tenester oppdaterer seg eller er mellombels utilgjengeleg. Prøv igjen seinare.</string>
+  <string name="RegistrationActivity_more_information">Meir informasjon</string>
+  <string name="RegistrationActivity_less_information">Mindre informasjon</string>
   <!--RegistrationProblemsActivity-->
   <string name="RegistrationProblemsActivity_possible_problems">Moglege problem</string>
   <!--RegistrationProgressActivity-->
@@ -485,7 +490,7 @@ Viss du ikkje er ein erfaren brukar, ikkje køyrer ein tredjeparts Android-ROM, 
   <string name="RegistrationProgressActivity_too_many_requests">For mange førespurnader.</string>
   <string name="RegistrationProgressActivity_youve_already_requested_a_voice_call">Du har allereie bede om ein samtale. Vent 20 minutt før du ber om ein ny.</string>
   <string name="RegistrationProgressActivity_registration_conflict">Registreringskonflikt</string>
-  <string name="RegistrationProgressActivity_this_number_is_already_registered_on_a_different">Dette nummeret er allereie registrert på ein annan Signal-tener (CyanogenMod?). Du må avregistrera nummeret der før du kan registrera det her.</string>
+  <string name="RegistrationProgressActivity_this_number_is_already_registered_on_a_different">Dette nummeret er allereie registrert på ein annan Signal-tenar. Du må avregistrera der før du registrerer her.</string>
   <!--RegistrationService-->
   <string name="RegistrationService_registration_complete">Registrering fullført</string>
   <string name="RegistrationService_signal_registration_has_successfully_completed">Signal-registrering utført.</string>
@@ -513,7 +518,7 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <string name="ThreadRecord_called_you">Ringte deg</string>
   <string name="ThreadRecord_missed_call">Usvart anrop</string>
   <string name="ThreadRecord_media_message">Mediemelding</string>
-  <string name="ThreadRecord_s_is_on_signal_say_hey">%s er på Signal. Sei hei!</string>
+  <string name="ThreadRecord_s_joined_signal">%s blei med på Signal!</string>
   <string name="ThreadRecord_disappearing_message_time_updated_to_s">Utløpstid for melding endra til %s</string>
   <string name="ThreadRecord_your_safety_number_with_s_has_changed">Tryggleiksnummeret ditt med %s har endra seg.</string>
   <!--UpdateApkReadyListener-->
@@ -589,6 +594,8 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Hurtigsvar er utilgjengeleg når Signal er låst.</string>
   <string name="QuickResponseService_problem_sending_message">Det oppstod eit problem under sending av melding.</string>
+  <!--SaveAttachmentTask-->
+  <string name="SaveAttachmentTask_open_directory">Opna mappe</string>
   <!--SingleRecipientNotificationBuilder-->
   <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
   <string name="SingleRecipientNotificationBuilder_new_message">Ny melding</string>
@@ -601,12 +608,8 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <!--WebRtcCallControls-->
   <string name="WebRtcCallControls_tap_to_enable_your_video">Trykk for å skru på videoen din</string>
   <!--attachment_type_selector-->
-  <string name="attachment_type_selector__image">Bilete</string>
-  <string name="attachment_type_selector__image_description">Bilete</string>
   <string name="attachment_type_selector__audio">Lyd</string>
   <string name="attachment_type_selector__audio_description">Lyd</string>
-  <string name="attachment_type_selector__video">Video</string>
-  <string name="attachment_type_selector__video_description">Video</string>
   <string name="attachment_type_selector__contact">Kontakt</string>
   <string name="attachment_type_selector__contact_description">Kontakt</string>
   <string name="attachment_type_selector__camera">Kamera</string>
@@ -615,6 +618,10 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <string name="attachment_type_selector__location_description">Plassering</string>
   <string name="attachment_type_selector__gif">GIF</string>
   <string name="attachment_type_selector__gif_description">Gif</string>
+  <string name="attachment_type_selector__gallery_description">Bilete eller video</string>
+  <string name="attachment_type_selector__file_description">Fil</string>
+  <string name="attachment_type_selector__gallery">Galleri</string>
+  <string name="attachment_type_selector__file">Fil</string>
   <string name="attachment_type_selector__drawer_description">Vis/skjul vedleggspanel</string>
   <!--change_passphrase_activity-->
   <string name="change_passphrase_activity__old_passphrase">Gammal passordfrase</string>
@@ -636,9 +643,9 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <!--conversation_title_view-->
   <string name="conversation_title_view__conversation_muted">Samtale dempa</string>
   <!--conversation_activity-->
-  <string name="conversation_activity__type_message_push">Send Signal-melding</string>
-  <string name="conversation_activity__type_message_sms_insecure">Send usikker SMS</string>
-  <string name="conversation_activity__type_message_mms_insecure">Send usikker MMS</string>
+  <string name="conversation_activity__type_message_push">Signal-melding</string>
+  <string name="conversation_activity__type_message_sms_insecure">Usikra SMS</string>
+  <string name="conversation_activity__type_message_mms_insecure">Usikra MMS</string>
   <string name="conversation_activity__from_sim_name">Frå %1$s</string>
   <string name="conversation_activity__send">Send</string>
   <string name="conversation_activity__remove">Fjern</string>
@@ -787,7 +794,9 @@ Stadfest telefonnummeret ditt for kopla til Signal.</string>
 TELEFONNUMMER</string>
   <string name="registration_activity__phone_number">TELEFONNUMMER</string>
   <string name="registration_activity__register">Registrer</string>
-  <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">Registrering overfører kontaktinformasjon til tenaren. Informasjonen vert ikkje lagra der.</string>
+  <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">Signal gjer det enkelt å kommunisera ved hjelp av telefonnummeret ditt og adresseboka di. Vennar og kontaktar som allereie veit korleis dei skal ta kontakt med deg over telefon vil enkelt kunna ta kontakt over Signal.
+
+Ved registrering sender me litt kontaktinformasjon til tenaren. Informasjonen vert ikkje lagra.</string>
   <string name="registration_activity__powered_by_twilio">Driven av av twilio</string>
   <!--registration_problems-->
   <string name="registration_problems__some_possible_problems_include">Følgjande problem
@@ -892,6 +901,14 @@ Signal fekk tidsavbrot ved venting på stadfestingsmeldinga.</string>
   <string name="arrays__images">Bilete</string>
   <string name="arrays__audio">Lyd</string>
   <string name="arrays__video">Video</string>
+  <string name="arrays__documents">Dokument</string>
+  <string name="arrays__small">Liten</string>
+  <string name="arrays__normal">Normal</string>
+  <string name="arrays__large">Stor</string>
+  <string name="arrays__extra_large">Veldig stor</string>
+  <string name="arrays__default">Forvald</string>
+  <string name="arrays__high">Høg</string>
+  <string name="arrays__max">Maks</string>
   <!--plurals.xml-->
   <plurals name="hours_ago">
     <item quantity="one">%d time</item>
@@ -933,7 +950,6 @@ Signal fekk tidsavbrot ved venting på stadfestingsmeldinga.</string>
   <string name="preferences__pref_led_blink_custom_pattern_off_for">Av for:</string>
   <string name="preferences__pref_led_blink_custom_pattern_set">LED-blinkemønster er endra.</string>
   <string name="preferences__sound">Lyd</string>
-  <string name="preferences__change_notification_sound">Endra varslingslyd</string>
   <string name="preferences__silent">Stille</string>
   <string name="preferences__in_conversation_notifications">Varsling under samtalar</string>
   <string name="preferences__play_inthread_notifications">Spel av varslingslyd når du ser på ein aktiv samtale</string>
@@ -1006,6 +1022,18 @@ Signal fekk tidsavbrot ved venting på stadfestingsmeldinga.</string>
   <string name="preferences_advanced__enable_support_for_next_generation_video_and_voice_calls">Støtte for neste-generasjons video- og taleringing, når begge partane har skrudd det på. Denne funksjonen er i beta.</string>
   <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Vidaresend alle samtalar gjennom Signal-tenaren for å unngå å visa IP-adressa di til kontakten din. Dette vil gi dårlegare samtalekvalitet.</string>
   <string name="preferences_advanced__always_relay_calls">Alltid vidaresend samtalar</string>
+  <string name="preferences_app_protection__app_access">App-tilgang</string>
+  <string name="preferences_app_protection__communication">Kommunikasjon</string>
+  <string name="preferences_chats__chats">Samtalar</string>
+  <string name="preferences_notifications__message_notifications">Meldingsvarsel</string>
+  <string name="preferences_notifications__events">Hendingar</string>
+  <string name="preferences_notifications__in_chat_sounds">Lydar i chat</string>
+  <string name="preferences_notifications__show">Vis</string>
+  <string name="preferences_chats__show_invitation_prompts">Oppfordring om invitering</string>
+  <string name="preferences_chats__display_invitation_prompts_for_contacts_without_signal">Vis oppfordring om å invitera kontaktar som ikkje har Signal</string>
+  <string name="preferences_chats__message_text_size">Skriftstorleik i meldingar</string>
+  <string name="preferences_events__contact_joined_signal">Ein kontakt tok i bruk Signal!</string>
+  <string name="preferences_notifications__priority">Prioritet</string>
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -1109,7 +1137,7 @@ Signal fekk tidsavbrot ved venting på stadfestingsmeldinga.</string>
   <string name="reminder_header_push_text">Oppgrader kommunikasjonsopplevinga.</string>
   <string name="reminder_header_push_button">SLÅ PÅ</string>
   <string name="reminder_header_invite_title">Inviter til Signal</string>
-  <string name="reminder_header_invite_text">Ta samtalen med %1$sjå til neste nivå.</string>
+  <string name="reminder_header_invite_text">Ta samtalen med %1$s til neste nivå.</string>
   <string name="reminder_header_invite_button">INVITER</string>
   <string name="reminder_header_share_title">Inviter vennane dine!</string>
   <string name="reminder_header_share_text">Jo fleire vennar som brukar Signal, desto betre vert det.</string>

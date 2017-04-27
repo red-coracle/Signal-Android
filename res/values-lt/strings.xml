@@ -88,6 +88,7 @@
   <string name="ConversationItem_click_to_approve_unencrypted_mms_dialog_title">Sugrįžti prie nešifruotų MMS naudojimo?</string>
   <string name="ConversationItem_click_to_approve_unencrypted_dialog_message">Ši žinutė <b>nebus</b> užšifruota, nes gavėjas daugiau nebėra Signal naudotojas.\n\nSiųsti neapsaugotą žinutę?</string>
   <string name="ConversationItem_unable_to_open_media">Nepavyksta rasti programėlės, galinčios atverti šią mediją.</string>
+  <string name="ConversationItem_copied_text">%s nukopijuota</string>
   <string name="ConversationItem_from_s">nuo %s</string>
   <string name="ConversationItem_to_s">iki %s</string>
   <!--ConversationActivity-->
@@ -242,6 +243,8 @@
   <string name="DeviceListItem_linked_s">Susietas %s</string>
   <string name="DeviceListItem_last_active_s">Paskutinį kartą aktyvus %s</string>
   <string name="DeviceListItem_today">Šiandien</string>
+  <!--DocumentView-->
+  <string name="DocumentView_unknown_file">Nežinomas failas</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">Optimizuoti trūkstamoms „Play“ paslaugoms</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Šis įrenginys nepalaiko „Play“ paslaugų. Bakstelėkite, norėdami išjungti sistemos baterijos optimizavimus, kurie neleidžia Signal gauti žinučių tol, kol įrenginys yra neaktyvus.</string>
@@ -385,7 +388,7 @@
   <string name="MessageRecord_s_called_you">Jums skambino %s</string>
   <string name="MessageRecord_called_s">Skambino %s</string>
   <string name="MessageRecord_missed_call_from">Praleistas skambutis nuo %s</string>
-  <string name="MessageRecord_s_is_on_signal_say_hey">%s naudoja Signal, pasisveikinkite!</string>
+  <string name="MessageRecord_s_joined_signal">%s prisijungė prie Signal!</string>
   <string name="MessageRecord_you_set_disappearing_message_time_to_s">Jūs nustatėte išnykstančių žinučių laiką į %1$s.</string>
   <string name="MessageRecord_s_set_disappearing_message_time_to_s">%1$s nustatė išnykstančių žinučių laiką į %2$s.</string>
   <string name="MessageRecord_your_safety_number_with_s_has_changed">Jūsų saugumo numeris su %s pasikeitė.</string>
@@ -487,6 +490,8 @@
   <string name="RegistrationActivity_i_understand">Aš suprantu</string>
   <string name="RegistrationActivity_play_services_error">„Play“ paslaugų klaida</string>
   <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">„Google Play“ paslaugos yra atnaujinamos arba laikinai neprieinamos. Prašome bandyti dar kartą.</string>
+  <string name="RegistrationActivity_more_information">Daugiau informacijos</string>
+  <string name="RegistrationActivity_less_information">Mažiau informacijos</string>
   <!--RegistrationProblemsActivity-->
   <string name="RegistrationProblemsActivity_possible_problems">Galimos problemos</string>
   <!--RegistrationProgressActivity-->
@@ -509,7 +514,7 @@
   <string name="RegistrationProgressActivity_too_many_requests">Per daug užklausų!</string>
   <string name="RegistrationProgressActivity_youve_already_requested_a_voice_call">Jūs neseniai jau užklausėte balso skambutį. Jūs galite užklausti kitą skambutį po 20 minučių. </string>
   <string name="RegistrationProgressActivity_registration_conflict">Registracijos konfliktas</string>
-  <string name="RegistrationProgressActivity_this_number_is_already_registered_on_a_different">Šis numeris jau yra registruotas kitame Signal serveryje (CyanogenMod?). Prieš registruojant jį čia, privalote jį ten išregistruoti.</string>
+  <string name="RegistrationProgressActivity_this_number_is_already_registered_on_a_different">Šis numeris jau yra registruotas kitame Signal serveryje. Prieš registruojant jį čia, privalote jį ten išregistruoti.</string>
   <!--RegistrationService-->
   <string name="RegistrationService_registration_complete">Registracija užbaigta</string>
   <string name="RegistrationService_signal_registration_has_successfully_completed">Signal registracija sėkmingai užbaigta.</string>
@@ -539,7 +544,7 @@
   <string name="ThreadRecord_called_you">Jums skambino</string>
   <string name="ThreadRecord_missed_call">Praleistas skambutis</string>
   <string name="ThreadRecord_media_message">Medijos žinutė</string>
-  <string name="ThreadRecord_s_is_on_signal_say_hey">%s naudoja Signal, pasisveikinkite!</string>
+  <string name="ThreadRecord_s_joined_signal">%s prisijungė prie Signal!</string>
   <string name="ThreadRecord_disappearing_message_time_updated_to_s">Išnykstančių žinučių laikas nustatytas į %s</string>
   <string name="ThreadRecord_your_safety_number_with_s_has_changed">Jūsų saugumo numeris su %s pasikeitė.</string>
   <!--UpdateApkReadyListener-->
@@ -615,6 +620,8 @@
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Spartusis atsakymas neprieinamas, kai Signal yra užrakinta!</string>
   <string name="QuickResponseService_problem_sending_message">Problemos siunčiant žinutę!</string>
+  <!--SaveAttachmentTask-->
+  <string name="SaveAttachmentTask_open_directory">Atverti katalogą</string>
   <!--SingleRecipientNotificationBuilder-->
   <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
   <string name="SingleRecipientNotificationBuilder_new_message">Nauja žinutė</string>
@@ -627,12 +634,8 @@
   <!--WebRtcCallControls-->
   <string name="WebRtcCallControls_tap_to_enable_your_video">Bakstelėkite, norėdami įjungti savo vaizdą</string>
   <!--attachment_type_selector-->
-  <string name="attachment_type_selector__image">Paveikslas</string>
-  <string name="attachment_type_selector__image_description">Paveikslas</string>
   <string name="attachment_type_selector__audio">Garsas</string>
   <string name="attachment_type_selector__audio_description">Garso įrašai</string>
-  <string name="attachment_type_selector__video">Vaizdas</string>
-  <string name="attachment_type_selector__video_description">Vaizdo įrašai</string>
   <string name="attachment_type_selector__contact">Kontaktas</string>
   <string name="attachment_type_selector__contact_description">Kontaktas</string>
   <string name="attachment_type_selector__camera">Kamera</string>
@@ -641,6 +644,10 @@
   <string name="attachment_type_selector__location_description">Vieta</string>
   <string name="attachment_type_selector__gif">GIF</string>
   <string name="attachment_type_selector__gif_description">Gif</string>
+  <string name="attachment_type_selector__gallery_description">Paveikslas ar vaizdo įrašas</string>
+  <string name="attachment_type_selector__file_description">Failas</string>
+  <string name="attachment_type_selector__gallery">Galerija</string>
+  <string name="attachment_type_selector__file">Failas</string>
   <string name="attachment_type_selector__drawer_description">Perjungti priedų stalčių</string>
   <!--change_passphrase_activity-->
   <string name="change_passphrase_activity__old_passphrase">Sena slaptafrazė</string>
@@ -662,9 +669,9 @@
   <!--conversation_title_view-->
   <string name="conversation_title_view__conversation_muted">Pokalbis nutildytas</string>
   <!--conversation_activity-->
-  <string name="conversation_activity__type_message_push">Siųsti Signal žinutę</string>
-  <string name="conversation_activity__type_message_sms_insecure">Siųsti nesaugią SMS žinutę</string>
-  <string name="conversation_activity__type_message_mms_insecure">Siųsti nesaugią MMS žinutę</string>
+  <string name="conversation_activity__type_message_push">Signal žinutė</string>
+  <string name="conversation_activity__type_message_sms_insecure">Neapsaugota SMS</string>
+  <string name="conversation_activity__type_message_mms_insecure">Neapsaugota MMS</string>
   <string name="conversation_activity__from_sim_name">Nuo %1$s</string>
   <string name="conversation_activity__send">Siųsti</string>
   <string name="conversation_activity__remove">Šalinti</string>
@@ -821,7 +828,7 @@
     </string>
   <string name="registration_activity__phone_number">TELEFONO NUMERIS</string>
   <string name="registration_activity__register">Registruoti</string>
-  <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">Registracija persiunčia tam tikrą kontaktinę informaciją į serverį. Ji nėra kaupiama.</string>
+  <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">Signal padaro bendravimą, naudojant jūsų esamą telefono numerį ir adresų knygą, lengvą. Draugai ir kontaktai, kurie jau žino kaip susisiekti su jumis telefonu, galės lengvai su jumis susisiekti, naudojant Signal.\n\nRegistracija persiunčia kai kurią kontaktinę informaciją į serverį. Ši informacija nėra kaupiama.</string>
   <string name="registration_activity__powered_by_twilio">Veikia su twilio</string>
   <!--registration_problems-->
   <string name="registration_problems__some_possible_problems_include">Į galimų problemų sąrašą
@@ -941,6 +948,14 @@ yra prisijungęs prie belaidžio (Wi-Fi) arba duomenų perdavimo tinklo.
   <string name="arrays__images">Paveikslai</string>
   <string name="arrays__audio">Garso įrašai</string>
   <string name="arrays__video">Vaizdo įrašai</string>
+  <string name="arrays__documents">Dokumentai</string>
+  <string name="arrays__small">Mažas</string>
+  <string name="arrays__normal">Normalus</string>
+  <string name="arrays__large">Didelis</string>
+  <string name="arrays__extra_large">Labai didelis</string>
+  <string name="arrays__default">Numatytoji</string>
+  <string name="arrays__high">Didžiausia</string>
+  <string name="arrays__max">Maksimali</string>
   <!--plurals.xml-->
   <plurals name="hours_ago">
     <item quantity="one">%d valanda</item>
@@ -983,7 +998,6 @@ yra prisijungęs prie belaidžio (Wi-Fi) arba duomenų perdavimo tinklo.
   <string name="preferences__pref_led_blink_custom_pattern_off_for">Išjungtas:</string>
   <string name="preferences__pref_led_blink_custom_pattern_set">Tinkintas šviesos diodo šablonas nustatytas!</string>
   <string name="preferences__sound">Garsas</string>
-  <string name="preferences__change_notification_sound">Pakeisti pranešimų garsą</string>
   <string name="preferences__silent">Tyliai</string>
   <string name="preferences__in_conversation_notifications">Pranešimai pokalbyje</string>
   <string name="preferences__play_inthread_notifications">Groti pranešimų garsą, kuomet rodomas aktyvus pokalbis</string>
@@ -1056,6 +1070,18 @@ yra prisijungęs prie belaidžio (Wi-Fi) arba duomenų perdavimo tinklo.
   <string name="preferences_advanced__enable_support_for_next_generation_video_and_voice_calls">Sekančios kartos vaizdo ir balso skambučių palaikymas, kuomet abi pusės turi šią ypatybę įjungtą. Ši ypatybė yra beta stadijoje.</string>
   <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Retransliuoti visus skambučius per Signal serverį, kad būtų išvengta jūsų IP adreso atskleidimo jūsų kontaktui. Įjungus, pablogės skambučių kokybė.</string>
   <string name="preferences_advanced__always_relay_calls">Visada retransliuoti skambučius</string>
+  <string name="preferences_app_protection__app_access">Programėlės prieiga</string>
+  <string name="preferences_app_protection__communication">Susisiekimas</string>
+  <string name="preferences_chats__chats">Pokalbiai</string>
+  <string name="preferences_notifications__message_notifications">Žinučių pranešimai</string>
+  <string name="preferences_notifications__events">Įvykiai</string>
+  <string name="preferences_notifications__in_chat_sounds">Garsai pokalbiuose</string>
+  <string name="preferences_notifications__show">Rodyti</string>
+  <string name="preferences_chats__show_invitation_prompts">Rodyti pakvietimų užklausas</string>
+  <string name="preferences_chats__display_invitation_prompts_for_contacts_without_signal">Rodyti pakvietimų užklausas kontaktams, kurie neturi Signal</string>
+  <string name="preferences_chats__message_text_size">Žinučių šrifto dydis</string>
+  <string name="preferences_events__contact_joined_signal">Kontaktas prisijungė prie Signal</string>
+  <string name="preferences_notifications__priority">Pirmenybė</string>
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
