@@ -3,8 +3,11 @@ package org.thoughtcrime.securesms;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -95,8 +98,10 @@ public class RegistrationActivity extends BaseActionBarActivity {
     this.informationToggle     =            findViewById(R.id.information_link_container);
     this.informationToggleText = (TextView) findViewById(R.id.information_label);
 
-    DrawableCompat.setTint(this.createButton.getBackground(), getResources().getColor(R.color.signal_primary));
-    DrawableCompat.setTint(this.skipButton.getBackground(), getResources().getColor(R.color.grey_400));
+    this.createButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.signal_primary),
+                                                     PorterDuff.Mode.MULTIPLY);
+    this.skipButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.grey_400),
+                                                   PorterDuff.Mode.MULTIPLY);
 
     this.countryCode.addTextChangedListener(new CountryCodeChangedListener());
     this.number.addTextChangedListener(new NumberChangedListener());
@@ -276,6 +281,16 @@ public class RegistrationActivity extends BaseActionBarActivity {
         case ConnectionResult.SUCCESS:
           return PlayServicesStatus.SUCCESS;
         case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
+          try {
+            ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo("com.google.android.gms", 0);
+
+            if (applicationInfo != null && !applicationInfo.enabled) {
+              return PlayServicesStatus.MISSING;
+            }
+          } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, e);
+          }
+
           return PlayServicesStatus.NEEDS_UPDATE;
         case ConnectionResult.SERVICE_DISABLED:
         case ConnectionResult.SERVICE_MISSING:

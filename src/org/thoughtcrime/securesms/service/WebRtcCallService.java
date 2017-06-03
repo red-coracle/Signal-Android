@@ -28,6 +28,7 @@ import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.WebRtcCallActivity;
 import org.thoughtcrime.securesms.contacts.ContactAccessor;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
+import org.thoughtcrime.securesms.database.IdentityDatabase.IdentityRecord;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.dependencies.SignalCommunicationModule.SignalMessageSenderFactory;
 import org.thoughtcrime.securesms.events.WebRtcViewModel;
@@ -68,6 +69,7 @@ import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoTrack;
 import org.whispersystems.libsignal.IdentityKey;
+import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.SignalServiceAccountManager;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException;
@@ -337,6 +339,12 @@ public class WebRtcCallService extends Service implements InjectableType, PeerCo
       return;
     }
 
+    if (isUnseenIdentity(this.recipient)) {
+      insertMissedCall(this.recipient, true);
+      terminate();
+      return;
+    }
+
     timeoutExecutor.schedule(new TimeoutRunnable(this.callId), 2, TimeUnit.MINUTES);
 
     initializeVideo();
@@ -592,8 +600,8 @@ public class WebRtcCallService extends Service implements InjectableType, PeerCo
   private void handleBusyMessage(Intent intent) {
     Log.w(TAG, "handleBusyMessage...");
 
-    Recipient recipient = getRemoteRecipient(intent);
-    long      callId    = getCallId(intent);
+    final Recipient recipient = getRemoteRecipient(intent);
+    final long      callId    = getCallId(intent);
 
     if (callState != CallState.STATE_DIALING || !Util.isEquals(this.callId, callId) || !recipient.equals(this.recipient)) {
       Log.w(TAG, "Got busy message for inactive session...");
@@ -606,7 +614,12 @@ public class WebRtcCallService extends Service implements InjectableType, PeerCo
     serviceHandler.postDelayed(new Runnable() {
       @Override
       public void run() {
-        WebRtcCallService.this.terminate();
+        Intent intent = new Intent(WebRtcCallService.this, WebRtcCallService.class);
+        intent.setAction(ACTION_LOCAL_HANGUP);
+        intent.putExtra(EXTRA_CALL_ID, intent.getLongExtra(EXTRA_CALL_ID, -1));
+        intent.putExtra(EXTRA_REMOTE_NUMBER, intent.getStringExtra(EXTRA_REMOTE_NUMBER));
+
+        startService(intent);
       }
     }, WebRtcCallActivity.BUSY_SIGNAL_DELAY_FINISH);
   }
@@ -940,6 +953,28 @@ public class WebRtcCallService extends Service implements InjectableType, PeerCo
 
     if (result == null) throw new AssertionError("Recipient lookup failed!");
     else                return result;
+  }
+
+  private boolean isUnseenIdentity(@NonNull Recipient recipient) {
+    Log.w(TAG, "Checking for unseen identity: " + recipient.getRecipientId());
+
+    Optional<IdentityRecord> identityRecord = DatabaseFactory.getIdentityDatabase(this).getIdentity(recipient.getRecipientId());
+
+    if (!identityRecord.isPresent()) {
+      throw new AssertionError("Should have an identity record at this point.");
+    }
+
+    if (identityRecord.get().isFirstUse()) {
+      Log.w(TAG, "Identity is first use...");
+      return false;
+    }
+
+    Log.w(TAG, "Last seen: " + identityRecord.get().getSeen() + " vs timestamp: " + identityRecord.get().getTimestamp());
+    if (identityRecord.get().getSeen() >= identityRecord.get().getTimestamp()) {
+      return false;
+    }
+
+    return true;
   }
 
   private long getCallId(Intent intent) {

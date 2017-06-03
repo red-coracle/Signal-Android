@@ -7,7 +7,6 @@ import android.util.Log;
 import android.util.Pair;
 
 import org.thoughtcrime.securesms.ApplicationContext;
-import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment;
 import org.thoughtcrime.securesms.attachments.PointerAttachment;
 import org.thoughtcrime.securesms.crypto.IdentityKeyUtil;
@@ -67,6 +66,7 @@ import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage;
 import org.whispersystems.signalservice.api.messages.SignalServiceEnvelope;
 import org.whispersystems.signalservice.api.messages.SignalServiceGroup;
 import org.whispersystems.signalservice.api.messages.calls.AnswerMessage;
+import org.whispersystems.signalservice.api.messages.calls.BusyMessage;
 import org.whispersystems.signalservice.api.messages.calls.HangupMessage;
 import org.whispersystems.signalservice.api.messages.calls.IceUpdateMessage;
 import org.whispersystems.signalservice.api.messages.calls.OfferMessage;
@@ -77,11 +77,10 @@ import org.whispersystems.signalservice.api.messages.multidevice.SentTranscriptM
 import org.whispersystems.signalservice.api.messages.multidevice.SignalServiceSyncMessage;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import ws.com.google.android.mms.MmsException;
+import org.thoughtcrime.securesms.mms.MmsException;
 
 public class PushDecryptJob extends ContextJob {
 
@@ -178,6 +177,7 @@ public class PushDecryptJob extends ContextJob {
         else if (message.getAnswerMessage().isPresent())     handleCallAnswerMessage(envelope, message.getAnswerMessage().get());
         else if (message.getIceUpdateMessages().isPresent()) handleCallIceUpdateMessage(envelope, message.getIceUpdateMessages().get());
         else if (message.getHangupMessage().isPresent())     handleCallHangupMessage(envelope, message.getHangupMessage().get(), smsMessageId);
+        else if (message.getBusyMessage().isPresent())       handleCallBusyMessage(envelope, message.getBusyMessage().get());
       } else {
         Log.w(TAG, "Got unrecognized message...");
       }
@@ -268,6 +268,16 @@ public class PushDecryptJob extends ContextJob {
       intent.putExtra(WebRtcCallService.EXTRA_REMOTE_NUMBER, envelope.getSource());
       context.startService(intent);
     }
+  }
+
+  private void handleCallBusyMessage(@NonNull SignalServiceEnvelope envelope,
+                                     @NonNull BusyMessage message)
+  {
+    Intent intent = new Intent(context, WebRtcCallService.class);
+    intent.setAction(WebRtcCallService.ACTION_REMOTE_BUSY);
+    intent.putExtra(WebRtcCallService.EXTRA_CALL_ID, message.getId());
+    intent.putExtra(WebRtcCallService.EXTRA_REMOTE_NUMBER, envelope.getSource());
+    context.startService(intent);
   }
 
   private void handleEndSessionMessage(@NonNull MasterSecretUnion        masterSecret,

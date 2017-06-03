@@ -144,7 +144,8 @@ public class MessageRetrievalService extends Service implements InjectableType, 
     Log.w(TAG, String.format("Network requirement: %s, active activities: %s, push pending: %s, gcm disabled: %b",
                              networkRequirement.isPresent(), activeActivities, pushPending.size(), isGcmDisabled));
 
-    return TextSecurePreferences.isWebsocketRegistered(this)                  &&
+    return TextSecurePreferences.isPushRegistered(this)                       &&
+           TextSecurePreferences.isWebsocketRegistered(this)                  &&
            (activeActivities > 0 || !pushPending.isEmpty() || isGcmDisabled)  &&
            networkRequirement.isPresent();
   }
@@ -181,9 +182,13 @@ public class MessageRetrievalService extends Service implements InjectableType, 
     return pipe;
   }
 
-  private class MessageRetrievalThread extends Thread {
+  private class MessageRetrievalThread extends Thread implements Thread.UncaughtExceptionHandler {
 
     private AtomicBoolean stopThread = new AtomicBoolean(false);
+
+    MessageRetrievalThread() {
+      setUncaughtExceptionHandler(this);
+    }
 
     @Override
     public void run() {
@@ -233,6 +238,12 @@ public class MessageRetrievalService extends Service implements InjectableType, 
 
     public void stopThread() {
       stopThread.set(true);
+    }
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+      Log.w(TAG, "*** Uncaught exception!");
+      Log.w(TAG, e);
     }
   }
 }

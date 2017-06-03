@@ -105,6 +105,7 @@ import org.thoughtcrime.securesms.database.RecipientPreferenceDatabase.Recipient
 import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.database.ThreadDatabase;
 import org.thoughtcrime.securesms.jobs.MultiDeviceBlockedUpdateJob;
+import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
 import org.thoughtcrime.securesms.mms.AttachmentManager;
 import org.thoughtcrime.securesms.mms.AttachmentManager.MediaType;
 import org.thoughtcrime.securesms.mms.AudioSlide;
@@ -156,8 +157,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import ws.com.google.android.mms.ContentType;
 
 import static org.thoughtcrime.securesms.TransportOption.Type;
 import static org.thoughtcrime.securesms.database.GroupDatabase.GroupRecord;
@@ -262,6 +261,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
         initializeDraft();
       }
     });
+    initializeProfiles();
   }
 
   @Override
@@ -317,6 +317,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
     MessageNotifier.setVisibleThread(threadId);
     markThreadAsRead();
+    markIdentitySeen();
 
     Log.w(TAG, "onResume() Finished: " + (System.currentTimeMillis() - getIntent().getLongExtra(TIMING_EXTRA, 0)));
   }
@@ -878,7 +879,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     final String    draftText      = getIntent().getStringExtra(TEXT_EXTRA);
     final Uri       draftMedia     = getIntent().getData();
     final MediaType draftMediaType = MediaType.from(getIntent().getType());
-
+    
     if (draftText != null)                            composeText.setText(draftText);
     if (draftMedia != null && draftMediaType != null) setMedia(draftMedia, draftMediaType);
 
@@ -1145,6 +1146,12 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     recipients.addListener(this);
   }
 
+  private void initializeProfiles() {
+    ApplicationContext.getInstance(this)
+                      .getJobManager()
+                      .add(new RetrieveProfileJob(this, recipients));
+  }
+
   @Override
   public void onModified(final Recipients recipients) {
     titleView.post(new Runnable() {
@@ -1408,8 +1415,8 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
   private MediaConstraints getCurrentMediaConstraints() {
     return sendButton.getSelectedTransport().getType() == Type.TEXTSECURE
-           ? MediaConstraints.PUSH_CONSTRAINTS
-           : MediaConstraints.MMS_CONSTRAINTS;
+           ? MediaConstraints.getPushMediaConstraints()
+           : MediaConstraints.getMmsMediaConstraints(sendButton.getSelectedTransport().getSimSubscriptionId().or(-1));
   }
 
   private void markThreadAsRead() {
@@ -1435,6 +1442,17 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
         return null;
       }
     }.execute(threadId);
+  }
+
+  private void markIdentitySeen() {
+    new AsyncTask<Recipient, Void, Void>() {
+      @Override
+      protected Void doInBackground(Recipient... params) {
+        DatabaseFactory.getIdentityDatabase(ConversationActivity.this)
+                       .setSeen(params[0].getRecipientId());
+        return null;
+      }
+    }.execute(recipients.getPrimaryRecipient());
   }
 
   protected void sendComplete(long threadId) {
@@ -1608,7 +1626,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   @Override
   public void onImageCapture(@NonNull final byte[] imageBytes) {
     setMedia(PersistentBlobProvider.getInstance(this)
-                                   .create(masterSecret, imageBytes, ContentType.IMAGE_JPEG),
+                                   .create(masterSecret, imageBytes, MediaUtil.IMAGE_JPEG, null),
              MediaType.IMAGE);
     quickAttachmentDrawer.hide(false);
   }
@@ -1649,7 +1667,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
           boolean    forceSms       = sendButton.isManualSelection() && sendButton.getSelectedTransport().isSms();
           int        subscriptionId = sendButton.getSelectedTransport().getSimSubscriptionId().or(-1);
           long       expiresIn      = recipients.getExpireMessages() * 1000;
-          AudioSlide audioSlide     = new AudioSlide(ConversationActivity.this, result.first, result.second, ContentType.AUDIO_AAC);
+          AudioSlide audioSlide     = new AudioSlide(ConversationActivity.this, result.first, result.second, MediaUtil.AUDIO_AAC, true);
           SlideDeck  slideDeck      = new SlideDeck();
           slideDeck.addSlide(audioSlide);
 
@@ -1720,11 +1738,11 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   public void onMediaSelected(@NonNull Uri uri, String contentType) {
     if (!TextUtils.isEmpty(contentType) && contentType.trim().equals("image/gif")) {
       setMedia(uri, MediaType.GIF);
-    } else if (ContentType.isImageType(contentType)) {
+    } else if (MediaUtil.isImageType(contentType)) {
       setMedia(uri, MediaType.IMAGE);
-    } else if (ContentType.isVideoType(contentType)) {
+    } else if (MediaUtil.isVideoType(contentType)) {
       setMedia(uri, MediaType.VIDEO);
-    } else if (ContentType.isAudioType(contentType)) {
+    } else if (MediaUtil.isAudioType(contentType)) {
       setMedia(uri, MediaType.AUDIO);
     }
   }
