@@ -30,7 +30,6 @@ import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.dependencies.SignalCommunicationModule;
 import org.thoughtcrime.securesms.jobs.CreateSignedPreKeyJob;
 import org.thoughtcrime.securesms.jobs.GcmRefreshJob;
-import org.thoughtcrime.securesms.jobs.RefreshAttributesJob;
 import org.thoughtcrime.securesms.jobs.persistence.EncryptingJobSerializer;
 import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirementProvider;
 import org.thoughtcrime.securesms.jobs.requirements.MediaNetworkRequirementProvider;
@@ -90,7 +89,6 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     initializeSignedPreKeyCheck();
     initializePeriodicTasks();
     initializeCircumvention();
-    initializeSetVideoCapable();
     initializeWebRtc();
   }
 
@@ -168,36 +166,23 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     }
   }
 
-  private void initializeSetVideoCapable() {
-    if (TextSecurePreferences.isPushRegistered(this) &&
-        !TextSecurePreferences.isWebrtcCallingEnabled(this))
-    {
-      TextSecurePreferences.setWebrtcCallingEnabled(this, true);
-      jobManager.add(new RefreshAttributesJob(this));
-    }
-  }
-
   private void initializeWebRtc() {
-    Set<String> HARDWARE_AEC_WHITELIST = new HashSet<String>() {{
-      add("D5803");
-      add("FP1");
-      add("SM-A500FU");
-      add("XT1092");
+    Set<String> HARDWARE_AEC_BLACKLIST = new HashSet<String>() {{
+      add("Pixel");
+      add("Pixel XL");
     }};
 
     Set<String> OPEN_SL_ES_WHITELIST = new HashSet<String>() {{
+      add("Pixel");
+      add("Pixel XL");
     }};
 
     if (Build.VERSION.SDK_INT >= 11) {
-      if (HARDWARE_AEC_WHITELIST.contains(Build.MODEL)) {
-        WebRtcAudioUtils.setWebRtcBasedAcousticEchoCanceler(false);
-      } else {
+      if (HARDWARE_AEC_BLACKLIST.contains(Build.MODEL)) {
         WebRtcAudioUtils.setWebRtcBasedAcousticEchoCanceler(true);
       }
 
-      if (OPEN_SL_ES_WHITELIST.contains(Build.MODEL)) {
-        WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(false);
-      } else {
+      if (!OPEN_SL_ES_WHITELIST.contains(Build.MODEL)) {
         WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(true);
       }
 

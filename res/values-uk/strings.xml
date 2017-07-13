@@ -372,7 +372,6 @@
   <string name="MessageRecord_s_called_you">%s вам телефонував/-ла</string>
   <string name="MessageRecord_called_s">Телефонували %s</string>
   <string name="MessageRecord_missed_call_from">Пропущено виклик від %s</string>
-  <string name="MessageRecord_s_joined_signal">%s приєднався до Signal!</string>
   <string name="MessageRecord_you_set_disappearing_message_time_to_s">Ви встановили час зникнення повідомлень на %1$s.</string>
   <string name="MessageRecord_s_set_disappearing_message_time_to_s">%1$s встановлює час зникнення повідомлень на %2$s.</string>
   <string name="MessageRecord_your_safety_number_with_s_has_changed">Ваш номер безпеки із %s змінився.</string>
@@ -522,7 +521,6 @@
   <string name="ThreadRecord_called_you">Вам телефонували</string>
   <string name="ThreadRecord_missed_call">Пропущений виклик</string>
   <string name="ThreadRecord_media_message">Медіа повідомлення</string>
-  <string name="ThreadRecord_s_joined_signal">%s приєднався до Signal!</string>
   <string name="ThreadRecord_disappearing_message_time_updated_to_s">Час зникнення повідомлень встановлено на %s</string>
   <string name="ThreadRecord_your_safety_number_with_s_has_changed">Ваш номер безпеки із %s змінився.</string>
   <!--UpdateApkReadyListener-->
@@ -722,6 +720,7 @@
     <item quantity="other">%d тижнів</item>
   </plurals>
   <string name="expiration_weeks_abbreviated">%dт</string>
+  <!--unverified safety numbers-->
   <!--giphy_activity-->
   <string name="giphy_activity_toolbar__search_gifs_and_stickers">Пошук GIF та наліпок</string>
   <!--giphy_fragment-->
@@ -756,7 +755,6 @@
   <string name="load_more_header__see_full_conversation">Переглянути всю розмову</string>
   <!--media_overview_activity-->
   <!--message_recipients_list_item-->
-  <string name="message_recipients_list_item__verify">ПІДТВЕРДИТИ</string>
   <string name="message_recipients_list_item__resend">НАДІСЛАТИ ЗНОВУ</string>
   <string name="message_recipients_list_item__resending">Повторне пересилання...</string>
   <!--GroupUtil-->
@@ -781,7 +779,6 @@
   <string name="recipient_preferences__block">Заблокувати</string>
   <string name="recipient_preferences__color">Колір</string>
   <string name="recipient_preferences__color_for_this_contact">Колір для цього контакту</string>
-  <string name="recipient_preferences__verify_safety_number">Перевірити номер безпеки</string>
   <!--- redphone_call_controls-->
   <string name="redphone_call_card__signal_call">Виклик Signal </string>
   <string name="redphone_call_controls__end_call">завершити виклик</string>
@@ -866,7 +863,6 @@ Signal не дочекався перевірочного SMS.
   <string name="recipients_panel__to"><small>Введіть ім\'я або номер</small></string>
   <string name="recipients_panel__add_members">Додати учасників</string>
   <!--verify_display_fragment-->
-  <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Якщо ви хочете перевірити безпеку вашого наскрізного шифрування із %s, порівняйте номер вище із номером на його/її пристрої. Інший спосіб, ви можете сканувати код на його/її телефоні, або попростити його/її сканувати ваш код. <a href="https://whispersystems.org/redirect/safety-numbers">Дізнатися більше про перевірку номерів безпеки</a>]]></string>
   <string name="verify_display_fragment__tap_to_scan">Натисніть, щоб сканувати</string>
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">Поділитися номером безпеки</string>
@@ -1027,7 +1023,6 @@ Signal не дочекався перевірочного SMS.
   <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Ретранслювати всі дзвінки через сервер Signal щоб уникнути розкриття вашого IP-адреси контакту. Включення знизить якість дзвінка.</string>
   <string name="preferences_advanced__always_relay_calls">Завжди ретранслювати дзвінки</string>
   <string name="preferences_chats__chats">Чати</string>
-  <string name="preferences_notifications__message_notifications">Сповіщення про повідомлення</string>
   <string name="preferences_notifications__events">Події</string>
   <string name="preferences_notifications__in_chat_sounds">Звуки чату</string>
   <string name="preferences_notifications__show">Показувати</string>
