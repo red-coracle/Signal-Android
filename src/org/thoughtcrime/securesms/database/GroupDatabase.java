@@ -17,7 +17,6 @@ import org.thoughtcrime.securesms.recipients.RecipientFactory;
 import org.thoughtcrime.securesms.recipients.Recipients;
 import org.thoughtcrime.securesms.util.BitmapUtil;
 import org.thoughtcrime.securesms.util.GroupUtil;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachmentPointer;
 
@@ -101,28 +100,26 @@ public class GroupDatabase extends Database {
   }
 
   public @NonNull Recipients getGroupMembers(byte[] groupId, boolean includeSelf) {
-    String          localNumber = TextSecurePreferences.getLocalNumber(context);
-    List<String>    members     = getCurrentMembers(groupId);
+    List<Address>   members     = getCurrentMembers(groupId);
     List<Recipient> recipients  = new LinkedList<>();
 
-    for (String member : members) {
-      if (!includeSelf && member.equals(localNumber))
+    for (Address member : members) {
+      if (!includeSelf && Util.isOwnNumber(context, member))
         continue;
 
-      recipients.addAll(RecipientFactory.getRecipientsFromString(context, member, false)
-                                        .getRecipientsList());
+      recipients.add(RecipientFactory.getRecipientFor(context, member, false));
     }
 
     return RecipientFactory.getRecipientsFor(context, recipients, false);
   }
 
-  public void create(byte[] groupId, String title, List<String> members,
+  public void create(byte[] groupId, String title, List<Address> members,
                      SignalServiceAttachmentPointer avatar, String relay)
   {
     ContentValues contentValues = new ContentValues();
     contentValues.put(GROUP_ID, GroupUtil.getEncodedId(groupId));
     contentValues.put(TITLE, title);
-    contentValues.put(MEMBERS, Util.join(members, ","));
+    contentValues.put(MEMBERS, Address.toSerializedList(members, ','));
 
     if (avatar != null) {
       contentValues.put(AVATAR_ID, avatar.getId());
@@ -185,27 +182,27 @@ public class GroupDatabase extends Database {
     notifyDatabaseListeners();
   }
 
-  public void updateMembers(byte[] id, List<String> members) {
+  public void updateMembers(byte[] id, List<Address> members) {
     ContentValues contents = new ContentValues();
-    contents.put(MEMBERS, Util.join(members, ","));
+    contents.put(MEMBERS, Address.toSerializedList(members, ','));
     contents.put(ACTIVE, 1);
 
     databaseHelper.getWritableDatabase().update(TABLE_NAME, contents, GROUP_ID + " = ?",
                                                 new String[] {GroupUtil.getEncodedId(id)});
   }
 
-  public void remove(byte[] id, String source) {
-    List<String> currentMembers = getCurrentMembers(id);
+  public void remove(byte[] id, Address source) {
+    List<Address> currentMembers = getCurrentMembers(id);
     currentMembers.remove(source);
 
     ContentValues contents = new ContentValues();
-    contents.put(MEMBERS, Util.join(currentMembers, ","));
+    contents.put(MEMBERS, Address.toSerializedList(currentMembers, ','));
 
     databaseHelper.getWritableDatabase().update(TABLE_NAME, contents, GROUP_ID + " = ?",
                                                 new String[] {GroupUtil.getEncodedId(id)});
   }
 
-  private List<String> getCurrentMembers(byte[] id) {
+  private List<Address> getCurrentMembers(byte[] id) {
     Cursor cursor = null;
 
     try {
@@ -215,7 +212,8 @@ public class GroupDatabase extends Database {
                                                           null, null, null);
 
       if (cursor != null && cursor.moveToFirst()) {
-        return Util.split(cursor.getString(cursor.getColumnIndexOrThrow(MEMBERS)), ",");
+        String serializedMembers = cursor.getString(cursor.getColumnIndexOrThrow(MEMBERS));
+        return Address.fromSerializedList(serializedMembers, ',');
       }
 
       return new LinkedList<>();
@@ -286,16 +284,16 @@ public class GroupDatabase extends Database {
 
   public static class GroupRecord {
 
-    private final String       id;
-    private final String       title;
-    private final List<String> members;
-    private final byte[]       avatar;
-    private final long         avatarId;
-    private final byte[]       avatarKey;
-    private final byte[]       avatarDigest;
-    private final String       avatarContentType;
-    private final String       relay;
-    private final boolean      active;
+    private final String        id;
+    private final String        title;
+    private final List<Address> members;
+    private final byte[]        avatar;
+    private final long          avatarId;
+    private final byte[]        avatarKey;
+    private final byte[]        avatarDigest;
+    private final String        avatarContentType;
+    private final String        relay;
+    private final boolean       active;
 
     public GroupRecord(String id, String title, String members, byte[] avatar,
                        long avatarId, byte[] avatarKey, String avatarContentType,
@@ -303,7 +301,7 @@ public class GroupDatabase extends Database {
     {
       this.id                = id;
       this.title             = title;
-      this.members           = Util.split(members, ",");
+      this.members           = Address.fromSerializedList(members, ',');
       this.avatar            = avatar;
       this.avatarId          = avatarId;
       this.avatarKey         = avatarKey;
@@ -329,7 +327,7 @@ public class GroupDatabase extends Database {
       return title;
     }
 
-    public List<String> getMembers() {
+    public List<Address> getMembers() {
       return members;
     }
 

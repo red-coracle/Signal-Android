@@ -203,8 +203,8 @@ android {
     }
 
     defaultConfig {
-        versionCode 275
-        versionName "4.8.1"
+        versionCode 282
+        versionName "4.9.6"
 
         applicationId "org.libresignal"
         minSdkVersion 9

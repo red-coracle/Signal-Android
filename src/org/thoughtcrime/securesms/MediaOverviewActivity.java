@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -38,12 +39,12 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import org.thoughtcrime.securesms.crypto.MasterSecret;
+import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.CursorRecyclerViewAdapter;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MediaDatabase.MediaRecord;
-import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.recipients.Recipient.RecipientModifiedListener;
 import org.thoughtcrime.securesms.recipients.RecipientFactory;
+import org.thoughtcrime.securesms.recipients.Recipients;
 import org.thoughtcrime.securesms.util.AbstractCursorLoader;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask;
@@ -58,7 +59,7 @@ import java.util.List;
 public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
   private final static String TAG = MediaOverviewActivity.class.getSimpleName();
 
-  public static final String RECIPIENT_EXTRA = "recipient";
+  public static final String ADDRESSES_EXTRA = "addresses";
   public static final String THREAD_ID_EXTRA = "thread_id";
 
   private final DynamicLanguage dynamicLanguage = new DynamicLanguage();
@@ -68,7 +69,7 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity i
   private RecyclerView      gridView;
   private GridLayoutManager gridManager;
   private TextView          noImages;
-  private Recipient         recipient;
+  private Recipients        recipients;
   private long              threadId;
 
   @Override
@@ -113,9 +114,9 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity i
   }
 
   private void initializeActionBar() {
-    getSupportActionBar().setTitle(recipient == null
+    getSupportActionBar().setTitle(recipients == null
                                    ? getString(R.string.AndroidManifest__all_media)
-                                   : getString(R.string.AndroidManifest__all_media_named, recipient.toShortString()));
+                                   : getString(R.string.AndroidManifest__all_media_named, recipients.toShortString()));
   }
 
   @Override
@@ -132,19 +133,20 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity i
     gridView.setLayoutManager(gridManager);
     gridView.setHasFixedSize(true);
 
-    final long recipientId = getIntent().getLongExtra(RECIPIENT_EXTRA, -1);
-    if (recipientId > -1) {
-      recipient = RecipientFactory.getRecipientForId(this, recipientId, true);
-    } else if (threadId > -1){
-      recipient = DatabaseFactory.getThreadDatabase(this).getRecipientsForThreadId(threadId).getPrimaryRecipient();
+    Parcelable[] parcelables = getIntent().getParcelableArrayExtra(ADDRESSES_EXTRA);
+
+    if (parcelables != null) {
+      recipients = RecipientFactory.getRecipientsFor(this, Address.fromParcelable(parcelables), true);
+    } else if (threadId > -1) {
+      recipients = DatabaseFactory.getThreadDatabase(this).getRecipientsForThreadId(threadId);
     } else {
-      recipient = null;
+      recipients = null;
     }
 
-    if (recipient != null) {
-      recipient.addListener(new RecipientModifiedListener() {
+    if (recipients != null) {
+      recipients.addListener(new Recipients.RecipientsModifiedListener() {
         @Override
-        public void onModified(Recipient recipient) {
+        public void onModified(Recipients recipients) {
           initializeActionBar();
         }
       });

@@ -7,12 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
 import org.whispersystems.signalservice.api.push.ContactTokenDetails;
-import org.whispersystems.signalservice.api.util.InvalidNumberException;
-import org.whispersystems.signalservice.api.util.PhoneNumberFormatter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,10 +68,9 @@ public class TextSecureDirectory {
     this.databaseHelper = new DatabaseHelper(context, DATABASE_NAME, null, DATABASE_VERSION);
   }
 
-  public boolean isSecureTextSupported(String e164number) throws NotInDirectoryException {
-    if (e164number == null || e164number.length() == 0) {
-      return false;
-    }
+  public boolean isSecureTextSupported(@NonNull Address address) throws NotInDirectoryException {
+    if (address.isEmail()) return false;
+    if (address.isGroup()) return true;
 
     SQLiteDatabase db = databaseHelper.getReadableDatabase();
     Cursor cursor = null;
@@ -80,7 +78,7 @@ public class TextSecureDirectory {
     try {
       cursor = db.query(TABLE_NAME,
           new String[]{REGISTERED}, NUMBER + " = ?",
-          new String[] {e164number}, null, null, null);
+          new String[] {address.serialize()}, null, null, null);
 
       if (cursor != null && cursor.moveToFirst()) {
         return cursor.getInt(0) == 1;
@@ -94,55 +92,55 @@ public class TextSecureDirectory {
     }
   }
 
-  public boolean isSecureVoiceSupported(String e164number) throws NotInDirectoryException {
-    if (TextUtils.isEmpty(e164number)) {
-      return false;
-    }
+//  public boolean isSecureVoiceSupported(String e164number) throws NotInDirectoryException {
+//    if (TextUtils.isEmpty(e164number)) {
+//      return false;
+//    }
+//
+//    SQLiteDatabase db     = databaseHelper.getReadableDatabase();
+//    Cursor         cursor = null;
+//
+//    try {
+//      cursor = db.query(TABLE_NAME,
+//                        new String[]{VOICE}, NUMBER + " = ?",
+//                        new String[] {e164number}, null, null, null);
+//
+//      if (cursor != null && cursor.moveToFirst()) {
+//        return cursor.getInt(0) == 1;
+//      } else {
+//        throw new NotInDirectoryException();
+//      }
+//
+//    } finally {
+//      if (cursor != null)
+//        cursor.close();
+//    }
+//  }
 
-    SQLiteDatabase db     = databaseHelper.getReadableDatabase();
-    Cursor         cursor = null;
-
-    try {
-      cursor = db.query(TABLE_NAME,
-                        new String[]{VOICE}, NUMBER + " = ?",
-                        new String[] {e164number}, null, null, null);
-
-      if (cursor != null && cursor.moveToFirst()) {
-        return cursor.getInt(0) == 1;
-      } else {
-        throw new NotInDirectoryException();
-      }
-
-    } finally {
-      if (cursor != null)
-        cursor.close();
-    }
-  }
-
-  public boolean isSecureVideoSupported(String e164number) throws NotInDirectoryException {
-    if (TextUtils.isEmpty(e164number)) {
-      return false;
-    }
-
-    SQLiteDatabase db     = databaseHelper.getReadableDatabase();
-    Cursor         cursor = null;
-
-    try {
-      cursor = db.query(TABLE_NAME,
-                        new String[]{VIDEO}, NUMBER + " = ?",
-                        new String[] {e164number}, null, null, null);
-
-      if (cursor != null && cursor.moveToFirst()) {
-        return cursor.getInt(0) == 1;
-      } else {
-        throw new NotInDirectoryException();
-      }
-
-    } finally {
-      if (cursor != null)
-        cursor.close();
-    }
-  }
+//  public boolean isSecureVideoSupported(String e164number) throws NotInDirectoryException {
+//    if (TextUtils.isEmpty(e164number)) {
+//      return false;
+//    }
+//
+//    SQLiteDatabase db     = databaseHelper.getReadableDatabase();
+//    Cursor         cursor = null;
+//
+//    try {
+//      cursor = db.query(TABLE_NAME,
+//                        new String[]{VIDEO}, NUMBER + " = ?",
+//                        new String[] {e164number}, null, null, null);
+//
+//      if (cursor != null && cursor.moveToFirst()) {
+//        return cursor.getInt(0) == 1;
+//      } else {
+//        throw new NotInDirectoryException();
+//      }
+//
+//    } finally {
+//      if (cursor != null)
+//        cursor.close();
+//    }
+//  }
 
   public String getRelay(String e164number) {
     SQLiteDatabase database = databaseHelper.getReadableDatabase();
@@ -174,7 +172,7 @@ public class TextSecureDirectory {
     db.replace(TABLE_NAME, null, values);
   }
 
-  public void setNumbers(List<ContactTokenDetails> activeTokens, Collection<String> inactiveTokens) {
+  public void setNumbers(List<ContactTokenDetails> activeTokens, Collection<Address> inactiveAddresses) {
     long timestamp    = System.currentTimeMillis();
     SQLiteDatabase db = databaseHelper.getWritableDatabase();
     db.beginTransaction();
@@ -192,9 +190,9 @@ public class TextSecureDirectory {
         db.replace(TABLE_NAME, null, values);
       }
 
-      for (String token : inactiveTokens) {
+      for (Address address : inactiveAddresses) {
         ContentValues values = new ContentValues();
-        values.put(NUMBER, token);
+        values.put(NUMBER, address.serialize());
         values.put(REGISTERED, 0);
         values.put(TIMESTAMP, timestamp);
         db.replace(TABLE_NAME, null, values);
@@ -206,23 +204,18 @@ public class TextSecureDirectory {
     }
   }
 
-  public Set<String> getPushEligibleContactNumbers(String localNumber) {
-    final Uri         uri     = Phone.CONTENT_URI;
-    final Set<String> results = new HashSet<>();
-          Cursor      cursor  = null;
+  public Set<Address> getPushEligibleContactNumbers() {
+    final Uri          uri     = Phone.CONTENT_URI;
+    final Set<Address> results = new HashSet<>();
+          Cursor       cursor  = null;
 
     try {
       cursor = context.getContentResolver().query(uri, new String[] {Phone.NUMBER}, null, null, null);
 
       while (cursor != null && cursor.moveToNext()) {
         final String rawNumber = cursor.getString(0);
-        if (rawNumber != null) {
-          try {
-            final String e164Number = PhoneNumberFormatter.formatNumber(rawNumber, localNumber);
-            results.add(e164Number);
-          } catch (InvalidNumberException e) {
-            Log.w("Directory", "Invalid number: " + rawNumber);
-          }
+        if (!TextUtils.isEmpty(rawNumber)) {
+          results.add(Address.fromExternal(context, rawNumber));
         }
       }
 
@@ -235,7 +228,7 @@ public class TextSecureDirectory {
             null, null, null, null, null);
 
         while (cursor != null && cursor.moveToNext()) {
-          results.add(cursor.getString(0));
+          results.add(Address.fromSerialized(cursor.getString(0)));
         }
       }
 

@@ -14,11 +14,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.thoughtcrime.securesms.color.MaterialColor;
 import org.thoughtcrime.securesms.recipients.RecipientFactory;
 import org.thoughtcrime.securesms.recipients.Recipients;
-import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.util.Arrays;
-
+import java.util.List;
 
 public class RecipientPreferenceDatabase extends Database {
 
@@ -27,7 +26,7 @@ public class RecipientPreferenceDatabase extends Database {
 
   private static final String TABLE_NAME              = "recipient_preferences";
   private static final String ID                      = "_id";
-  private static final String RECIPIENT_IDS           = "recipient_ids";
+  private static final String ADDRESSES               = "recipient_ids";
   private static final String BLOCK                   = "block";
   private static final String NOTIFICATION            = "notification";
   private static final String VIBRATE                 = "vibrate";
@@ -58,7 +57,7 @@ public class RecipientPreferenceDatabase extends Database {
   public static final String CREATE_TABLE =
       "CREATE TABLE " + TABLE_NAME +
           " (" + ID + " INTEGER PRIMARY KEY, " +
-          RECIPIENT_IDS + " TEXT UNIQUE, " +
+          ADDRESSES + " TEXT UNIQUE, " +
           BLOCK + " INTEGER DEFAULT 0," +
           NOTIFICATION + " TEXT DEFAULT NULL, " +
           VIBRATE + " INTEGER DEFAULT " + VibrateState.DEFAULT.getId() + ", " +
@@ -75,7 +74,7 @@ public class RecipientPreferenceDatabase extends Database {
   public Cursor getBlocked() {
     SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
-    Cursor cursor = database.query(TABLE_NAME, new String[] {ID, RECIPIENT_IDS}, BLOCK + " = 1",
+    Cursor cursor = database.query(TABLE_NAME, new String[] {ID, ADDRESSES}, BLOCK + " = 1",
                                    null, null, null, null, null);
     cursor.setNotificationUri(context.getContentResolver(), Uri.parse(RECIPIENT_PREFERENCES_URI));
 
@@ -86,15 +85,13 @@ public class RecipientPreferenceDatabase extends Database {
     return new BlockedReader(context, cursor);
   }
 
-  public Optional<RecipientsPreferences> getRecipientsPreferences(@NonNull long[] recipients) {
-    Arrays.sort(recipients);
-
+  public Optional<RecipientsPreferences> getRecipientsPreferences(@NonNull Address[] addresses) {
     SQLiteDatabase database = databaseHelper.getReadableDatabase();
     Cursor         cursor   = null;
 
     try {
-      cursor = database.query(TABLE_NAME, null, RECIPIENT_IDS + " = ?",
-                              new String[] {Util.join(recipients, " ")},
+      cursor = database.query(TABLE_NAME, null, ADDRESSES + " = ?",
+                              new String[] {Address.toSerializedList(Arrays.asList(addresses), ' ')},
                               null, null, null);
 
       if (cursor != null && cursor.moveToNext()) {
@@ -188,11 +185,12 @@ public class RecipientPreferenceDatabase extends Database {
 
     database.beginTransaction();
 
-    int updated = database.update(TABLE_NAME, contentValues, RECIPIENT_IDS + " = ?",
-                                  new String[] {String.valueOf(recipients.getSortedIdsString())});
+    List<Address> addresses           = recipients.getAddressesList();
+    String        serializedAddresses = Address.toSerializedList(addresses, ' ');
+    int           updated             = database.update(TABLE_NAME, contentValues, ADDRESSES + " = ?", new String[]{serializedAddresses});
 
     if (updated < 1) {
-      contentValues.put(RECIPIENT_IDS, recipients.getSortedIdsString());
+      contentValues.put(ADDRESSES, serializedAddresses);
       database.insert(TABLE_NAME, null, contentValues);
     }
 
@@ -212,13 +210,13 @@ public class RecipientPreferenceDatabase extends Database {
     private final int           defaultSubscriptionId;
     private final int           expireMessages;
 
-    public RecipientsPreferences(boolean blocked, long muteUntil,
-                                 @NonNull VibrateState vibrateState,
-                                 @Nullable Uri notification,
-                                 @Nullable MaterialColor color,
-                                 boolean seenInviteReminder,
-                                 int defaultSubscriptionId,
-                                 int expireMessages)
+    RecipientsPreferences(boolean blocked, long muteUntil,
+                          @NonNull VibrateState vibrateState,
+                          @Nullable Uri notification,
+                          @Nullable MaterialColor color,
+                          boolean seenInviteReminder,
+                          int defaultSubscriptionId,
+                          int expireMessages)
     {
       this.blocked               = blocked;
       this.muteUntil             = muteUntil;
@@ -268,14 +266,16 @@ public class RecipientPreferenceDatabase extends Database {
     private final Context context;
     private final Cursor cursor;
 
-    public BlockedReader(Context context, Cursor cursor) {
+    BlockedReader(Context context, Cursor cursor) {
       this.context = context;
       this.cursor  = cursor;
     }
 
     public @NonNull Recipients getCurrent() {
-      String recipientIds = cursor.getString(cursor.getColumnIndexOrThrow(RECIPIENT_IDS));
-      return RecipientFactory.getRecipientsForIds(context, recipientIds, false);
+      String        serialized  = cursor.getString(cursor.getColumnIndexOrThrow(ADDRESSES));
+      List<Address> addressList = Address.fromSerializedList(serialized, ' ');
+
+      return RecipientFactory.getRecipientsFor(context, addressList.toArray(new Address[0]), false);
     }
 
     public @Nullable Recipients getNext() {
@@ -291,7 +291,7 @@ public class RecipientPreferenceDatabase extends Database {
 
     private final Recipients recipients;
 
-    public RecipientPreferenceEvent(Recipients recipients) {
+    RecipientPreferenceEvent(Recipients recipients) {
       this.recipients = recipients;
     }
 
