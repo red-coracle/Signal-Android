@@ -44,7 +44,9 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.contacts.avatars.ContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.ContactPhotoFactory;
 import org.thoughtcrime.securesms.recipients.Recipient;
+import org.thoughtcrime.securesms.recipients.RecipientModifiedListener;
 import org.thoughtcrime.securesms.service.WebRtcCallService;
+import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.VerifySpan;
 import org.thoughtcrime.securesms.util.ViewUtil;
 import org.webrtc.SurfaceViewRenderer;
@@ -57,7 +59,7 @@ import org.whispersystems.libsignal.IdentityKey;
  * @author Moxie Marlinspike
  *
  */
-public class WebRtcCallScreen extends FrameLayout implements Recipient.RecipientModifiedListener {
+public class WebRtcCallScreen extends FrameLayout implements RecipientModifiedListener {
 
   private static final String TAG = WebRtcCallScreen.class.getSimpleName();
 
@@ -292,7 +294,7 @@ public class WebRtcCallScreen extends FrameLayout implements Recipient.Recipient
         Uri            contentUri    = ContactsContract.Contacts.lookupContact(context.getContentResolver(),
                                                                                recipient.getContactUri());
         windowManager.getDefaultDisplay().getMetrics(metrics);
-        return ContactPhotoFactory.getContactPhoto(context, contentUri, null, metrics.widthPixels);
+        return ContactPhotoFactory.getContactPhoto(context, contentUri, recipient.getAddress(), null, metrics.widthPixels);
       }
 
       @Override
@@ -338,9 +340,11 @@ public class WebRtcCallScreen extends FrameLayout implements Recipient.Recipient
 
   @Override
   public void onModified(Recipient recipient) {
-    if (recipient == this.recipient) {
-      setPersonInfo(recipient);
-    }
+    Util.runOnMain(() -> {
+      if (recipient == WebRtcCallScreen.this.recipient) {
+        setPersonInfo(recipient);
+      }
+    });
   }
 
   public static interface HangupButtonListener {

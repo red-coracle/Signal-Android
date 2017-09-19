@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms.dependencies;
 import android.content.Context;
 
 import org.thoughtcrime.securesms.BuildConfig;
+import org.thoughtcrime.securesms.CreateProfileActivity;
 import org.thoughtcrime.securesms.DeviceListFragment;
 import org.thoughtcrime.securesms.crypto.storage.SignalProtocolStoreImpl;
 import org.thoughtcrime.securesms.jobs.AttachmentDownloadJob;
@@ -14,6 +15,7 @@ import org.thoughtcrime.securesms.jobs.GcmRefreshJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceBlockedUpdateJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceGroupUpdateJob;
+import org.thoughtcrime.securesms.jobs.MultiDeviceProfileKeyUpdateJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceReadUpdateJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceVerifiedUpdateJob;
 import org.thoughtcrime.securesms.jobs.PushGroupSendJob;
@@ -24,6 +26,7 @@ import org.thoughtcrime.securesms.jobs.PushTextSendJob;
 import org.thoughtcrime.securesms.jobs.RefreshAttributesJob;
 import org.thoughtcrime.securesms.jobs.RefreshPreKeysJob;
 import org.thoughtcrime.securesms.jobs.RequestGroupInfoJob;
+import org.thoughtcrime.securesms.jobs.RetrieveProfileAvatarJob;
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
 import org.thoughtcrime.securesms.jobs.RotateSignedPreKeyJob;
 import org.thoughtcrime.securesms.push.SecurityEventListener;
@@ -63,7 +66,10 @@ import dagger.Provides;
                                      RotateSignedPreKeyJob.class,
                                      WebRtcCallService.class,
                                      RetrieveProfileJob.class,
-                                     MultiDeviceVerifiedUpdateJob.class})
+                                     MultiDeviceVerifiedUpdateJob.class,
+                                     CreateProfileActivity.class,
+                                     RetrieveProfileAvatarJob.class,
+                                     MultiDeviceProfileKeyUpdateJob.class})
 public class SignalCommunicationModule {
 
   private final Context                    context;

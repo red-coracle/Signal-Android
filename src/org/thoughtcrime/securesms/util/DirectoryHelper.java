@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -12,21 +13,25 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.contacts.ContactAccessor;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.crypto.SessionUtil;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MessagingDatabase.InsertResult;
-import org.thoughtcrime.securesms.database.NotInDirectoryException;
-import org.thoughtcrime.securesms.database.TextSecureDirectory;
+import org.thoughtcrime.securesms.database.RecipientDatabase;
+import org.thoughtcrime.securesms.database.RecipientDatabase.RecipientSettings;
+import org.thoughtcrime.securesms.database.RecipientDatabase.RegisteredState;
 import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.push.AccountManagerFactory;
-import org.thoughtcrime.securesms.recipients.Recipients;
+import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.IncomingJoinedMessage;
-import org.thoughtcrime.securesms.util.DirectoryHelper.UserCapabilities.Capability;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.SignalServiceAccountManager;
 import org.whispersystems.signalservice.api.push.ContactTokenDetails;
@@ -39,38 +44,6 @@ import java.util.List;
 import java.util.Set;
 
 public class DirectoryHelper {
-
-  public static class UserCapabilities {
-
-    public static final UserCapabilities UNKNOWN     = new UserCapabilities(Capability.UNKNOWN, Capability.UNKNOWN, Capability.UNKNOWN);
-    public static final UserCapabilities UNSUPPORTED = new UserCapabilities(Capability.UNSUPPORTED, Capability.UNSUPPORTED, Capability.UNSUPPORTED);
-
-    public enum Capability {
-      UNKNOWN, SUPPORTED, UNSUPPORTED
-    }
-
-    private final Capability text;
-    private final Capability voice;
-    private final Capability video;
-
-    public UserCapabilities(Capability text, Capability voice, Capability video) {
-      this.text  = text;
-      this.voice = voice;
-      this.video = video;
-    }
-
-    public Capability getTextCapability() {
-      return text;
-    }
-
-    public Capability getVoiceCapability() {
-      return voice;
-    }
-
-    public Capability getVideoCapability() {
-      return video;
-    }
-  }
 
   private static final String TAG = DirectoryHelper.class.getSimpleName();
 
@@ -96,45 +69,52 @@ public class DirectoryHelper {
       throws IOException
   {
     if (TextUtils.isEmpty(TextSecurePreferences.getLocalNumber(context))) {
-      return new RefreshResult(new LinkedList<Address>(), false);
+      return new RefreshResult(new LinkedList<>(), false);
     }
 
-    TextSecureDirectory directory              = TextSecureDirectory.getInstance(context);
-    Set<Address>        eligibleContactNumbers = directory.getPushEligibleContactNumbers();
-    Set<String>         serializedAddresses    = new HashSet<>();
+    RecipientDatabase recipientDatabase                       = DatabaseFactory.getRecipientDatabase(context);
+    Stream<String>    eligibleRecipientDatabaseContactNumbers = Stream.of(recipientDatabase.getAllRecipients()).map(recipient -> recipient.getAddress().serialize());
+    Stream<String>    eligibleSystemDatabaseContactNumbers    = Stream.of(ContactAccessor.getInstance().getAllContactsWithNumbers(context)).map(Address::serialize);
+    Set<String>       eligibleContactNumbers                  = Stream.concat(eligibleRecipientDatabaseContactNumbers, eligibleSystemDatabaseContactNumbers).collect(Collectors.toSet());
 
-    for (Address address : eligibleContactNumbers) {
-      serializedAddresses.add(address.serialize());
-    }
-
-    List<ContactTokenDetails> activeTokens = accountManager.getContacts(serializedAddresses);
+    List<ContactTokenDetails> activeTokens = accountManager.getContacts(eligibleContactNumbers);
 
     if (activeTokens != null) {
+      List<Recipient> activeRecipients   = new LinkedList<>();
+      List<Recipient> inactiveRecipients = new LinkedList<>();
+
+      Set<String>  inactiveContactNumbers = new HashSet<>(eligibleContactNumbers);
+
       for (ContactTokenDetails activeToken : activeTokens) {
-        eligibleContactNumbers.remove(Address.fromSerialized(activeToken.getNumber()));
+        activeRecipients.add(Recipient.from(context, Address.fromSerialized(activeToken.getNumber()), true));
+        inactiveContactNumbers.remove(activeToken.getNumber());
       }
 
-      directory.setNumbers(activeTokens, eligibleContactNumbers);
-      return updateContactsDatabase(context, activeTokens, true);
+      for (String inactiveContactNumber : inactiveContactNumbers) {
+        inactiveRecipients.add(Recipient.from(context, Address.fromSerialized(inactiveContactNumber), true));
+      }
+
+      recipientDatabase.setRegistered(activeRecipients, inactiveRecipients);
+      return updateContactsDatabase(context, Stream.of(activeRecipients).map(Recipient::getAddress).toList(), true);
     }
 
-    return new RefreshResult(new LinkedList<Address>(), false);
+    return new RefreshResult(new LinkedList<>(), false);
   }
 
-  public static UserCapabilities refreshDirectoryFor(@NonNull  Context context,
-                                                     @Nullable MasterSecret masterSecret,
-                                                     @NonNull  Recipients recipients)
+  public static RegisteredState refreshDirectoryFor(@NonNull  Context context,
+                                                    @Nullable MasterSecret masterSecret,
+                                                    @NonNull  Recipient recipient)
       throws IOException
   {
-    TextSecureDirectory           directory      = TextSecureDirectory.getInstance(context);
-    SignalServiceAccountManager   accountManager = AccountManagerFactory.createManager(context);
-    String                        number         = recipients.getPrimaryRecipient().getAddress().serialize();
-    Optional<ContactTokenDetails> details        = accountManager.getContact(number);
+    RecipientDatabase             recipientDatabase = DatabaseFactory.getRecipientDatabase(context);
+    SignalServiceAccountManager   accountManager    = AccountManagerFactory.createManager(context);
+    String                        number            = recipient.getAddress().serialize();
+    Optional<ContactTokenDetails> details           = accountManager.getContact(number);
 
     if (details.isPresent()) {
-      directory.setNumber(details.get(), true);
+      recipientDatabase.setRegistered(recipient, RegisteredState.REGISTERED);
 
-      RefreshResult result = updateContactsDatabase(context, details.get());
+      RefreshResult result = updateContactsDatabase(context, Util.asList(recipient.getAddress()), false);
 
       if (!result.getNewUsers().isEmpty() && TextSecurePreferences.isMultiDevice(context)) {
         ApplicationContext.getInstance(context).getJobManager().add(new MultiDeviceContactUpdateJob(context));
@@ -144,66 +124,39 @@ public class DirectoryHelper {
         notifyNewUsers(context, masterSecret, result.getNewUsers());
       }
 
-      return new UserCapabilities(Capability.SUPPORTED,
-                                  details.get().isVoice() ? Capability.SUPPORTED : Capability.UNSUPPORTED,
-                                  details.get().isVideo() ? Capability.SUPPORTED : Capability.UNSUPPORTED);
+      return RegisteredState.REGISTERED;
     } else {
-      ContactTokenDetails absent = new ContactTokenDetails();
-      absent.setNumber(number);
-      directory.setNumber(absent, false);
-      return UserCapabilities.UNSUPPORTED;
+      recipientDatabase.setRegistered(recipient, RegisteredState.NOT_REGISTERED);
+      return RegisteredState.NOT_REGISTERED;
     }
   }
 
-  public static @NonNull UserCapabilities getUserCapabilities(@NonNull Context context,
-                                                              @Nullable Recipients recipients)
-  {
-    try {
-      if (recipients == null) {
-        return UserCapabilities.UNSUPPORTED;
-      }
-
-      if (!TextSecurePreferences.isPushRegistered(context)) {
-        return UserCapabilities.UNSUPPORTED;
-      }
-
-      if (!recipients.isSingleRecipient()) {
-        return UserCapabilities.UNSUPPORTED;
-      }
-
-      if (recipients.isGroupRecipient()) {
-        return new UserCapabilities(Capability.SUPPORTED, Capability.UNSUPPORTED, Capability.UNSUPPORTED);
-      }
-
-      final Address address = recipients.getPrimaryRecipient().getAddress();
-
-      boolean secureText  = TextSecureDirectory.getInstance(context).isSecureTextSupported(address);
-
-      return new UserCapabilities(secureText ? Capability.SUPPORTED : Capability.UNSUPPORTED,
-                                  secureText ? Capability.SUPPORTED : Capability.UNSUPPORTED,
-                                  secureText ? Capability.SUPPORTED : Capability.UNSUPPORTED);
-
-    } catch (NotInDirectoryException e) {
-      return UserCapabilities.UNKNOWN;
-    }
-  }
-
-  private static @NonNull RefreshResult updateContactsDatabase(@NonNull Context context,
-                                                               @NonNull final ContactTokenDetails activeToken)
-  {
-    return updateContactsDatabase(context, new LinkedList<ContactTokenDetails>() {{add(activeToken);}}, false);
-  }
-
-  private static @NonNull RefreshResult updateContactsDatabase(@NonNull Context context,
-                                                               @NonNull List<ContactTokenDetails> activeTokens,
-                                                               boolean removeMissing)
-  {
+  private static @NonNull RefreshResult updateContactsDatabase(@NonNull Context context, @NonNull List<Address> activeAddresses, boolean removeMissing) {
     Optional<AccountHolder> account = getOrCreateAccount(context);
 
     if (account.isPresent()) {
       try {
         List<Address> newUsers = DatabaseFactory.getContactsDatabase(context)
-                                                .setRegisteredUsers(account.get().getAccount(), activeTokens, removeMissing);
+                                                .setRegisteredUsers(account.get().getAccount(), activeAddresses, removeMissing);
+
+        Cursor                                 cursor = ContactAccessor.getInstance().getAllSystemContacts(context);
+        RecipientDatabase.BulkOperationsHandle handle = DatabaseFactory.getRecipientDatabase(context).resetAllDisplayNames();
+
+        try {
+          while (cursor != null && cursor.moveToNext()) {
+            String number = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+            if (!TextUtils.isEmpty(number)) {
+              Address   address     = Address.fromExternal(context, number);
+              Recipient recipient   = Recipient.from(context, address, true);
+              String    displayName = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+
+              handle.setDisplayName(recipient, displayName);
+            }
+          }
+        } finally {
+          handle.finish();
+        }
 
         return new RefreshResult(newUsers, account.get().isFresh());
       } catch (RemoteException | OperationApplicationException e) {

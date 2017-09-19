@@ -34,8 +34,7 @@ import org.thoughtcrime.securesms.database.model.DisplayRecord;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.SmsMessageRecord;
 import org.thoughtcrime.securesms.jobs.TrimThreadJob;
-import org.thoughtcrime.securesms.recipients.RecipientFactory;
-import org.thoughtcrime.securesms.recipients.Recipients;
+import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.IncomingGroupMessage;
 import org.thoughtcrime.securesms.sms.IncomingTextMessage;
 import org.thoughtcrime.securesms.sms.OutgoingTextMessage;
@@ -457,8 +456,8 @@ public class SmsDatabase extends MessagingDatabase {
   }
 
   private @NonNull Pair<Long, Long> insertCallLog(@NonNull Address address, long type, boolean unread) {
-    Recipients recipients = RecipientFactory.getRecipientsFor(context, new Address[] {address}, true);
-    long       threadId   = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(recipients);
+    Recipient recipient = Recipient.from(context, address, true);
+    long      threadId  = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(recipient);
 
     ContentValues values = new ContentValues(6);
     values.put(ADDRESS, address.serialize());
@@ -506,14 +505,14 @@ public class SmsDatabase extends MessagingDatabase {
     if      (message.isIdentityVerified())    type |= Types.KEY_EXCHANGE_IDENTITY_VERIFIED_BIT;
     else if (message.isIdentityDefault())     type |= Types.KEY_EXCHANGE_IDENTITY_DEFAULT_BIT;
 
-    Recipients recipients = RecipientFactory.getRecipientsFor(context, new Address[] {message.getSender()}, true);
+    Recipient recipient = Recipient.from(context, message.getSender(), true);
 
-    Recipients groupRecipients;
+    Recipient groupRecipient;
 
     if (message.getGroupId() == null) {
-      groupRecipients = null;
+      groupRecipient = null;
     } else {
-      groupRecipients = RecipientFactory.getRecipientsFor(context, new Address[] {message.getGroupId()}, true);
+      groupRecipient = Recipient.from(context, message.getGroupId(), true);
     }
 
     boolean    unread     = (org.thoughtcrime.securesms.util.Util.isDefaultSmsProvider(context) ||
@@ -522,8 +521,8 @@ public class SmsDatabase extends MessagingDatabase {
 
     long       threadId;
 
-    if (groupRecipients == null) threadId = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(recipients);
-    else                         threadId = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(groupRecipients);
+    if (groupRecipient == null) threadId = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(recipient);
+    else                        threadId = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(groupRecipient);
 
     ContentValues values = new ContentValues(6);
     values.put(ADDRESS, message.getSender().serialize());
@@ -560,7 +559,7 @@ public class SmsDatabase extends MessagingDatabase {
       }
 
       if (message.getSubscriptionId() != -1) {
-        DatabaseFactory.getRecipientPreferenceDatabase(context).setDefaultSubscriptionId(recipients, message.getSubscriptionId());
+        DatabaseFactory.getRecipientDatabase(context).setDefaultSubscriptionId(recipient, message.getSubscriptionId());
       }
 
       notifyConversationListeners(threadId);
@@ -589,7 +588,7 @@ public class SmsDatabase extends MessagingDatabase {
     if      (message.isIdentityVerified()) type |= Types.KEY_EXCHANGE_IDENTITY_VERIFIED_BIT;
     else if (message.isIdentityDefault())  type |= Types.KEY_EXCHANGE_IDENTITY_DEFAULT_BIT;
 
-    Address address = message.getRecipients().getPrimaryRecipient().getAddress();
+    Address address = message.getRecipient().getAddress();
 
     ContentValues contentValues = new ContentValues(6);
     contentValues.put(ADDRESS, address.serialize());
@@ -614,6 +613,8 @@ public class SmsDatabase extends MessagingDatabase {
       DatabaseFactory.getThreadDatabase(context).update(threadId, true);
       DatabaseFactory.getThreadDatabase(context).setLastSeen(threadId);
     }
+
+    DatabaseFactory.getThreadDatabase(context).setHasSent(threadId, true);
 
     notifyConversationListeners(threadId);
 
@@ -783,7 +784,7 @@ public class SmsDatabase extends MessagingDatabase {
 
     public MessageRecord getCurrent() {
       return new SmsMessageRecord(context, id, new DisplayRecord.Body(message.getMessageBody(), true),
-                                  message.getRecipients(), message.getRecipients().getPrimaryRecipient(),
+                                  message.getRecipient(), message.getRecipient(),
                                   1, System.currentTimeMillis(), System.currentTimeMillis(),
                                   0, message.isSecureMessage() ? MmsSmsColumns.Types.getOutgoingEncryptedMessageType() : MmsSmsColumns.Types.getOutgoingSmsMessageType(),
                                   threadId, 0, new LinkedList<IdentityKeyMismatch>(),
@@ -828,19 +829,15 @@ public class SmsDatabase extends MessagingDatabase {
       long    expireStarted    = cursor.getLong(cursor.getColumnIndexOrThrow(SmsDatabase.EXPIRE_STARTED));
 
       List<IdentityKeyMismatch> mismatches = getMismatches(mismatchDocument);
-      Recipients                recipients = getRecipientsFor(address);
+      Recipient                 recipient  = Recipient.from(context, address, true);
       DisplayRecord.Body        body       = getBody(cursor);
 
-      return new SmsMessageRecord(context, messageId, body, recipients,
-                                  recipients.getPrimaryRecipient(),
+      return new SmsMessageRecord(context, messageId, body, recipient,
+                                  recipient,
                                   addressDeviceId,
                                   dateSent, dateReceived, receiptCount, type,
                                   threadId, status, mismatches, subscriptionId,
                                   expiresIn, expireStarted);
-    }
-
-    private Recipients getRecipientsFor(Address address) {
-      return RecipientFactory.getRecipientsFor(context, new Address[] {address}, true);
     }
 
     private List<IdentityKeyMismatch> getMismatches(String document) {

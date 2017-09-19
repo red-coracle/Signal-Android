@@ -56,13 +56,14 @@ import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MmsSmsDatabase;
+import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.database.loaders.ConversationLoader;
 import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
 import org.thoughtcrime.securesms.mms.Slide;
-import org.thoughtcrime.securesms.recipients.RecipientFactory;
-import org.thoughtcrime.securesms.recipients.Recipients;
+import org.thoughtcrime.securesms.profiles.UnknownSenderView;
+import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.sms.OutgoingTextMessage;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask;
@@ -91,7 +92,7 @@ public class ConversationFragment extends Fragment
   private ConversationFragmentListener listener;
 
   private MasterSecret                masterSecret;
-  private Recipients                  recipients;
+  private Recipient                   recipient;
   private long                        threadId;
   private long                        lastSeen;
   private boolean                     firstLoad;
@@ -100,6 +101,7 @@ public class ConversationFragment extends Fragment
   private RecyclerView                list;
   private RecyclerView.ItemDecoration lastSeenDecoration;
   private View                        loadMoreView;
+  private UnknownSenderView           unknownSenderView;
   private View                        composeDivider;
   private View                        scrollToBottomButton;
   private TextView                    scrollDateHeader;
@@ -132,14 +134,12 @@ public class ConversationFragment extends Fragment
     list.setItemAnimator(null);
 
     loadMoreView = inflater.inflate(R.layout.load_more_header, container, false);
-    loadMoreView.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        Bundle args = new Bundle();
-        args.putLong("limit", 0);
-        getLoaderManager().restartLoader(0, args, ConversationFragment.this);
-      }
+    loadMoreView.setOnClickListener(v -> {
+      Bundle args = new Bundle();
+      args.putLong("limit", 0);
+      getLoaderManager().restartLoader(0, args, ConversationFragment.this);
     });
+
     return view;
   }
 
@@ -184,18 +184,19 @@ public class ConversationFragment extends Fragment
   }
 
   private void initializeResources() {
-    this.recipients     = RecipientFactory.getRecipientsFor(getActivity(), Address.fromParcelable(getActivity().getIntent().getParcelableArrayExtra(ConversationActivity.ADDRESSES_EXTRA)), true);
-    this.threadId       = this.getActivity().getIntent().getLongExtra(ConversationActivity.THREAD_ID_EXTRA, -1);
-    this.lastSeen       = this.getActivity().getIntent().getLongExtra(ConversationActivity.LAST_SEEN_EXTRA, -1);
-    this.firstLoad      = true;
+    this.recipient         = Recipient.from(getActivity(), (Address) getActivity().getIntent().getParcelableExtra(ConversationActivity.ADDRESS_EXTRA), true);
+    this.threadId          = this.getActivity().getIntent().getLongExtra(ConversationActivity.THREAD_ID_EXTRA, -1);
+    this.lastSeen          = this.getActivity().getIntent().getLongExtra(ConversationActivity.LAST_SEEN_EXTRA, -1);
+    this.firstLoad         = true;
+    this.unknownSenderView = new UnknownSenderView(getActivity(), recipient, threadId);
 
     OnScrollListener scrollListener = new ConversationScrollListener(getActivity());
     list.addOnScrollListener(scrollListener);
   }
 
   private void initializeListAdapter() {
-    if (this.recipients != null && this.threadId != -1) {
-      ConversationAdapter adapter = new ConversationAdapter(getActivity(), masterSecret, locale, selectionClickListener, null, this.recipients);
+    if (this.recipient != null && this.threadId != -1) {
+      ConversationAdapter adapter = new ConversationAdapter(getActivity(), masterSecret, locale, selectionClickListener, null, this.recipient);
       list.setAdapter(adapter);
       list.addItemDecoration(new StickyHeaderDecoration(adapter, false, false));
 
@@ -256,8 +257,8 @@ public class ConversationFragment extends Fragment
     else                            throw new AssertionError();
   }
 
-  public void reload(Recipients recipients, long threadId) {
-    this.recipients = recipients;
+  public void reload(Recipient recipient, long threadId) {
+    this.recipient = recipient;
 
     if (this.threadId != threadId) {
       this.threadId = threadId;
@@ -359,8 +360,8 @@ public class ConversationFragment extends Fragment
     intent.putExtra(MessageDetailsActivity.MESSAGE_ID_EXTRA, message.getId());
     intent.putExtra(MessageDetailsActivity.THREAD_ID_EXTRA, threadId);
     intent.putExtra(MessageDetailsActivity.TYPE_EXTRA, message.isMms() ? MmsSmsDatabase.MMS_TRANSPORT : MmsSmsDatabase.SMS_TRANSPORT);
-    intent.putExtra(MessageDetailsActivity.ADDRESSES_EXTRA, recipients.getAddresses());
-    intent.putExtra(MessageDetailsActivity.IS_PUSH_GROUP_EXTRA, (!recipients.isSingleRecipient() || recipients.isGroupRecipient()) && message.isPush());
+    intent.putExtra(MessageDetailsActivity.ADDRESS_EXTRA, recipient.getAddress());
+    intent.putExtra(MessageDetailsActivity.IS_PUSH_GROUP_EXTRA, recipient.isGroupRecipient() && message.isPush());
     startActivity(intent);
   }
 
@@ -430,6 +431,12 @@ public class ConversationFragment extends Fragment
         setLastSeen(loader.getLastSeen());
       }
 
+      if (!loader.hasSent() && !recipient.isSystemContact() && !recipient.isGroupRecipient() && recipient.getRegistered() == RecipientDatabase.RegisteredState.REGISTERED) {
+        getListAdapter().setHeaderView(unknownSenderView);
+      } else {
+        getListAdapter().setHeaderView(null);
+      }
+
       getListAdapter().changeCursor(cursor);
 
       int lastSeenPosition = getListAdapter().findLastSeenPosition(lastSeen);
@@ -456,6 +463,8 @@ public class ConversationFragment extends Fragment
     MessageRecord messageRecord = DatabaseFactory.getMmsDatabase(getContext()).readerFor(message, threadId).getCurrent();
 
     if (getListAdapter() != null) {
+      getListAdapter().setHeaderView(null);
+      setLastSeen(0);
       getListAdapter().addFastRecord(messageRecord);
     }
 
@@ -466,6 +475,8 @@ public class ConversationFragment extends Fragment
     MessageRecord messageRecord = DatabaseFactory.getSmsDatabase(getContext()).readerFor(message, threadId).getCurrent();
 
     if (getListAdapter() != null) {
+      getListAdapter().setHeaderView(null);
+      setLastSeen(0);
       getListAdapter().addFastRecord(messageRecord);
     }
 

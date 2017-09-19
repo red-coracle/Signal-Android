@@ -33,7 +33,6 @@ import org.thoughtcrime.securesms.dependencies.SignalCommunicationModule.SignalM
 import org.thoughtcrime.securesms.events.WebRtcViewModel;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.recipients.RecipientFactory;
 import org.thoughtcrime.securesms.util.FutureTaskListener;
 import org.thoughtcrime.securesms.util.ListenableFutureTask;
 import org.thoughtcrime.securesms.util.ServiceUtil;
@@ -148,7 +147,6 @@ public class WebRtcCallService extends Service implements InjectableType, PeerCo
   private boolean   localVideoEnabled  = false;
   private boolean   remoteVideoEnabled = false;
   private boolean   bluetoothAvailable = false;
-  private Handler   serviceHandler     = new Handler();
 
   @Inject public SignalMessageSenderFactory  messageSenderFactory;
   @Inject public SignalServiceAccountManager accountManager;
@@ -612,7 +610,7 @@ public class WebRtcCallService extends Service implements InjectableType, PeerCo
     sendMessage(WebRtcViewModel.State.CALL_BUSY, recipient, localVideoEnabled, remoteVideoEnabled, bluetoothAvailable, microphoneEnabled);
 
     audioManager.startOutgoingRinger(OutgoingRinger.Type.BUSY);
-    serviceHandler.postDelayed(new Runnable() {
+    Util.runOnMainDelayed(new Runnable() {
       @Override
       public void run() {
         Intent intent = new Intent(WebRtcCallService.this, WebRtcCallService.class);
@@ -945,7 +943,7 @@ public class WebRtcCallService extends Service implements InjectableType, PeerCo
     Address remoteAddress = intent.getParcelableExtra(EXTRA_REMOTE_ADDRESS);
     if (remoteAddress == null) throw new AssertionError("No recipient in intent!");
 
-    return RecipientFactory.getRecipientFor(this, remoteAddress, true);
+    return Recipient.from(this, remoteAddress, true);
   }
 
   private long getCallId(Intent intent) {

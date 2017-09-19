@@ -10,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.recipients.Recipients;
 import org.thoughtcrime.securesms.util.ViewUtil;
 
 public class ConversationTitleView extends LinearLayout {
@@ -42,14 +41,13 @@ public class ConversationTitleView extends LinearLayout {
     ViewUtil.setTextViewGravityStart(this.subtitle, getContext());
   }
 
-  public void setTitle(@Nullable Recipients recipients) {
-    if      (recipients == null)             setComposeTitle();
-    else if (recipients.isSingleRecipient()) setRecipientTitle(recipients.getPrimaryRecipient());
-    else                                     setRecipientsTitle(recipients);
+  public void setTitle(@Nullable Recipient recipient) {
+    if      (recipient == null) setComposeTitle();
+    else                        setRecipientTitle(recipient);
 
-    if (recipients != null && recipients.isBlocked()) {
+    if (recipient != null && recipient.isBlocked()) {
       title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_block_white_18dp, 0, 0, 0);
-    } else if (recipients != null && recipients.isMuted()) {
+    } else if (recipient != null && recipient.isMuted()) {
       title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_volume_off_white_18dp, 0, 0, 0);
     } else {
       title.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
@@ -67,36 +65,35 @@ public class ConversationTitleView extends LinearLayout {
   }
 
   private void setRecipientTitle(Recipient recipient) {
-    if (!recipient.isGroupRecipient()) {
-      if (TextUtils.isEmpty(recipient.getName())) {
-        this.title.setText(recipient.getAddress().serialize());
-        this.subtitle.setText(null);
-        this.subtitle.setVisibility(View.GONE);
-      } else {
-        this.title.setText(recipient.getName());
+    if      (recipient.isGroupRecipient())           setGroupRecipientTitle(recipient);
+    else if (TextUtils.isEmpty(recipient.getName())) setNonContactRecipientTitle(recipient);
+    else                                             setContactRecipientTitle(recipient);
+  }
 
-        if (recipient.getCustomLabel() != null) this.subtitle.setText(recipient.getCustomLabel());
-        else                                    this.subtitle.setText(recipient.getAddress().serialize());
+  private void setGroupRecipientTitle(Recipient recipient) {
+    this.title.setText(recipient.getName());
+    this.subtitle.setText(null);
+    this.subtitle.setVisibility(View.GONE);
+  }
 
-        this.subtitle.setVisibility(View.VISIBLE);
-      }
-    } else {
-      this.title.setText(recipient.getName());
+  private void setNonContactRecipientTitle(Recipient recipient) {
+    this.title.setText(recipient.getAddress().serialize());
+
+    if (TextUtils.isEmpty(recipient.getProfileName())) {
       this.subtitle.setText(null);
       this.subtitle.setVisibility(View.GONE);
+    } else {
+      this.subtitle.setText("~" + recipient.getProfileName());
+      this.subtitle.setVisibility(View.VISIBLE);
     }
   }
 
-  private void setRecipientsTitle(Recipients recipients) {
-    int size = recipients.getRecipientsList().size();
+  private void setContactRecipientTitle(Recipient recipient) {
+    this.title.setText(recipient.getName());
 
-    title.setText(getContext().getString(R.string.ConversationActivity_group_conversation));
-    subtitle.setText(getContext().getResources().getQuantityString(R.plurals.ConversationActivity_d_recipients_in_group, size, size));
-    subtitle.setVisibility(View.VISIBLE);
+    if (recipient.getCustomLabel() != null) this.subtitle.setText(recipient.getCustomLabel());
+    else                                    this.subtitle.setText(recipient.getAddress().serialize());
+
+    this.subtitle.setVisibility(View.VISIBLE);
   }
-
-
-
-
-
 }

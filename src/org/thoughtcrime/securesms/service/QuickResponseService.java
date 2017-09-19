@@ -11,12 +11,8 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
-import org.thoughtcrime.securesms.database.RecipientPreferenceDatabase.RecipientsPreferences;
-import org.thoughtcrime.securesms.database.ThreadDatabase;
-import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
-import org.thoughtcrime.securesms.mms.SlideDeck;
-import org.thoughtcrime.securesms.recipients.RecipientFactory;
-import org.thoughtcrime.securesms.recipients.Recipients;
+import org.thoughtcrime.securesms.database.RecipientDatabase.RecipientSettings;
+import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.sms.OutgoingTextMessage;
 import org.thoughtcrime.securesms.util.Rfc5724Uri;
@@ -49,31 +45,19 @@ public class QuickResponseService extends MasterSecretIntentService {
     try {
       Rfc5724Uri uri        = new Rfc5724Uri(intent.getDataString());
       String     content    = intent.getStringExtra(Intent.EXTRA_TEXT);
-      String     numbers    = uri.getPath();
+      String     number     = uri.getPath();
 
-      if (numbers.contains("%")){
-        numbers = URLDecoder.decode(numbers);
+      if (number.contains("%")){
+        number = URLDecoder.decode(number);
       }
 
-      String[]  numbersArray = numbers.split(",");
-      Address[] addresses    = new Address[numbersArray.length];
-
-      for (int i=0;i<numbersArray.length;i++) {
-        addresses[i] = Address.fromExternal(this, numbersArray[i]);
-      }
-
-      Recipients                      recipients     = RecipientFactory.getRecipientsFor(this, addresses, false);
-      Optional<RecipientsPreferences> preferences    = DatabaseFactory.getRecipientPreferenceDatabase(this).getRecipientsPreferences(recipients.getAddresses());
-      int                             subscriptionId = preferences.isPresent() ? preferences.get().getDefaultSubscriptionId().or(-1) : -1;
-      long                            expiresIn      = preferences.isPresent() ? preferences.get().getExpireMessages() * 1000 : 0;
+      Address   address        = Address.fromExternal(this, number);
+      Recipient recipient      = Recipient.from(this, address, false);
+      int       subscriptionId = recipient.getDefaultSubscriptionId().or(-1);
+      long      expiresIn      = recipient.getExpireMessages() * 1000;
 
       if (!TextUtils.isEmpty(content)) {
-        if (recipients.isSingleRecipient()) {
-          MessageSender.send(this, masterSecret, new OutgoingTextMessage(recipients, content, expiresIn, subscriptionId), -1, false, null);
-        } else {
-          MessageSender.send(this, masterSecret, new OutgoingMediaMessage(recipients, new SlideDeck(), content, System.currentTimeMillis(),
-                                                                          subscriptionId, expiresIn, ThreadDatabase.DistributionTypes.DEFAULT), -1, false, null);
-        }
+        MessageSender.send(this, masterSecret, new OutgoingTextMessage(recipient, content, expiresIn, subscriptionId), -1, false, null);
       }
     } catch (URISyntaxException e) {
       Toast.makeText(this, R.string.QuickResponseService_problem_sending_message, Toast.LENGTH_LONG).show();

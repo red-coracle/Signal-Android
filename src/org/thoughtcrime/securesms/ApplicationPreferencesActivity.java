@@ -34,6 +34,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AppCompatActivity;
 
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.preferences.AdvancedPreferenceFragment;
@@ -41,6 +42,7 @@ import org.thoughtcrime.securesms.preferences.AppProtectionPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.AppearancePreferenceFragment;
 import org.thoughtcrime.securesms.preferences.CorrectedPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.NotificationsPreferenceFragment;
+import org.thoughtcrime.securesms.preferences.ProfilePreference;
 import org.thoughtcrime.securesms.preferences.SmsMmsPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.ChatsPreferenceFragment;
 import org.thoughtcrime.securesms.service.KeyCachingService;
@@ -60,6 +62,7 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
 {
   private static final String TAG = ApplicationPreferencesActivity.class.getSimpleName();
 
+  private static final String PREFERENCE_CATEGORY_PROFILE        = "preference_category_profile";
   private static final String PREFERENCE_CATEGORY_SMS_MMS        = "preference_category_sms_mms";
   private static final String PREFERENCE_CATEGORY_NOTIFICATIONS  = "preference_category_notifications";
   private static final String PREFERENCE_CATEGORY_APP_PROTECTION = "preference_category_app_protection";
@@ -138,6 +141,8 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
       addPreferencesFromResource(R.xml.preferences);
 
       MasterSecret masterSecret = getArguments().getParcelable("master_secret");
+      this.findPreference(PREFERENCE_CATEGORY_PROFILE)
+          .setOnPreferenceClickListener(new ProfileClickListener());
       this.findPreference(PREFERENCE_CATEGORY_SMS_MMS)
         .setOnPreferenceClickListener(new CategoryClickListener(masterSecret, PREFERENCE_CATEGORY_SMS_MMS));
       this.findPreference(PREFERENCE_CATEGORY_NOTIFICATIONS)
@@ -167,6 +172,8 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
     }
 
     private void setCategorySummaries() {
+      ((ProfilePreference)this.findPreference(PREFERENCE_CATEGORY_PROFILE)).refresh();
+
       this.findPreference(PREFERENCE_CATEGORY_SMS_MMS)
           .setSummary(SmsMmsPreferenceFragment.getSummary(getActivity()));
       this.findPreference(PREFERENCE_CATEGORY_NOTIFICATIONS)
@@ -273,5 +280,18 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
         return true;
       }
     }
+
+    private class ProfileClickListener implements Preference.OnPreferenceClickListener {
+      @Override
+      public boolean onPreferenceClick(Preference preference) {
+        Intent intent = new Intent(preference.getContext(), CreateProfileActivity.class);
+        intent.putExtra(CreateProfileActivity.EXCLUDE_SYSTEM, true);
+
+        getActivity().startActivity(intent);
+//        ((BaseActionBarActivity)getActivity()).startActivitySceneTransition(intent, getActivity().findViewById(R.id.avatar), "avatar");
+        return true;
+      }
+    }
   }
+
 }

@@ -1,21 +1,24 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MessagingDatabase.SyncMessageId;
-import org.thoughtcrime.securesms.database.NotInDirectoryException;
-import org.thoughtcrime.securesms.database.TextSecureDirectory;
-import org.thoughtcrime.securesms.recipients.RecipientFactory;
-import org.thoughtcrime.securesms.recipients.Recipients;
+import org.thoughtcrime.securesms.database.RecipientDatabase;
+import org.thoughtcrime.securesms.database.RecipientDatabase.RecipientSettings;
+import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.service.KeyCachingService;
+import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.jobqueue.JobManager;
 import org.whispersystems.jobqueue.JobParameters;
+import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.messages.SignalServiceEnvelope;
-import org.whispersystems.signalservice.api.push.ContactTokenDetails;
+
+import java.util.LinkedList;
 
 public abstract class PushReceivedJob extends ContextJob {
 
@@ -26,17 +29,12 @@ public abstract class PushReceivedJob extends ContextJob {
   }
 
   public void handle(SignalServiceEnvelope envelope, boolean sendExplicitReceipt) {
-    Address source = Address.fromExternal(context, envelope.getSource());
+    Address   source    = Address.fromExternal(context, envelope.getSource());
+    Recipient recipient = Recipient.from(context, source, false);
 
-    if (!isActiveNumber(context, source)) {
-      TextSecureDirectory directory           = TextSecureDirectory.getInstance(context);
-      ContactTokenDetails contactTokenDetails = new ContactTokenDetails();
-      contactTokenDetails.setNumber(envelope.getSource());
-
-      directory.setNumber(contactTokenDetails, true);
-
-      Recipients recipients = RecipientFactory.getRecipientsFor(context, new Address[] {source}, false);
-      ApplicationContext.getInstance(context).getJobManager().add(new DirectoryRefreshJob(context, KeyCachingService.getMasterSecret(context), recipients));
+    if (!isActiveNumber(recipient)) {
+      DatabaseFactory.getRecipientDatabase(context).setRegistered(recipient, RecipientDatabase.RegisteredState.REGISTERED);
+      ApplicationContext.getInstance(context).getJobManager().add(new DirectoryRefreshJob(context, KeyCachingService.getMasterSecret(context), recipient));
     }
 
     if (envelope.isReceipt()) {
@@ -49,7 +47,7 @@ public abstract class PushReceivedJob extends ContextJob {
   }
 
   private void handleMessage(SignalServiceEnvelope envelope, Address source, boolean sendExplicitReceipt) {
-    Recipients recipients = RecipientFactory.getRecipientsFor(context, new Address[] {source}, false);
+    Recipient  recipients = Recipient.from(context, source, false);
     JobManager jobManager = ApplicationContext.getInstance(context).getJobManager();
 
     if (!recipients.isBlocked()) {
@@ -72,16 +70,8 @@ public abstract class PushReceivedJob extends ContextJob {
                                                                                                envelope.getTimestamp()));
   }
 
-  private boolean isActiveNumber(Context context, Address address) {
-    boolean isActiveNumber;
-
-    try {
-      isActiveNumber = TextSecureDirectory.getInstance(context).isSecureTextSupported(address);
-    } catch (NotInDirectoryException e) {
-      isActiveNumber = false;
-    }
-
-    return isActiveNumber;
+  private boolean isActiveNumber(@NonNull Recipient recipient) {
+    return recipient.resolve().getRegistered() == RecipientDatabase.RegisteredState.REGISTERED;
   }
 
 

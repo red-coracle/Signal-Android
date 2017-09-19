@@ -75,6 +75,12 @@ public class Util {
 
   public static Handler handler = new Handler(Looper.getMainLooper());
 
+  public static <T> List<T> asList(T... elements) {
+    List<T> result = new LinkedList<>();
+    Collections.addAll(result, elements);
+    return result;
+  }
+
   public static String join(String[] list, String delimiter) {
     return join(Arrays.asList(list), delimiter);
   }
@@ -371,6 +377,10 @@ public class Util {
   public static void runOnMain(final @NonNull Runnable runnable) {
     if (isMainThread()) runnable.run();
     else                handler.post(runnable);
+  }
+
+  public static void runOnMainDelayed(final @NonNull Runnable runnable, long delayMillis) {
+    handler.postDelayed(runnable, delayMillis);
   }
 
   public static void runOnMainSync(final @NonNull Runnable runnable) {

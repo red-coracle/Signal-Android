@@ -37,12 +37,12 @@ import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.mms.VideoSlide;
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.recipients.Recipient.RecipientModifiedListener;
-import org.thoughtcrime.securesms.recipients.RecipientFactory;
+import org.thoughtcrime.securesms.recipients.RecipientModifiedListener;
 import org.thoughtcrime.securesms.util.DateUtils;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask.Attachment;
+import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.video.VideoPlayer;
 
 import java.io.IOException;
@@ -99,7 +99,7 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
 
   @Override
   public void onModified(Recipient recipient) {
-    initializeActionBar();
+    Util.runOnMain(this::initializeActionBar);
   }
 
   private void initializeActionBar() {
@@ -153,7 +153,7 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
     threadId     = getIntent().getLongExtra(THREAD_ID_EXTRA, -1);
 
     if (address != null) {
-      recipient = RecipientFactory.getRecipientFor(this, address, true);
+      recipient = Recipient.from(this, address, true);
       recipient.addListener(this);
     } else {
       recipient = null;
@@ -177,6 +177,7 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
       } else if (mediaType != null && mediaType.startsWith("video/")) {
         image.setVisibility(View.GONE);
         video.setVisibility(View.VISIBLE);
+        video.setWindow(getWindow());
         video.setVideoSource(masterSecret, new VideoSlide(this, mediaUri, size));
       }
     } catch (IOException e) {

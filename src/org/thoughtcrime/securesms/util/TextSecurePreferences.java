@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.ArrayRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -47,6 +48,7 @@ public class TextSecurePreferences {
 
   private static final String LAST_VERSION_CODE_PREF           = "last_version_code";
   private static final String LAST_EXPERIENCE_VERSION_PREF     = "last_experience_version_code";
+  private static final String EXPERIENCE_DISMISSED_PREF        = "experience_dismissed";
   public  static final String RINGTONE_PREF                    = "pref_key_ringtone";
   private static final String VIBRATE_PREF                     = "pref_key_vibrate";
   private static final String NOTIFICATION_PREF                = "pref_key_enable_notifications";
@@ -109,6 +111,24 @@ public class TextSecurePreferences {
   private static final String MULTI_DEVICE_PROVISIONED_PREF    = "pref_multi_device";
   public  static final String DIRECT_CAPTURE_CAMERA_ID         = "pref_direct_capture_camera_id";
   private static final String ALWAYS_RELAY_CALLS_PREF          = "pref_turn_only";
+  private static final String PROFILE_KEY_PREF                 = "pref_profile_key";
+  private static final String PROFILE_NAME_PREF                = "pref_profile_name";
+
+  public static @Nullable String getProfileKey(Context context) {
+    return getStringPreference(context, PROFILE_KEY_PREF, null);
+  }
+
+  public static void setProfileKey(Context context, String key) {
+    setStringPreference(context, PROFILE_KEY_PREF, key);
+  }
+
+  public static void setProfileName(Context context, String name) {
+    setStringPreference(context, PROFILE_NAME_PREF, name);
+  }
+
+  public static String getProfileName(Context context) {
+    return getStringPreference(context, PROFILE_NAME_PREF, null);
+  }
 
   public static int getNotificationPriority(Context context) {
     return Integer.valueOf(getStringPreference(context, NOTIFICATION_PRIORITY_PREF, String.valueOf(NotificationCompat.PRIORITY_HIGH)));
@@ -467,6 +487,14 @@ public class TextSecurePreferences {
 
   public static void setLastExperienceVersionCode(Context context, int versionCode) {
     setIntegerPrefrence(context, LAST_EXPERIENCE_VERSION_PREF, versionCode);
+  }
+
+  public static int getExperienceDismissedVersionCode(Context context) {
+    return getIntegerPreference(context, EXPERIENCE_DISMISSED_PREF, 0);
+  }
+
+  public static void setExperienceDismissedVersionCode(Context context, int versionCode) {
+    setIntegerPrefrence(context, EXPERIENCE_DISMISSED_PREF, versionCode);
   }
 
   public static String getTheme(Context context) {
