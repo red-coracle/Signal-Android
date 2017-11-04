@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2011 Whisper Systems
  *
  * This program is free software: you can redistribute it and/or modify
@@ -117,6 +117,8 @@ import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
 import org.thoughtcrime.securesms.mms.AttachmentManager;
 import org.thoughtcrime.securesms.mms.AttachmentManager.MediaType;
 import org.thoughtcrime.securesms.mms.AudioSlide;
+import org.thoughtcrime.securesms.mms.GlideApp;
+import org.thoughtcrime.securesms.mms.GlideRequests;
 import org.thoughtcrime.securesms.mms.LocationSlide;
 import org.thoughtcrime.securesms.mms.MediaConstraints;
 import org.thoughtcrime.securesms.mms.OutgoingExpirationUpdateMessage;
@@ -208,6 +210,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   private static final int SMS_DEFAULT       = 10;
 
   private   MasterSecret                masterSecret;
+  private   GlideRequests               glideRequests;
   protected ComposeText                 composeText;
   private   AnimatingToggle             buttonToggle;
   private   SendButton                  sendButton;
@@ -287,7 +290,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
     if (!Util.isEmpty(composeText) || attachmentManager.isAttachmentPresent()) {
       saveDraft();
-      attachmentManager.clear(false);
+      attachmentManager.clear(glideRequests, false);
       composeText.setText("");
     }
 
@@ -323,7 +326,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     initializeIdentityRecords();
     composeText.setTransport(sendButton.getSelectedTransport());
 
-    titleView.setTitle(recipient);
+    titleView.setTitle(glideRequests, recipient);
     setActionBarColor(recipient.getColor());
     setBlockedUserState(recipient, isSecureText, isDefaultSms);
     setGroupShareProfileReminder(recipient);
@@ -409,9 +412,9 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       addAttachmentContactInfo(data.getData());
       break;
     case GROUP_EDIT:
-      recipient = Recipient.from(this, (Address)data.getParcelableExtra(GroupCreateActivity.GROUP_ADDRESS_EXTRA), true);
+      recipient = Recipient.from(this, data.getParcelableExtra(GroupCreateActivity.GROUP_ADDRESS_EXTRA), true);
       recipient.addListener(this);
-      titleView.setTitle(recipient);
+      titleView.setTitle(glideRequests, recipient);
       setBlockedUserState(recipient, isSecureText, isDefaultSms);
       supportInvalidateOptionsMenu();
       break;
@@ -588,7 +591,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
             invalidateOptionsMenu();
             if (fragment != null) fragment.setLastSeen(0);
           }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
       }
     });
   }
@@ -607,13 +610,18 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
             return null;
           }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
       }
     });
   }
 
   private void handleConversationSettings() {
-    titleView.performClick();
+    Intent intent = new Intent(ConversationActivity.this, RecipientPreferenceActivity.class);
+    intent.putExtra(RecipientPreferenceActivity.ADDRESS_EXTRA, recipient.getAddress());
+    intent.putExtra(RecipientPreferenceActivity.CAN_HAVE_SAFETY_NUMBER_EXTRA,
+                    isSecureText && !isSelfConversation());
+
+    startActivitySceneTransition(intent, titleView.findViewById(R.id.contact_photo_image), "avatar");
   }
 
   private void handleUnmuteNotifications() {
@@ -627,7 +635,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
         return null;
       }
-    }.execute();
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   private void handleUnblock() {
@@ -650,7 +658,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
                 return null;
               }
-            }.execute();
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
           }
         }).show();
   }
@@ -709,7 +717,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
             protected void onPostExecute(Long result) {
               sendComplete(result);
             }
-          }.execute(endSessionMessage);
+          }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, endSessionMessage);
         }
       }
     });
@@ -719,7 +727,6 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
   private void handleViewMedia() {
     Intent intent = new Intent(this, MediaOverviewActivity.class);
-    intent.putExtra(MediaOverviewActivity.THREAD_ID_EXTRA, threadId);
     intent.putExtra(MediaOverviewActivity.ADDRESS_EXTRA, recipient.getAddress());
     startActivity(intent);
   }
@@ -782,7 +789,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                          .setDistributionType(threadId, ThreadDatabase.DistributionTypes.BROADCAST);
           return null;
         }
-      }.execute();
+      }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
   }
 
@@ -798,7 +805,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                          .setDistributionType(threadId, ThreadDatabase.DistributionTypes.CONVERSATION);
           return null;
         }
-      }.execute();
+      }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
   }
 
@@ -847,6 +854,18 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     } catch (ActivityNotFoundException e) {
       Log.w(TAG, e);
     }
+  }
+
+  private boolean handleDisplayQuickContact() {
+    if (recipient.getAddress().isGroup()) return false;
+
+    if (recipient.getContactUri() != null) {
+      ContactsContract.QuickContact.showQuickContact(ConversationActivity.this, titleView, recipient.getContactUri(), ContactsContract.QuickContact.MODE_LARGE, null);
+    } else {
+      handleAddToContacts();
+    }
+
+    return true;
   }
 
   private void handleAddAttachment() {
@@ -1001,7 +1020,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
         updateToggleButtonState();
       }
-    }.execute();
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   private ListenableFuture<Boolean> initializeSecurity(final boolean currentSecureText,
@@ -1039,7 +1058,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
         future.set(true);
         onSecurityUpdated();
       }
-    }.execute(recipient);
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, recipient);
 
     return future;
   }
@@ -1088,7 +1107,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       protected void onPostExecute(Boolean isMmsEnabled) {
         ConversationActivity.this.isMmsEnabled = isMmsEnabled;
       }
-    }.execute();
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   private ListenableFuture<Boolean> initializeIdentityRecords() {
@@ -1142,7 +1161,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
         future.set(true);
       }
 
-    }.execute(recipient);
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, recipient);
 
     return future;
   }
@@ -1202,31 +1221,11 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       }
     });
 
-    titleView.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        Intent intent = new Intent(ConversationActivity.this, RecipientPreferenceActivity.class);
-        intent.putExtra(RecipientPreferenceActivity.ADDRESS_EXTRA, recipient.getAddress());
-        intent.putExtra(RecipientPreferenceActivity.CAN_HAVE_SAFETY_NUMBER_EXTRA,
-                        isSecureText && !isSelfConversation());
-
-        startActivitySceneTransition(intent, titleView.findViewById(R.id.title), "recipient_name");
-      }
-    });
-
-    unblockButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        handleUnblock();
-      }
-    });
-
-    makeDefaultSmsButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        handleMakeDefaultSms();
-      }
-    });
+    titleView.setOnClickListener(v -> handleConversationSettings());
+    titleView.setOnLongClickListener(v -> handleDisplayQuickContact());
+    titleView.setOnBackClickedListener(view -> super.onBackPressed());
+    unblockButton.setOnClickListener(v -> handleUnblock());
+    makeDefaultSmsButton.setOnClickListener(v -> handleMakeDefaultSms());
 
     composeText.setOnKeyListener(composeKeyPressedListener);
     composeText.addTextChangedListener(composeKeyPressedListener);
@@ -1244,7 +1243,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   protected void initializeActionBar() {
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     getSupportActionBar().setCustomView(R.layout.conversation_title_view);
     getSupportActionBar().setDisplayShowCustomEnabled(true);
     getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -1257,6 +1256,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     threadId         = getIntent().getLongExtra(THREAD_ID_EXTRA, -1);
     archived         = getIntent().getBooleanExtra(IS_ARCHIVED_EXTRA, false);
     distributionType = getIntent().getIntExtra(DISTRIBUTION_TYPE_EXTRA, ThreadDatabase.DistributionTypes.DEFAULT);
+    glideRequests    = GlideApp.with(this);
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
       LinearLayout conversationContainer = ViewUtil.findById(this, R.id.conversation_container);
@@ -1280,19 +1280,16 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
   @Override
   public void onModified(final Recipient recipient) {
-    titleView.post(new Runnable() {
-      @Override
-      public void run() {
-        titleView.setTitle(recipient);
-        titleView.setVerified(identityRecords.isVerified());
-        setBlockedUserState(recipient, isSecureText, isDefaultSms);
-        setActionBarColor(recipient.getColor());
-        setGroupShareProfileReminder(recipient);
-        updateInviteReminder(recipient.hasSeenInviteReminder());
-        updateDefaultSubscriptionId(recipient.getDefaultSubscriptionId());
-        initializeSecurity(isSecureText, isDefaultSms);
-        invalidateOptionsMenu();
-      }
+    Util.runOnMain(() -> {
+      titleView.setTitle(glideRequests, recipient);
+      titleView.setVerified(identityRecords.isVerified());
+      setBlockedUserState(recipient, isSecureText, isDefaultSms);
+      setActionBarColor(recipient.getColor());
+      setGroupShareProfileReminder(recipient);
+      updateInviteReminder(recipient.hasSeenInviteReminder());
+      updateDefaultSubscriptionId(recipient.getDefaultSubscriptionId());
+      initializeSecurity(isSecureText, isDefaultSms);
+      invalidateOptionsMenu();
     });
   }
 
@@ -1359,7 +1356,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
   private void setMedia(@Nullable Uri uri, @NonNull MediaType mediaType) {
     if (uri == null) return;
-    attachmentManager.setMedia(masterSecret, uri, mediaType, getCurrentMediaConstraints());
+    attachmentManager.setMedia(masterSecret, glideRequests, uri, mediaType, getCurrentMediaConstraints());
   }
 
   private void addAttachmentContactInfo(Uri contactUri) {
@@ -1448,7 +1445,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
         future.set(result);
       }
 
-    }.execute(thisThreadId);
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, thisThreadId);
 
     return future;
   }
@@ -1558,7 +1555,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
         return null;
       }
-    }.execute(threadId);
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, threadId);
   }
 
   private void markLastSeen() {
@@ -1568,7 +1565,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
         DatabaseFactory.getThreadDatabase(ConversationActivity.this).setLastSeen(params[0]);
         return null;
       }
-    }.execute(threadId);
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, threadId);
   }
 
   protected void sendComplete(long threadId) {
@@ -1652,7 +1649,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       outgoingMessage = new OutgoingSecureMediaMessage(outgoingMessage);
     }
 
-    attachmentManager.clear(false);
+    attachmentManager.clear(glideRequests, false);
     composeText.setText("");
     final long id = fragment.stageOutgoingMessage(outgoingMessage);
 
@@ -1676,7 +1673,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
         sendComplete(result);
         future.set(null);
       }
-    }.execute(outgoingMessage);
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, outgoingMessage);
 
     return future;
   }
@@ -1715,7 +1712,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       protected void onPostExecute(Long result) {
         sendComplete(result);
       }
-    }.execute(message);
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
   }
 
   private void updateToggleButtonState() {
@@ -1736,7 +1733,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                        .setDefaultSubscriptionId(recipient, subscriptionId.or(-1));
         return null;
       }
-    }.execute();
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @Override
@@ -1810,7 +1807,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                   PersistentBlobProvider.getInstance(ConversationActivity.this).delete(result.first);
                   return null;
                 }
-              }.execute();
+              }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
           });
         } catch (InvalidMessageException e) {
@@ -1842,7 +1839,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
             PersistentBlobProvider.getInstance(ConversationActivity.this).delete(result.first);
             return null;
           }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
       }
 
       @Override
@@ -2020,7 +2017,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
         protected void onPostExecute(Void result) {
           initializeIdentityRecords();
         }
-      }.execute();
+      }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
   }
 

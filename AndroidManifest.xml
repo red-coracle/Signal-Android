@@ -3,7 +3,7 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="org.thoughtcrime.securesms">
 
-    <uses-sdk tools:overrideLibrary="com.amulyakhare.textdrawable,com.astuetz.pagerslidingtabstrip,pl.tajchert.waitingdots,com.h6ah4i.android.multiselectlistpreferencecompat,android.support.v13,com.davemorrissey.labs.subscaleview,com.tomergoldst.tooltips,com.klinker.android.send_message"/>
+    <uses-sdk tools:overrideLibrary="com.amulyakhare.textdrawable,com.astuetz.pagerslidingtabstrip,pl.tajchert.waitingdots,com.h6ah4i.android.multiselectlistpreferencecompat,android.support.v13,com.davemorrissey.labs.subscaleview,com.tomergoldst.tooltips,com.klinker.android.send_message,com.takisoft.colorpicker,android.support.v14.preference"/>
 
     <permission android:name="org.thoughtcrime.securesms.ACCESS_SECRETS"
                 android:label="Access to TextSecure Secrets"
@@ -104,9 +104,6 @@
 
     <meta-data android:name="com.google.android.gms.version"
                android:value="@integer/google_play_services_version" />
-
-    <meta-data android:name="org.thoughtcrime.securesms.mms.TextSecureGlideModule"
-               android:value="GlideModule" />
 
     <meta-data android:name="com.google.android.gms.car.application"
                android:resource="@xml/automotive_app_desc" />
@@ -314,6 +311,7 @@
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
 
     <activity android:name=".MediaOverviewActivity"
+              android:theme="@style/TextSecure.LightNoActionBar"
               android:windowSoftInputMode="stateHidden"
               android:launchMode="singleTask"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
@@ -386,6 +384,7 @@
 
     <activity android:name=".CreateProfileActivity"
               android:theme="@style/TextSecure.LightTheme"
+              android:windowSoftInputMode="stateVisible"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
 
     <activity android:name=".ClearProfileAvatarActivity"

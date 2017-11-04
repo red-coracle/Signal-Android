@@ -10,12 +10,11 @@ import android.support.annotation.ArrayRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.SharedPreferencesCompat;
 import android.util.Log;
 
-import com.h6ah4i.android.compat.content.SharedPreferenceCompat;
-
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.preferences.NotificationPrivacyPreference;
+import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -113,6 +112,21 @@ public class TextSecurePreferences {
   private static final String ALWAYS_RELAY_CALLS_PREF          = "pref_turn_only";
   private static final String PROFILE_KEY_PREF                 = "pref_profile_key";
   private static final String PROFILE_NAME_PREF                = "pref_profile_name";
+  private static final String PROFILE_AVATAR_ID_PREF           = "pref_profile_avatar_id";
+  public  static final String READ_RECEIPTS_PREF               = "pref_read_receipts";
+  public  static final String INCOGNITO_KEYBORAD_PREF          = "pref_incognito_keyboard";
+
+  public static boolean isIncognitoKeyboardEnabled(Context context) {
+    return getBooleanPreference(context, INCOGNITO_KEYBORAD_PREF, false);
+  }
+
+  public static boolean isReadReceiptsEnabled(Context context) {
+    return getBooleanPreference(context, READ_RECEIPTS_PREF, false);
+  }
+
+  public static void setReadReceiptsEnabled(Context context, boolean enabled) {
+    setBooleanPreference(context, READ_RECEIPTS_PREF, enabled);
+  }
 
   public static @Nullable String getProfileKey(Context context) {
     return getStringPreference(context, PROFILE_KEY_PREF, null);
@@ -128,6 +142,14 @@ public class TextSecurePreferences {
 
   public static String getProfileName(Context context) {
     return getStringPreference(context, PROFILE_NAME_PREF, null);
+  }
+
+  public static void setProfileAvatarId(Context context, int id) {
+    setIntegerPrefrence(context, PROFILE_AVATAR_ID_PREF, id);
+  }
+
+  public static int getProfileAvatarId(Context context) {
+    return getIntegerPreference(context, PROFILE_AVATAR_ID_PREF, 0);
   }
 
   public static int getNotificationPriority(Context context) {
@@ -463,8 +485,12 @@ public class TextSecurePreferences {
     setStringPreference(context, IDENTITY_PREF, identityUri);
   }
 
+  public static void setScreenSecurityEnabled(Context context, boolean value) {
+    setBooleanPreference(context, SCREEN_SECURITY_PREF, value);
+  }
+
   public static boolean isScreenSecurityEnabled(Context context) {
-    return getBooleanPreference(context, SCREEN_SECURITY_PREF, true);
+    return getBooleanPreference(context, SCREEN_SECURITY_PREF, false);
   }
 
   public static boolean isLegacyUseLocalApnsEnabled(Context context) {
@@ -683,9 +709,7 @@ public class TextSecurePreferences {
   private static Set<String> getStringSetPreference(Context context, String key, Set<String> defaultValues) {
     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
     if (prefs.contains(key)) {
-      return SharedPreferenceCompat.getStringSet(PreferenceManager.getDefaultSharedPreferences(context),
-                                                 key,
-                                                 Collections.<String>emptySet());
+      return prefs.getStringSet(key, Collections.<String>emptySet());
     } else {
       return defaultValues;
     }

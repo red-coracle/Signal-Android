@@ -189,6 +189,7 @@ public class MessageRetrievalService extends Service implements InjectableType, 
     private AtomicBoolean stopThread = new AtomicBoolean(false);
 
     MessageRetrievalThread() {
+      super("MessageRetrievalService");
       setUncaughtExceptionHandler(this);
     }
 
@@ -214,7 +215,7 @@ public class MessageRetrievalService extends Service implements InjectableType, 
                                  Log.w(TAG, "Retrieved envelope! " + envelope.getSource());
 
                                  PushContentReceiveJob receiveJob = new PushContentReceiveJob(MessageRetrievalService.this);
-                                 receiveJob.handle(envelope, false);
+                                 receiveJob.handle(envelope);
 
                                  decrementPushReceived();
                                }

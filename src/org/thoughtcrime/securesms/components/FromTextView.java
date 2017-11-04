@@ -3,10 +3,12 @@ package org.thoughtcrime.securesms.components;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.support.v4.view.ViewCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
@@ -55,13 +57,13 @@ public class FromTextView extends EmojiTextView {
     fromSpan.setSpan(new StyleSpan(typeface), 0, builder.length(),
                      Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 
-    if (recipient.getName() == null && recipient.getProfileName() != null) {
+    if (recipient.getName() == null && !TextUtils.isEmpty(recipient.getProfileName())) {
       SpannableString profileName = new SpannableString(" (~" + recipient.getProfileName() + ") ");
       profileName.setSpan(new CenterAlignedRelativeSizeSpan(0.75f), 0, profileName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
       profileName.setSpan(new TypefaceSpan("sans-serif-light"), 0, profileName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
       profileName.setSpan(new ForegroundColorSpan(ResUtil.getColor(getContext(), R.attr.conversation_list_item_subject_color)), 0, profileName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-      if (DynamicLanguage.getLayoutDirection(getContext()) == LAYOUT_DIRECTION_RTL){
+      if (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL){
         builder.append(profileName);
         builder.append(fromSpan);
       } else {

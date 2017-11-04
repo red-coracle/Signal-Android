@@ -23,6 +23,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -44,6 +45,7 @@ import org.thoughtcrime.securesms.jobs.DirectoryRefreshJob;
 import org.thoughtcrime.securesms.jobs.PushDecryptJob;
 import org.thoughtcrime.securesms.jobs.RefreshAttributesJob;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.VersionTracker;
 
@@ -70,6 +72,8 @@ public class DatabaseUpgradeActivity extends BaseActivity {
   public static final int REDPHONE_SUPPORT_VERSION             = 157;
   public static final int NO_MORE_CANONICAL_DB_VERSION         = 276;
   public static final int PROFILES                             = 289;
+  public static final int SCREENSHOTS                          = 300;
+  public static final int PERSISTENT_BLOBS                     = 307;
 
   private static final SortedSet<Integer> UPGRADE_VERSIONS = new TreeSet<Integer>() {{
     add(NO_MORE_KEY_EXCHANGE_PREFIX_VERSION);
@@ -84,6 +88,7 @@ public class DatabaseUpgradeActivity extends BaseActivity {
     add(MEDIA_DOWNLOAD_CONTROLS_VERSION);
     add(REDPHONE_SUPPORT_VERSION);
     add(NO_MORE_CANONICAL_DB_VERSION);
+    add(SCREENSHOTS);
   }};
 
   private MasterSecret masterSecret;
@@ -101,7 +106,7 @@ public class DatabaseUpgradeActivity extends BaseActivity {
       ProgressBar determinateProgress   = (ProgressBar)findViewById(R.id.determinate_progress);
 
       new DatabaseUpgradeTask(indeterminateProgress, determinateProgress)
-          .execute(VersionTracker.getLastSeenVersion(this));
+          .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, VersionTracker.getLastSeenVersion(this));
     } else {
       VersionTracker.updateLastSeenVersion(this);
       updateNotifications(this, masterSecret);
@@ -146,7 +151,7 @@ public class DatabaseUpgradeActivity extends BaseActivity {
         MessageNotifier.updateNotification(context, masterSecret);
         return null;
       }
-    }.execute();
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   public interface DatabaseUpgradeListener {
@@ -238,6 +243,21 @@ public class DatabaseUpgradeActivity extends BaseActivity {
         ApplicationContext.getInstance(getApplicationContext())
                           .getJobManager()
                           .add(new DirectoryRefreshJob(getApplicationContext()));
+      }
+
+      if (params[0] < SCREENSHOTS) {
+        boolean screenSecurity = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(TextSecurePreferences.SCREEN_SECURITY_PREF, true);
+        TextSecurePreferences.setScreenSecurityEnabled(getApplicationContext(), screenSecurity);
+      }
+
+      if (params[0] < PERSISTENT_BLOBS) {
+        File externalDir = context.getExternalFilesDir(null);
+
+        if (externalDir != null && externalDir.isDirectory() && externalDir.exists()) {
+          for (File blob : externalDir.listFiles()) {
+            if (blob.exists() && blob.isFile()) blob.delete();
+          }
+        }
       }
 
       return null;

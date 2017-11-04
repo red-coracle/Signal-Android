@@ -6,22 +6,24 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.PreferenceScreen;
-import android.support.v4.preference.PreferenceFragment;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceScreen;
 import android.widget.Toast;
 
 import com.doomonafireball.betterpickers.hmspicker.HmsPickerBuilder;
 import com.doomonafireball.betterpickers.hmspicker.HmsPickerDialogFragment;
 
+import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.ApplicationPreferencesActivity;
 import org.thoughtcrime.securesms.BlockedContactsActivity;
 import org.thoughtcrime.securesms.PassphraseChangeActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
+import org.thoughtcrime.securesms.jobs.MultiDeviceReadReceiptUpdateJob;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
@@ -37,7 +39,6 @@ public class AppProtectionPreferenceFragment extends CorrectedPreferenceFragment
   @Override
   public void onCreate(Bundle paramBundle) {
     super.onCreate(paramBundle);
-    addPreferencesFromResource(R.xml.preferences_app_protection);
 
     masterSecret      = getArguments().getParcelable("master_secret");
     disablePassphrase = (CheckBoxPreference) this.findPreference("pref_enable_passphrase_temporary");
@@ -46,10 +47,17 @@ public class AppProtectionPreferenceFragment extends CorrectedPreferenceFragment
         .setOnPreferenceClickListener(new ChangePassphraseClickListener());
     this.findPreference(TextSecurePreferences.PASSPHRASE_TIMEOUT_INTERVAL_PREF)
         .setOnPreferenceClickListener(new PassphraseIntervalClickListener());
+    this.findPreference(TextSecurePreferences.READ_RECEIPTS_PREF)
+        .setOnPreferenceChangeListener(new ReadReceiptToggleListener());
     this.findPreference(PREFERENCE_CATEGORY_BLOCKED)
         .setOnPreferenceClickListener(new BlockedContactsClickListener());
     disablePassphrase
         .setOnPreferenceChangeListener(new DisablePassphraseClickListener());
+  }
+
+  @Override
+  public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
+    addPreferencesFromResource(R.xml.preferences_app_protection);
   }
 
   @Override
@@ -65,7 +73,7 @@ public class AppProtectionPreferenceFragment extends CorrectedPreferenceFragment
 
   private void initializePlatformSpecificOptions() {
     PreferenceScreen preferenceScreen         = getPreferenceScreen();
-    Preference       screenSecurityPreference = findPreference(TextSecurePreferences.SCREEN_SECURITY_PREF);
+    Preference screenSecurityPreference = findPreference(TextSecurePreferences.SCREEN_SECURITY_PREF);
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
         screenSecurityPreference != null) {
@@ -163,6 +171,18 @@ public class AppProtectionPreferenceFragment extends CorrectedPreferenceFragment
       }
 
       return false;
+    }
+  }
+
+  private class ReadReceiptToggleListener implements Preference.OnPreferenceChangeListener {
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+      boolean enabled = (boolean)newValue;
+      ApplicationContext.getInstance(getContext())
+                        .getJobManager()
+                        .add(new MultiDeviceReadReceiptUpdateJob(getContext(), enabled));
+
+      return true;
     }
   }
 

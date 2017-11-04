@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2015 Open Whisper Systems
  *
  * This program is free software: you can redistribute it and/or modify
@@ -60,6 +60,7 @@ import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.database.loaders.ConversationLoader;
 import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
+import org.thoughtcrime.securesms.mms.GlideApp;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
 import org.thoughtcrime.securesms.mms.Slide;
 import org.thoughtcrime.securesms.profiles.UnknownSenderView;
@@ -121,12 +122,7 @@ public class ConversationFragment extends Fragment
     scrollToBottomButton = ViewUtil.findById(view, R.id.scroll_to_bottom_button);
     scrollDateHeader     = ViewUtil.findById(view, R.id.scroll_date_header);
 
-    scrollToBottomButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(final View view) {
-        scrollToBottom();
-      }
-    });
+    scrollToBottomButton.setOnClickListener(v -> scrollToBottom());
 
     final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, true);
     list.setHasFixedSize(false);
@@ -184,7 +180,7 @@ public class ConversationFragment extends Fragment
   }
 
   private void initializeResources() {
-    this.recipient         = Recipient.from(getActivity(), (Address) getActivity().getIntent().getParcelableExtra(ConversationActivity.ADDRESS_EXTRA), true);
+    this.recipient         = Recipient.from(getActivity(), getActivity().getIntent().getParcelableExtra(ConversationActivity.ADDRESS_EXTRA), true);
     this.threadId          = this.getActivity().getIntent().getLongExtra(ConversationActivity.THREAD_ID_EXTRA, -1);
     this.lastSeen          = this.getActivity().getIntent().getLongExtra(ConversationActivity.LAST_SEEN_EXTRA, -1);
     this.firstLoad         = true;
@@ -196,7 +192,7 @@ public class ConversationFragment extends Fragment
 
   private void initializeListAdapter() {
     if (this.recipient != null && this.threadId != -1) {
-      ConversationAdapter adapter = new ConversationAdapter(getActivity(), masterSecret, locale, selectionClickListener, null, this.recipient);
+      ConversationAdapter adapter = new ConversationAdapter(getActivity(), masterSecret, GlideApp.with(this), locale, selectionClickListener, null, this.recipient);
       list.setAdapter(adapter);
       list.addItemDecoration(new StickyHeaderDecoration(adapter, false, false));
 
@@ -346,7 +342,7 @@ public class ConversationFragment extends Fragment
 
             return null;
           }
-        }.execute(messageRecords.toArray(new MessageRecord[messageRecords.size()]));
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, messageRecords.toArray(new MessageRecord[messageRecords.size()]));
       }
     });
 
@@ -387,7 +383,7 @@ public class ConversationFragment extends Fragment
         MessageSender.resend(context, masterSecret, messageRecords[0]);
         return null;
       }
-    }.execute(message);
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
   }
 
   private void handleSaveAttachment(final MediaMmsMessageRecord message) {
@@ -396,7 +392,7 @@ public class ConversationFragment extends Fragment
         for (Slide slide : message.getSlideDeck().getSlides()) {
           if ((slide.hasImage() || slide.hasVideo() || slide.hasAudio() || slide.hasDocument()) && slide.getUri() != null) {
             SaveAttachmentTask saveTask = new SaveAttachmentTask(getActivity(), masterSecret, list);
-            saveTask.execute(new Attachment(slide.getUri(), slide.getContentType(), message.getDateReceived(), slide.getFileName().orNull()));
+            saveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new Attachment(slide.getUri(), slide.getContentType(), message.getDateReceived(), slide.getFileName().orNull()));
             return;
           }
         }
@@ -491,12 +487,7 @@ public class ConversationFragment extends Fragment
 
   private void scrollToLastSeenPosition(final int lastSeenPosition) {
     if (lastSeenPosition > 0) {
-      list.post(new Runnable() {
-        @Override
-        public void run() {
-          ((LinearLayoutManager)list.getLayoutManager()).scrollToPositionWithOffset(lastSeenPosition, list.getHeight());
-        }
-      });
+      list.post(() -> ((LinearLayoutManager)list.getLayoutManager()).scrollToPositionWithOffset(lastSeenPosition, list.getHeight()));
     }
   }
 
