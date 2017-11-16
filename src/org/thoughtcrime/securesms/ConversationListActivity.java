@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2014 Open Whisper Systems
+/*
+ * Copyright (C) 2014-2017 Open Whisper Systems
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
  */
 package org.thoughtcrime.securesms;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -25,25 +26,25 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.thoughtcrime.securesms.components.RatingManager;
+import org.thoughtcrime.securesms.components.SearchToolbar;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
-import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.database.MessagingDatabase.MarkedMessageInfo;
 import org.thoughtcrime.securesms.notifications.MarkReadReceiver;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
+import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
@@ -54,12 +55,14 @@ public class ConversationListActivity extends PassphraseRequiredActionBarActivit
 {
   private static final String TAG = ConversationListActivity.class.getSimpleName();
 
-  private final DynamicTheme    dynamicTheme    = new DynamicTheme   ();
+  private final DynamicTheme    dynamicTheme    = new DynamicNoActionBarTheme();
   private final DynamicLanguage dynamicLanguage = new DynamicLanguage();
 
   private ConversationListFragment fragment;
-  private ContentObserver observer;
-  private MasterSecret masterSecret;
+  private ContentObserver          observer;
+  private MasterSecret             masterSecret;
+  private SearchToolbar            searchToolbar;
+  private ImageView                searchAction;
 
   @Override
   protected void onPreCreate() {
@@ -71,11 +74,17 @@ public class ConversationListActivity extends PassphraseRequiredActionBarActivit
   protected void onCreate(Bundle icicle, @NonNull MasterSecret masterSecret) {
     this.masterSecret = masterSecret;
 
-    getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
-    getSupportActionBar().setTitle(R.string.app_name);
-    fragment = initFragment(android.R.id.content, new ConversationListFragment(), masterSecret, dynamicLanguage.getCurrentLocale());
+    setContentView(R.layout.conversation_list_activity);
+
+    Toolbar toolbar = findViewById(R.id.toolbar);
+    setSupportActionBar(toolbar);
+
+    searchToolbar = findViewById(R.id.search_toolbar);
+    searchAction  = findViewById(R.id.search_action);
+    fragment      = initFragment(R.id.fragment_container, new ConversationListFragment(), masterSecret, dynamicLanguage.getCurrentLocale());
 
     initializeContactUpdatesReceiver();
+    initializeSearchListener();
 
     RatingManager.showRatingDialogIfNecessary(this);
   }
@@ -102,47 +111,27 @@ public class ConversationListActivity extends PassphraseRequiredActionBarActivit
 
     menu.findItem(R.id.menu_clear_passphrase).setVisible(!TextSecurePreferences.isPasswordDisabled(this));
 
-    inflater.inflate(R.menu.conversation_list, menu);
-    MenuItem menuItem = menu.findItem(R.id.menu_search);
-    initializeSearch(menuItem);
-
     super.onPrepareOptionsMenu(menu);
     return true;
   }
 
-  private void initializeSearch(MenuItem searchViewItem) {
-    SearchView searchView = (SearchView)MenuItemCompat.getActionView(searchViewItem);
-    searchView.setQueryHint(getString(R.string.ConversationListActivity_search));
-    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+  private void initializeSearchListener() {
+    searchAction.setOnClickListener(v -> searchToolbar.display(searchAction.getX() + (searchAction.getWidth() / 2),
+                                                               searchAction.getY() + (searchAction.getHeight() / 2)));
+
+    searchToolbar.setListener(new SearchToolbar.SearchListener() {
       @Override
-      public boolean onQueryTextSubmit(String query) {
+      public void onSearchTextChange(String text) {
         if (fragment != null) {
-          fragment.setQueryFilter(query);
-          return true;
+          fragment.setQueryFilter(text);
         }
-
-        return false;
       }
 
       @Override
-      public boolean onQueryTextChange(String newText) {
-        return onQueryTextSubmit(newText);
-      }
-    });
-
-    MenuItemCompat.setOnActionExpandListener(searchViewItem, new MenuItemCompat.OnActionExpandListener() {
-      @Override
-      public boolean onMenuItemActionExpand(MenuItem menuItem) {
-        return true;
-      }
-
-      @Override
-      public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+      public void onSearchReset() {
         if (fragment != null) {
           fragment.resetQueryFilter();
         }
-
-        return true;
       }
     });
   }
@@ -183,6 +172,12 @@ public class ConversationListActivity extends PassphraseRequiredActionBarActivit
     startActivity(intent);
   }
 
+  @Override
+  public void onBackPressed() {
+    if (searchToolbar.isVisible()) searchToolbar.collapse();
+    else                           super.onBackPressed();
+  }
+
   private void createGroup() {
     Intent intent = new Intent(this, GroupCreateActivity.class);
     startActivity(intent);
@@ -203,6 +198,7 @@ public class ConversationListActivity extends PassphraseRequiredActionBarActivit
     startActivity(new Intent(this, ImportExportActivity.class));
   }
 
+  @SuppressLint("StaticFieldLeak")
   private void handleMarkAllRead() {
     new AsyncTask<Void, Void, Void>() {
       @Override
@@ -237,12 +233,7 @@ public class ConversationListActivity extends PassphraseRequiredActionBarActivit
         super.onChange(selfChange);
         Log.w(TAG, "Detected android contact data changed, refreshing cache");
         Recipient.clearCache(ConversationListActivity.this);
-        ConversationListActivity.this.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            fragment.getListAdapter().notifyDataSetChanged();
-          }
-        });
+        ConversationListActivity.this.runOnUiThread(() -> fragment.getListAdapter().notifyDataSetChanged());
       }
     };
 

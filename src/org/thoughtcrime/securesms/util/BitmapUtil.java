@@ -15,6 +15,8 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.util.Pair;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy;
 
 import org.thoughtcrime.securesms.mms.GlideApp;
@@ -54,6 +56,8 @@ public class BitmapUtil {
       Bitmap scaledBitmap = GlideApp.with(context.getApplicationContext())
                                     .asBitmap()
                                     .load(model)
+                                    .skipMemoryCache(true)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                                     .downsample(DownsampleStrategy.AT_MOST)
                                     .submit(constraints.getImageMaxWidth(context),
                                             constraints.getImageMaxWidth(context))
@@ -102,22 +106,6 @@ public class BitmapUtil {
                      .load(model)
                      .downsample(DownsampleStrategy.AT_MOST)
                      .submit(maxWidth, maxHeight)
-                     .get();
-    } catch (InterruptedException | ExecutionException e) {
-      throw new BitmapDecodingException(e);
-    }
-  }
-
-  @WorkerThread
-  public static <T> Bitmap createScaledBitmap(Context context, T model, float scale)
-      throws BitmapDecodingException
-  {
-    try {
-      return GlideApp.with(context.getApplicationContext())
-                     .asBitmap()
-                     .load(model)
-                     .sizeMultiplier(scale)
-                     .submit()
                      .get();
     } catch (InterruptedException | ExecutionException e) {
       throw new BitmapDecodingException(e);

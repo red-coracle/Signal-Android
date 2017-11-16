@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms;
 
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dd.CircularProgressButton;
 import com.soundcloud.android.crop.Crop;
 
@@ -66,6 +68,7 @@ import javax.inject.Inject;
 
 import static android.provider.MediaStore.EXTRA_OUTPUT;
 
+@SuppressLint("StaticFieldLeak")
 public class CreateProfileActivity extends BaseActionBarActivity implements InjectableType {
 
   private static final String TAG = CreateProfileActivity.class.getSimpleName();
@@ -176,6 +179,8 @@ public class CreateProfileActivity extends BaseActionBarActivity implements Inje
                 avatarBytes = result;
                 GlideApp.with(CreateProfileActivity.this)
                         .load(avatarBytes)
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .circleCrop()
                         .into(avatar);
               } else {

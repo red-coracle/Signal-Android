@@ -16,6 +16,7 @@
  */
 package org.thoughtcrime.securesms;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -89,8 +90,10 @@ import org.thoughtcrime.securesms.components.identity.UntrustedSendDialog;
 import org.thoughtcrime.securesms.components.identity.UnverifiedBannerView;
 import org.thoughtcrime.securesms.components.identity.UnverifiedSendDialog;
 import org.thoughtcrime.securesms.components.location.SignalPlace;
+import org.thoughtcrime.securesms.components.reminder.ExpiredBuildReminder;
 import org.thoughtcrime.securesms.components.reminder.InviteReminder;
 import org.thoughtcrime.securesms.components.reminder.ReminderView;
+import org.thoughtcrime.securesms.components.reminder.UnauthorizedReminder;
 import org.thoughtcrime.securesms.contacts.ContactAccessor;
 import org.thoughtcrime.securesms.contacts.ContactAccessor.ContactData;
 import org.thoughtcrime.securesms.crypto.IdentityKeyParcelable;
@@ -112,6 +115,7 @@ import org.thoughtcrime.securesms.database.RecipientDatabase.RegisteredState;
 import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.database.ThreadDatabase;
 import org.thoughtcrime.securesms.database.identity.IdentityRecordList;
+import org.thoughtcrime.securesms.events.ReminderUpdateEvent;
 import org.thoughtcrime.securesms.jobs.MultiDeviceBlockedUpdateJob;
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
 import org.thoughtcrime.securesms.mms.AttachmentManager;
@@ -179,6 +183,7 @@ import static org.whispersystems.signalservice.internal.push.SignalServiceProtos
  * @author Moxie Marlinspike
  *
  */
+@SuppressLint("StaticFieldLeak")
 public class ConversationActivity extends PassphraseRequiredActionBarActivity
     implements ConversationFragment.ConversationFragmentListener,
                AttachmentManager.AttachmentListener,
@@ -262,6 +267,12 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
     supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
     setContentView(R.layout.conversation_activity);
+
+    TypedArray typedArray = obtainStyledAttributes(new int[] {R.attr.conversation_background});
+    int color = typedArray.getColor(0, Color.WHITE);
+    typedArray.recycle();
+
+    getWindow().getDecorView().setBackgroundColor(color);
 
     fragment = initFragment(R.id.fragment_content, new ConversationFragment(),
                             masterSecret, dynamicLanguage.getCurrentLocale());
@@ -557,6 +568,11 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   @Override
   public void onKeyboardShown() {
     inputPanel.onKeyboardShown();
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  public void onEvent(ReminderUpdateEvent event) {
+    updateReminders(recipient.hasSeenInviteReminder());
   }
 
   //////// Event Handlers
@@ -938,6 +954,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   private void handleSecurityChange(boolean isSecureText, boolean isDefaultSms) {
+    Log.w(TAG, "handleSecurityChange(" + isSecureText + ", " + isDefaultSms + ")");
     if (isSecurityInitialized && isSecureText == this.isSecureText && isDefaultSms == this.isDefaultSms) {
       return;
     }
@@ -1035,17 +1052,21 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       protected boolean[] doInBackground(Recipient... params) {
         Context           context         = ConversationActivity.this;
         Recipient         recipient       = params[0];
+        Log.w(TAG, "Resolving registered state...");
         RegisteredState   registeredState = recipient.resolve().getRegistered();
+        Log.w(TAG, "Resolved registered state: " + registeredState);
         boolean           signalEnabled   = TextSecurePreferences.isPushRegistered(context);
 
         if (registeredState == RegisteredState.UNKNOWN) {
           try {
+            Log.w(TAG, "Refreshing directory for user: " + recipient.getAddress().serialize());
             registeredState = DirectoryHelper.refreshDirectoryFor(context, masterSecret, recipient);
           } catch (IOException e) {
             Log.w(TAG, e);
           }
         }
 
+        Log.w(TAG, "Returning registered state...");
         return new boolean[] {registeredState == RegisteredState.REGISTERED && signalEnabled,
                               Util.isDefaultSmsProvider(context)};
       }
@@ -1053,6 +1074,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       @Override
       protected void onPostExecute(boolean[] result) {
         if (result[0] != currentSecureText || result[1] != currentIsDefaultSms) {
+          Log.w(TAG, "onPostExecute() handleSecurityChange: " + result[0] + " , " + result[1]);
           handleSecurityChange(result[0], result[1]);
         }
         future.set(true);
@@ -1064,31 +1086,33 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   private void onSecurityUpdated() {
-    updateInviteReminder(recipient.hasSeenInviteReminder());
+    Log.w(TAG, "onSecurityUpdated()");
+    updateReminders(recipient.hasSeenInviteReminder());
     updateDefaultSubscriptionId(recipient.getDefaultSubscriptionId());
   }
 
-  protected void updateInviteReminder(boolean seenInvite) {
-    /*Log.w(TAG, "updateInviteReminder(" + seenInvite+")");
-    if (TextSecurePreferences.isPushRegistered(this)      &&
-        TextSecurePreferences.isShowInviteReminders(this) &&
-        !isSecureText                                     &&
-        !seenInvite                                       &&
-        !recipient.isGroupRecipient())
+  protected void updateReminders(boolean seenInvite) {
+    Log.w(TAG, "updateReminders(" + seenInvite+")");
+
+    if (UnauthorizedReminder.isEligible(this)) {
+      reminderView.get().showReminder(new UnauthorizedReminder(this));
+    } else if (ExpiredBuildReminder.isEligible()) {
+      reminderView.get().showReminder(new ExpiredBuildReminder(this));
+    } else if (TextSecurePreferences.isPushRegistered(this)      &&
+               TextSecurePreferences.isShowInviteReminders(this) &&
+               !isSecureText                                            &&
+               !seenInvite                                              &&
+               !recipient.isGroupRecipient())
     {
       InviteReminder reminder = new InviteReminder(this, recipient);
-      reminder.setOkListener(new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          handleInviteLink();
-          reminderView.get().requestDismiss();
-        }
+      reminder.setOkListener(v -> {
+        handleInviteLink();
+        reminderView.get().requestDismiss();
       });
-      reminderView.showReminder(reminder);
-    } else {
-      reminderView.hide();
-    }*/
+      reminderView.get().showReminder(reminder);
+    } else if (reminderView.resolved()) {
       reminderView.get().hide();
+    }
   }
 
   private void updateDefaultSubscriptionId(Optional<Integer> defaultSubscriptionId) {
@@ -1280,13 +1304,15 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
   @Override
   public void onModified(final Recipient recipient) {
+    Log.w(TAG, "onModified(" + recipient.getAddress().serialize() + ")");
     Util.runOnMain(() -> {
+      Log.w(TAG, "onModifiedRun(): " + recipient.getRegistered());
       titleView.setTitle(glideRequests, recipient);
       titleView.setVerified(identityRecords.isVerified());
       setBlockedUserState(recipient, isSecureText, isDefaultSms);
       setActionBarColor(recipient.getColor());
       setGroupShareProfileReminder(recipient);
-      updateInviteReminder(recipient.hasSeenInviteReminder());
+      updateReminders(recipient.hasSeenInviteReminder());
       updateDefaultSubscriptionId(recipient.getDefaultSubscriptionId());
       initializeSecurity(isSecureText, isDefaultSms);
       invalidateOptionsMenu();
