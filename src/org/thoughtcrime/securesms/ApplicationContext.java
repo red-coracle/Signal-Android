@@ -153,9 +153,9 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     RotateSignedPreKeyListener.schedule(this);
     DirectoryRefreshListener.schedule(this);
 
-    if (BuildConfig.PLAY_STORE_DISABLED) {
-      UpdateApkRefreshListener.schedule(this);
-    }
+    //if (BuildConfig.PLAY_STORE_DISABLED) {
+    //  UpdateApkRefreshListener.schedule(this);
+    //}
   }
 
   private void initializeWebRtc() {

@@ -1098,7 +1098,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       reminderView.get().showReminder(new UnauthorizedReminder(this));
     } else if (ExpiredBuildReminder.isEligible()) {
       reminderView.get().showReminder(new ExpiredBuildReminder(this));
-    } else if (TextSecurePreferences.isPushRegistered(this)      &&
+    } /*else if (TextSecurePreferences.isPushRegistered(this)      &&
                TextSecurePreferences.isShowInviteReminders(this) &&
                !isSecureText                                            &&
                !seenInvite                                              &&
@@ -1110,7 +1110,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
         reminderView.get().requestDismiss();
       });
       reminderView.get().showReminder(reminder);
-    } else if (reminderView.resolved()) {
+    }*/ else if (reminderView.resolved()) {
       reminderView.get().hide();
     }
   }
