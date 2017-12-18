@@ -73,6 +73,9 @@
   <string name="ConfirmIdentityDialog_your_safety_number_with_s_has_changed">Jūsų saugumo numeris su %1$s pasikeitė. Tai gali reikšti, kad kažkas bando perimti jūsų susirašinėjimą arba, kad %2$s, tiesiog, iš naujo įdiegė Signal.</string>
   <string name="ConfirmIdentityDialog_you_may_wish_to_verify_your_safety_number_with_this_contact">Jūs, tikriausiai, norėtumėte patvirtinti savo saugumo numerį su šiuo kontaktu.</string>
   <string name="ConfirmIdentityDialog_accept">Priimti</string>
+  <!--ContactsCursorLoader-->
+  <string name="ContactsCursorLoader_recent_chats">Paskiausi pokalbiai</string>
+  <string name="ContactsCursorLoader_contacts">Kontaktai</string>
   <!--ContactsDatabase-->
   <string name="ContactsDatabase_message_s">Žinutė %s</string>
   <string name="ContactsDatabase_signal_call_s">Signal skambutis %s</string>
@@ -120,6 +123,10 @@
   <string name="ConversationActivity_unable_to_record_audio">Nepavyksta įrašyti garso!</string>
   <string name="ConversationActivity_error_sending_voice_message">Klaida, išsiunčiant balso žinutę</string>
   <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">Nėra prieinamos programėlės, kuri galėtų apdoroti šią nuorodą jūsų įrenginyje.</string>
+  <string name="ConversationActivity_to_send_audio_messages_allow_signal_access_to_your_microphone">Norėdami siųsti garso žinutes, leiskite Signal prieigą prie mikrofono.</string>
+  <string name="ConversationActivity_to_call_s_signal_needs_access_to_your_microphone_and_camera">Norint skambinti %s, Signal yra reikalinga prieiga prie jūsų mikrofono ir kameros.</string>
+  <string name="ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera">Norėdami fotografuoti ir filmuoti vaizdo įrašus, leiskite Signal prieigą prie kameros.</string>
+  <string name="ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video">Norint fotografuoti ar filmuoti, Signal reikalinga prieiga prie kameros</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d neskaityta žinutė</item>
@@ -173,6 +180,7 @@
   <!--ConversationListActivity-->
   <string name="ConversationListActivity_there_is_no_browser_installed_on_your_device">Jūsų įrenginyje nėra įdiegtos naršyklės.</string>
   <!--ConversationListFragment-->
+  <string name="ConversationListFragment_no_results_found_for_s_">Nerasta jokių rezultatų, atitinkančių \"%s\"</string>
   <plurals name="ConversationListFragment_delete_selected_conversations">
     <item quantity="one">Ištrinti pasirinktą pokalbį?</item>
     <item quantity="few">Ištrinti pasirinktus pokalbius?</item>
@@ -309,6 +317,9 @@
   <string name="ImportFragment_no_plaintext_backup_found">Nerasta jokios grynojo teksto atsarginės kopijos!</string>
   <string name="ImportFragment_error_importing_backup">Klaida importuojant atsarginę kopiją!</string>
   <string name="ImportFragment_import_complete">Importavimas užbaigtas!</string>
+  <string name="ImportExportFragment_signal_needs_the_sms_permission_in_order_to_import_sms_messages_toast">Norint importuoti SMS žinutes, Signal reikalingas SMS leidimas</string>
+  <string name="ImportExportFragment_signal_needs_the_storage_permission_in_order_to_read_from_external_storage">Norint skaityti iš išorinių įrenginių, Signal reikalingas saugyklos leidimas</string>
+  <string name="ImportExportFragment_signal_needs_the_storage_permission_in_order_to_write_to_external_storage">Norint rašyti į išorinius įrenginius, Signal reikalingas saugyklos leidimas.</string>
   <!--InputPanel-->
   <string name="InputPanel_tap_and_hold_to_record_a_voice_message_release_to_send">Bakstelėkite ir laikykite, kad įrašinėtumėte balso žinutę, atleiskite, kad išsiųstumėte</string>
   <!--InviteActivity-->
@@ -395,6 +406,7 @@
   <string name="DeviceActivity_sorry_this_is_not_a_valid_device_link_qr_code">Atleiskite, tai nėra teisingas įrenginio nuorodos QR kodas.</string>
   <string name="DeviceProvisioningActivity_link_a_signal_device">Susieti Signal įrenginį?</string>
   <string name="DeviceProvisioningActivity_it_looks_like_youre_trying_to_link_a_signal_device_using_a_3rd_party_scanner">Atrodo, kad bandote susieti Signal įrenginį, naudodami trečiųjų šalių skenerį. Jūsų saugumui, dar kartą nuskenuokite kodą, naudodami Signal.</string>
+  <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">Nepavyksta nuskenuoti QR kodo be kameros leidimo</string>
   <!--ExpirationDialog-->
   <string name="ExpirationDialog_disappearing_messages">Išnykstančios žinutės</string>
   <string name="ExpirationDialog_your_messages_will_not_expire">Jūsų žinučių galiojimas nesibaigs.</string>
@@ -456,6 +468,7 @@
   <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">„Google Play“ paslaugos yra atnaujinamos arba laikinai neprieinamos. Prašome bandyti dar kartą.</string>
   <string name="RegistrationActivity_more_information">Daugiau informacijos</string>
   <string name="RegistrationActivity_less_information">Mažiau informacijos</string>
+  <string name="RegistrationActivity_unable_to_connect_to_service">Nepavyksta prisijungti prie paslaugos. Patikrinkite tinklo ryšį ir bandykite dar kartą.</string>
   <!--RegistrationProblemsActivity-->
   <!--RegistrationProgressActivity-->
   <!--RegistrationService-->
@@ -524,6 +537,7 @@
   <string name="VerifyIdentityActivity_our_signal_safety_number">Mūsų Signal saugumo numeris:</string>
   <string name="VerifyIdentityActivity_no_app_to_share_to">Atrodo, kad neturite programėlių su kuriomis dalintis.</string>
   <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">Iškarpinėje palyginimui nebuvo rasta jokio saugumo numerio</string>
+  <string name="VerifyIdentityActivity_unable_to_scan_qr_code_without_camera_permission">Nepavyksta nuskenuoti QR kodo be kameros leidimo</string>
   <!--KeyExchangeInitiator-->
   <!--MessageDisplayHelper-->
   <string name="MessageDisplayHelper_bad_encrypted_message">Blogai šifruota žinutė</string>
@@ -541,6 +555,8 @@
   <string name="MmsMessageRecord_mms_message_encrypted_for_non_existing_session">MMS žinutė užšifruota seansui, kurio nėra</string>
   <!--MuteDialog-->
   <string name="MuteDialog_mute_notifications">Nutildyti pranešimus</string>
+  <!--OutdatedBuildReminder-->
+  <string name="OutdatedBuildReminder_no_web_browser_installed">Neįdiegta jokia saityno naršyklė!</string>
   <!--ApplicationMigrationService-->
   <string name="ApplicationMigrationService_import_in_progress">Importavimas eigoje</string>
   <string name="ApplicationMigrationService_importing_text_messages">Importuojamos tekstinės žinutės</string>
@@ -555,6 +571,7 @@
   <string name="MediaPreviewActivity_you">Jūs</string>
   <string name="MediaPreviewActivity_unssuported_media_type">Nepalaikomas medijos tipas</string>
   <string name="MediaPreviewActivity_draft">Juodraštis</string>
+  <string name="MediaPreviewActivity_unable_to_write_to_external_storage_without_permission">Nepavyksta įrašyti į išorinę saugyklą be leidimų</string>
   <!--MessageNotifier-->
   <string name="MessageNotifier_d_new_messages_in_d_conversations">%1$d naujų(-os) žinutės(-ių) %2$d pokalbyje(-iuose)</string>
   <string name="MessageNotifier_most_recent_from_s">Paskiausia nuo: %1$s</string>
@@ -575,11 +592,18 @@
   <string name="QuickResponseService_problem_sending_message">Problemos siunčiant žinutę!</string>
   <!--SaveAttachmentTask-->
   <string name="SaveAttachmentTask_open_directory">Atverti katalogą</string>
+  <!--SearchToolbar-->
+  <string name="SearchToolbar_search">Ieškoti</string>
   <!--SingleRecipientNotificationBuilder-->
   <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
   <string name="SingleRecipientNotificationBuilder_new_message">Nauja žinutė</string>
+  <!--UnauthorizedReminder-->
+  <string name="UnauthorizedReminder_device_no_longer_registered">Įrenginys daugiau nebėra registruotas</string>
+  <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Tai yra tikėtina, nes registravote savo telefono numerį su Signal kitame įrenginyje. Bakstelėkite, norėdami registruoti iš naujo.</string>
   <!--VideoPlayer-->
   <string name="VideoPlayer_error_playing_video">Klaida, atkuriant vaizdo įrašą</string>
+  <!--WebRtcCallActivity-->
+  <string name="WebRtcCallActivity_to_answer_the_call_from_s_give_signal_access_to_your_microphone">Norėdami atsiliepti į skambutį nuo %s, suteikite Signal prieigą prie mikrofono.</string>
   <!--WebRtcCallScreen-->
   <string name="WebRtcCallScreen_new_safety_numbers">Jūsų pokalbio su %1$s saugumo numeris pasikeitė. Tai gali reikšti, kad kažkas bando perimti jūsų susirašinėjimą arba, kad %2$s, tiesiog, iš naujo įdiegė Signal.</string>
   <string name="WebRtcCallScreen_you_may_wish_to_verify_this_contact">Jūs, tikriausiai, norėtumėte patvirtinti savo saugumo numerį su šiuo kontaktu.</string>
@@ -614,9 +638,13 @@
   <!--single_contact_selection_activity-->
   <string name="SingleContactSelectionActivity_contact_photo">Kontakto nuotrauka</string>
   <!--ContactSelectionListFragment-->
+  <string name="ContactSelectionListFragment_error_retrieving_contacts_check_your_network_connection">Klaida gaunant kontaktus, patikrinkite tinklo ryšį</string>
   <!--blocked_contacts_fragment-->
   <string name="blocked_contacts_fragment__no_blocked_contacts">Nėra užblokuotų kontaktų</string>
   <!--contact_selection_recent_activity-->
+  <!--contact_selection_list_fragment-->
+  <string name="contact_selection_list_fragment__signal_needs_access_to_your_contacts_in_order_to_display_them">Norint rodyti jūsų kontaktus, Signal reikalinga prieiga prie jų.</string>
+  <string name="contact_selection_list_fragment__show_contacts">Rodyti kontaktus</string>
   <!--conversation_title_view-->
   <!--conversation_activity-->
   <string name="conversation_activity__type_message_push">Signal žinutė</string>
@@ -639,6 +667,7 @@
   <string name="conversation_item_sent__send_failed_indicator_description">Siuntimas nepavyko</string>
   <string name="conversation_item_sent__pending_approval_description">Laukiama patvirtinimo</string>
   <string name="conversation_item_sent__delivered_description">Pristatyta</string>
+  <string name="conversation_item_sent__message_read">Žinutė perskaityta</string>
   <!--conversation_item_received-->
   <string name="conversation_item_received__contact_photo_description">Kontakto nuotrauka</string>
   <!--audio_view-->
@@ -662,6 +691,9 @@
   <string name="device_list_fragment__link_new_device">Susieti naują įrenginį</string>
   <!--experience_upgrade_activity-->
   <string name="experience_upgrade_activity__continue">tęsti</string>
+  <string name="experience_upgrade_preference_fragment__read_receipts_are_here">Pranešimai apie žinučių skaitymą jau čia</string>
+  <string name="experience_upgrade_preference_fragment__optionally_see_and_share_when_messages_have_been_read">Pasirinktinai matyti kada žinutės būna perskaitomos ir rodyti tai kitiems</string>
+  <string name="experience_upgrade_preference_fragment__enable_read_receipts">Įjungti pranešimus apie žinučių skaitymą</string>
   <!--expiration-->
   <string name="expiration_off">Išjungta</string>
   <plurals name="expiration_seconds">
@@ -762,6 +794,7 @@
   <string name="profile_create_activity__who_can_see_this_information">Kas gali matyti šią informaciją?</string>
   <string name="profile_create_activity__your_name">Jūsų vardas</string>
   <!--recipient_preferences_activity-->
+  <string name="recipient_preference_activity__shared_media">Bendrinama medija</string>
   <!--recipient_preferences-->
   <string name="recipient_preferences__mute_conversation">Nutildyti pokalbį</string>
   <string name="recipient_preferences__notification_sound">Pranešimų garsas</string>
@@ -778,6 +811,8 @@
   <!--registration_activity-->
   <string name="registration_activity__phone_number">TELEFONO NUMERIS</string>
   <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">Signal padaro bendravimą, naudojant jūsų esamą telefono numerį ir adresų knygą, lengvą. Draugai ir kontaktai, kurie jau žino kaip susisiekti su jumis telefonu, galės lengvai su jumis susisiekti, naudojant Signal.\n\nRegistracija persiunčia kai kurią kontaktinę informaciją į serverį. Ši informacija nėra kaupiama.</string>
+  <string name="registration_activity__verify_your_number">Patvirtinkite savo numerį</string>
+  <string name="registration_activity__please_enter_your_mobile_number_to_receive_a_verification_code_carrier_rates_may_apply">Norėdami gauti patvirtinimo kodą, įveskite savo mobiliojo telefono numerį. Gali būti taikomi mobiliojo ryšio paslaugos teikėjo mokesčiai.</string>
   <!--registration_problems-->
   <!--registration_progress_activity-->
   <!--recipients_panel-->
@@ -795,6 +830,9 @@
   <string name="verify_display_fragment__verified">Patvirtinta(-s)</string>
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">Dalintis saugumo numeriu</string>
+  <!--webrtc_answer_decline_button-->
+  <string name="webrtc_answer_decline_button__swipe_up_to_answer">Perbraukite aukštyn, norėdami atsiliepti</string>
+  <string name="webrtc_answer_decline_button__swipe_down_to_reject">Perbraukite žemyn, norėdami atmesti</string>
   <!--message_details_header-->
   <string name="message_details_header__issues_need_your_attention">Kai kurios problemos reikalauja jūsų dėmesio.</string>
   <string name="message_details_header__sent">Išsiųsta</string>
@@ -983,8 +1021,11 @@
   <!--conversation_list_item_view-->
   <string name="conversation_list_item_view__contact_photo_image">Kontakto nuotraukos paveikslas</string>
   <string name="conversation_list_item_view__archived">Archyvuota</string>
+  <string name="conversation_list_item_inbox_zero__inbox_zeeerrro">Gautųjų aplankas tuščias</string>
+  <string name="conversation_list_item_inbox_zero__zip_zilch_zero_nada_nyou_re_all_caught_up">Tuščia. Nieko nėra.\nNieko nepraleidote!</string>
   <!--conversation_list_fragment-->
   <string name="conversation_list_fragment__fab_content_description">Naujas pokalbis</string>
+  <string name="conversation_list_fragment__give_your_inbox_something_to_write_home_about_get_started_by_messaging_a_friend">Pradėkite, bendraudami su draugais.</string>
   <!--conversation_secure_verified-->
   <string name="conversation_secure_verified__menu_reset_secure_session">Atstatyti saugųjį seansą</string>
   <!--conversation_muted-->
@@ -1043,6 +1084,7 @@
   <string name="media_preview__forward_title">Persiųsti</string>
   <string name="media_preview__all_media_title">Visa medija</string>
   <!--media_overview-->
+  <string name="media_overview_documents_fragment__no_documents_found">Nėra dokumentų</string>
   <!--media_preview_activity-->
   <string name="media_preview_activity__media_content_description">Medijos peržiūra</string>
   <!--new_conversation_activity-->
@@ -1054,15 +1096,9 @@
   <string name="trimmer__old_messages_successfully_deleted">Senos žinutės sėkmingai ištrintos</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Perdavimo piktograma</string>
-  <string name="conversation_item_sent__message_read">Žinutė perskaityta</string>
-  <string name="media_overview_documents_fragment__no_documents_found">Nėra dokumentų</string>
-  <string name="experience_upgrade_preference_fragment__read_receipts_are_here">Pranešimai apie žinučių skaitymą jau čia</string>
-  <string name="experience_upgrade_preference_fragment__optionally_see_and_share_when_messages_have_been_read">Pasirinktinai matyti kada žinutės būna perskaitomos ir rodyti tai kitiems</string>
-  <string name="experience_upgrade_preference_fragment__enable_read_receipts">Įjungti pranešimus apie žinučių skaitymą</string>
-  <string name="recipient_preference_activity__shared_media">Bendrinama medija</string>
-  <string name="registration_activity__verify_your_number">Patvirtinkite savo numerį</string>
-  <string name="registration_activity__please_enter_your_mobile_number_to_receive_a_verification_code_carrier_rates_may_apply">Norėdami gauti patvirtinimo kodą, įveskite savo mobiliojo telefono numerį. Gali būti taikomi mobiliojo ryšio paslaugos teikėjo mokesčiai.</string>
-  <string name="ConversationListFragment_no_results_found_for_s_">Nerasta jokių rezultatų, atitinkančių \"%s\"</string>
-  <string name="SearchToolbar_search">Ieškoti</string>
+  <string name="ConversationListFragment_loading">Įkeliama...</string>
+  <string name="CallNotificationBuilder_connecting">Jungiamasi...</string>
+  <string name="Permissions_permission_required">Reikalingas leidimas</string>
+  <string name="Permissions_continue">Tęsti</string>
   <!--EOF-->
 </resources>

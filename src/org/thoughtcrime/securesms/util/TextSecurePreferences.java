@@ -116,6 +116,15 @@ public class TextSecurePreferences {
   public  static final String READ_RECEIPTS_PREF               = "pref_read_receipts";
   public  static final String INCOGNITO_KEYBORAD_PREF          = "pref_incognito_keyboard";
   private static final String UNAUTHORIZED_RECEIVED            = "pref_unauthorized_received";
+  private static final String SUCCESSFUL_DIRECTORY_PREF        = "pref_successful_directory";
+
+  public static void setHasSuccessfullyRetrievedDirectory(Context context, boolean value) {
+    setBooleanPreference(context, SUCCESSFUL_DIRECTORY_PREF, value);
+  }
+
+  public static boolean hasSuccessfullyRetrievedDirectory(Context context) {
+    return getBooleanPreference(context, SUCCESSFUL_DIRECTORY_PREF, false);
+  }
 
   public static void setUnauthorizedReceived(Context context, boolean value) {
     setBooleanPreference(context, UNAUTHORIZED_RECEIVED, value);
@@ -626,7 +635,17 @@ public class TextSecurePreferences {
   }
 
   public static String getNotificationRingtone(Context context) {
-    return getStringPreference(context, RINGTONE_PREF, Settings.System.DEFAULT_NOTIFICATION_URI.toString());
+    String result = getStringPreference(context, RINGTONE_PREF, Settings.System.DEFAULT_NOTIFICATION_URI.toString());
+
+    if (result != null && result.startsWith("file:")) {
+      result = Settings.System.DEFAULT_NOTIFICATION_URI.toString();
+    }
+
+    return result;
+  }
+
+  public static void setNotificationRingtone(Context context, String ringtone) {
+    setStringPreference(context, RINGTONE_PREF, ringtone);
   }
 
   public static boolean isNotificationVibrateEnabled(Context context) {

@@ -1,5 +1,6 @@
-/**
+/*
  * Copyright (C) 2011 Whisper Systems
+ * Copyright (C) 2013 - 2017 Open Whisper Systems
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +18,25 @@
 package org.thoughtcrime.securesms.recipients;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.annimon.stream.function.Consumer;
+
+import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.color.MaterialColor;
 import org.thoughtcrime.securesms.contacts.avatars.ContactColors;
 import org.thoughtcrime.securesms.contacts.avatars.ContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.FallbackContactPhoto;
+import org.thoughtcrime.securesms.contacts.avatars.GeneratedContactPhoto;
+import org.thoughtcrime.securesms.contacts.avatars.GroupRecordContactPhoto;
+import org.thoughtcrime.securesms.contacts.avatars.ProfileContactPhoto;
+import org.thoughtcrime.securesms.contacts.avatars.ResourceContactPhoto;
+import org.thoughtcrime.securesms.contacts.avatars.SystemContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.TransparentContactPhoto;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.GroupDatabase;
@@ -50,9 +59,8 @@ import java.util.concurrent.ExecutionException;
 
 public class Recipient implements RecipientModifiedListener {
 
-  public static final  String            RECIPIENT_CLEAR_ACTION = "org.thoughtcrime.securesms.database.RecipientFactory.CLEAR";
-  private static final String            TAG                    = Recipient.class.getSimpleName();
-  private static final RecipientProvider provider               = new RecipientProvider();
+  private static final String            TAG      = Recipient.class.getSimpleName();
+  private static final RecipientProvider provider = new RecipientProvider();
 
   private final Set<RecipientModifiedListener> listeners = Collections.newSetFromMap(new WeakHashMap<RecipientModifiedListener, Boolean>());
 
@@ -61,11 +69,10 @@ public class Recipient implements RecipientModifiedListener {
 
   private @Nullable String  name;
   private @Nullable String  customLabel;
-  private           boolean stale;
   private           boolean resolving;
 
-  private @Nullable ContactPhoto         contactPhoto;
-  private @NonNull  FallbackContactPhoto fallbackContactPhoto;
+  private @Nullable Uri                  systemContactPhoto;
+  private @Nullable Long                 groupAvatarId;
   private           Uri                  contactUri;
   private @Nullable Uri                  ringtone              = null;
   private           long                 mutedUntil            = 0;
@@ -84,19 +91,21 @@ public class Recipient implements RecipientModifiedListener {
   private           boolean        isSystemContact;
 
 
+  @SuppressWarnings("ConstantConditions")
   public static @NonNull Recipient from(@NonNull Context context, @NonNull Address address, boolean asynchronous) {
     if (address == null) throw new AssertionError(address);
     return provider.getRecipient(context, address, Optional.absent(), Optional.absent(), asynchronous);
   }
 
+  @SuppressWarnings("ConstantConditions")
   public static @NonNull Recipient from(@NonNull Context context, @NonNull Address address, @NonNull Optional<RecipientSettings> settings, @NonNull Optional<GroupDatabase.GroupRecord> groupRecord, boolean asynchronous) {
     if (address == null) throw new AssertionError(address);
     return provider.getRecipient(context, address, settings, groupRecord, asynchronous);
   }
 
-  public static void clearCache(Context context) {
-    provider.clearCache();
-    context.sendBroadcast(new Intent(RECIPIENT_CLEAR_ACTION));
+  public static void applyCached(@NonNull Address address, Consumer<Recipient> consumer) {
+    Optional<Recipient> recipient = provider.getCached(address);
+    if (recipient.isPresent()) consumer.accept(recipient.get());
   }
 
   Recipient(@NonNull  Address address,
@@ -105,15 +114,14 @@ public class Recipient implements RecipientModifiedListener {
             @NonNull  ListenableFutureTask<RecipientDetails> future)
   {
     this.address              = address;
-    this.fallbackContactPhoto = new TransparentContactPhoto();
     this.color                = null;
     this.resolving            = true;
 
     if (stale != null) {
       this.name                  = stale.name;
       this.contactUri            = stale.contactUri;
-      this.contactPhoto          = stale.contactPhoto;
-      this.fallbackContactPhoto  = stale.fallbackContactPhoto;
+      this.systemContactPhoto    = stale.systemContactPhoto;
+      this.groupAvatarId         = stale.groupAvatarId;
       this.color                 = stale.color;
       this.customLabel           = stale.customLabel;
       this.ringtone              = stale.ringtone;
@@ -135,8 +143,8 @@ public class Recipient implements RecipientModifiedListener {
 
     if (details.isPresent()) {
       this.name                  = details.get().name;
-      this.contactPhoto          = details.get().avatar;
-      this.fallbackContactPhoto  = details.get().fallbackAvatar;
+      this.systemContactPhoto    = details.get().systemContactPhoto;
+      this.groupAvatarId         = details.get().groupAvatarId;
       this.color                 = details.get().color;
       this.ringtone              = details.get().ringtone;
       this.mutedUntil            = details.get().mutedUntil;
@@ -162,8 +170,8 @@ public class Recipient implements RecipientModifiedListener {
           synchronized (Recipient.this) {
             Recipient.this.name                  = result.name;
             Recipient.this.contactUri            = result.contactUri;
-            Recipient.this.contactPhoto          = result.avatar;
-            Recipient.this.fallbackContactPhoto  = result.fallbackAvatar;
+            Recipient.this.systemContactPhoto    = result.systemContactPhoto;
+            Recipient.this.groupAvatarId         = result.groupAvatarId;
             Recipient.this.color                 = result.color;
             Recipient.this.customLabel           = result.customLabel;
             Recipient.this.ringtone              = result.ringtone;
@@ -207,8 +215,8 @@ public class Recipient implements RecipientModifiedListener {
     this.address               = address;
     this.contactUri            = details.contactUri;
     this.name                  = details.name;
-    this.contactPhoto          = details.avatar;
-    this.fallbackContactPhoto  = details.fallbackAvatar;
+    this.systemContactPhoto    = details.systemContactPhoto;
+    this.groupAvatarId         = details.groupAvatarId;
     this.color                 = details.color;
     this.customLabel           = details.customLabel;
     this.ringtone              = details.ringtone;
@@ -232,6 +240,19 @@ public class Recipient implements RecipientModifiedListener {
     return this.contactUri;
   }
 
+  public void setContactUri(@Nullable Uri contactUri) {
+    boolean notify = false;
+
+    synchronized (this) {
+      if (!Util.equals(contactUri, this.contactUri)) {
+        this.contactUri = contactUri;
+        notify = true;
+      }
+    }
+
+    if (notify) notifyListeners();
+  }
+
   public synchronized @Nullable String getName() {
     if (this.name == null && isMmsGroupRecipient()) {
       List<String> names = new LinkedList<>();
@@ -244,6 +265,19 @@ public class Recipient implements RecipientModifiedListener {
     }
 
     return this.name;
+  }
+
+  public void setName(@Nullable String name) {
+    boolean notify = false;
+
+    synchronized (this) {
+      if (!Util.equals(this.name, name)) {
+        this.name = name;
+        notify = true;
+      }
+    }
+
+    if (notify) notifyListeners();
   }
 
   public synchronized @NonNull MaterialColor getColor() {
@@ -265,8 +299,21 @@ public class Recipient implements RecipientModifiedListener {
     return address;
   }
 
-  public @Nullable String getCustomLabel() {
+  public synchronized @Nullable String getCustomLabel() {
     return customLabel;
+  }
+
+  public void setCustomLabel(@Nullable String customLabel) {
+    boolean notify = false;
+
+    synchronized (this) {
+      if (!Util.equals(customLabel, this.customLabel)) {
+        this.customLabel = customLabel;
+        notify = true;
+      }
+    }
+
+    if (notify) notifyListeners();
   }
 
   public synchronized Optional<Integer> getDefaultSubscriptionId() {
@@ -329,8 +376,17 @@ public class Recipient implements RecipientModifiedListener {
     return address.isGroup() && !address.isMmsGroup();
   }
 
-  public @NonNull List<Recipient> getParticipants() {
-    return participants;
+  public @NonNull synchronized List<Recipient> getParticipants() {
+    return new LinkedList<>(participants);
+  }
+
+  public void setParticipants(@NonNull List<Recipient> participants) {
+    synchronized (this) {
+      this.participants.clear();
+      this.participants.addAll(participants);
+    }
+
+    notifyListeners();
   }
 
   public synchronized void addListener(RecipientModifiedListener listener) {
@@ -357,19 +413,43 @@ public class Recipient implements RecipientModifiedListener {
   }
 
   public synchronized @NonNull FallbackContactPhoto getFallbackContactPhoto() {
-    return fallbackContactPhoto;
+    if      (isResolving())            return new TransparentContactPhoto();
+    else if (isGroupRecipient())       return new ResourceContactPhoto(R.drawable.ic_group_white_24dp, R.drawable.ic_group_large);
+    else if (!TextUtils.isEmpty(name)) return new GeneratedContactPhoto(name);
+    else                               return new GeneratedContactPhoto("#");
   }
 
   public synchronized @Nullable ContactPhoto getContactPhoto() {
-    return contactPhoto;
+    if      (isGroupRecipient() && groupAvatarId != null) return new GroupRecordContactPhoto(address, groupAvatarId);
+    else if (systemContactPhoto != null)                  return new SystemContactPhoto(address, systemContactPhoto, 0);
+    else if (profileAvatar != null)                       return new ProfileContactPhoto(address, profileAvatar);
+    else                                                  return null;
   }
 
-  public void setContactPhoto(@NonNull ContactPhoto contactPhoto) {
+  public void setSystemContactPhoto(@Nullable Uri systemContactPhoto) {
+    boolean notify = false;
+
     synchronized (this) {
-      this.contactPhoto = contactPhoto;
+      if (!Util.equals(systemContactPhoto, this.systemContactPhoto)) {
+        this.systemContactPhoto = systemContactPhoto;
+        notify = true;
+      }
     }
 
-    notifyListeners();
+    if (notify) notifyListeners();
+  }
+
+  public void setGroupAvatarId(@Nullable Long groupAvatarId) {
+    boolean notify = false;
+
+    synchronized (this) {
+      if (!Util.equals(this.groupAvatarId, groupAvatarId)) {
+        this.groupAvatarId = groupAvatarId;
+        notify = true;
+      }
+    }
+
+    if (notify) notifyListeners();
   }
 
   public synchronized @Nullable Uri getRingtone() {
@@ -452,11 +532,16 @@ public class Recipient implements RecipientModifiedListener {
   }
 
   public void setRegistered(@NonNull RegisteredState value) {
+    boolean notify = false;
+
     synchronized (this) {
-      this.registered = value;
+      if (this.registered != value) {
+        this.registered = value;
+        notify = true;
+      }
     }
 
-    notifyListeners();
+    if (notify) notifyListeners();
   }
 
   public synchronized @Nullable byte[] getProfileKey() {
@@ -473,15 +558,6 @@ public class Recipient implements RecipientModifiedListener {
 
   public synchronized boolean isSystemContact() {
     return isSystemContact;
-  }
-
-  public void setSystemDisplayName(@Nullable String displayName) {
-    synchronized (this) {
-      if (displayName == null) this.name = profileName;
-      else                     this.name = displayName;
-    }
-
-    notifyListeners();
   }
 
   public synchronized Recipient resolve() {
@@ -521,15 +597,7 @@ public class Recipient implements RecipientModifiedListener {
     notifyListeners();
   }
 
-  boolean isStale() {
-    return stale;
-  }
-
-  void setStale() {
-    this.stale = true;
-  }
-
-  synchronized boolean isResolving() {
+  public synchronized boolean isResolving() {
     return resolving;
   }
 
