@@ -39,7 +39,6 @@ import android.widget.TextView;
 
 import com.codewaves.stickyheadergrid.StickyHeaderGridLayoutManager;
 
-import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.CursorRecyclerViewAdapter;
 import org.thoughtcrime.securesms.database.loaders.BucketedThreadMediaLoader;
@@ -71,7 +70,6 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
   private Toolbar      toolbar;
   private TabLayout    tabLayout;
   private ViewPager    viewPager;
-  private MasterSecret masterSecret;
   private Recipient    recipient;
 
   @Override
@@ -81,9 +79,8 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
   }
 
   @Override
-  protected void onCreate(Bundle bundle, @NonNull MasterSecret masterSecret) {
+  protected void onCreate(Bundle bundle, boolean ready) {
     setContentView(R.layout.media_overview_activity);
-    this.masterSecret = masterSecret;
 
     initializeResources();
     initializeToolbar();
@@ -142,7 +139,6 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
 
       Bundle args = new Bundle();
       args.putString(MediaOverviewGalleryFragment.ADDRESS_EXTRA, recipient.getAddress().serialize());
-      args.putParcelable(MediaOverviewGalleryFragment.MASTER_SECRET_EXTRA, masterSecret);
       args.putSerializable(MediaOverviewGalleryFragment.LOCALE_EXTRA, dynamicLanguage.getCurrentLocale());
 
       fragment.setArguments(args);
@@ -165,13 +161,11 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
 
   public static abstract class MediaOverviewFragment<T> extends Fragment implements LoaderManager.LoaderCallbacks<T> {
 
-    public static final String ADDRESS_EXTRA       = "address";
-    public static final String MASTER_SECRET_EXTRA = "master_secret";
-    public static final String LOCALE_EXTRA        = "locale_extra";
+    public static final String ADDRESS_EXTRA = "address";
+    public static final String LOCALE_EXTRA  = "locale_extra";
 
     protected TextView     noMedia;
     protected Recipient    recipient;
-    protected MasterSecret masterSecret;
     protected RecyclerView recyclerView;
     protected Locale       locale;
 
@@ -180,15 +174,12 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
       super.onCreate(bundle);
 
       String       address      = getArguments().getString(ADDRESS_EXTRA);
-      MasterSecret masterSecret = getArguments().getParcelable(MASTER_SECRET_EXTRA);
       Locale       locale       = (Locale)getArguments().getSerializable(LOCALE_EXTRA);
 
       if (address == null)      throw new AssertionError();
-      if (masterSecret == null) throw new AssertionError();
       if (locale == null)       throw new AssertionError();
 
       this.recipient    = Recipient.from(getContext(), Address.fromSerialized(address), true);
-      this.masterSecret = masterSecret;
       this.locale       = locale;
 
       getLoaderManager().initLoader(0, null, this);
@@ -207,7 +198,7 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
       this.noMedia      = ViewUtil.findById(view, R.id.no_images);
       this.gridManager  = new StickyHeaderGridLayoutManager(getResources().getInteger(R.integer.media_overview_cols));
 
-      this.recyclerView.setAdapter(new MediaGalleryAdapter(getContext(), masterSecret, GlideApp.with(this), new BucketedThreadMedia(getContext()), locale, recipient.getAddress()));
+      this.recyclerView.setAdapter(new MediaGalleryAdapter(getContext(), GlideApp.with(this), new BucketedThreadMedia(getContext()), locale, recipient.getAddress()));
       this.recyclerView.setLayoutManager(gridManager);
       this.recyclerView.setHasFixedSize(true);
 
@@ -225,7 +216,7 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
 
     @Override
     public Loader<BucketedThreadMedia> onCreateLoader(int i, Bundle bundle) {
-      return new BucketedThreadMediaLoader(getContext(), masterSecret, recipient.getAddress());
+      return new BucketedThreadMediaLoader(getContext(), recipient.getAddress());
     }
 
     @Override
@@ -248,7 +239,7 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
       View                  view    = inflater.inflate(R.layout.media_overview_documents_fragment, container, false);
-      MediaDocumentsAdapter adapter = new MediaDocumentsAdapter(getContext(), masterSecret, null, locale);
+      MediaDocumentsAdapter adapter = new MediaDocumentsAdapter(getContext(), null, locale);
 
       this.recyclerView  = ViewUtil.findById(view, R.id.recycler_view);
       this.noMedia       = ViewUtil.findById(view, R.id.no_documents);
@@ -263,7 +254,7 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-      return new ThreadMediaLoader(getContext(), masterSecret, recipient.getAddress(), false);
+      return new ThreadMediaLoader(getContext(), recipient.getAddress(), false);
     }
 
     @Override

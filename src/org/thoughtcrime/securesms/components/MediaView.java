@@ -13,17 +13,17 @@ import android.view.Window;
 import android.widget.FrameLayout;
 
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.mms.GlideRequests;
 import org.thoughtcrime.securesms.mms.VideoSlide;
+import org.thoughtcrime.securesms.util.views.Stub;
 import org.thoughtcrime.securesms.video.VideoPlayer;
 
 import java.io.IOException;
 
 public class MediaView extends FrameLayout {
 
-  private ZoomingImageView imageView;
-  private VideoPlayer      videoView;
+  private ZoomingImageView  imageView;
+  private Stub<VideoPlayer> videoView;
 
   public MediaView(@NonNull Context context) {
     super(context);
@@ -50,11 +50,10 @@ public class MediaView extends FrameLayout {
     inflate(getContext(), R.layout.media_view, this);
 
     this.imageView = findViewById(R.id.image);
-    this.videoView = findViewById(R.id.video_player);
+    this.videoView = new Stub<>(findViewById(R.id.video_player_stub));
   }
 
-  public void set(@NonNull MasterSecret masterSecret,
-                  @NonNull GlideRequests glideRequests,
+  public void set(@NonNull GlideRequests glideRequests,
                   @NonNull Window window,
                   @NonNull Uri source,
                   @NonNull String mediaType,
@@ -64,24 +63,28 @@ public class MediaView extends FrameLayout {
   {
     if (mediaType.startsWith("image/")) {
       imageView.setVisibility(View.VISIBLE);
-      videoView.setVisibility(View.GONE);
-      imageView.setImageUri(masterSecret, glideRequests, source, mediaType);
+      if (videoView.resolved()) videoView.get().setVisibility(View.GONE);
+      imageView.setImageUri(glideRequests, source, mediaType);
     } else if (mediaType.startsWith("video/")) {
       imageView.setVisibility(View.GONE);
-      videoView.setVisibility(View.VISIBLE);
-      videoView.setWindow(window);
-      videoView.setVideoSource(masterSecret, new VideoSlide(getContext(), source, size), autoplay);
+      videoView.get().setVisibility(View.VISIBLE);
+      videoView.get().setWindow(window);
+      videoView.get().setVideoSource(new VideoSlide(getContext(), source, size), autoplay);
     } else {
       throw new IOException("Unsupported media type: " + mediaType);
     }
   }
 
   public void pause() {
-    this.videoView.pause();
+    if (this.videoView.resolved()){
+      this.videoView.get().pause();
+    }
   }
 
   public void cleanup() {
     this.imageView.cleanup();
-    this.videoView.cleanup();
+    if (this.videoView.resolved()) {
+      this.videoView.get().cleanup();
+    }
   }
 }

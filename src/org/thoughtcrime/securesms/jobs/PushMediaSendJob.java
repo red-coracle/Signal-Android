@@ -5,7 +5,6 @@ import android.util.Log;
 
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.attachments.Attachment;
-import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MmsDatabase;
@@ -53,16 +52,16 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
   }
 
   @Override
-  public void onPushSend(MasterSecret masterSecret)
+  public void onPushSend()
       throws RetryLaterException, MmsException, NoSuchMessageException,
              UndeliverableMessageException
   {
     ExpiringMessageManager expirationManager = ApplicationContext.getInstance(context).getExpiringMessageManager();
     MmsDatabase            database          = DatabaseFactory.getMmsDatabase(context);
-    OutgoingMediaMessage   message           = database.getOutgoingMessage(masterSecret, messageId);
+    OutgoingMediaMessage   message           = database.getOutgoingMessage(messageId);
 
     try {
-      deliver(masterSecret, message);
+      deliver(message);
       database.markAsSent(messageId, true);
       markAttachmentsUploaded(messageId, message.getAttachments());
 
@@ -97,7 +96,7 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
     notifyMediaMessageDeliveryFailed(context, messageId);
   }
 
-  private void deliver(MasterSecret masterSecret, OutgoingMediaMessage message)
+  private void deliver(OutgoingMediaMessage message)
       throws RetryLaterException, InsecureFallbackApprovalException, UntrustedIdentityException,
              UndeliverableMessageException
   {
@@ -108,8 +107,8 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
     try {
       SignalServiceAddress          address           = getPushAddress(message.getRecipient().getAddress());
       MediaConstraints              mediaConstraints  = MediaConstraints.getPushMediaConstraints();
-      List<Attachment>              scaledAttachments = scaleAttachments(masterSecret, mediaConstraints, message.getAttachments());
-      List<SignalServiceAttachment> attachmentStreams = getAttachmentsFor(masterSecret, scaledAttachments);
+      List<Attachment>              scaledAttachments = scaleAttachments(mediaConstraints, message.getAttachments());
+      List<SignalServiceAttachment> attachmentStreams = getAttachmentsFor(scaledAttachments);
       Optional<byte[]>              profileKey        = getProfileKey(message.getRecipient());
       SignalServiceDataMessage      mediaMessage      = SignalServiceDataMessage.newBuilder()
                                                                                 .withBody(message.getBody())

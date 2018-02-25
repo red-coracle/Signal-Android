@@ -48,7 +48,6 @@ import android.widget.Toast;
 
 import org.thoughtcrime.securesms.components.MediaView;
 import org.thoughtcrime.securesms.components.viewpager.ExtendedOnPageChangedListener;
-import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.MediaDatabase.MediaRecord;
 import org.thoughtcrime.securesms.database.loaders.PagingMediaLoader;
@@ -73,25 +72,26 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
 
   private final static String TAG = MediaPreviewActivity.class.getSimpleName();
 
-  public static final String ADDRESS_EXTRA  = "address";
-  public static final String DATE_EXTRA     = "date";
-  public static final String SIZE_EXTRA     = "size";
-  public static final String OUTGOING_EXTRA = "outgoing";
+  public static final String ADDRESS_EXTRA        = "address";
+  public static final String DATE_EXTRA           = "date";
+  public static final String SIZE_EXTRA           = "size";
+  public static final String OUTGOING_EXTRA       = "outgoing";
+  public static final String LEFT_IS_RECENT_EXTRA = "left_is_recent";
 
   private final DynamicLanguage dynamicLanguage = new DynamicLanguage();
-
-  private MasterSecret masterSecret;
 
   private ViewPager mediaPager;
   private Uri       initialMediaUri;
   private String    initialMediaType;
   private long      initialMediaSize;
   private Recipient conversationRecipient;
+  private boolean   leftIsRecent;
+
+  private int restartItem = -1;
 
   @SuppressWarnings("ConstantConditions")
   @Override
-  protected void onCreate(Bundle bundle, @NonNull MasterSecret masterSecret) {
-    this.masterSecret = masterSecret;
+  protected void onCreate(Bundle bundle, boolean ready) {
     this.setTheme(R.style.TextSecure_DarkTheme);
     dynamicLanguage.onCreate(this);
 
@@ -155,7 +155,7 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
   @Override
   public void onPause() {
     super.onPause();
-    cleanupMedia();
+    restartItem = cleanupMedia();
   }
 
   @Override
@@ -177,6 +177,8 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
     initialMediaUri  = getIntent().getData();
     initialMediaType = getIntent().getType();
     initialMediaSize = getIntent().getLongExtra(SIZE_EXTRA, 0);
+    leftIsRecent     = getIntent().getBooleanExtra(LEFT_IS_RECENT_EXTRA, false);
+    restartItem      = -1;
 
     if (address != null) {
       conversationRecipient = Recipient.from(this, address, true);
@@ -195,15 +197,19 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
     Log.w(TAG, "Loading Part URI: " + initialMediaUri);
 
     if (conversationRecipient != null) {
-      getSupportLoaderManager().initLoader(0, null, this);
+      getSupportLoaderManager().restartLoader(0, null, this);
     } else {
-      mediaPager.setAdapter(new SingleItemPagerAdapter(this, masterSecret, GlideApp.with(this), getWindow(), initialMediaUri, initialMediaType, initialMediaSize));
+      mediaPager.setAdapter(new SingleItemPagerAdapter(this, GlideApp.with(this), getWindow(), initialMediaUri, initialMediaType, initialMediaSize));
     }
   }
 
-  private void cleanupMedia() {
+  private int cleanupMedia() {
+    int restartItem = mediaPager.getCurrentItem();
+
     mediaPager.removeAllViews();
     mediaPager.setAdapter(null);
+
+    return restartItem;
   }
 
   private void showOverview() {
@@ -236,7 +242,7 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
                    .withPermanentDenialDialog(getString(R.string.MediaPreviewActivity_signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied))
                    .onAnyDenied(() -> Toast.makeText(this, R.string.MediaPreviewActivity_unable_to_write_to_external_storage_without_permission, Toast.LENGTH_LONG).show())
                    .onAllGranted(() -> {
-                     SaveAttachmentTask saveTask = new SaveAttachmentTask(MediaPreviewActivity.this, masterSecret);
+                     SaveAttachmentTask saveTask = new SaveAttachmentTask(MediaPreviewActivity.this);
                      long saveDate = (mediaItem.date > 0) ? mediaItem.date : System.currentTimeMillis();
                      saveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new Attachment(mediaItem.uri, mediaItem.type, saveDate, null));
                    })
@@ -287,17 +293,19 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
 
   @Override
   public Loader<Pair<Cursor, Integer>> onCreateLoader(int id, Bundle args) {
-    return new PagingMediaLoader(this, conversationRecipient, initialMediaUri);
+    return new PagingMediaLoader(this, conversationRecipient, initialMediaUri, leftIsRecent);
   }
 
   @Override
   public void onLoadFinished(Loader<Pair<Cursor, Integer>> loader, @Nullable Pair<Cursor, Integer> data) {
     if (data != null) {
       @SuppressWarnings("ConstantConditions")
-      CursorPagerAdapter adapter = new CursorPagerAdapter(this, masterSecret, GlideApp.with(this), getWindow(), data.first, data.second);
+      CursorPagerAdapter adapter = new CursorPagerAdapter(this, GlideApp.with(this), getWindow(), data.first, data.second, leftIsRecent);
       mediaPager.setAdapter(adapter);
       adapter.setActive(true);
-      mediaPager.setCurrentItem(data.second);
+
+      if (restartItem < 0) mediaPager.setCurrentItem(data.second);
+      else                 mediaPager.setCurrentItem(restartItem);
     }
   }
 
@@ -338,7 +346,6 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
 
   private static class SingleItemPagerAdapter extends PagerAdapter implements MediaItemAdapter {
 
-    private final MasterSecret  masterSecret;
     private final GlideRequests glideRequests;
     private final Window        window;
     private final Uri           uri;
@@ -347,11 +354,10 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
 
     private final LayoutInflater inflater;
 
-    SingleItemPagerAdapter(@NonNull Context context, @NonNull MasterSecret masterSecret,
-                           @NonNull GlideRequests glideRequests, @NonNull Window window,
-                           @NonNull Uri uri, @NonNull String mediaType, long size)
+    SingleItemPagerAdapter(@NonNull Context context, @NonNull GlideRequests glideRequests,
+                           @NonNull Window window, @NonNull Uri uri, @NonNull String mediaType,
+                           long size)
     {
-      this.masterSecret  = masterSecret;
       this.glideRequests = glideRequests;
       this.window        = window;
       this.uri           = uri;
@@ -376,7 +382,7 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
       MediaView mediaView = itemView.findViewById(R.id.media_view);
 
       try {
-        mediaView.set(masterSecret, glideRequests, window, uri, mediaType, size, true);
+        mediaView.set(glideRequests, window, uri, mediaType, size, true);
       } catch (IOException e) {
         Log.w(TAG, e);
       }
@@ -410,24 +416,24 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
     private final WeakHashMap<Integer, MediaView> mediaViews = new WeakHashMap<>();
 
     private final Context       context;
-    private final MasterSecret  masterSecret;
     private final GlideRequests glideRequests;
     private final Window        window;
     private final Cursor        cursor;
+    private final boolean       leftIsRecent;
 
     private boolean active;
     private int     autoPlayPosition;
 
-    CursorPagerAdapter(@NonNull Context context, @NonNull MasterSecret masterSecret,
-                       @NonNull GlideRequests glideRequests, @NonNull Window window,
-                       @NonNull Cursor cursor, int autoPlayPosition)
+    CursorPagerAdapter(@NonNull Context context, @NonNull GlideRequests glideRequests,
+                       @NonNull Window window, @NonNull Cursor cursor, int autoPlayPosition,
+                       boolean leftIsRecent)
     {
       this.context          = context.getApplicationContext();
-      this.masterSecret     = masterSecret;
       this.glideRequests    = glideRequests;
       this.window           = window;
       this.cursor           = cursor;
       this.autoPlayPosition = autoPlayPosition;
+      this.leftIsRecent     = leftIsRecent;
     }
 
     public void setActive(boolean active) {
@@ -457,11 +463,11 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
 
       cursor.moveToPosition(cursorPosition);
 
-      MediaRecord mediaRecord = MediaRecord.from(context, masterSecret, cursor);
+      MediaRecord mediaRecord = MediaRecord.from(context, cursor);
 
       try {
         //noinspection ConstantConditions
-        mediaView.set(masterSecret, glideRequests, window, mediaRecord.getAttachment().getDataUri(), mediaRecord.getAttachment().getContentType(), mediaRecord.getAttachment().getSize(), autoplay);
+        mediaView.set(glideRequests, window, mediaRecord.getAttachment().getDataUri(), mediaRecord.getAttachment().getContentType(), mediaRecord.getAttachment().getSize(), autoplay);
       } catch (IOException e) {
         Log.w(TAG, e);
       }
@@ -483,7 +489,7 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
 
     public MediaItem getMediaItemFor(int position) {
       cursor.moveToPosition(getCursorPosition(position));
-      MediaRecord mediaRecord = MediaRecord.from(context, masterSecret, cursor);
+      MediaRecord mediaRecord = MediaRecord.from(context, cursor);
       Address     address     = mediaRecord.getAddress();
 
       if (mediaRecord.getAttachment().getDataUri() == null) throw new AssertionError();
@@ -502,7 +508,8 @@ public class MediaPreviewActivity extends PassphraseRequiredActionBarActivity im
     }
 
     private int getCursorPosition(int position) {
-      return cursor.getCount() - 1 - position;
+      if (leftIsRecent) return position;
+      else              return cursor.getCount() - 1 - position;
     }
   }
 
