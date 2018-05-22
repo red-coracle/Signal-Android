@@ -52,6 +52,7 @@
   <string name="DraftDatabase_Draft_audio_snippet">(audio)</string>
   <string name="DraftDatabase_Draft_video_snippet">(video)</string>
   <string name="DraftDatabase_Draft_location_snippet">(locație)</string>
+  <string name="DraftDatabase_Draft_quote_snippet">(răspuns)</string>
   <!--AttchmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">Nu pot găsi o aplicație pentru selecție media.</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Signal are nevoie de permisiunea pentru spațiul de stocare pentru a putea atașa poze, filme sau audio, dar i-a fost refuzat accesul permanent. Te rog navighează în meniul de setări al aplicației, selectează \"Permisiuni\" și activează \"Spațiu de stocare\".</string>
@@ -84,6 +85,8 @@
   <!--ContactsDatabase-->
   <string name="ContactsDatabase_message_s">Mesaj %s</string>
   <string name="ContactsDatabase_signal_call_s">Apel Signal %s</string>
+  <!--ContactNameEditActivity-->
+  <!--ContactShareEditActivity-->
   <!--ConversationItem-->
   <string name="ConversationItem_error_not_delivered">Nelivrat</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">Am primit un mesaj pentru schimbul de chei, apasă pentru a-l procesa.</string>
@@ -185,6 +188,7 @@
   <string name="ConversationFragment_sms">SMS</string>
   <string name="ConversationFragment_deleting">Se șterge</string>
   <string name="ConversationFragment_deleting_messages">Se șterg mesajele...</string>
+  <string name="ConversationFragment_quoted_message_not_found">Mesajul citat nu a fost găsit</string>
   <!--ConversationListActivity-->
   <string name="ConversationListActivity_there_is_no_browser_installed_on_your_device">Nu există nici un browser instalat pe dispozitivul tău.</string>
   <!--ConversationListFragment-->
@@ -502,6 +506,15 @@ furnizat (%s) este invalid.</string>
   <string name="RingtonePreference_alarm_sound_default">Sunet de alarmă implicit</string>
   <string name="RingtonePreference_add_ringtone_text">Adaugă ton de apel</string>
   <string name="RingtonePreference_unable_to_add_ringtone">Nu am putut adăuga tonul de apel personalizat</string>
+  <!--Search-->
+  <string name="SearchFragment_no_results">Nu s-a găsit nici un rezultat pentru \'1%s\'</string>
+  <string name="SearchFragment_header_contacts">Contacte</string>
+  <string name="SearchFragment_header_messages">Mesaje</string>
+  <!--SharedContactDetailsActivity-->
+  <string name="SharedContactDetailsActivity_invite_to_signal">Invită la Signal</string>
+  <string name="SharedContactDetailsActivity_invite_message">Hai să folosim Signal: %1$s</string>
+  <!--SharedContactView-->
+  <string name="SharedContactView_invite_to_signal">Invită la Signal</string>
   <!--Slide-->
   <string name="Slide_image">Imagine</string>
   <string name="Slide_audio">Audio</string>
@@ -607,6 +620,7 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="MessageNotifier_reply">Răspunde</string>
   <string name="MessageNotifier_pending_signal_messages">Mesaje Signal în așteptare</string>
   <string name="MessageNotifier_you_have_pending_signal_messages">Ai mesaje Signal în așteptare, apasă pentru deschidere și recuperare</string>
+  <string name="MessageNotifier_unknown_contact_message">Contact</string>
   <!--MmsPreferencesFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Răspunsul rapid nu este disponibil cât timp Signal este blocat!</string>
@@ -631,6 +645,9 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="WebRtcCallScreen_new_safety_numbers">Numărul de siguranță pentru conversația ta cu %1$s s-a schimbat.  Asta poate însemna că cineva încearcă să intercepteze comunicația sau că %2$s a reinstalat Signal.</string>
   <string name="WebRtcCallScreen_you_may_wish_to_verify_this_contact">Probabil că dorești să verifici numărul de siguranță pentru acest contact.</string>
   <string name="WebRtcCallScreen_new_safety_number_title">Număr nou de siguranță</string>
+  <string name="WebRtcCallScreen_accept">Acceptă</string>
+  <string name="WebRtcCallScreen_cancel">Anulare</string>
+  <string name="WebRtcCallScreen_end_call">Închide apelul</string>
   <!--WebRtcCallControls-->
   <string name="WebRtcCallControls_tap_to_enable_your_video">Apasă pentru a activa video-ul tău</string>
   <!--attachment_type_selector-->
@@ -701,6 +718,7 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <!--QuoteView-->
   <string name="QuoteView_audio">Audio</string>
   <string name="QuoteView_video">Video</string>
+  <string name="QuoteView_photo">Poză</string>
   <string name="QuoteView_document">Document</string>
   <string name="QuoteView_you">Tu</string>
   <!--conversation_fragment_cab-->
@@ -1037,6 +1055,7 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="conversation_context__menu_delete_message">Şterge mesajul</string>
   <string name="conversation_context__menu_forward_message">Redirecționează mesajul</string>
   <string name="conversation_context__menu_resend_message">Retrimite mesajul</string>
+  <string name="conversation_context__menu_reply_to_message">Răspunde la mesaj</string>
   <!--conversation_context_image-->
   <string name="conversation_context_image__save_attachment">Salvează ataşamentul</string>
   <!--conversation_expiring_off-->
@@ -1171,10 +1190,13 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="ChatsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Signal necesită permisiunea de acces la stocarea externă pentru a putea crea copii de rezervă, dar a fost refuzat permanent. Te rog continuă la setări aplicație, selectează \"Permisiuni\" și activează \"Stocare\". </string>
   <string name="ChatsPreferenceFragment_last_backup_s">Ultima copie de rezervă: %s</string>
   <string name="ChatsPreferenceFragment_in_progress">În curs</string>
+  <string name="LocalBackupJob_creating_backup">Se creează copia de rezervă...</string>
   <string name="ProgressPreference_d_messages_so_far">%d mesaje până acum</string>
   <string name="RegistrationActivity_verify_s">Verifică %s</string>
   <string name="RegistrationActivity_please_enter_the_verification_code_sent_to_s">Te rog introdu codul de verficare trimis la %s.</string>
   <string name="RegistrationActivity_wrong_number">Număr greșit?</string>
+  <string name="RegistrationActivity_call_me_instead">Sună-mă mai bine</string>
+  <string name="RegistrationActivity_available_in">Disponibil în:\u0020</string>
   <string name="BackupUtil_never">Niciodată</string>
   <string name="BackupUtil_unknown">Necunoscut</string>
   <string name="prompt_passphrase_activity__unlock_signal">Deblochează Signal</string>
@@ -1202,10 +1224,10 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="RegistrationActivity_registration_of_this_phone_number_will_be_possible_without_your_registration_lock_pin_after_seven_days_have_passed">Înregistrarea acestui număr de telefon va fi posibilă fără un Cod PIN de Blocare a Înregistrării după 7 zile de când acest număr de telefon a fost activ ultima oară în Signal. Mai ai %d zile rămase.</string>
   <string name="RegistrationActivity_registration_lock_pin">PIN de blocare a înregistrării</string>
   <string name="RegistrationActivity_this_phone_number_has_registration_lock_enabled_please_enter_the_registration_lock_pin">Acest număr de telefon are Blocarea Înregistrării activă. Te rog să introduci Codul PIN de Blocare a Înregistrării.</string>
-  <string name="RegistrationLockDialog_registration_lock_is_enabled_for_your_phone_number">Blocarea Înregistrării e activă pentru numărul tău de telefon. Pentru a te ajuta să îți memorezi Codul PIN de Blocare a Înregistrării, Signal îți va cere să îl confirmi periodic.</string>
+  <string name="RegistrationLockDialog_registration_lock_is_enabled_for_your_phone_number">Blocarea înregistrării e activă pentru numărul tău de telefon. Pentru a te ajuta să îți memorezi Codul PIN de Blocare a înregistrării, Signal îți va cere să îl confirmi periodic.</string>
   <string name="RegistrationLockDialog_i_forgot_my_pin">Mi-am uitat PIN-ul.</string>
   <string name="RegistrationLockDialog_forgotten_pin">PIN uitat ?</string>
-  <string name="RegistrationLockDialog_registration_lock_helps_protect_your_phone_number_from_unauthorized_registration_attempts">Blocarea Înregistrării ajută la protejarea numărului tău de telefon împotriva încercărilor neautorizate de înregistrare. Această facilitate poate fi dezactivată oricând în setările de intimitate ale Signal</string>
+  <string name="RegistrationLockDialog_registration_lock_helps_protect_your_phone_number_from_unauthorized_registration_attempts">Blocarea înregistrării ajută la protejarea numărului tău de telefon împotriva încercărilor neautorizate de înregistrare. Această facilitate poate fi dezactivată oricând în setările de confidențialitate ale Signal</string>
   <string name="RegistrationLockDialog_registration_lock">Blocarea înregistrării</string>
   <string name="RegistrationLockDialog_enable">Activat</string>
   <string name="RegistrationLockDialog_the_registration_lock_pin_must_be_at_least_four_digits">PIN-ul de blocare a înregistrării trebuie să aibe cel puțin 4 cifre.</string>
@@ -1218,5 +1240,6 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="prompt_passphrase_activity__signal_is_locked">Signal este blocat</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">Apasă pentru deblocare</string>
   <string name="RegistrationLockDialog_reminder">Memento:</string>
+  <string name="recipient_preferences__about">Despre</string>
   <!--EOF-->
 </resources>

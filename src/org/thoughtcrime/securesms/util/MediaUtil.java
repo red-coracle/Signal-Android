@@ -3,13 +3,11 @@ package org.thoughtcrime.securesms.util;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
-import android.support.media.ExifInterface;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -46,6 +44,7 @@ public class MediaUtil {
   public static final String AUDIO_AAC         = "audio/aac";
   public static final String AUDIO_UNSPECIFIED = "audio/*";
   public static final String VIDEO_UNSPECIFIED = "video/*";
+  public static final String VCARD             = "text/x-vcard";
 
 
   public static Slide getSlideForAttachment(Context context, Attachment attachment) {
@@ -196,6 +195,10 @@ public class MediaUtil {
 
   public static boolean isVideo(String contentType) {
     return !TextUtils.isEmpty(contentType) && contentType.trim().startsWith("video/");
+  }
+
+  public static boolean isVcard(String contentType) {
+    return !TextUtils.isEmpty(contentType) && contentType.trim().equals(VCARD);
   }
 
   public static boolean isGif(String contentType) {

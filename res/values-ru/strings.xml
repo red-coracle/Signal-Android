@@ -12,7 +12,7 @@
   <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Вы ещё не задали парольную фразу!</string>
   <plurals name="ApplicationPreferencesActivity_messages_per_conversation">
     <item quantity="one">%dсообщение в разговоре</item>
-    <item quantity="few">%dсообщений в разговоре</item>
+    <item quantity="few">%dсообщения в разговоре</item>
     <item quantity="many">%dсообщений в разговоре</item>
     <item quantity="other">%dсообщений в разговоре</item>
   </plurals>
@@ -46,7 +46,7 @@
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">%dминута</item>
-    <item quantity="few">%dминут</item>
+    <item quantity="few">%dминуты</item>
     <item quantity="many">%dминут</item>
     <item quantity="other">%dминут</item>
   </plurals>
@@ -55,6 +55,7 @@
   <string name="DraftDatabase_Draft_audio_snippet">(аудио)</string>
   <string name="DraftDatabase_Draft_video_snippet">(видео)</string>
   <string name="DraftDatabase_Draft_location_snippet">(место)</string>
+  <string name="DraftDatabase_Draft_quote_snippet">(ответ)</string>
   <!--AttchmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">Не найдено приложение для выбора медиа-файлов.</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Signal требуется разрешение на доступ к хранилищу для возможности прирепления фото, видео и аудио, но оно было вами отклонено. Чтобы предоставить разрешение вручную, перейдите Настройки, выберите Приложения, найдите Signal, затем выберите Разрешения и включите Хранилище.</string>
@@ -87,6 +88,8 @@
   <!--ContactsDatabase-->
   <string name="ContactsDatabase_message_s">Сообщение %s</string>
   <string name="ContactsDatabase_signal_call_s">Позвонить через Signal на %s</string>
+  <!--ContactNameEditActivity-->
+  <!--ContactShareEditActivity-->
   <!--ConversationItem-->
   <string name="ConversationItem_error_not_delivered">Не доставлено</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">Получено сообщение обмена ключами. Нажмите, чтобы его обработать.</string>
@@ -196,6 +199,7 @@
   <string name="ConversationFragment_sms">SMS</string>
   <string name="ConversationFragment_deleting">Удаление</string>
   <string name="ConversationFragment_deleting_messages">Удаляем сообщения...</string>
+  <string name="ConversationFragment_quoted_message_not_found">Цитируемое сообщение не найдено</string>
   <!--ConversationListActivity-->
   <string name="ConversationListActivity_there_is_no_browser_installed_on_your_device">На вашем устройстве не установлен браузер.</string>
   <!--ConversationListFragment-->
@@ -516,6 +520,15 @@
   <string name="RingtonePreference_alarm_sound_default">Звуковой сигнал по умолчанию</string>
   <string name="RingtonePreference_add_ringtone_text">Добавить мелодию звонка</string>
   <string name="RingtonePreference_unable_to_add_ringtone">Не удается добавить мелодию звонка</string>
+  <!--Search-->
+  <string name="SearchFragment_no_results">Результаты не найдены для \'%s\'</string>
+  <string name="SearchFragment_header_contacts">Контакты</string>
+  <string name="SearchFragment_header_messages">Сообщения</string>
+  <!--SharedContactDetailsActivity-->
+  <string name="SharedContactDetailsActivity_invite_to_signal">Пригласить в Signal</string>
+  <string name="SharedContactDetailsActivity_invite_message">Давайте перейдём на Signal: %1$s</string>
+  <!--SharedContactView-->
+  <string name="SharedContactView_invite_to_signal">Пригласить в Signal</string>
   <!--Slide-->
   <string name="Slide_image">Изображение</string>
   <string name="Slide_audio">Аудио</string>
@@ -623,6 +636,7 @@
   <string name="MessageNotifier_reply">Ответить</string>
   <string name="MessageNotifier_pending_signal_messages">Неполученные сообщения</string>
   <string name="MessageNotifier_you_have_pending_signal_messages">У вас есть неполученные сообщения в Signal. Нажмите, чтобы открыть приложение и получить их.</string>
+  <string name="MessageNotifier_unknown_contact_message">Контакт</string>
   <!--MmsPreferencesFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Быстрые ответы недоступны, когда Signal заблокирован!</string>
@@ -647,6 +661,9 @@
   <string name="WebRtcCallScreen_new_safety_numbers">Код безопасности вашего разговора с %1$s изменился. Это может означать, что кто-то пытается перехватить вашу переписку и звонки, или что %2$s просто переустановил(а) Signal.</string>
   <string name="WebRtcCallScreen_you_may_wish_to_verify_this_contact">Возможно, вам стоит подтвердить код безопасности с этим контактом.</string>
   <string name="WebRtcCallScreen_new_safety_number_title">Новый код безопасности</string>
+  <string name="WebRtcCallScreen_accept">Принять</string>
+  <string name="WebRtcCallScreen_cancel">Отмена</string>
+  <string name="WebRtcCallScreen_end_call">Завершить</string>
   <!--WebRtcCallControls-->
   <string name="WebRtcCallControls_tap_to_enable_your_video">Нажмите для активации видео</string>
   <!--attachment_type_selector-->
@@ -717,6 +734,8 @@
   <!--QuoteView-->
   <string name="QuoteView_audio">Аудио</string>
   <string name="QuoteView_video">Видео</string>
+  <string name="QuoteView_photo">Фото</string>
+  <string name="QuoteView_document">Документ</string>
   <string name="QuoteView_you">Вы</string>
   <!--conversation_fragment_cab-->
   <string name="conversation_fragment_cab__batch_selection_mode">Выбрать несколько</string>
@@ -1059,6 +1078,7 @@
   <string name="conversation_context__menu_delete_message">Удалить сообщение</string>
   <string name="conversation_context__menu_forward_message">Переслать сообщение</string>
   <string name="conversation_context__menu_resend_message">Отправить заново</string>
+  <string name="conversation_context__menu_reply_to_message">Ответ на сообщение</string>
   <!--conversation_context_image-->
   <string name="conversation_context_image__save_attachment">Сохранить вложение</string>
   <!--conversation_expiring_off-->
@@ -1194,10 +1214,13 @@
   <string name="ChatsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Signal требуется разрешение на доступ к хранилищу для создания резервных копий, но оно было вами отклонено. Чтобы предоставить разрешение вручную, перейдите Настройки, выберите Приложения, найдите Signal, затем выберите Разрешения и включите Хранилище.</string>
   <string name="ChatsPreferenceFragment_last_backup_s">Последнее резервное копирование: %s</string>
   <string name="ChatsPreferenceFragment_in_progress">В процессе</string>
+  <string name="LocalBackupJob_creating_backup">Создание резервной копии...</string>
   <string name="ProgressPreference_d_messages_so_far">еще %d сообщений</string>
   <string name="RegistrationActivity_verify_s">Подтвердить %s</string>
   <string name="RegistrationActivity_please_enter_the_verification_code_sent_to_s">Пожалуйста, введите проверочный код, отправленный на %s.</string>
   <string name="RegistrationActivity_wrong_number">Неправильный номер?</string>
+  <string name="RegistrationActivity_call_me_instead">Позвонить мне вместо этого</string>
+  <string name="RegistrationActivity_available_in">Доступно в:\u0020</string>
   <string name="BackupUtil_never">Никогда</string>
   <string name="BackupUtil_unknown">Неизвестен</string>
   <string name="prompt_passphrase_activity__unlock_signal">Разблокировать Signal</string>
@@ -1241,5 +1264,6 @@
   <string name="prompt_passphrase_activity__signal_is_locked">Signal заблокирован</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">КОСНИТЕСЬ, ЧТОБЫ РАЗБЛОКИРОВАТЬ</string>
   <string name="RegistrationLockDialog_reminder">Напоминание:</string>
+  <string name="recipient_preferences__about">О Signal</string>
   <!--EOF-->
 </resources>

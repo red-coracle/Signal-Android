@@ -46,6 +46,7 @@
   <string name="DraftDatabase_Draft_audio_snippet">（音訊）</string>
   <string name="DraftDatabase_Draft_video_snippet">（影片）</string>
   <string name="DraftDatabase_Draft_location_snippet">（位置）</string>
+  <string name="DraftDatabase_Draft_quote_snippet">（回覆）</string>
   <!--AttchmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">找不到合適的應用程式來選擇媒體檔案。</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Signal 需要\"儲存空間\"的權限以存取照片、影片或聲音檔。但是現在被設定為永久拒絕存取。請到應用程式設定中，選取\"權限\"，並啟用\"儲存空間\"的權限。</string>
@@ -78,6 +79,8 @@
   <!--ContactsDatabase-->
   <string name="ContactsDatabase_message_s">%s 則訊息</string>
   <string name="ContactsDatabase_signal_call_s">Signal 通話 %s</string>
+  <!--ContactNameEditActivity-->
+  <!--ContactShareEditActivity-->
   <!--ConversationItem-->
   <string name="ConversationItem_error_not_delivered">未送達</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">接收到金鑰交換訊息，按此開始處理。</string>
@@ -163,6 +166,7 @@
   <string name="ConversationFragment_sms">簡訊</string>
   <string name="ConversationFragment_deleting">正在刪除</string>
   <string name="ConversationFragment_deleting_messages">正在刪除訊息...</string>
+  <string name="ConversationFragment_quoted_message_not_found">未找到被引用的訊息</string>
   <!--ConversationListActivity-->
   <string name="ConversationListActivity_there_is_no_browser_installed_on_your_device">您的裝置上未安裝瀏覽器。</string>
   <!--ConversationListFragment-->
@@ -467,6 +471,15 @@
   <string name="RingtonePreference_alarm_sound_default">預設鬧鐘鈴聲</string>
   <string name="RingtonePreference_add_ringtone_text">加入鈴聲</string>
   <string name="RingtonePreference_unable_to_add_ringtone">無法加入自訂的鈴聲</string>
+  <!--Search-->
+  <string name="SearchFragment_no_results">沒有找到「%s」的結果</string>
+  <string name="SearchFragment_header_contacts">聯絡人</string>
+  <string name="SearchFragment_header_messages">訊息</string>
+  <!--SharedContactDetailsActivity-->
+  <string name="SharedContactDetailsActivity_invite_to_signal">邀請至 Signal</string>
+  <string name="SharedContactDetailsActivity_invite_message">讓我們切換到 Signal：%1$s</string>
+  <!--SharedContactView-->
+  <string name="SharedContactView_invite_to_signal">邀請至 Signal</string>
   <!--Slide-->
   <string name="Slide_image">圖片</string>
   <string name="Slide_audio">音訊</string>
@@ -574,6 +587,7 @@
   <string name="MessageNotifier_reply">回覆</string>
   <string name="MessageNotifier_pending_signal_messages">擱置的 Signal 訊息</string>
   <string name="MessageNotifier_you_have_pending_signal_messages">你有擱置的 Signal 訊息，輕觸打開及取得訊息</string>
+  <string name="MessageNotifier_unknown_contact_message">聯絡人</string>
   <!--MmsPreferencesFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">當 Signal 鎖定時無法使用快速回覆！</string>
@@ -598,6 +612,9 @@
   <string name="WebRtcCallScreen_new_safety_numbers">%1$s 的安全碼產生變動。這有可能是有不明人士試圖攔截您的通訊／對話內容，或是因為 %2$s 重新安裝 Signal。</string>
   <string name="WebRtcCallScreen_you_may_wish_to_verify_this_contact">您可能希望驗證這名聯絡人的安全碼。</string>
   <string name="WebRtcCallScreen_new_safety_number_title">新的安全碼</string>
+  <string name="WebRtcCallScreen_accept">接受</string>
+  <string name="WebRtcCallScreen_cancel">取消</string>
+  <string name="WebRtcCallScreen_end_call">結束通話</string>
   <!--WebRtcCallControls-->
   <string name="WebRtcCallControls_tap_to_enable_your_video">輕觸開啟你的視訊</string>
   <!--attachment_type_selector-->
@@ -668,6 +685,7 @@
   <!--QuoteView-->
   <string name="QuoteView_audio">音訊</string>
   <string name="QuoteView_video">影片</string>
+  <string name="QuoteView_photo">照片</string>
   <string name="QuoteView_document">文件</string>
   <string name="QuoteView_you">您</string>
   <!--conversation_fragment_cab-->
@@ -987,6 +1005,7 @@
   <string name="conversation_context__menu_delete_message">刪除訊息</string>
   <string name="conversation_context__menu_forward_message">轉寄訊息</string>
   <string name="conversation_context__menu_resend_message">重送訊息</string>
+  <string name="conversation_context__menu_reply_to_message">回覆訊息</string>
   <!--conversation_context_image-->
   <string name="conversation_context_image__save_attachment">另存附件檔案</string>
   <!--conversation_expiring_off-->
@@ -1119,10 +1138,13 @@
   <string name="ChatsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">為了要建立備份，Signal 需要外部空間的權限，但是已被永久拒絕。請到應用程式設定，選擇「權限」及開啟「儲存」。</string>
   <string name="ChatsPreferenceFragment_last_backup_s">上一次備份︰%s</string>
   <string name="ChatsPreferenceFragment_in_progress">處理中</string>
+  <string name="LocalBackupJob_creating_backup">正在建立備份...</string>
   <string name="ProgressPreference_d_messages_so_far">目前有 %d 則訊息</string>
   <string name="RegistrationActivity_verify_s">驗證 %s</string>
   <string name="RegistrationActivity_please_enter_the_verification_code_sent_to_s">請輸入傳送給 %s 的驗證碼</string>
   <string name="RegistrationActivity_wrong_number">錯誤的號碼？</string>
+  <string name="RegistrationActivity_call_me_instead">改為撥電話給我</string>
+  <string name="RegistrationActivity_available_in">可用於：\u0020</string>
   <string name="BackupUtil_never">永不</string>
   <string name="BackupUtil_unknown">未知</string>
   <string name="prompt_passphrase_activity__unlock_signal">解鎖 Signal</string>
@@ -1166,5 +1188,6 @@
   <string name="prompt_passphrase_activity__signal_is_locked">Signal 已被鎖定</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">點擊來解鎖</string>
   <string name="RegistrationLockDialog_reminder">提醒：</string>
+  <string name="recipient_preferences__about">關於</string>
   <!--EOF-->
 </resources>

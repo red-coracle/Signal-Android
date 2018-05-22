@@ -26,6 +26,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -49,9 +51,13 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import org.thoughtcrime.securesms.ConversationAdapter.HeaderViewHolder;
 import org.thoughtcrime.securesms.ConversationAdapter.ItemClickListener;
+import org.thoughtcrime.securesms.contactshare.ContactUtil;
+import org.thoughtcrime.securesms.contactshare.SharedContactDetailsActivity;
+import org.thoughtcrime.securesms.contactshare.Contact;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MmsSmsDatabase;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
@@ -59,6 +65,7 @@ import org.thoughtcrime.securesms.database.loaders.ConversationLoader;
 import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
+import org.thoughtcrime.securesms.jobs.DirectoryRefreshJob;
 import org.thoughtcrime.securesms.mms.GlideApp;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
 import org.thoughtcrime.securesms.mms.Slide;
@@ -66,6 +73,7 @@ import org.thoughtcrime.securesms.profiles.UnknownSenderView;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.sms.OutgoingTextMessage;
+import org.thoughtcrime.securesms.util.CommunicationActions;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask.Attachment;
 import org.thoughtcrime.securesms.util.StickyHeaderDecoration;
@@ -83,9 +91,12 @@ import java.util.Set;
 public class ConversationFragment extends Fragment
   implements LoaderManager.LoaderCallbacks<Cursor>
 {
-  private static final String TAG = ConversationFragment.class.getSimpleName();
+  private static final String TAG       = ConversationFragment.class.getSimpleName();
+  private static final String KEY_LIMIT = "limit";
 
-  private static final long   PARTIAL_CONVERSATION_LIMIT = 500L;
+  private static final int PARTIAL_CONVERSATION_LIMIT = 500;
+  private static final int SCROLL_ANIMATION_THRESHOLD = 50;
+  private static final int CODE_ADD_EDIT_CONTACT      = 77;
 
   private final ActionModeCallback actionModeCallback     = new ActionModeCallback();
   private final ItemClickListener  selectionClickListener = new ConversationFragmentItemClickListener();
@@ -95,12 +106,16 @@ public class ConversationFragment extends Fragment
   private Recipient                   recipient;
   private long                        threadId;
   private long                        lastSeen;
+  private int                         startingPosition;
+  private int                         previousOffset;
   private boolean                     firstLoad;
+  private long                        loaderStartTime;
   private ActionMode                  actionMode;
   private Locale                      locale;
   private RecyclerView                list;
   private RecyclerView.ItemDecoration lastSeenDecoration;
-  private View                        loadMoreView;
+  private ViewSwitcher                topLoadMoreView;
+  private ViewSwitcher                bottomLoadMoreView;
   private UnknownSenderView           unknownSenderView;
   private View                        composeDivider;
   private View                        scrollToBottomButton;
@@ -127,12 +142,10 @@ public class ConversationFragment extends Fragment
     list.setLayoutManager(layoutManager);
     list.setItemAnimator(null);
 
-    loadMoreView = inflater.inflate(R.layout.load_more_header, container, false);
-    loadMoreView.setOnClickListener(v -> {
-      Bundle args = new Bundle();
-      args.putLong("limit", 0);
-      getLoaderManager().restartLoader(0, args, ConversationFragment.this);
-    });
+    topLoadMoreView    = (ViewSwitcher) inflater.inflate(R.layout.load_more_header, container, false);
+    bottomLoadMoreView = (ViewSwitcher) inflater.inflate(R.layout.load_more_header, container, false);
+    initializeLoadMoreView(topLoadMoreView);
+    initializeLoadMoreView(bottomLoadMoreView);
 
     return view;
   }
@@ -181,6 +194,7 @@ public class ConversationFragment extends Fragment
     this.recipient         = Recipient.from(getActivity(), getActivity().getIntent().getParcelableExtra(ConversationActivity.ADDRESS_EXTRA), true);
     this.threadId          = this.getActivity().getIntent().getLongExtra(ConversationActivity.THREAD_ID_EXTRA, -1);
     this.lastSeen          = this.getActivity().getIntent().getLongExtra(ConversationActivity.LAST_SEEN_EXTRA, -1);
+    this.startingPosition  = this.getActivity().getIntent().getIntExtra(ConversationActivity.STARTING_POSITION_EXTRA, -1);
     this.firstLoad         = true;
     this.unknownSenderView = new UnknownSenderView(getActivity(), recipient, threadId);
 
@@ -197,6 +211,16 @@ public class ConversationFragment extends Fragment
       setLastSeen(lastSeen);
       getLoaderManager().restartLoader(0, Bundle.EMPTY, this);
     }
+  }
+
+  private void initializeLoadMoreView(ViewSwitcher loadMoreView) {
+    loadMoreView.setOnClickListener(v -> {
+      Bundle args = new Bundle();
+      args.putInt(KEY_LIMIT, 0);
+      getLoaderManager().restartLoader(0, args, ConversationFragment.this);
+      loadMoreView.showNext();
+      loadMoreView.setOnClickListener(null);
+    });
   }
 
   private void setCorrectMenuVisibility(Menu menu) {
@@ -270,7 +294,11 @@ public class ConversationFragment extends Fragment
   }
 
   public void scrollToBottom() {
-    list.smoothScrollToPosition(0);
+    if (((LinearLayoutManager) list.getLayoutManager()).findFirstVisibleItemPosition() < SCROLL_ANIMATION_THRESHOLD) {
+      list.smoothScrollToPosition(0);
+    } else {
+      list.scrollToPosition(0);
+    }
   }
 
   public void setLastSeen(long lastSeen) {
@@ -416,43 +444,76 @@ public class ConversationFragment extends Fragment
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    return new ConversationLoader(getActivity(), threadId, args.getLong("limit", PARTIAL_CONVERSATION_LIMIT), lastSeen);
+    Log.w(TAG, "onCreateLoader");
+    loaderStartTime = System.currentTimeMillis();
+
+    int limit  = args.getInt(KEY_LIMIT, PARTIAL_CONVERSATION_LIMIT);
+    int offset = 0;
+    if (limit != 0 && startingPosition > limit) {
+      offset = Math.max(startingPosition - (limit / 2) + 1, 0);
+      startingPosition -= offset - 1;
+    }
+
+    return new ConversationLoader(getActivity(), threadId, offset, limit, lastSeen);
   }
 
   @Override
   public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-    Log.w(TAG, "onLoadFinished");
+    long loadTime = System.currentTimeMillis() - loaderStartTime;
+    int  count    = cursor.getCount();
+    Log.w(TAG, "onLoadFinished - took " + loadTime + " ms to load a cursor of size " + count);
     ConversationLoader loader = (ConversationLoader)cursorLoader;
 
-    if (list.getAdapter() != null) {
-      if (cursor.getCount() >= PARTIAL_CONVERSATION_LIMIT && loader.hasLimit()) {
-        getListAdapter().setFooterView(loadMoreView);
+    ConversationAdapter adapter = getListAdapter();
+    if (adapter == null) {
+      return;
+    }
+
+    if (cursor.getCount() >= PARTIAL_CONVERSATION_LIMIT && loader.hasLimit()) {
+      adapter.setFooterView(topLoadMoreView);
+    } else {
+      adapter.setFooterView(null);
+    }
+
+    if (lastSeen == -1) {
+      setLastSeen(loader.getLastSeen());
+    }
+
+    if (!loader.hasSent() && !recipient.isSystemContact() && !recipient.isGroupRecipient() && recipient.getRegistered() == RecipientDatabase.RegisteredState.REGISTERED) {
+      adapter.setHeaderView(unknownSenderView);
+    } else {
+      adapter.setHeaderView(null);
+    }
+
+    if (loader.hasOffset()) {
+      adapter.setHeaderView(bottomLoadMoreView);
+      previousOffset = loader.getOffset();
+    }
+
+    adapter.changeCursor(cursor);
+
+    int lastSeenPosition = adapter.findLastSeenPosition(lastSeen);
+
+    if (firstLoad) {
+      if (startingPosition >= 0) {
+        scrollToStartingPosition(startingPosition);
       } else {
-        getListAdapter().setFooterView(null);
-      }
-
-      if (lastSeen == -1) {
-        setLastSeen(loader.getLastSeen());
-      }
-
-      if (!loader.hasSent() && !recipient.isSystemContact() && !recipient.isGroupRecipient() && recipient.getRegistered() == RecipientDatabase.RegisteredState.REGISTERED) {
-        getListAdapter().setHeaderView(unknownSenderView);
-      } else {
-        getListAdapter().setHeaderView(null);
-      }
-
-      getListAdapter().changeCursor(cursor);
-
-      int lastSeenPosition = getListAdapter().findLastSeenPosition(lastSeen);
-
-      if (firstLoad) {
         scrollToLastSeenPosition(lastSeenPosition);
-        firstLoad = false;
       }
+      firstLoad = false;
+    } else if (previousOffset > 0) {
+      int scrollPosition = previousOffset + ((LinearLayoutManager) list.getLayoutManager()).findFirstVisibleItemPosition();
+      scrollPosition = Math.min(scrollPosition, count - 1);
 
-      if (lastSeenPosition <= 0) {
-        setLastSeen(0);
-      }
+      View firstView = list.getLayoutManager().getChildAt(scrollPosition);
+      int pixelOffset = (firstView == null) ? 0 : (firstView.getBottom() - list.getPaddingBottom());
+
+      ((LinearLayoutManager) list.getLayoutManager()).scrollToPositionWithOffset(scrollPosition, pixelOffset);
+      previousOffset = 0;
+    }
+
+    if (lastSeenPosition <= 0) {
+      setLastSeen(0);
     }
   }
 
@@ -491,6 +552,13 @@ public class ConversationFragment extends Fragment
     if (getListAdapter() != null) {
       getListAdapter().releaseFastRecord(id);
     }
+  }
+
+  private void scrollToStartingPosition(final int startingPosition) {
+    list.post(() -> {
+      list.getLayoutManager().scrollToPosition(startingPosition);
+      getListAdapter().pulseHighlightItem(startingPosition);
+    });
   }
 
   private void scrollToLastSeenPosition(final int lastSeenPosition) {
@@ -620,12 +688,24 @@ public class ConversationFragment extends Fragment
       new AsyncTask<Void, Void, Integer>() {
         @Override
         protected Integer doInBackground(Void... voids) {
+          if (getActivity() == null || getActivity().isFinishing()) {
+            Log.w(TAG, "Task to retrieve quote position started after the fragment was detached.");
+            return 0;
+          }
           return DatabaseFactory.getMmsSmsDatabase(getContext())
-                                .getQuotedMessagePosition(threadId, messageRecord.getQuote().getId(), messageRecord.getQuote().getAuthor());
+                                .getQuotedMessagePosition(threadId,
+                                                          messageRecord.getQuote().getId(),
+                                                          messageRecord.getQuote().getAuthor(),
+                                                          getListAdapter().getItemCount());
         }
 
         @Override
         protected void onPostExecute(Integer position) {
+          if (getActivity() == null || getActivity().isFinishing()) {
+            Log.w(TAG, "Task to retrieve quote position finished after the fragment was detached.");
+            return;
+          }
+
           if (position >= 0 && position < getListAdapter().getItemCount()) {
             list.scrollToPosition(position);
             getListAdapter().pulseHighlightItem(position);
@@ -639,6 +719,60 @@ public class ConversationFragment extends Fragment
           }
         }
       }.execute();
+    }
+
+    @Override
+    public void onSharedContactDetailsClicked(@NonNull Contact contact, @NonNull View avatarTransitionView) {
+      if (getContext() != null && getActivity() != null) {
+        Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), avatarTransitionView, "avatar").toBundle();
+        ActivityCompat.startActivity(getActivity(), SharedContactDetailsActivity.getIntent(getContext(), contact), bundle);
+      }
+    }
+
+    @Override
+    public void onAddToContactsClicked(@NonNull Contact contactWithAvatar) {
+      if (getContext() != null) {
+        new AsyncTask<Void, Void, Intent>() {
+          @Override
+          protected Intent doInBackground(Void... voids) {
+            return ContactUtil.buildAddToContactsIntent(getContext(), contactWithAvatar);
+          }
+
+          @Override
+          protected void onPostExecute(Intent intent) {
+            startActivityForResult(intent, CODE_ADD_EDIT_CONTACT);
+          }
+        }.execute();
+      }
+    }
+
+    @Override
+    public void onMessageSharedContactClicked(@NonNull List<Recipient> choices) {
+      if (getContext() == null) return;
+
+      ContactUtil.selectRecipientThroughDialog(getContext(), choices, locale, recipient -> {
+        CommunicationActions.startConversation(getContext(), recipient, null);
+      });
+    }
+
+    @Override
+    public void onInviteSharedContactClicked(@NonNull List<Recipient> choices) {
+      if (getContext() == null) return;
+
+      ContactUtil.selectRecipientThroughDialog(getContext(), choices, locale, recipient -> {
+        CommunicationActions.composeSmsThroughDefaultApp(getContext(), recipient.getAddress(), getString(R.string.InviteActivity_lets_switch_to_signal, "https://sgnl.link/1KpeYmF"));
+      });
+    }
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == CODE_ADD_EDIT_CONTACT && getContext() != null) {
+      ApplicationContext.getInstance(getContext().getApplicationContext())
+                        .getJobManager()
+                        .add(new DirectoryRefreshJob(getContext().getApplicationContext(), false));
     }
   }
 
