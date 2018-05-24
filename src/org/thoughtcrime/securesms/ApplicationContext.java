@@ -151,7 +151,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
   }
 
   private void initializeExpiringMessageManager() {
-    this.expiringMessageManager = new ExpiringMessageManager(this);
+    //this.expiringMessageManager = new ExpiringMessageManager(this);
   }
 
   private void initializePeriodicTasks() {
