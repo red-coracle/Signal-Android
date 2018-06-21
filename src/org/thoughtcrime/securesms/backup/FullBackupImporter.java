@@ -5,7 +5,9 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.util.Pair;
 
 import net.sqlcipher.database.SQLiteDatabase;
@@ -20,6 +22,7 @@ import org.thoughtcrime.securesms.crypto.AttachmentSecret;
 import org.thoughtcrime.securesms.crypto.ModernEncryptingPartOutputStream;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.AttachmentDatabase;
+import org.thoughtcrime.securesms.database.SearchDatabase;
 import org.thoughtcrime.securesms.profiles.AvatarHelper;
 import org.thoughtcrime.securesms.util.Conversions;
 import org.thoughtcrime.securesms.util.Util;
@@ -36,6 +39,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,6 +66,8 @@ public class FullBackupImporter extends FullBackupBase {
     try {
       db.beginTransaction();
 
+      dropAllTables(db);
+
       BackupFrame frame;
 
       while (!(frame = inputStream.readFrame()).getEnd()) {
@@ -87,6 +93,14 @@ public class FullBackupImporter extends FullBackupBase {
   }
 
   private static void processStatement(@NonNull SQLiteDatabase db, SqlStatement statement) {
+    boolean isForSmsFtsSecretTable = statement.getStatement().contains(SearchDatabase.SMS_FTS_TABLE_NAME + "_");
+    boolean isForMmsFtsSecretTable = statement.getStatement().contains(SearchDatabase.MMS_FTS_TABLE_NAME + "_");
+
+    if (isForSmsFtsSecretTable || isForMmsFtsSecretTable) {
+      Log.i(TAG, "Ignoring import for statement: " + statement.getStatement());
+      return;
+    }
+
     List<Object> parameters = new LinkedList<>();
 
     for (SqlStatement.SqlParameter parameter : statement.getParametersList()) {
@@ -129,6 +143,19 @@ public class FullBackupImporter extends FullBackupBase {
   private static void processPreference(@NonNull Context context, SharedPreference preference) {
     SharedPreferences preferences = context.getSharedPreferences(preference.getFile(), 0);
     preferences.edit().putString(preference.getKey(), preference.getValue()).commit();
+  }
+
+  private static void dropAllTables(@NonNull SQLiteDatabase db) {
+    try (Cursor cursor = db.rawQuery("SELECT name, type FROM sqlite_master", null)) {
+      while (cursor != null && cursor.moveToNext()) {
+        String name = cursor.getString(0);
+        String type = cursor.getString(1);
+
+        if ("table".equals(type)) {
+          db.execSQL("DROP TABLE IF EXISTS " + name);
+        }
+      }
+    }
   }
 
   private static class BackupRecordInputStream extends BackupStream {

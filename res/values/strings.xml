@@ -584,6 +584,9 @@
     <string name="RingtonePreference_add_ringtone_text">Add ringtone</string>
     <string name="RingtonePreference_unable_to_add_ringtone">Unable to add custom ringtone</string>
 
+    <!-- ScribbleActivity -->
+    <string name="ScribbleActivity_save_failure">Failed to save image changes</string>
+
     <!-- Search -->
     <string name="SearchFragment_begin_searching">Begin typing to search for conversations, messages, and contacts.</string>
     <string name="SearchFragment_no_results">No results found for \'%s\'</string>
@@ -1361,6 +1364,7 @@
     <string name="reminder_header_invite_text">Take your conversation with %1$s to the next level.</string>
     <string name="reminder_header_share_title">Invite your friends!</string>
     <string name="reminder_header_share_text">The more friends use Signal, the better it gets.</string>
+    <string name="reminder_header_service_outage_text">Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.</string>
 
     <!-- media_preview -->
     <string name="media_preview__save_title">Save</string>
