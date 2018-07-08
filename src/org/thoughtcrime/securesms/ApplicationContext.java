@@ -29,6 +29,10 @@ import org.thoughtcrime.securesms.crypto.PRNGFixes;
 import org.thoughtcrime.securesms.dependencies.AxolotlStorageModule;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.dependencies.SignalCommunicationModule;
+import org.thoughtcrime.securesms.jobmanager.JobManager;
+import org.thoughtcrime.securesms.jobmanager.dependencies.DependencyInjector;
+import org.thoughtcrime.securesms.jobmanager.persistence.JavaJobSerializer;
+import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirementProvider;
 import org.thoughtcrime.securesms.jobs.CreateSignedPreKeyJob;
 import org.thoughtcrime.securesms.jobs.GcmRefreshJob;
 import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirementProvider;
@@ -45,10 +49,6 @@ import org.webrtc.PeerConnectionFactory;
 import org.webrtc.PeerConnectionFactory.InitializationOptions;
 import org.webrtc.voiceengine.WebRtcAudioManager;
 import org.webrtc.voiceengine.WebRtcAudioUtils;
-import org.whispersystems.jobqueue.JobManager;
-import org.whispersystems.jobqueue.dependencies.DependencyInjector;
-import org.whispersystems.jobqueue.persistence.JavaJobSerializer;
-import org.whispersystems.jobqueue.requirements.NetworkRequirementProvider;
 import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
 import org.whispersystems.libsignal.util.AndroidSignalProtocolLogger;
 
@@ -171,6 +171,9 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
         add("Pixel XL");
         add("Moto G5");
         add("Moto G (5S) Plus");
+        add("Moto G4");
+        add("TA-1053");
+        add("Mi A1");
       }};
 
       Set<String> OPEN_SL_ES_WHITELIST = new HashSet<String>() {{

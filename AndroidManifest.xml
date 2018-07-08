@@ -120,9 +120,6 @@
     <activity android:name=".CountrySelectionActivity"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
 
-    <activity android:name=".ImportExportActivity"
-              android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
-
     <activity android:name=".InviteActivity"
               android:theme="@style/TextSecure.HighlightTheme"
               android:windowSoftInputMode="stateHidden"
@@ -526,6 +523,9 @@
         </intent-filter>
     </receiver>
 
+    <receiver android:name=".service.ExpirationListener" />
+
+    <receiver android:name=".jobmanager.requirements.BackoffReceiver" />
 
     <provider android:name=".providers.PartProvider"
               android:grantUriPermissions="true"
