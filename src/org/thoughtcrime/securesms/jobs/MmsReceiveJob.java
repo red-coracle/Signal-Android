@@ -1,7 +1,7 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 import android.util.Pair;
 
 import com.google.android.mms.pdu_alt.GenericPdu;
@@ -60,7 +60,7 @@ public class MmsReceiveJob extends ContextJob {
       MmsDatabase database                = DatabaseFactory.getMmsDatabase(context);
       Pair<Long, Long> messageAndThreadId = database.insertMessageInbox((NotificationInd)pdu, subscriptionId);
 
-      Log.w(TAG, "Inserted received MMS notification...");
+      Log.i(TAG, "Inserted received MMS notification...");
 
       ApplicationContext.getInstance(context)
                         .getJobManager()

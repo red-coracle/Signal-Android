@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.thoughtcrime.securesms.ApplicationContext;
@@ -18,6 +17,7 @@ import org.thoughtcrime.securesms.events.PartProgressEvent;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
 import org.thoughtcrime.securesms.jobmanager.requirements.NetworkBackoffRequirement;
 import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirement;
+import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mms.DecryptableStreamUriLoader;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
 import org.thoughtcrime.securesms.mms.PartAuthority;
@@ -70,14 +70,18 @@ public abstract class PushSendJob extends SendJob {
       throw new TextSecureExpiredException("Too many signed prekey rotation failures");
     }
 
+    Log.i(TAG, "Starting message send attempt");
     onPushSend();
+    Log.i(TAG, "Message send completed");
   }
 
   @Override
   public void onRetry() {
     super.onRetry();
+    Log.i(TAG, "onRetry()");
 
     if (getRunIteration() > 1) {
+      Log.i(TAG, "Scheduling service outage detection job.");
       ApplicationContext.getInstance(context).getJobManager().add(new ServiceOutageDetectionJob(context));
     }
   }

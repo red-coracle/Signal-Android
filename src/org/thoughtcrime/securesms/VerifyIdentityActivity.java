@@ -43,7 +43,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -592,7 +592,7 @@ public class VerifyIdentityActivity extends PassphraseRequiredActionBarActivity 
         protected Void doInBackground(Recipient... params) {
           synchronized (SESSION_LOCK) {
             if (isChecked) {
-              Log.w(TAG, "Saving identity: " + params[0].getAddress());
+              Log.i(TAG, "Saving identity: " + params[0].getAddress());
               DatabaseFactory.getIdentityDatabase(getActivity())
                              .saveIdentity(params[0].getAddress(),
                                            remoteIdentity,

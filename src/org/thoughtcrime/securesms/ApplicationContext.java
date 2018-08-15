@@ -17,11 +17,17 @@
 package org.thoughtcrime.securesms;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.arch.lifecycle.DefaultLifecycleObserver;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
-import android.util.Log;
+import android.support.v4.app.NotificationManagerCompat;
 
 import com.google.android.gms.security.ProviderInstaller;
 
@@ -35,9 +41,16 @@ import org.thoughtcrime.securesms.jobmanager.persistence.JavaJobSerializer;
 import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirementProvider;
 import org.thoughtcrime.securesms.jobs.CreateSignedPreKeyJob;
 import org.thoughtcrime.securesms.jobs.GcmRefreshJob;
+import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob;
 import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirementProvider;
 import org.thoughtcrime.securesms.jobs.requirements.ServiceRequirementProvider;
 import org.thoughtcrime.securesms.jobs.requirements.SqlCipherMigrationRequirementProvider;
+import org.thoughtcrime.securesms.logging.AndroidLogger;
+import org.thoughtcrime.securesms.logging.CustomSignalProtocolLogger;
+import org.thoughtcrime.securesms.logging.Log;
+import org.thoughtcrime.securesms.logging.PersistentLogger;
+import org.thoughtcrime.securesms.logging.UncaughtExceptionLogger;
+import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
 import org.thoughtcrime.securesms.service.DirectoryRefreshListener;
 import org.thoughtcrime.securesms.service.ExpiringMessageManager;
@@ -50,7 +63,6 @@ import org.webrtc.PeerConnectionFactory.InitializationOptions;
 import org.webrtc.voiceengine.WebRtcAudioManager;
 import org.webrtc.voiceengine.WebRtcAudioUtils;
 import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
-import org.whispersystems.libsignal.util.AndroidSignalProtocolLogger;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -66,13 +78,16 @@ import dagger.ObjectGraph;
  *
  * @author Moxie Marlinspike
  */
-public class ApplicationContext extends MultiDexApplication implements DependencyInjector {
+public class ApplicationContext extends MultiDexApplication implements DependencyInjector, DefaultLifecycleObserver {
 
-  private static final String TAG = ApplicationContext.class.getName();
+  private static final String TAG = ApplicationContext.class.getSimpleName();
 
   private ExpiringMessageManager expiringMessageManager;
   private JobManager             jobManager;
   private ObjectGraph            objectGraph;
+  private PersistentLogger       persistentLogger;
+
+  private volatile boolean isAppVisible;
 
   public static ApplicationContext getInstance(Context context) {
     return (ApplicationContext)context.getApplicationContext();
@@ -83,6 +98,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     super.onCreate();
     initializeRandomNumberFix();
     initializeLogging();
+    initializeCrashHandling();
     initializeDependencyInjection();
     initializeJobManager();
     initializeExpiringMessageManager();
@@ -91,6 +107,21 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     initializePeriodicTasks();
     initializeCircumvention();
     initializeWebRtc();
+    NotificationChannels.create(this);
+    ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+  }
+
+  @Override
+  public void onStart(@NonNull LifecycleOwner owner) {
+    isAppVisible = true;
+    Log.i(TAG, "App is now visible.");
+    executePendingContactSync();
+  }
+
+  @Override
+  public void onStop(@NonNull LifecycleOwner owner) {
+    isAppVisible = false;
+    Log.i(TAG, "App is no longer visible.");
   }
 
   @Override
@@ -108,12 +139,28 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     return expiringMessageManager;
   }
 
+  public boolean isAppVisible() {
+    return isAppVisible;
+  }
+
+  public PersistentLogger getPersistentLogger() {
+    return persistentLogger;
+  }
+
   private void initializeRandomNumberFix() {
     PRNGFixes.apply();
   }
 
   private void initializeLogging() {
-    SignalProtocolLoggerProvider.setProvider(new AndroidSignalProtocolLogger());
+    persistentLogger = new PersistentLogger(this);
+    org.thoughtcrime.securesms.logging.Log.initialize(new AndroidLogger(), persistentLogger);
+
+    SignalProtocolLoggerProvider.setProvider(new CustomSignalProtocolLogger());
+  }
+
+  private void initializeCrashHandling() {
+    final Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
+    Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionLogger(originalHandler, persistentLogger));
   }
 
   private void initializeJobManager() {
@@ -174,6 +221,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
         add("Moto G4");
         add("TA-1053");
         add("Mi A1");
+        add("E5823"); // Sony z5 compact
       }};
 
       Set<String> OPEN_SL_ES_WHITELIST = new HashSet<String>() {{
@@ -216,4 +264,9 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
+  private void executePendingContactSync() {
+    if (TextSecurePreferences.needsFullContactSync(this)) {
+      ApplicationContext.getInstance(this).getJobManager().add(new MultiDeviceContactUpdateJob(this, true));
+    }
+  }
 }

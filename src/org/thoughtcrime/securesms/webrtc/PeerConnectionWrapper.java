@@ -4,7 +4,7 @@ package org.thoughtcrime.securesms.webrtc;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.util.concurrent.SettableFuture;
 import org.webrtc.AudioSource;
@@ -21,7 +21,7 @@ import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SdpObserver;
 import org.webrtc.SessionDescription;
-import org.webrtc.VideoRenderer;
+import org.webrtc.VideoSink;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
@@ -49,7 +49,7 @@ public class PeerConnectionWrapper {
   public PeerConnectionWrapper(@NonNull Context                        context,
                                @NonNull PeerConnectionFactory          factory,
                                @NonNull PeerConnection.Observer        observer,
-                               @NonNull VideoRenderer.Callbacks        localRenderer,
+                               @NonNull VideoSink                      localRenderer,
                                @NonNull List<PeerConnection.IceServer> turnServers,
                                @NonNull CameraEventListener            cameraEventListener,
                                boolean                                 hideIp)
@@ -88,7 +88,7 @@ public class PeerConnectionWrapper {
       this.videoSource = factory.createVideoSource(camera.capturer);
       this.videoTrack = factory.createVideoTrack("ARDAMSv0", videoSource);
 
-      this.videoTrack.addRenderer(new VideoRenderer(localRenderer));
+      this.videoTrack.addSink(localRenderer);
       this.videoTrack.setEnabled(false);
       mediaStream.addTrack(videoTrack);
     } else {
@@ -394,7 +394,7 @@ public class PeerConnectionWrapper {
         Log.w(TAG, "Camera2Enumator.isSupport() threw.", throwable);
       }
 
-      Log.w(TAG, "Camera2 enumerator supported: " + camera2EnumeratorIsSupported);
+      Log.i(TAG, "Camera2 enumerator supported: " + camera2EnumeratorIsSupported);
 
       return camera2EnumeratorIsSupported ? new Camera2Enumerator(context)
                                           : new Camera1Enumerator(true);

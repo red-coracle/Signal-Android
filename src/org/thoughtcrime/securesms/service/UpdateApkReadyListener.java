@@ -11,9 +11,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.util.FileProviderUtil;
 import org.thoughtcrime.securesms.util.FileUtils;
 import org.thoughtcrime.securesms.util.Hex;
@@ -31,7 +32,7 @@ public class UpdateApkReadyListener extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    Log.w(TAG, "onReceive()");
+    Log.i(TAG, "onReceive()");
 
     if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
       long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -2);
@@ -61,7 +62,7 @@ public class UpdateApkReadyListener extends BroadcastReceiver {
 
     PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-    Notification notification = new NotificationCompat.Builder(context)
+    Notification notification = new NotificationCompat.Builder(context, NotificationChannels.APP_UPDATES)
         .setOngoing(true)
         .setContentTitle(context.getString(R.string.UpdateApkReadyListener_Signal_update))
         .setContentText(context.getString(R.string.UpdateApkReadyListener_a_new_version_of_signal_is_available_tap_to_update))

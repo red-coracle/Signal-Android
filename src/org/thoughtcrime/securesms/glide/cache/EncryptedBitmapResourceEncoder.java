@@ -3,7 +3,7 @@ package org.thoughtcrime.securesms.glide.cache;
 
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import com.bumptech.glide.load.EncodeStrategy;
 import com.bumptech.glide.load.Options;
@@ -33,7 +33,7 @@ public class EncryptedBitmapResourceEncoder extends EncryptedCoder implements Re
   @SuppressWarnings("EmptyCatchBlock")
   @Override
   public boolean encode(@NonNull Resource<Bitmap> data, @NonNull File file, @NonNull Options options) {
-    Log.w(TAG, "Encrypted resource encoder running: " + file.toString());
+    Log.i(TAG, "Encrypted resource encoder running: " + file.toString());
 
     Bitmap                bitmap  = data.get();
     Bitmap.CompressFormat format  = getFormat(bitmap, options);

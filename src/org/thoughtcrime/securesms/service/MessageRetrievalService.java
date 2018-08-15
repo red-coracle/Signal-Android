@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.R;
@@ -16,6 +16,7 @@ import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
 import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirementProvider;
 import org.thoughtcrime.securesms.jobmanager.requirements.RequirementListener;
 import org.thoughtcrime.securesms.jobs.PushContentReceiveJob;
+import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.libsignal.InvalidVersionException;
 import org.whispersystems.signalservice.api.SignalServiceMessagePipe;
@@ -104,7 +105,7 @@ public class MessageRetrievalService extends Service implements InjectableType, 
 
   private void setForegroundIfNecessary() {
     if (TextSecurePreferences.isGcmDisabled(this)) {
-      NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+      NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationChannels.OTHER);
       builder.setContentTitle(getString(R.string.MessageRetrievalService_signal));
       builder.setContentText(getString(R.string.MessageRetrievalService_background_connection_enabled));
       builder.setPriority(NotificationCompat.PRIORITY_MIN);
@@ -116,13 +117,13 @@ public class MessageRetrievalService extends Service implements InjectableType, 
 
   private synchronized void incrementActive() {
     activeActivities++;
-    Log.w(TAG, "Active Count: " + activeActivities);
+    Log.d(TAG, "Active Count: " + activeActivities);
     notifyAll();
   }
 
   private synchronized void decrementActive() {
     activeActivities--;
-    Log.w(TAG, "Active Count: " + activeActivities);
+    Log.d(TAG, "Active Count: " + activeActivities);
     notifyAll();
   }
 
@@ -142,7 +143,7 @@ public class MessageRetrievalService extends Service implements InjectableType, 
   private synchronized boolean isConnectionNecessary() {
     boolean isGcmDisabled = TextSecurePreferences.isGcmDisabled(this);
 
-    Log.w(TAG, String.format("Network requirement: %s, active activities: %s, push pending: %s, gcm disabled: %b",
+    Log.d(TAG, String.format("Network requirement: %s, active activities: %s, push pending: %s, gcm disabled: %b",
                              networkRequirement.isPresent(), activeActivities, pushPending.size(), isGcmDisabled));
 
     return TextSecurePreferences.isPushRegistered(this)                       &&
@@ -195,10 +196,10 @@ public class MessageRetrievalService extends Service implements InjectableType, 
     @Override
     public void run() {
       while (!stopThread.get()) {
-        Log.w(TAG, "Waiting for websocket state change....");
+        Log.i(TAG, "Waiting for websocket state change....");
         waitForConnectionNecessary();
 
-        Log.w(TAG, "Making websocket connection....");
+        Log.i(TAG, "Making websocket connection....");
         pipe = receiver.createMessagePipe();
 
         SignalServiceMessagePipe localPipe = pipe;
@@ -206,10 +207,10 @@ public class MessageRetrievalService extends Service implements InjectableType, 
         try {
           while (isConnectionNecessary() && !stopThread.get()) {
             try {
-              Log.w(TAG, "Reading message...");
+              Log.i(TAG, "Reading message...");
               localPipe.read(REQUEST_TIMEOUT_MINUTES, TimeUnit.MINUTES,
                              envelope -> {
-                               Log.w(TAG, "Retrieved envelope! " + envelope.getSource());
+                               Log.i(TAG, "Retrieved envelope! " + envelope.getSource());
 
                                PushContentReceiveJob receiveJob = new PushContentReceiveJob(MessageRetrievalService.this);
                                receiveJob.handle(envelope);
@@ -229,10 +230,10 @@ public class MessageRetrievalService extends Service implements InjectableType, 
           shutdown(localPipe);
         }
 
-        Log.w(TAG, "Looping...");
+        Log.i(TAG, "Looping...");
       }
 
-      Log.w(TAG, "Exiting...");
+      Log.i(TAG, "Exiting...");
     }
 
     private void stopThread() {

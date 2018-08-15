@@ -21,7 +21,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -53,6 +52,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.attachments.AttachmentServer;
+import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mms.PartAuthority;
 import org.thoughtcrime.securesms.mms.VideoSlide;
 import org.thoughtcrime.securesms.util.ViewUtil;
@@ -154,14 +154,14 @@ public class VideoPlayer extends FrameLayout {
     }
 
     if (videoSource.getUri() != null && PartAuthority.isLocalUri(videoSource.getUri())) {
-      Log.w(TAG, "Starting video attachment server for part provider Uri...");
+      Log.i(TAG, "Starting video attachment server for part provider Uri...");
       this.attachmentServer = new AttachmentServer(getContext(), videoSource.asAttachment());
       this.attachmentServer.start();
 
       //noinspection ConstantConditions
       this.videoView.setVideoURI(this.attachmentServer.getUri());
     } else if (videoSource.getUri() != null) {
-      Log.w(TAG, "Playing video directly from non-local Uri...");
+      Log.i(TAG, "Playing video directly from non-local Uri...");
       //noinspection ConstantConditions
       this.videoView.setVideoURI(videoSource.getUri());
     } else {

@@ -35,7 +35,7 @@ import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.ConversationActivity;
 import org.thoughtcrime.securesms.R;
@@ -196,7 +196,7 @@ public class MessageNotifier {
   public static void updateNotification(@NonNull Context context, long threadId)
   {
     if (System.currentTimeMillis() - lastDesktopActivityTimestamp < DESKTOP_ACTIVITY_PERIOD) {
-      Log.w(TAG, "Scheduling delayed notification...");
+      Log.i(TAG, "Scheduling delayed notification...");
       executor.execute(new DelayedNotification(context, threadId));
     } else {
       updateNotification(context, threadId, true);
@@ -305,6 +305,7 @@ public class MessageNotifier {
     builder.setContentIntent(notifications.get(0).getPendingIntent(context));
     builder.setGroup(NOTIFICATION_GROUP);
     builder.setDeleteIntent(notificationState.getDeleteIntent(context));
+    builder.setOnlyAlertOnce(!signal);
 
     long timestamp = notifications.get(0).getTimestamp();
     if (timestamp != 0) builder.setWhen(timestamp);
@@ -347,6 +348,7 @@ public class MessageNotifier {
     builder.setMostRecentSender(notifications.get(0).getIndividualRecipient());
     builder.setGroup(NOTIFICATION_GROUP);
     builder.setDeleteIntent(notificationState.getDeleteIntent(context));
+    builder.setOnlyAlertOnce(!signal);
 
     long timestamp = notifications.get(0).getTimestamp();
     if (timestamp != 0) builder.setWhen(timestamp);
@@ -526,14 +528,14 @@ public class MessageNotifier {
       MessageNotifier.updateNotification(context);
 
       long delayMillis = delayUntil - System.currentTimeMillis();
-      Log.w(TAG, "Waiting to notify: " + delayMillis);
+      Log.i(TAG, "Waiting to notify: " + delayMillis);
 
       if (delayMillis > 0) {
         Util.sleep(delayMillis);
       }
 
       if (!canceled.get()) {
-        Log.w(TAG, "Not canceled, notifying...");
+        Log.i(TAG, "Not canceled, notifying...");
         MessageNotifier.updateNotification(context, threadId, true);
         MessageNotifier.cancelDelayedNotifications();
       } else {

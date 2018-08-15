@@ -31,7 +31,7 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 import android.widget.RemoteViews;
 
 import org.thoughtcrime.securesms.ConversationListActivity;
@@ -42,6 +42,7 @@ import org.thoughtcrime.securesms.crypto.InvalidPassphraseException;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
+import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.ServiceUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
@@ -126,7 +127,7 @@ public class KeyCachingService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     if (intent == null) return START_NOT_STICKY;
-    Log.w("KeyCachingService", "onStartCommand, " + intent.getAction());
+    Log.d(TAG, "onStartCommand, " + intent.getAction());
 
     if (intent.getAction() != null) {
       switch (intent.getAction()) {
@@ -145,7 +146,7 @@ public class KeyCachingService extends Service {
 
   @Override
   public void onCreate() {
-    Log.w("KeyCachingService", "onCreate()");
+    Log.i(TAG, "onCreate()");
     super.onCreate();
     this.pending = PendingIntent.getService(this, 0, new Intent(PASSPHRASE_EXPIRED_EVENT, null,
                                                                 this, KeyCachingService.class), 0);
@@ -163,7 +164,7 @@ public class KeyCachingService extends Service {
   @Override
   public void onDestroy() {
     super.onDestroy();
-    Log.w("KeyCachingService", "KCS Is Being Destroyed!");
+    Log.w(TAG, "KCS Is Being Destroyed!");
     handleClearKey();
   }
 
@@ -179,7 +180,7 @@ public class KeyCachingService extends Service {
   }
 
   private void handleActivityStarted() {
-    Log.w("KeyCachingService", "Incrementing activity count...");
+    Log.d(TAG, "Incrementing activity count...");
 
     AlarmManager alarmManager = ServiceUtil.getAlarmManager(this);
     alarmManager.cancel(pending);
@@ -187,7 +188,7 @@ public class KeyCachingService extends Service {
   }
 
   private void handleActivityStopped() {
-    Log.w("KeyCachingService", "Decrementing activity count...");
+    Log.d(TAG, "Decrementing activity count...");
 
     activitiesRunning--;
     startTimeoutIfAppropriate();
@@ -195,7 +196,7 @@ public class KeyCachingService extends Service {
 
   @SuppressLint("StaticFieldLeak")
   private void handleClearKey() {
-    Log.w("KeyCachingService", "handleClearKey()");
+    Log.i(TAG, "handleClearKey()");
     KeyCachingService.masterSecret = null;
     stopForeground(true);
 
@@ -253,7 +254,7 @@ public class KeyCachingService extends Service {
       if (!TextSecurePreferences.isPasswordDisabled(this)) timeoutMillis = TimeUnit.MINUTES.toMillis(passphraseTimeoutMinutes);
       else                                                        timeoutMillis  = TimeUnit.SECONDS.toMillis(screenLockTimeoutSeconds);
 
-      Log.w("KeyCachingService", "Starting timeout: " + timeoutMillis);
+      Log.i(TAG, "Starting timeout: " + timeoutMillis);
 
       AlarmManager alarmManager = ServiceUtil.getAlarmManager(this);
       alarmManager.cancel(pending);
@@ -263,8 +264,8 @@ public class KeyCachingService extends Service {
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   private void foregroundServiceModern() {
-    Log.w("KeyCachingService", "foregrounding KCS");
-    NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+    Log.i(TAG, "foregrounding KCS");
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationChannels.LOCKED_STATUS);
 
     builder.setContentTitle(getString(R.string.KeyCachingService_passphrase_cached));
     builder.setContentText(getString(R.string.KeyCachingService_signal_passphrase_cached));
@@ -280,7 +281,7 @@ public class KeyCachingService extends Service {
   }
 
   private void foregroundServiceICS() {
-    NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationChannels.LOCKED_STATUS);
     RemoteViews remoteViews            = new RemoteViews(getPackageName(), R.layout.key_caching_notification);
 
     remoteViews.setOnClickPendingIntent(R.id.lock_cache_icon, buildLockIntent());
@@ -294,7 +295,7 @@ public class KeyCachingService extends Service {
   }
 
   private void foregroundServiceLegacy() {
-    NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationChannels.LOCKED_STATUS);
     builder.setSmallIcon(R.drawable.icon_cached);
     builder.setWhen(System.currentTimeMillis());
 
@@ -322,7 +323,7 @@ public class KeyCachingService extends Service {
   }
 
   private void broadcastNewSecret() {
-    Log.w("service", "Broadcasting new secret...");
+    Log.i(TAG, "Broadcasting new secret...");
 
     Intent intent = new Intent(NEW_KEY_EVENT);
     intent.setPackage(getApplicationContext().getPackageName());

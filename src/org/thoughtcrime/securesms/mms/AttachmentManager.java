@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -33,7 +34,7 @@ import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
@@ -57,10 +58,12 @@ import org.thoughtcrime.securesms.providers.PersistentBlobProvider;
 import org.thoughtcrime.securesms.scribbles.ScribbleActivity;
 import org.thoughtcrime.securesms.util.BitmapUtil;
 import org.thoughtcrime.securesms.util.MediaUtil;
+import org.thoughtcrime.securesms.util.ThemeUtil;
 import org.thoughtcrime.securesms.util.ViewUtil;
 import org.thoughtcrime.securesms.util.concurrent.AssertedSuccessListener;
 import org.thoughtcrime.securesms.util.concurrent.ListenableFuture;
 import org.thoughtcrime.securesms.util.concurrent.ListenableFuture.Listener;
+import org.thoughtcrime.securesms.util.concurrent.SettableFuture;
 import org.thoughtcrime.securesms.util.views.Stub;
 import org.whispersystems.libsignal.util.guava.Optional;
 
@@ -108,6 +111,7 @@ public class AttachmentManager {
       removableMediaView.setRemoveClickListener(new RemoveButtonListener());
       removableMediaView.setEditClickListener(new EditButtonListener());
       thumbnail.setOnClickListener(new ThumbnailClickListener());
+      documentView.getBackground().setColorFilter(ThemeUtil.getThemedColor(context, R.attr.conversation_item_bubble_background), PorterDuff.Mode.MULTIPLY);
     }
 
   }
@@ -158,14 +162,14 @@ public class AttachmentManager {
 
   private void cleanup(final @Nullable Uri uri) {
     if (uri != null && PersistentBlobProvider.isAuthority(context, uri)) {
-      Log.w(TAG, "cleaning up " + uri);
+      Log.d(TAG, "cleaning up " + uri);
       PersistentBlobProvider.getInstance(context).delete(context, uri);
     }
   }
 
   private void markGarbage(@Nullable Uri uri) {
     if (uri != null && PersistentBlobProvider.isAuthority(context, uri)) {
-      Log.w(TAG, "Marking garbage that needs cleaning: " + uri);
+      Log.d(TAG, "Marking garbage that needs cleaning: " + uri);
       garbage.add(uri);
     }
   }
@@ -178,12 +182,13 @@ public class AttachmentManager {
     this.slide      = Optional.of(slide);
   }
 
-  public void setLocation(@NonNull final SignalPlace place,
-                          @NonNull final MediaConstraints constraints)
+  public ListenableFuture<Boolean> setLocation(@NonNull final SignalPlace place,
+                                               @NonNull final MediaConstraints constraints)
   {
     inflateStub();
 
-    ListenableFuture<Bitmap> future = mapView.display(place);
+    SettableFuture<Boolean>  returnResult = new SettableFuture<>();
+    ListenableFuture<Bitmap> future       = mapView.display(place);
 
     attachmentViewStub.get().setVisibility(View.VISIBLE);
     removableMediaView.display(mapView, false);
@@ -198,19 +203,24 @@ public class AttachmentManager {
 
         setSlide(locationSlide);
         attachmentListener.onAttachmentChanged();
+        returnResult.set(true);
       }
     });
+
+    return returnResult;
   }
 
   @SuppressLint("StaticFieldLeak")
-  public void setMedia(@NonNull final GlideRequests glideRequests,
-                       @NonNull final Uri uri,
-                       @NonNull final MediaType mediaType,
-                       @NonNull final MediaConstraints constraints,
-                                final int width,
-                                final int height)
+  public ListenableFuture<Boolean> setMedia(@NonNull final GlideRequests glideRequests,
+                                            @NonNull final Uri uri,
+                                            @NonNull final MediaType mediaType,
+                                            @NonNull final MediaConstraints constraints,
+                                                     final int width,
+                                                     final int height)
   {
     inflateStub();
+
+    final SettableFuture<Boolean> result = new SettableFuture<>();
 
     new AsyncTask<Void, Void, Slide>() {
       @Override
@@ -244,11 +254,13 @@ public class AttachmentManager {
           Toast.makeText(context,
                          R.string.ConversationActivity_sorry_there_was_an_error_setting_your_attachment,
                          Toast.LENGTH_SHORT).show();
+          result.set(false);
         } else if (!areConstraintsSatisfied(context, slide, constraints)) {
           attachmentViewStub.get().setVisibility(View.GONE);
           Toast.makeText(context,
                          R.string.ConversationActivity_attachment_exceeds_size_limits,
                          Toast.LENGTH_SHORT).show();
+          result.set(false);
         } else {
           setSlide(slide);
           attachmentViewStub.get().setVisibility(View.VISIBLE);
@@ -256,12 +268,14 @@ public class AttachmentManager {
           if (slide.hasAudio()) {
             audioView.setAudio((AudioSlide) slide, false);
             removableMediaView.display(audioView, false);
+            result.set(true);
           } else if (slide.hasDocument()) {
             documentView.setDocument((DocumentSlide) slide, false);
             removableMediaView.display(documentView, false);
+            result.set(true);
           } else {
             Attachment attachment = slide.asAttachment();
-            thumbnail.setImageResource(glideRequests, slide, false, true, attachment.getWidth(), attachment.getHeight());
+            result.deferTo(thumbnail.setImageResource(glideRequests, slide, false, true, attachment.getWidth(), attachment.getHeight()));
             removableMediaView.display(thumbnail, mediaType == MediaType.IMAGE);
           }
 
@@ -287,7 +301,7 @@ public class AttachmentManager {
               height = dimens.second;
             }
 
-            Log.w(TAG, "remote slide with size " + fileSize + " took " + (System.currentTimeMillis() - start) + "ms");
+            Log.d(TAG, "remote slide with size " + fileSize + " took " + (System.currentTimeMillis() - start) + "ms");
             return mediaType.createSlide(context, uri, fileName, mimeType, fileSize, width, height);
           }
         } finally {
@@ -323,10 +337,12 @@ public class AttachmentManager {
           height = dimens.second;
         }
 
-        Log.w(TAG, "local slide with size " + mediaSize + " took " + (System.currentTimeMillis() - start) + "ms");
+        Log.d(TAG, "local slide with size " + mediaSize + " took " + (System.currentTimeMillis() - start) + "ms");
         return mediaType.createSlide(context, uri, fileName, mimeType, mediaSize, width, height);
       }
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+    return result;
   }
 
   public boolean isAttachmentPresent() {
@@ -419,7 +435,7 @@ public class AttachmentManager {
                      if (captureUri == null) {
                        captureUri = PersistentBlobProvider.getInstance(context).createForExternal(context, MediaUtil.IMAGE_JPEG);
                      }
-                     Log.w(TAG, "captureUri path is " + captureUri.getPath());
+                     Log.d(TAG, "captureUri path is " + captureUri.getPath());
                      captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, captureUri);
                      activity.startActivityForResult(captureIntent, requestCode);
                    }

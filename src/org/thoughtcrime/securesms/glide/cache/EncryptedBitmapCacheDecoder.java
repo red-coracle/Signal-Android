@@ -4,7 +4,7 @@ package org.thoughtcrime.securesms.glide.cache;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import com.bumptech.glide.load.Options;
 import com.bumptech.glide.load.ResourceDecoder;
@@ -31,7 +31,7 @@ public class EncryptedBitmapCacheDecoder extends EncryptedCoder implements Resou
   public boolean handles(@NonNull File source, @NonNull Options options)
       throws IOException
   {
-    Log.w(TAG, "Checking item for encrypted Bitmap cache decoder: " + source.toString());
+    Log.i(TAG, "Checking item for encrypted Bitmap cache decoder: " + source.toString());
 
     try (InputStream inputStream = createEncryptedInputStream(secret, source)) {
       return streamBitmapDecoder.handles(inputStream, options);
@@ -46,7 +46,7 @@ public class EncryptedBitmapCacheDecoder extends EncryptedCoder implements Resou
   public Resource<Bitmap> decode(@NonNull File source, int width, int height, @NonNull Options options)
       throws IOException
   {
-    Log.w(TAG, "Encrypted Bitmap cache decoder running: " + source.toString());
+    Log.i(TAG, "Encrypted Bitmap cache decoder running: " + source.toString());
     try (InputStream inputStream = createEncryptedInputStream(secret, source)) {
       return streamBitmapDecoder.decode(inputStream, width, height, options);
     }

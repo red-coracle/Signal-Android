@@ -72,6 +72,7 @@
 
     <!-- For conversation 'shortcuts' on the desktop -->
     <uses-permission android:name="android.permission.INSTALL_SHORTCUT"/>
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
 
     <!-- For fixing MMS -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -193,9 +194,9 @@
         </intent-filter>
 
         <meta-data android:name="com.sec.minimode.icon.portrait.normal"
-            android:resource="@drawable/icon" />
+                   android:resource="@mipmap/ic_launcher" />
         <meta-data android:name="com.sec.minimode.icon.landscape.normal"
-            android:resource="@drawable/icon" />
+                   android:resource="@mipmap/ic_launcher" />
 
     </activity-alias>
 
@@ -411,6 +412,11 @@
               android:theme="@style/TextSecure.LightNoActionBar"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
 
+    <activity android:name=".ShortcutLauncherActivity"
+              android:theme="@style/TextSecure.LightNoActionBar"
+              android:exported="true"
+              android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
+
     <service android:enabled="true" android:name="org.thoughtcrime.securesms.service.WebRtcCallService"/>
     <service android:enabled="true" android:name=".service.ApplicationMigrationService"/>
     <service android:enabled="true" android:exported="false" android:name=".service.KeyCachingService"/>
@@ -574,6 +580,12 @@
     <receiver android:name=".service.PersistentConnectionBootListener">
         <intent-filter>
             <action android:name="android.intent.action.BOOT_COMPLETED"/>
+        </intent-filter>
+    </receiver>
+
+    <receiver android:name=".notifications.LocaleChangedReceiver">
+        <intent-filter>
+            <action android:name="android.intent.action.LOCALE_CHANGED"/>
         </intent-filter>
     </receiver>
 

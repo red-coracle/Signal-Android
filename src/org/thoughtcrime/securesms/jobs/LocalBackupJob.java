@@ -4,7 +4,7 @@ package org.thoughtcrime.securesms.jobs;
 import android.Manifest;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.backup.FullBackupExporter;
@@ -12,6 +12,7 @@ import org.thoughtcrime.securesms.crypto.AttachmentSecretProvider;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.NoExternalStorageException;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
+import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.service.GenericForegroundService;
 import org.thoughtcrime.securesms.util.BackupUtil;
@@ -41,14 +42,15 @@ public class LocalBackupJob extends ContextJob {
 
   @Override
   public void onRun() throws NoExternalStorageException, IOException {
-    Log.w(TAG, "Executing backup job...");
+    Log.i(TAG, "Executing backup job...");
 
     if (!Permissions.hasAll(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
       throw new IOException("No external storage permission!");
     }
 
     GenericForegroundService.startForegroundTask(context,
-                                                 context.getString(R.string.LocalBackupJob_creating_backup));
+                                                 context.getString(R.string.LocalBackupJob_creating_backup),
+                                                 NotificationChannels.BACKUPS);
 
     try {
       String backupPassword  = TextSecurePreferences.getBackupPassphrase(context);

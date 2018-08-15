@@ -10,7 +10,7 @@ import android.os.Build;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.util.ServiceUtil;
 
@@ -50,7 +50,7 @@ public class IncomingRinger {
         if (!player.isPlaying()) {
           player.prepare();
           player.start();
-          Log.w(TAG, "Playing ringtone now...");
+          Log.i(TAG, "Playing ringtone now...");
         } else {
           Log.w(TAG, "Ringtone is already playing, declining to restart.");
         }
@@ -65,12 +65,12 @@ public class IncomingRinger {
 
   public void stop() {
     if (player != null) {
-      Log.w(TAG, "Stopping ringer");
+      Log.i(TAG, "Stopping ringer");
       player.release();
       player = null;
     }
 
-    Log.w(TAG, "Cancelling vibrator");
+    Log.i(TAG, "Cancelling vibrator");
     vibrator.cancel();
   }
 

@@ -12,7 +12,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -122,7 +122,7 @@ public class CustomDefaultPreference extends DialogPreference {
 
     @Override
     protected void onBindDialogView(@NonNull View view) {
-      Log.w(TAG, "onBindDialogView");
+      Log.i(TAG, "onBindDialogView");
       super.onBindDialogView(view);
 
       CustomDefaultPreference preference = (CustomDefaultPreference)getPreference();

@@ -32,13 +32,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
 import org.thoughtcrime.securesms.components.SearchToolbar;
-import org.thoughtcrime.securesms.contacts.ContactsCursorLoader;
 import org.thoughtcrime.securesms.contacts.ContactsCursorLoader.DisplayMode;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
@@ -111,7 +110,7 @@ public class ShareActivity extends PassphraseRequiredActionBarActivity
 
   @Override
   protected void onNewIntent(Intent intent) {
-    Log.w(TAG, "onNewIntent()");
+    Log.i(TAG, "onNewIntent()");
     super.onNewIntent(intent);
     setIntent(intent);
     initializeMedia();
@@ -119,7 +118,7 @@ public class ShareActivity extends PassphraseRequiredActionBarActivity
 
   @Override
   public void onResume() {
-    Log.w(TAG, "onResume()");
+    Log.i(TAG, "onResume()");
     super.onResume();
     dynamicTheme.onResume(this);
     dynamicLanguage.onResume(this);

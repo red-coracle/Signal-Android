@@ -12,7 +12,7 @@ import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
@@ -20,7 +20,6 @@ import com.annimon.stream.Stream;
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.contacts.ContactAccessor;
-import org.thoughtcrime.securesms.contacts.ContactsDatabase;
 import org.thoughtcrime.securesms.crypto.SessionUtil;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
@@ -232,7 +231,7 @@ public class DirectoryHelper {
     Account        account        = new Account(context.getString(R.string.app_name), "org.thoughtcrime.securesms");
 
     if (accountManager.addAccountExplicitly(account, null, null)) {
-      Log.w(TAG, "Created new account...");
+      Log.i(TAG, "Created new account...");
       ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
       return Optional.of(new AccountHolder(account, true));
     } else {

@@ -25,7 +25,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -486,7 +486,9 @@ public class RegistrationActivity extends BaseActionBarActivity implements Verif
 
           return new Pair<>(password, gcmToken);
         } catch (IOException e) {
-          Log.w(TAG, e);
+          Log.w(TAG, "Error during account registration", e);
+          createButton.setIndeterminateProgressMode(false);
+          createButton.setProgress(0);
           return null;
         }
       }
@@ -1006,7 +1008,7 @@ public class RegistrationActivity extends BaseActionBarActivity implements Verif
   private class ChallengeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-      Log.w(TAG, "Got a challenge broadcast...");
+      Log.i(TAG, "Got a challenge broadcast...");
       handleChallengeReceived(intent.getStringExtra(CHALLENGE_EXTRA));
     }
   }

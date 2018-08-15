@@ -4,7 +4,7 @@ package org.thoughtcrime.securesms.attachments;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.spongycastle.util.encoders.Hex;
 import org.thoughtcrime.securesms.mms.PartAuthority;
@@ -276,15 +276,13 @@ public class AttachmentServer implements Runnable {
           return;
         StringTokenizer st = new StringTokenizer(inLine);
         if (!st.hasMoreTokens())
-          Log.e(TAG,
-                "BAD REQUEST: Syntax error. Usage: GET /example/file.html");
+          Log.e(TAG, "BAD REQUEST: Syntax error. Usage: GET /example/file.html");
 
         String method = st.nextToken();
         pre.put("method", method);
 
         if (!st.hasMoreTokens())
-          Log.e(TAG,
-                "BAD REQUEST: Missing URI. Usage: GET /example/file.html");
+          Log.e(TAG, "BAD REQUEST: Missing URI. Usage: GET /example/file.html");
 
         String uri = st.nextToken();
 
@@ -313,8 +311,7 @@ public class AttachmentServer implements Runnable {
 
         pre.put("uri", uri);
       } catch (IOException ioe) {
-        Log.e(TAG,
-              "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
+        Log.e(TAG, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
       }
     }
 

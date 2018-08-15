@@ -7,7 +7,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 import android.util.Pair;
 
 import org.thoughtcrime.securesms.ApplicationContext;
@@ -46,6 +46,7 @@ import org.thoughtcrime.securesms.mms.OutgoingSecureMediaMessage;
 import org.thoughtcrime.securesms.mms.QuoteModel;
 import org.thoughtcrime.securesms.mms.SlideDeck;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
+import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.service.WebRtcCallService;
 import org.thoughtcrime.securesms.sms.IncomingEncryptedMessage;
@@ -135,7 +136,7 @@ public class PushDecryptJob extends ContextJob {
     if (TextSecurePreferences.getNeedsSqlCipherMigration(context)) {
       Log.w(TAG, "Skipping job, waiting for sqlcipher migration...");
       NotificationManagerCompat.from(context).notify(494949,
-                                                     new NotificationCompat.Builder(context)
+                                                     new NotificationCompat.Builder(context, NotificationChannels.MESSAGES)
                                                          .setSmallIcon(R.drawable.icon_notification)
                                                          .setPriority(NotificationCompat.PRIORITY_HIGH)
                                                          .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -200,7 +201,7 @@ public class PushDecryptJob extends ContextJob {
         else if (syncMessage.getVerified().isPresent()) handleSynchronizeVerifiedMessage(syncMessage.getVerified().get());
         else                                           Log.w(TAG, "Contains no known sync types...");
       } else if (content.getCallMessage().isPresent()) {
-        Log.w(TAG, "Got call message...");
+        Log.i(TAG, "Got call message...");
         SignalServiceCallMessage message = content.getCallMessage().get();
 
         if      (message.getOfferMessage().isPresent())      handleCallOfferMessage(envelope, message.getOfferMessage().get(), smsMessageId);
@@ -266,7 +267,7 @@ public class PushDecryptJob extends ContextJob {
   private void handleCallAnswerMessage(@NonNull SignalServiceEnvelope envelope,
                                        @NonNull AnswerMessage message)
   {
-    Log.w(TAG, "handleCallAnswerMessage...");
+    Log.i(TAG, "handleCallAnswerMessage...");
     Intent intent = new Intent(context, WebRtcCallService.class);
     intent.setAction(WebRtcCallService.ACTION_RESPONSE_MESSAGE);
     intent.putExtra(WebRtcCallService.EXTRA_CALL_ID, message.getId());
@@ -297,7 +298,7 @@ public class PushDecryptJob extends ContextJob {
                                        @NonNull HangupMessage message,
                                        @NonNull Optional<Long> smsMessageId)
   {
-    Log.w(TAG, "handleCallHangupMessage");
+    Log.i(TAG, "handleCallHangupMessage");
     if (smsMessageId.isPresent()) {
       DatabaseFactory.getSmsDatabase(context).markAsMissedCall(smsMessageId.get());
     } else {
@@ -479,7 +480,7 @@ public class PushDecryptJob extends ContextJob {
     if (message.isContactsRequest()) {
       ApplicationContext.getInstance(context)
                         .getJobManager()
-                        .add(new MultiDeviceContactUpdateJob(getContext()));
+                        .add(new MultiDeviceContactUpdateJob(getContext(), true));
     }
 
     if (message.isGroupsRequest()) {
@@ -680,12 +681,13 @@ public class PushDecryptJob extends ContextJob {
       handleSynchronizeSentExpirationUpdate(message);
     }
 
-    long threadId  = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(recipient);
+    long    threadId  = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(recipient);
+    boolean isGroup   = recipient.getAddress().isGroup();
 
     MessagingDatabase database;
     long              messageId;
 
-    if (recipient.getAddress().isGroup()) {
+    if (isGroup) {
       OutgoingMediaMessage outgoingMediaMessage = new OutgoingMediaMessage(recipient, new SlideDeck(), body, message.getTimestamp(), -1, expiresInMillis, ThreadDatabase.DistributionTypes.DEFAULT, null, Collections.emptyList());
       outgoingMediaMessage = new OutgoingSecureMediaMessage(outgoingMediaMessage);
 
@@ -704,7 +706,7 @@ public class PushDecryptJob extends ContextJob {
       database.markExpireStarted(messageId, message.getExpirationStartTimestamp());
       ApplicationContext.getInstance(context)
                         .getExpiringMessageManager()
-                        .scheduleDeletion(messageId, false, message.getExpirationStartTimestamp(), expiresInMillis);
+                        .scheduleDeletion(messageId, isGroup, message.getExpirationStartTimestamp(), expiresInMillis);
     }
 
     return threadId;
@@ -845,7 +847,7 @@ public class PushDecryptJob extends ContextJob {
                                      @NonNull SignalServiceReceiptMessage message)
   {
     for (long timestamp : message.getTimestamps()) {
-      Log.w(TAG, String.format("Received encrypted delivery receipt: (XXXXX, %d)", timestamp));
+      Log.i(TAG, String.format("Received encrypted delivery receipt: (XXXXX, %d)", timestamp));
       DatabaseFactory.getMmsSmsDatabase(context)
                      .incrementDeliveryReceiptCount(new SyncMessageId(Address.fromExternal(context, envelope.getSource()), timestamp), System.currentTimeMillis());
     }
@@ -856,7 +858,7 @@ public class PushDecryptJob extends ContextJob {
   {
     if (TextSecurePreferences.isReadReceiptsEnabled(context)) {
       for (long timestamp : message.getTimestamps()) {
-        Log.w(TAG, String.format("Received encrypted read receipt: (XXXXX, %d)", timestamp));
+        Log.i(TAG, String.format("Received encrypted read receipt: (XXXXX, %d)", timestamp));
 
         DatabaseFactory.getMmsSmsDatabase(context)
                        .incrementReadReceiptCount(new SyncMessageId(Address.fromExternal(context, envelope.getSource()), timestamp), envelope.getTimestamp());
@@ -881,7 +883,7 @@ public class PushDecryptJob extends ContextJob {
     MessageRecord message = DatabaseFactory.getMmsSmsDatabase(context).getMessageFor(quote.get().getId(), author);
 
     if (message != null) {
-      Log.w(TAG, "Found matching message record...");
+      Log.i(TAG, "Found matching message record...");
 
       List<Attachment> attachments = new LinkedList<>();
 
@@ -889,13 +891,14 @@ public class PushDecryptJob extends ContextJob {
         attachments = ((MmsMessageRecord) message).getSlideDeck().asAttachments();
       }
 
-      return Optional.of(new QuoteModel(quote.get().getId(), author, quote.get().getText(), attachments));
+      return Optional.of(new QuoteModel(quote.get().getId(), author, message.getBody(), false, attachments));
     }
 
     Log.w(TAG, "Didn't find matching message record...");
     return Optional.of(new QuoteModel(quote.get().getId(),
                                       author,
                                       quote.get().getText(),
+                                      true,
                                       PointerAttachment.forPointers(quote.get().getAttachments())));
   }
 

@@ -1,7 +1,7 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.attachments.Attachment;
@@ -28,7 +28,6 @@ import org.whispersystems.signalservice.api.push.exceptions.UnregisteredUserExce
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -50,7 +49,7 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
 
   @Override
   public void onAdded() {
-
+    Log.i(TAG, "onAdded() messageId: " + messageId);
   }
 
   @Override
@@ -63,6 +62,8 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
     OutgoingMediaMessage   message           = database.getOutgoingMessage(messageId);
 
     try {
+      Log.i(TAG, "Sending message: " + messageId);
+
       deliver(message);
       database.markAsSent(messageId, true);
       markAttachmentsUploaded(messageId, message.getAttachments());
@@ -71,6 +72,8 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
         database.markExpireStarted(messageId);
         expirationManager.scheduleDeletion(messageId, true, message.getExpiresIn());
       }
+
+      Log.i(TAG, "Sent message: " + messageId);
 
     } catch (InsecureFallbackApprovalException ifae) {
       Log.w(TAG, ifae);

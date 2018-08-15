@@ -11,11 +11,10 @@ import android.support.annotation.ArrayRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.events.ReminderUpdateEvent;
 import org.thoughtcrime.securesms.jobs.requirements.SqlCipherMigrationRequirementProvider;
 import org.thoughtcrime.securesms.lock.RegistrationLockReminders;
 import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference;
@@ -153,6 +152,12 @@ public class TextSecurePreferences {
 
   private static final String SERVICE_OUTAGE         = "pref_service_outage";
   private static final String LAST_OUTAGE_CHECK_TIME = "pref_last_outage_check_time";
+
+  private static final String LAST_FULL_CONTACT_SYNC_TIME = "pref_last_full_contact_sync_time";
+  private static final String NEEDS_FULL_CONTACT_SYNC     = "pref_needs_full_contact_sync";
+
+  private static final String LOG_ENCRYPTED_SECRET   = "pref_log_encrypted_secret";
+  private static final String LOG_UNENCRYPTED_SECRET = "pref_log_unencrypted_secret";
 
   public static boolean isScreenLockEnabled(@NonNull Context context) {
     return getBooleanPreference(context, SCREEN_LOCK, false);
@@ -731,7 +736,7 @@ public class TextSecurePreferences {
   }
 
   public static void setPushRegistered(Context context, boolean registered) {
-    Log.w("TextSecurePreferences", "Setting push registered: " + registered);
+    Log.i(TAG, "Setting push registered: " + registered);
     setBooleanPreference(context, REGISTERED_GCM_PREF, registered);
   }
 
@@ -921,6 +926,38 @@ public class TextSecurePreferences {
 
   public static boolean getServiceOutage(Context context) {
     return getBooleanPreference(context, SERVICE_OUTAGE, false);
+  }
+
+  public static long getLastFullContactSyncTime(Context context) {
+    return getLongPreference(context, LAST_FULL_CONTACT_SYNC_TIME, 0);
+  }
+
+  public static void setLastFullContactSyncTime(Context context, long timestamp) {
+    setLongPreference(context, LAST_FULL_CONTACT_SYNC_TIME, timestamp);
+  }
+
+  public static boolean needsFullContactSync(Context context) {
+    return getBooleanPreference(context, NEEDS_FULL_CONTACT_SYNC, false);
+  }
+
+  public static void setNeedsFullContactSync(Context context, boolean needsSync) {
+    setBooleanPreference(context, NEEDS_FULL_CONTACT_SYNC, needsSync);
+  }
+
+  public static void setLogEncryptedSecret(Context context, String base64Secret) {
+    setStringPreference(context, LOG_ENCRYPTED_SECRET, base64Secret);
+  }
+
+  public static String getLogEncryptedSecret(Context context) {
+    return getStringPreference(context, LOG_ENCRYPTED_SECRET, null);
+  }
+
+  public static void setLogUnencryptedSecret(Context context, String base64Secret) {
+    setStringPreference(context, LOG_UNENCRYPTED_SECRET, base64Secret);
+  }
+
+  public static String getLogUnencryptedSecret(Context context) {
+    return getStringPreference(context, LOG_UNENCRYPTED_SECRET, null);
   }
 
   public static void setBooleanPreference(Context context, String key, boolean value) {

@@ -19,8 +19,6 @@ package org.thoughtcrime.securesms.contacts;
 import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
@@ -34,12 +32,11 @@ import android.provider.ContactsContract.RawContacts;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 
-import org.thoughtcrime.securesms.ContactSelectionListFragment;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.database.Address;
+import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.libsignal.util.guava.Optional;
 
@@ -92,7 +89,7 @@ public class ContactsDatabase {
     try (Cursor cursor = context.getContentResolver().query(currentContactsUri, projection, RawContacts.DELETED + " = ?", new String[] {"1"}, null)) {
       while (cursor != null && cursor.moveToNext()) {
         long rawContactId = cursor.getLong(0);
-        Log.w(TAG, "Deleting raw contact: " + cursor.getString(1) + ", " + rawContactId);
+        Log.i(TAG, "Deleting raw contact: " + cursor.getString(1) + ", " + rawContactId);
 
         context.getContentResolver().delete(currentContactsUri, RawContacts._ID + " = ?", new String[] {String.valueOf(rawContactId)});
       }
@@ -115,7 +112,7 @@ public class ContactsDatabase {
         Optional<SystemContactInfo> systemContactInfo = getSystemContactInfo(registeredAddress);
 
         if (systemContactInfo.isPresent()) {
-          Log.w(TAG, "Adding number: " + registeredAddress);
+          Log.i(TAG, "Adding number: " + registeredAddress);
           addTextSecureRawContact(operations, account, systemContactInfo.get().number,
                                   systemContactInfo.get().name, systemContactInfo.get().id);
         }
@@ -125,16 +122,16 @@ public class ContactsDatabase {
     for (Map.Entry<Address, SignalContact> currentContactEntry : currentContacts.entrySet()) {
       if (!registeredAddressSet.contains(currentContactEntry.getKey())) {
         if (remove) {
-          Log.w(TAG, "Removing number: " + currentContactEntry.getKey());
+          Log.i(TAG, "Removing number: " + currentContactEntry.getKey());
           removeTextSecureRawContact(operations, account, currentContactEntry.getValue().getId());
         }
       } else if (!currentContactEntry.getValue().isVoiceSupported()) {
-        Log.w(TAG, "Adding voice support: " + currentContactEntry.getKey());
+        Log.i(TAG, "Adding voice support: " + currentContactEntry.getKey());
         addContactVoiceSupport(operations, currentContactEntry.getKey(), currentContactEntry.getValue().getId());
       } else if (!Util.isStringEquals(currentContactEntry.getValue().getRawDisplayName(),
                                       currentContactEntry.getValue().getAggregateDisplayName()))
       {
-        Log.w(TAG, "Updating display name: " + currentContactEntry.getKey());
+        Log.i(TAG, "Updating display name: " + currentContactEntry.getKey());
         updateDisplayName(operations, currentContactEntry.getValue().getAggregateDisplayName(), currentContactEntry.getValue().getId(), currentContactEntry.getValue().getDisplayNameSource());
       }
     }

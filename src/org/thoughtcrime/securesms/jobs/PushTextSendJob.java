@@ -1,7 +1,7 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.database.Address;
@@ -42,7 +42,9 @@ public class PushTextSendJob extends PushSendJob implements InjectableType {
   }
 
   @Override
-  public void onAdded() {}
+  public void onAdded() {
+    Log.i(TAG, "onAdded() messageId: " + messageId);
+  }
 
   @Override
   public void onPushSend() throws NoSuchMessageException, RetryLaterException {
@@ -51,7 +53,7 @@ public class PushTextSendJob extends PushSendJob implements InjectableType {
     SmsMessageRecord       record            = database.getMessage(messageId);
 
     try {
-      Log.w(TAG, "Sending message: " + messageId);
+      Log.i(TAG, "Sending message: " + messageId);
 
       deliver(record);
       database.markAsSent(messageId, true);
@@ -60,6 +62,8 @@ public class PushTextSendJob extends PushSendJob implements InjectableType {
         database.markExpireStarted(messageId);
         expirationManager.scheduleDeletion(record.getId(), record.isMms(), record.getExpiresIn());
       }
+
+      Log.i(TAG, "Sent message: " + messageId);
 
     } catch (InsecureFallbackApprovalException e) {
       Log.w(TAG, e);

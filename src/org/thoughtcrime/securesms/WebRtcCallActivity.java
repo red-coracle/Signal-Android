@@ -28,7 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -49,7 +49,6 @@ import org.thoughtcrime.securesms.service.WebRtcCallService;
 import org.thoughtcrime.securesms.util.ServiceUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.ViewUtil;
-import org.thoughtcrime.securesms.webrtc.CameraState;
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.SignalProtocolAddress;
 
@@ -71,7 +70,7 @@ public class WebRtcCallActivity extends Activity {
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
-    Log.w(TAG, "onCreate()");
+    Log.i(TAG, "onCreate()");
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     super.onCreate(savedInstanceState);
@@ -87,7 +86,7 @@ public class WebRtcCallActivity extends Activity {
 
   @Override
   public void onResume() {
-    Log.w(TAG, "onResume()");
+    Log.i(TAG, "onResume()");
     super.onResume();
     if (!networkAccess.isCensored(this)) MessageRetrievalService.registerActivityStarted(this);
     initializeScreenshotSecurity();
@@ -96,7 +95,7 @@ public class WebRtcCallActivity extends Activity {
 
   @Override
   public void onNewIntent(Intent intent){
-    Log.w(TAG, "onNewIntent");
+    Log.i(TAG, "onNewIntent");
     if (ANSWER_ACTION.equals(intent.getAction())) {
       handleAnswerCall();
     } else if (DENY_ACTION.equals(intent.getAction())) {
@@ -108,7 +107,7 @@ public class WebRtcCallActivity extends Activity {
 
   @Override
   public void onPause() {
-    Log.w(TAG, "onPause");
+    Log.i(TAG, "onPause");
     super.onPause();
     if (!networkAccess.isCensored(this)) MessageRetrievalService.registerActivityStopped(this);
     EventBus.getDefault().unregister(this);
@@ -203,7 +202,7 @@ public class WebRtcCallActivity extends Activity {
   }
 
   private void handleEndCall() {
-    Log.w(TAG, "Hangup pressed, handling termination now...");
+    Log.i(TAG, "Hangup pressed, handling termination now...");
     Intent intent = new Intent(WebRtcCallActivity.this, WebRtcCallService.class);
     intent.setAction(WebRtcCallService.ACTION_LOCAL_HANGUP);
     startService(intent);
@@ -218,7 +217,7 @@ public class WebRtcCallActivity extends Activity {
   }
 
   private void handleTerminate(@NonNull Recipient recipient /*, int terminationType */) {
-    Log.w(TAG, "handleTerminate called");
+    Log.i(TAG, "handleTerminate called");
 
     callScreen.setActiveCall(recipient, getString(R.string.RedPhone_ending_call));
     EventBus.getDefault().removeStickyEvent(WebRtcViewModel.class);
@@ -315,7 +314,7 @@ public class WebRtcCallActivity extends Activity {
 
   @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
   public void onEventMainThread(final WebRtcViewModel event) {
-    Log.w(TAG, "Got message from service: " + event);
+    Log.i(TAG, "Got message from service: " + event);
 
     switch (event.getState()) {
       case CALL_CONNECTED:          handleCallConnected(event);            break;

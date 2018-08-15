@@ -12,7 +12,6 @@ import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -21,10 +20,10 @@ import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.ApplicationPreferencesActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.backup.BackupDialog;
-import org.thoughtcrime.securesms.backup.FullBackupBase;
 import org.thoughtcrime.securesms.backup.FullBackupBase.BackupEvent;
 import org.thoughtcrime.securesms.components.SwitchPreferenceCompat;
 import org.thoughtcrime.securesms.jobs.LocalBackupJob;
+import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.preferences.widgets.ProgressPreference;
 import org.thoughtcrime.securesms.util.BackupUtil;
@@ -161,7 +160,7 @@ public class ChatsPreferenceFragment extends ListSummaryPreferenceFragment {
                  .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                  .ifNecessary()
                  .onAllGranted(() -> {
-                   Log.w(TAG, "Queing backup...");
+                   Log.i(TAG, "Queing backup...");
                    ApplicationContext.getInstance(getContext())
                                      .getJobManager()
                                      .add(new LocalBackupJob(getContext()));
@@ -199,7 +198,7 @@ public class ChatsPreferenceFragment extends ListSummaryPreferenceFragment {
   private class MediaDownloadChangeListener implements Preference.OnPreferenceChangeListener {
     @SuppressWarnings("unchecked")
     @Override public boolean onPreferenceChange(Preference preference, Object newValue) {
-      Log.w(TAG, "onPreferenceChange");
+      Log.i(TAG, "onPreferenceChange");
       preference.setSummary(getSummaryForMediaPreference((Set<String>)newValue));
       return true;
     }

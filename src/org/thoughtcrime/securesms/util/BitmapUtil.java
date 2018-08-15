@@ -13,7 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.*;
 import android.support.annotation.WorkerThread;
 import android.support.media.ExifInterface;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 import android.util.Pair;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -71,10 +71,12 @@ public class BitmapUtil {
                                     .downsample(DownsampleStrategy.AT_MOST)
                                     .submit(maxImageWidth, maxImageHeight)
                                     .get();
-      
+
       if (scaledBitmap == null) {
         throw new BitmapDecodingException("Unable to decode image");
       }
+
+      Log.i(TAG, "Initial scaled bitmap has size of " + scaledBitmap.getByteCount() + " bytes.");
 
       try {
         do {
@@ -82,7 +84,7 @@ public class BitmapUtil {
           scaledBitmap.compress(CompressFormat.JPEG, quality, baos);
           bytes = baos.toByteArray();
 
-          Log.w(TAG, "iteration with quality " + quality + " size " + (bytes.length / 1024) + "kb");
+          Log.d(TAG, "iteration with quality " + quality + " size " + (bytes.length / 1024) + "kb");
           if (quality == MIN_COMPRESSION_QUALITY) break;
 
           int nextQuality = (int)Math.floor(quality * Math.sqrt((double)maxImageSize / bytes.length));
@@ -92,10 +94,17 @@ public class BitmapUtil {
           quality = Math.max(nextQuality, MIN_COMPRESSION_QUALITY);
         }
         while (bytes.length > maxImageSize && attempts++ < MAX_COMPRESSION_ATTEMPTS);
+
         if (bytes.length > maxImageSize) {
           throw new BitmapDecodingException("Unable to scale image below: " + bytes.length);
         }
-        Log.w(TAG, "createScaledBytes(" + model.toString() + ") -> quality " + Math.min(quality, MAX_COMPRESSION_QUALITY) + ", " + attempts + " attempt(s)");
+
+        if (bytes.length <= 0) {
+          throw new BitmapDecodingException("Decoding failed. Bitmap has a length of " + bytes.length + " bytes.");
+        }
+
+        Log.i(TAG, "createScaledBytes(" + model.toString() + ") -> quality " + Math.min(quality, MAX_COMPRESSION_QUALITY) + ", " + attempts + " attempt(s)");
+
         return new ScaleResult(bytes, scaledBitmap.getWidth(), scaledBitmap.getHeight());
       } finally {
         if (scaledBitmap != null) scaledBitmap.recycle();

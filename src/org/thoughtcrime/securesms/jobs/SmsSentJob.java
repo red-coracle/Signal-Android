@@ -3,7 +3,7 @@ package org.thoughtcrime.securesms.jobs;
 import android.app.Activity;
 import android.content.Context;
 import android.telephony.SmsManager;
-import android.util.Log;
+import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
@@ -43,7 +43,7 @@ public class SmsSentJob extends MasterSecretJob {
 
   @Override
   public void onRun(MasterSecret masterSecret) {
-    Log.w(TAG, "Got SMS callback: " + action + " , " + result);
+    Log.i(TAG, "Got SMS callback: " + action + " , " + result);
 
     switch (action) {
       case SmsDeliveryListener.SENT_SMS_ACTION:

@@ -1,13 +1,13 @@
 package org.thoughtcrime.securesms.jobs;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.events.ReminderUpdateEvent;
 import org.thoughtcrime.securesms.jobmanager.JobParameters;
 import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
+import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
@@ -36,6 +36,8 @@ public class ServiceOutageDetectionJob extends ContextJob {
 
   @Override
   public void onRun() throws RetryLaterException {
+    Log.i(TAG, "onRun()");
+
     long timeSinceLastCheck = System.currentTimeMillis() - TextSecurePreferences.getLastOutageCheckTime(context);
     if (timeSinceLastCheck < CHECK_TIME) {
       Log.w(TAG, "Skipping service outage check. Too soon.");
