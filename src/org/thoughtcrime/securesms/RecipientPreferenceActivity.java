@@ -356,7 +356,7 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
 
       mutePreference.setChecked(recipient.isMuted());
 
-      ringtoneMessagePreference.setSummary(getRingtoneSummary(getContext(), recipient.getMessageRingtone()));
+      ringtoneMessagePreference.setSummary(getRingtoneSummary(getContext(), recipient.getMessageRingtone(getContext())));
       ringtoneCallPreference.setSummary(getRingtoneSummary(getContext(), recipient.getCallRingtone()));
 
       Pair<String, Integer> vibrateMessageSummary = getVibrateSummary(getContext(), recipient.getMessageVibrate());
@@ -443,7 +443,11 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
 
     @Override
     public void onModified(final Recipient recipient) {
-      Util.runOnMain(() -> setSummaries(recipient));
+      Util.runOnMain(() -> {
+        if (getContext() != null && getActivity() != null && !getActivity().isFinishing()) {
+          setSummaries(recipient);
+        }
+      });
     }
 
     private class RingtoneChangeListener implements Preference.OnPreferenceChangeListener {
@@ -496,7 +500,7 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
           current    = recipient.getCallRingtone();
           defaultUri = TextSecurePreferences.getCallNotificationRingtone(getContext());
         } else  {
-          current    = recipient.getMessageRingtone();
+          current    = recipient.getMessageRingtone(getContext());
           defaultUri = TextSecurePreferences.getNotificationRingtone(getContext());
         }
 

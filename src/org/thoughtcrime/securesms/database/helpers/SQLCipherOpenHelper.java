@@ -247,6 +247,7 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper {
 
       if (oldVersion < NOTIFICATION_CHANNELS) {
         db.execSQL("ALTER TABLE recipient_preferences ADD COLUMN notification_channel TEXT DEFAULT NULL");
+        NotificationChannels.create(context);
 
         try (Cursor cursor = db.rawQuery("SELECT recipient_ids, system_display_name, signal_profile_name, notification, vibrate FROM recipient_preferences WHERE notification NOT NULL OR vibrate != 0", null)) {
           while (cursor != null && cursor.moveToNext()) {
@@ -257,8 +258,20 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper {
             String  messageSound    = cursor.getString(cursor.getColumnIndexOrThrow("notification"));
             Uri     messageSoundUri = messageSound != null ? Uri.parse(messageSound) : null;
             int     vibrateState    = cursor.getInt(cursor.getColumnIndexOrThrow("vibrate"));
-            String  displayName     = NotificationChannels.getChannelDisplayNameFor(systemName, profileName, address);
+            String  displayName     = NotificationChannels.getChannelDisplayNameFor(context, systemName, profileName, address);
             boolean vibrateEnabled  = vibrateState == 0 ? TextSecurePreferences.isNotificationVibrateEnabled(context) : vibrateState == 1;
+
+            if (address.isGroup()) {
+              try(Cursor groupCursor = db.rawQuery("SELECT title FROM groups WHERE group_id = ?", new String[] { address.toGroupString() })) {
+                if (groupCursor != null && groupCursor.moveToFirst()) {
+                  String title = groupCursor.getString(groupCursor.getColumnIndexOrThrow("title"));
+
+                  if (!TextUtils.isEmpty(title)) {
+                    displayName = title;
+                  }
+                }
+              }
+            }
 
             String channelId = NotificationChannels.createChannelFor(context, address, displayName, messageSoundUri, vibrateEnabled);
 

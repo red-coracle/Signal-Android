@@ -250,8 +250,8 @@ android {
     }
 
     defaultConfig {
-        versionCode 396
-        versionName "4.25.2"
+        versionCode 400
+        versionName "4.25.6"
 
         applicationId "org.libresignal"
         minSdkVersion 14

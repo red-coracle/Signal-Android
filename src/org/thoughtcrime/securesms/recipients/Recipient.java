@@ -17,7 +17,6 @@
  */
 package org.thoughtcrime.securesms.recipients;
 
-import android.app.NotificationChannel;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -464,9 +463,13 @@ public class Recipient implements RecipientModifiedListener {
     if (notify) notifyListeners();
   }
 
-  public synchronized @Nullable Uri getMessageRingtone() {
+  public synchronized @Nullable Uri getMessageRingtone(@NonNull Context context) {
     if (messageRingtone != null && messageRingtone.getScheme() != null && messageRingtone.getScheme().startsWith("file")) {
       return null;
+    }
+
+    if (NotificationChannels.supported()) {
+      return NotificationChannels.getMessageRingtone(context, this);
     }
 
     return messageRingtone;
