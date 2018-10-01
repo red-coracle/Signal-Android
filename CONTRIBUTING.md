@@ -17,7 +17,7 @@ Truths which we believe to be self-evident:
 
 ## Translations
 
-Thanks to a dedicated community of volunteer translators, Signal is now available in more than one hundred languages. We use Transifex to manage our translation efforts, not GitHub. Any suggestions, corrections, or new translations should be submitted to the [Signal localization project for Android](https://www.transifex.com/projects/p/signal-android/).
+Thanks to a dedicated community of volunteer translators, Signal is now available in more than one hundred languages. We use Transifex to manage our translation efforts, not GitHub. Any suggestions, corrections, or new translations should be submitted to the [Signal localization project for Android](https://www.transifex.com/signalapp/signal-android/).
 
 
 ## Issues
@@ -76,9 +76,9 @@ There are several other ways to get involved:
   * Redirect non-bug discussions to the [community forum](https://community.signalusers.org).
 * Improve documentation in the [wiki](https://github.com/signalapp/Signal-Android/wiki).
 * Join the community of volunteer translators on Transifex:
-  * [Android](https://www.transifex.com/projects/p/signal-android/)
-  * [iOS](https://www.transifex.com/open-whisper-systems/signal-ios/)
-  * [Desktop](https://www.transifex.com/projects/p/signal-desktop/)
+  * [Android](https://www.transifex.com/signalapp/signal-android/)
+  * [iOS](https://www.transifex.com/signalapp/signal-ios/)
+  * [Desktop](https://www.transifex.com/signalapp/signal-desktop/)
 * Find and mark duplicate issues.
 * Try to reproduce issues and help with troubleshooting.
 * Discover solutions to open issues and post any relevant findings.
