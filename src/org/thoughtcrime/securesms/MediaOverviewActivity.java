@@ -16,6 +16,7 @@
  */
 package org.thoughtcrime.securesms;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -46,6 +47,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codewaves.stickyheadergrid.StickyHeaderGridLayoutManager;
 
@@ -56,22 +58,26 @@ import org.thoughtcrime.securesms.database.loaders.BucketedThreadMediaLoader;
 import org.thoughtcrime.securesms.database.loaders.BucketedThreadMediaLoader.BucketedThreadMedia;
 import org.thoughtcrime.securesms.database.loaders.ThreadMediaLoader;
 import org.thoughtcrime.securesms.mms.GlideApp;
+import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.util.AttachmentUtil;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
+import org.thoughtcrime.securesms.util.SaveAttachmentTask;
 import org.thoughtcrime.securesms.util.StickyHeaderDecoration;
 import org.thoughtcrime.securesms.util.ViewUtil;
 import org.thoughtcrime.securesms.util.task.ProgressDialogAsyncTask;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * Activity for displaying media attachments in-app
  */
-public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  {
+public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity {
 
   @SuppressWarnings("unused")
   private final static String TAG = MediaOverviewActivity.class.getSimpleName();
@@ -135,6 +141,16 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
     getSupportActionBar().setTitle(recipient.toShortString());
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     this.recipient.addListener(recipient -> getSupportActionBar().setTitle(recipient.toShortString()));
+  }
+
+  public void onEnterMultiSelect() {
+    tabLayout.setEnabled(false);
+    viewPager.setEnabled(false);
+  }
+
+  public void onExitMultiSelect() {
+    tabLayout.setEnabled(true);
+    viewPager.setEnabled(true);
   }
 
   private class MediaOverviewPagerAdapter extends FragmentStatePagerAdapter {
@@ -271,7 +287,6 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
       adapter.toggleSelection(mediaRecord);
       if (adapter.getSelectedMediaCount() == 0) {
         actionMode.finish();
-        actionMode = null;
       } else {
         actionMode.setTitle(String.valueOf(adapter.getSelectedMediaCount()));
       }
@@ -304,8 +319,53 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
         ((MediaGalleryAdapter) recyclerView.getAdapter()).toggleSelection(mediaRecord);
         recyclerView.getAdapter().notifyDataSetChanged();
 
-        actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(actionModeCallback);
+        enterMultiSelect();
       }
+    }
+
+    @SuppressWarnings("CodeBlock2Expr")
+    @SuppressLint({"InlinedApi","StaticFieldLeak"})
+    private void handleSaveMedia(@NonNull Collection<MediaDatabase.MediaRecord> mediaRecords) {
+      final Context context = getContext();
+      SaveAttachmentTask.showWarningDialog(context, (dialogInterface, which) -> {
+        Permissions.with(this)
+                   .request(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+                   .ifNecessary()
+                   .withPermanentDenialDialog(getString(R.string.MediaPreviewActivity_signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied))
+                   .onAnyDenied(() -> Toast.makeText(getContext(), R.string.MediaPreviewActivity_unable_to_write_to_external_storage_without_permission, Toast.LENGTH_LONG).show())
+                   .onAllGranted(() -> {
+                     new ProgressDialogAsyncTask<Void, Void, List<SaveAttachmentTask.Attachment>>(context,
+                                                                                                  R.string.MediaOverviewActivity_collecting_attachments,
+                                                                                                  R.string.please_wait) {
+                       @Override
+                       protected List<SaveAttachmentTask.Attachment> doInBackground(Void... params) {
+                         List<SaveAttachmentTask.Attachment> attachments = new LinkedList<>();
+
+                         for (MediaDatabase.MediaRecord mediaRecord : mediaRecords) {
+                           if (mediaRecord.getAttachment().getDataUri() != null) {
+                             attachments.add(new SaveAttachmentTask.Attachment(mediaRecord.getAttachment().getDataUri(),
+                                                                               mediaRecord.getContentType(),
+                                                                               mediaRecord.getDate(),
+                                                                               mediaRecord.getAttachment().getFileName()));
+                           }
+                         }
+
+                         return attachments;
+                       }
+
+                       @Override
+                       protected void onPostExecute(List<SaveAttachmentTask.Attachment> attachments) {
+                         super.onPostExecute(attachments);
+                         SaveAttachmentTask saveTask = new SaveAttachmentTask(context,
+                                                                              attachments.size());
+                         saveTask.executeOnExecutor(THREAD_POOL_EXECUTOR,
+                                                    attachments.toArray(new SaveAttachmentTask.Attachment[attachments.size()]));
+                         actionMode.finish();
+                       }
+                     }.execute();
+                   })
+                   .execute();
+      }, mediaRecords.size());
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -348,8 +408,18 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
       builder.show();
     }
 
+    private void handleSelectAllMedia() {
+      getListAdapter().selectAllMedia();
+      actionMode.setTitle(String.valueOf(getListAdapter().getSelectedMediaCount()));
+    }
+
     private MediaGalleryAdapter getListAdapter() {
       return (MediaGalleryAdapter) recyclerView.getAdapter();
+    }
+
+    private void enterMultiSelect() {
+      actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(actionModeCallback);
+      ((MediaOverviewActivity) getActivity()).onEnterMultiSelect();
     }
 
     private class ActionModeCallback implements ActionMode.Callback {
@@ -377,9 +447,15 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
       @Override
       public boolean onActionItemClicked(ActionMode mode, MenuItem menuItem) {
         switch (menuItem.getItemId()) {
+          case R.id.save:
+            handleSaveMedia(getListAdapter().getSelectedMedia());
+            return true;
           case R.id.delete:
             handleDeleteMedia(getListAdapter().getSelectedMedia());
-            mode.finish();
+            actionMode.finish();
+            return true;
+          case R.id.select_all:
+            handleSelectAllMedia();
             return true;
         }
         return false;
@@ -389,6 +465,7 @@ public class MediaOverviewActivity extends PassphraseRequiredActionBarActivity  
       public void onDestroyActionMode(ActionMode mode) {
         actionMode = null;
         getListAdapter().clearSelection();
+        ((MediaOverviewActivity) getActivity()).onExitMultiSelect();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           getActivity().getWindow().setStatusBarColor(originalStatusBarColor);

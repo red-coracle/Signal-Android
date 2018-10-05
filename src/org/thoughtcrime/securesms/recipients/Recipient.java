@@ -292,8 +292,7 @@ public class Recipient implements RecipientModifiedListener {
   }
 
   public synchronized @NonNull MaterialColor getColor() {
-    if      (isGroupRecipient()) return MaterialColor.BLUE;
-    else if (color != null)      return color;
+    if      (color != null)      return color;
     else if (name != null)       return ContactColors.generateFor(name);
     else                         return ContactColors.UNKNOWN_COLOR;
   }
@@ -420,14 +419,14 @@ public class Recipient implements RecipientModifiedListener {
   }
 
   public synchronized @NonNull Drawable getFallbackContactPhotoDrawable(Context context, boolean inverted) {
-    return getFallbackContactPhoto().asDrawable(context, getColor().toConversationColor(context), inverted);
+    return getFallbackContactPhoto().asDrawable(context, getColor().toAvatarColor(context), inverted);
   }
 
   public synchronized @NonNull FallbackContactPhoto getFallbackContactPhoto() {
     if      (isResolving())            return new TransparentContactPhoto();
     else if (isGroupRecipient())       return new ResourceContactPhoto(R.drawable.ic_group_white_24dp, R.drawable.ic_group_large);
-    else if (!TextUtils.isEmpty(name)) return new GeneratedContactPhoto(name);
-    else                               return new GeneratedContactPhoto("#");
+    else if (!TextUtils.isEmpty(name)) return new GeneratedContactPhoto(name, R.drawable.ic_profile_default);
+    else                               return new ResourceContactPhoto(R.drawable.ic_profile_default, R.drawable.ic_person_large);
   }
 
   public synchronized @Nullable ContactPhoto getContactPhoto() {

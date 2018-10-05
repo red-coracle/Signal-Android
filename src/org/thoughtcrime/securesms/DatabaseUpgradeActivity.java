@@ -25,6 +25,13 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
+
+import org.thoughtcrime.securesms.jobmanager.Job;
+import org.thoughtcrime.securesms.jobmanager.JobManager;
+import org.thoughtcrime.securesms.jobmanager.persistence.JavaJobSerializer;
+import org.thoughtcrime.securesms.jobmanager.persistence.PersistentStorage;
+import org.thoughtcrime.securesms.color.MaterialColor;
+import org.thoughtcrime.securesms.contacts.avatars.ContactColorsLegacy;
 import org.thoughtcrime.securesms.logging.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -45,6 +52,7 @@ import org.thoughtcrime.securesms.jobs.PushDecryptJob;
 import org.thoughtcrime.securesms.jobs.RefreshAttributesJob;
 import org.thoughtcrime.securesms.mms.GlideApp;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
+import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.FileUtils;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
@@ -85,6 +93,8 @@ public class DatabaseUpgradeActivity extends BaseActivity {
   public static final int FULL_TEXT_SEARCH                     = 358;
   public static final int BAD_IMPORT_CLEANUP                   = 373;
   public static final int IMAGE_CACHE_CLEANUP                  = 406;
+  public static final int WORKMANAGER_MIGRATION                = 408;
+  public static final int COLOR_MIGRATION                      = 412;
 
   private static final SortedSet<Integer> UPGRADE_VERSIONS = new TreeSet<Integer>() {{
     add(NO_MORE_KEY_EXCHANGE_PREFIX_VERSION);
@@ -108,6 +118,8 @@ public class DatabaseUpgradeActivity extends BaseActivity {
     add(FULL_TEXT_SEARCH);
     add(BAD_IMPORT_CLEANUP);
     add(IMAGE_CACHE_CLEANUP);
+    add(WORKMANAGER_MIGRATION);
+    add(COLOR_MIGRATION);
   }};
 
   private MasterSecret masterSecret;
@@ -316,6 +328,34 @@ public class DatabaseUpgradeActivity extends BaseActivity {
         } catch (IOException e) {
           Log.w(TAG, e);
         }
+      }
+
+      if (params[0] < WORKMANAGER_MIGRATION) {
+        Log.i(TAG, "Beginning migration of existing jobs to WorkManager");
+
+        JobManager        jobManager = ApplicationContext.getInstance(getApplicationContext()).getJobManager();
+        PersistentStorage storage    = new PersistentStorage(getApplicationContext(), "TextSecureJobs", new JavaJobSerializer());
+
+        for (Job job : storage.getAllUnencrypted()) {
+          jobManager.add(job);
+          Log.i(TAG, "Migrated job with class '" + job.getClass().getSimpleName() + "' to run on new JobManager.");
+        }
+      }
+
+      if (params[0] < COLOR_MIGRATION) {
+        long startTime = System.currentTimeMillis();
+        DatabaseFactory.getRecipientDatabase(context).updateSystemContactColors((name, color) -> {
+          if (color != null) {
+            try {
+              return MaterialColor.fromSerialized(color);
+            } catch (MaterialColor.UnknownColorException e) {
+              Log.w(TAG, "Encountered an unknown color during legacy color migration.", e);
+              return ContactColorsLegacy.generateFor(name);
+            }
+          }
+          return ContactColorsLegacy.generateFor(name);
+        });
+        Log.i(TAG, "Color migration took " + (System.currentTimeMillis() - startTime) + " ms");
       }
 
       return null;

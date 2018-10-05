@@ -17,8 +17,6 @@
 package org.thoughtcrime.securesms;
 
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.arch.lifecycle.DefaultLifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.ProcessLifecycleOwner;
@@ -27,7 +25,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
-import android.support.v4.app.NotificationManagerCompat;
 
 import com.google.android.gms.security.ProviderInstaller;
 
@@ -37,14 +34,9 @@ import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.dependencies.SignalCommunicationModule;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.jobmanager.dependencies.DependencyInjector;
-import org.thoughtcrime.securesms.jobmanager.persistence.JavaJobSerializer;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirementProvider;
 import org.thoughtcrime.securesms.jobs.CreateSignedPreKeyJob;
 import org.thoughtcrime.securesms.jobs.GcmRefreshJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob;
-import org.thoughtcrime.securesms.jobs.requirements.MasterSecretRequirementProvider;
-import org.thoughtcrime.securesms.jobs.requirements.ServiceRequirementProvider;
-import org.thoughtcrime.securesms.jobs.requirements.SqlCipherMigrationRequirementProvider;
 import org.thoughtcrime.securesms.logging.AndroidLogger;
 import org.thoughtcrime.securesms.logging.CustomSignalProtocolLogger;
 import org.thoughtcrime.securesms.logging.Log;
@@ -58,6 +50,7 @@ import org.thoughtcrime.securesms.service.LocalBackupListener;
 import org.thoughtcrime.securesms.service.RotateSignedPreKeyListener;
 import org.thoughtcrime.securesms.service.UpdateApkRefreshListener;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.Util;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.PeerConnectionFactory.InitializationOptions;
 import org.webrtc.voiceengine.WebRtcAudioManager;
@@ -68,6 +61,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import androidx.work.Configuration;
+import androidx.work.WorkManager;
 import dagger.ObjectGraph;
 
 /**
@@ -164,16 +159,11 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
   }
 
   private void initializeJobManager() {
-    this.jobManager = JobManager.newBuilder(this)
-                                .withName("TextSecureJobs")
-                                .withDependencyInjector(this)
-                                .withJobSerializer(new JavaJobSerializer())
-                                .withRequirementProviders(new MasterSecretRequirementProvider(this),
-                                                          new ServiceRequirementProvider(this),
-                                                          new NetworkRequirementProvider(this),
-                                                          new SqlCipherMigrationRequirementProvider())
-                                .withConsumerThreads(5)
-                                .build();
+    WorkManager.initialize(this, new Configuration.Builder()
+                                                  .setMinimumLoggingLevel(android.util.Log.DEBUG)
+                                                  .build());
+
+    this.jobManager = new JobManager(WorkManager.getInstance());
   }
 
   private void initializeDependencyInjection() {
