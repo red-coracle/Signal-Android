@@ -6,26 +6,34 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import org.thoughtcrime.securesms.ConversationListActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import org.whispersystems.libsignal.util.guava.Preconditions;
 
 public class GenericForegroundService extends Service {
+
+  private static final String TAG = GenericForegroundService.class.getSimpleName();
 
   private static final int    NOTIFICATION_ID  = 827353982;
   private static final String EXTRA_TITLE      = "extra_title";
   private static final String EXTRA_CHANNEL_ID = "extra_channel_id";
+  private static final String EXTRA_ICON_RES   = "extra_icon_res";
 
   private static final String ACTION_START = "start";
   private static final String ACTION_STOP  = "stop";
 
-  private final AtomicInteger foregroundCount = new AtomicInteger(0);
+  private int    foregroundCount;
+  private String activeTitle;
+  private String activeChannelId;
+  private int    activeIconRes;
 
   @Override
   public void onCreate() {
@@ -34,34 +42,51 @@ public class GenericForegroundService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    if      (intent != null && ACTION_START.equals(intent.getAction())) handleStart(intent);
-    else if (intent != null && ACTION_STOP.equals(intent.getAction()))  handleStop();
+    synchronized (GenericForegroundService.class) {
+      if      (intent != null && ACTION_START.equals(intent.getAction())) handleStart(intent);
+      else if (intent != null && ACTION_STOP.equals(intent.getAction()))  handleStop();
+      else                                                                throw new IllegalStateException("Action needs to be START or STOP.");
 
-    return START_NOT_STICKY;
+      return START_NOT_STICKY;
+    }
   }
 
 
   private void handleStart(@NonNull Intent intent) {
-    String title     = intent.getStringExtra(EXTRA_TITLE);
-    String channelId = intent.getStringExtra(EXTRA_CHANNEL_ID);
+    String title     = Preconditions.checkNotNull(intent.getStringExtra(EXTRA_TITLE));
+    String channelId = Preconditions.checkNotNull(intent.getStringExtra(EXTRA_CHANNEL_ID));
+    int    iconRes   = intent.getIntExtra(EXTRA_ICON_RES, R.drawable.ic_signal_grey_24dp);
 
-    assert title != null;
-    assert channelId != null;
+    foregroundCount++;
 
-    if (foregroundCount.getAndIncrement() == 0) {
-      startForeground(NOTIFICATION_ID, new NotificationCompat.Builder(this, channelId)
-          .setSmallIcon(R.drawable.ic_signal_grey_24dp)
-          .setContentTitle(title)
-          .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, ConversationListActivity.class), 0))
-          .build());
+    if (foregroundCount == 1) {
+      Log.d(TAG, "First request. Title: " + title + "  ChannelId: " + channelId);
+      activeTitle     = title;
+      activeChannelId = channelId;
+      activeIconRes   = iconRes;
     }
+
+    postObligatoryForegroundNotification(activeTitle, activeChannelId, activeIconRes);
   }
 
   private void handleStop() {
-    if (foregroundCount.decrementAndGet() == 0) {
+    postObligatoryForegroundNotification(activeTitle, activeChannelId, activeIconRes);
+
+    foregroundCount--;
+
+    if (foregroundCount == 0) {
+      Log.d(TAG, "Last request. Ending foreground service.");
       stopForeground(true);
       stopSelf();
     }
+  }
+
+  private void postObligatoryForegroundNotification(String title, String channelId, @DrawableRes int iconRes) {
+    startForeground(NOTIFICATION_ID, new NotificationCompat.Builder(this, channelId)
+                                                           .setSmallIcon(iconRes)
+                                                           .setContentTitle(title)
+                                                           .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, ConversationListActivity.class), 0))
+                                                           .build());
   }
 
   @Nullable
@@ -75,18 +100,23 @@ public class GenericForegroundService extends Service {
   }
 
   public static void startForegroundTask(@NonNull Context context, @NonNull String task, @NonNull String channelId) {
+    startForegroundTask(context, task, channelId, R.drawable.ic_signal_grey_24dp);
+  }
+
+  public static void startForegroundTask(@NonNull Context context, @NonNull String task, @NonNull String channelId, @DrawableRes int iconRes) {
     Intent intent = new Intent(context, GenericForegroundService.class);
     intent.setAction(ACTION_START);
     intent.putExtra(EXTRA_TITLE, task);
     intent.putExtra(EXTRA_CHANNEL_ID, channelId);
+    intent.putExtra(EXTRA_ICON_RES, iconRes);
 
-    context.startService(intent);
+    ContextCompat.startForegroundService(context, intent);
   }
 
   public static void stopForegroundTask(@NonNull Context context) {
     Intent intent = new Intent(context, GenericForegroundService.class);
     intent.setAction(ACTION_STOP);
 
-    context.startService(intent);
+    ContextCompat.startForegroundService(context, intent);
   }
 }

@@ -15,8 +15,8 @@ import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
 import org.thoughtcrime.securesms.jobs.PushNotificationReceiveJob;
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
 import org.thoughtcrime.securesms.service.KeyCachingService;
-import org.thoughtcrime.securesms.service.MessageRetrievalService;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.Util;
 
 import java.util.Locale;
 
@@ -34,7 +34,6 @@ public abstract class PassphraseRequiredActionBarActivity extends BaseActionBarA
 
   private SignalServiceNetworkAccess networkAccess;
   private BroadcastReceiver          clearKeyReceiver;
-  private boolean                    isVisible;
 
   @Override
   protected final void onCreate(Bundle savedInstanceState) {
@@ -60,23 +59,16 @@ public abstract class PassphraseRequiredActionBarActivity extends BaseActionBarA
   protected void onResume() {
     Log.i(TAG, "onResume()");
     super.onResume();
-    KeyCachingService.registerPassphraseActivityStarted(this);
 
-    if (!networkAccess.isCensored(this)) MessageRetrievalService.registerActivityStarted(this);
-    else                                 ApplicationContext.getInstance(this).getJobManager().add(new PushNotificationReceiveJob(this));
-
-    isVisible = true;
+    if (networkAccess.isCensored(this)) {
+      ApplicationContext.getInstance(this).getJobManager().add(new PushNotificationReceiveJob(this));
+    }
   }
 
   @Override
   protected void onPause() {
     Log.i(TAG, "onPause()");
     super.onPause();
-    KeyCachingService.registerPassphraseActivityStopped(this);
-
-    if (!networkAccess.isCensored(this)) MessageRetrievalService.registerActivityStopped(this);
-
-    isVisible = false;
   }
 
   @Override
@@ -89,8 +81,8 @@ public abstract class PassphraseRequiredActionBarActivity extends BaseActionBarA
   @Override
   public void onMasterSecretCleared() {
     Log.i(TAG, "onMasterSecretCleared()");
-    if (isVisible) routeApplicationState(true);
-    else           finish();
+    if (ApplicationContext.getInstance(this).isAppVisible()) routeApplicationState(true);
+    else                                                     finish();
   }
 
   protected <T extends Fragment> T initFragment(@IdRes int target,

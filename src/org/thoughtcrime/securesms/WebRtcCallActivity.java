@@ -44,10 +44,10 @@ import org.thoughtcrime.securesms.events.WebRtcViewModel;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.service.MessageRetrievalService;
 import org.thoughtcrime.securesms.service.WebRtcCallService;
 import org.thoughtcrime.securesms.util.ServiceUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.ViewUtil;
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.SignalProtocolAddress;
@@ -66,7 +66,6 @@ public class WebRtcCallActivity extends Activity {
   public static final String END_CALL_ACTION = WebRtcCallActivity.class.getCanonicalName() + ".END_CALL_ACTION";
 
   private WebRtcCallScreen           callScreen;
-  private SignalServiceNetworkAccess networkAccess;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -88,7 +87,6 @@ public class WebRtcCallActivity extends Activity {
   public void onResume() {
     Log.i(TAG, "onResume()");
     super.onResume();
-    if (!networkAccess.isCensored(this)) MessageRetrievalService.registerActivityStarted(this);
     initializeScreenshotSecurity();
     EventBus.getDefault().register(this);
   }
@@ -109,7 +107,6 @@ public class WebRtcCallActivity extends Activity {
   public void onPause() {
     Log.i(TAG, "onPause");
     super.onPause();
-    if (!networkAccess.isCensored(this)) MessageRetrievalService.registerActivityStopped(this);
     EventBus.getDefault().unregister(this);
   }
 
@@ -142,8 +139,6 @@ public class WebRtcCallActivity extends Activity {
     callScreen.setCameraFlipButtonListener(new CameraFlipButtonListener());
     callScreen.setSpeakerButtonListener(new SpeakerButtonListener());
     callScreen.setBluetoothButtonListener(new BluetoothButtonListener());
-
-    networkAccess = new SignalServiceNetworkAccess(this);
   }
 
   private void handleSetMuteAudio(boolean enabled) {

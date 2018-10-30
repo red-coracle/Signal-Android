@@ -134,7 +134,7 @@
         <item name="conversation_list_item_background">@drawable/conversation_list_item_background</item>
         <item name="conversation_list_item_contact_color">@color/core_grey_90</item>
         <item name="conversation_list_item_subject_color">@color/core_grey_60</item>
-        <item name="conversation_list_item_delivery_icon_color">@color/core_grey_45</item>
+        <item name="conversation_list_item_delivery_icon_color">@color/core_grey_60</item>
         <item name="conversation_list_item_date_color">@color/core_grey_60</item>
         <item name="conversation_list_item_unread_color">@color/core_black</item>
         <item name="conversation_list_item_unread_background">@drawable/unread_count_background_light</item>
@@ -167,7 +167,7 @@
 
         <item name="contact_list_divider">@drawable/contact_list_divider_light</item>
 
-        <item name="verification_background">@color/gray5</item>
+        <item name="verification_background">@color/core_grey_05</item>
 
         <item name="emoji_tab_strip_background">@color/gray12</item>
         <item name="emoji_tab_indicator">#66555555</item>
@@ -188,12 +188,13 @@
 
 
         <item name="conversation_item_bubble_background">@color/core_grey_05</item>
-        <item name="conversation_item_sent_text_primary_color">@color/core_white</item>
-        <item name="conversation_item_sent_text_secondary_color">@color/core_white</item>
-        <item name="conversation_item_sent_icon_color">@color/core_white</item>
+        <item name="conversation_item_sent_text_primary_color">@color/core_grey_90</item>
+        <item name="conversation_item_sent_text_secondary_color">@color/core_grey_60</item>
+        <item name="conversation_item_sent_icon_color">@color/core_grey_60</item>
+        <item name="conversation_item_sent_download_icon_color">@color/core_grey_60</item>
         <item name="conversation_item_sent_text_indicator_tab_color">#99000000</item>
-        <item name="conversation_item_received_text_primary_color">@color/core_grey_90</item>
-        <item name="conversation_item_received_text_secondary_color">@color/core_grey_60</item>
+        <item name="conversation_item_received_text_primary_color">@color/core_white</item>
+        <item name="conversation_item_received_text_secondary_color">@color/core_white</item>
         <item name="conversation_item_update_text_color">@color/core_grey_60</item>
         <item name="conversation_item_last_seen_text_color">@color/core_grey_90</item>
         <item name="conversation_item_last_seen_line_color">@color/core_grey_60</item>
@@ -282,7 +283,7 @@
         <item name="conversation_list_item_background">@drawable/conversation_list_item_background_dark</item>
         <item name="conversation_list_item_contact_color">#ffdddddd</item>
         <item name="conversation_list_item_subject_color">#ffdddddd</item>
-        <item name="conversation_list_item_delivery_icon_color">@color/core_grey_45</item>
+        <item name="conversation_list_item_delivery_icon_color">@color/core_grey_25</item>
         <item name="conversation_list_item_date_color">#ffdddddd</item>
         <item name="conversation_list_item_unread_color">@color/core_white</item>
         <item name="conversation_list_item_unread_background">@drawable/unread_count_background_dark</item>
@@ -293,8 +294,9 @@
 
         <item name="conversation_item_bubble_background">@color/core_grey_75</item>
         <item name="conversation_item_sent_text_primary_color">@color/core_grey_05</item>
-        <item name="conversation_item_sent_text_secondary_color">@color/core_grey_05</item>
-        <item name="conversation_item_sent_icon_color">@color/core_grey_05</item>
+        <item name="conversation_item_sent_text_secondary_color">@color/core_grey_25</item>
+        <item name="conversation_item_sent_icon_color">@color/core_grey_25</item>
+        <item name="conversation_item_sent_download_icon_color">@color/core_white</item>
         <item name="conversation_item_sent_text_indicator_tab_color">#99ffffff</item>
         <item name="conversation_item_received_text_primary_color">@color/core_grey_05</item>
         <item name="conversation_item_received_text_secondary_color">@color/core_grey_25</item>
@@ -309,7 +311,7 @@
 
         <item name="contact_list_divider">@drawable/contact_list_divider_dark</item>
 
-        <item name="verification_background">#ff333333</item>
+        <item name="verification_background">@color/core_grey_95</item>
 
         <item name="dialog_info_icon">@drawable/ic_info_outline_dark</item>
         <item name="dialog_alert_icon">@drawable/ic_warning_dark</item>

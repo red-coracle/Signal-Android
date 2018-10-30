@@ -1,6 +1,8 @@
 package org.thoughtcrime.securesms.dependencies;
 
 import android.content.Context;
+
+import org.thoughtcrime.securesms.gcm.GcmBroadcastReceiver;
 import org.thoughtcrime.securesms.logging.Log;
 
 import org.greenrobot.eventbus.EventBus;
@@ -36,7 +38,7 @@ import org.thoughtcrime.securesms.jobs.SendReadReceiptJob;
 import org.thoughtcrime.securesms.preferences.AppProtectionPreferenceFragment;
 import org.thoughtcrime.securesms.push.SecurityEventListener;
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
-import org.thoughtcrime.securesms.service.MessageRetrievalService;
+import org.thoughtcrime.securesms.service.IncomingMessageObserver;
 import org.thoughtcrime.securesms.service.WebRtcCallService;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.libsignal.util.guava.Optional;
@@ -59,7 +61,7 @@ import dagger.Provides;
                                      PushMediaSendJob.class,
                                      AttachmentDownloadJob.class,
                                      RefreshPreKeysJob.class,
-                                     MessageRetrievalService.class,
+                                     IncomingMessageObserver.class,
                                      PushNotificationReceiveJob.class,
                                      MultiDeviceContactUpdateJob.class,
                                      MultiDeviceGroupUpdateJob.class,
@@ -80,7 +82,8 @@ import dagger.Provides;
                                      MultiDeviceProfileKeyUpdateJob.class,
                                      SendReadReceiptJob.class,
                                      MultiDeviceReadReceiptUpdateJob.class,
-                                     AppProtectionPreferenceFragment.class})
+                                     AppProtectionPreferenceFragment.class,
+                                     GcmBroadcastReceiver.class})
 public class SignalCommunicationModule {
 
   private static final String TAG = SignalCommunicationModule.class.getSimpleName();
@@ -115,10 +118,10 @@ public class SignalCommunicationModule {
                                                           new DynamicCredentialsProvider(context),
                                                           new SignalProtocolStoreImpl(context),
                                                           BuildConfig.USER_AGENT,
-                                                          Optional.fromNullable(MessageRetrievalService.getPipe()),
+                                                          Optional.fromNullable(IncomingMessageObserver.getPipe()),
                                                           Optional.of(new SecurityEventListener(context)));
     } else {
-      this.messageSender.setMessagePipe(MessageRetrievalService.getPipe());
+      this.messageSender.setMessagePipe(IncomingMessageObserver.getPipe());
     }
 
     return this.messageSender;
@@ -137,6 +140,11 @@ public class SignalCommunicationModule {
     }
 
     return this.messageReceiver;
+  }
+
+  @Provides
+  synchronized SignalServiceNetworkAccess provideSignalServiceNetworkAccess() {
+    return networkAccess;
   }
 
   private static class DynamicCredentialsProvider implements CredentialsProvider {
