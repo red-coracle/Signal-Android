@@ -284,7 +284,7 @@ android {
 
         applicationId "org.libresignal"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         multiDexEnabled true
 
         vectorDrawables.useSupportLibrary = true
