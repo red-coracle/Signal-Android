@@ -163,7 +163,8 @@ public class MmsDatabase extends MessagingDatabase {
           "'" + AttachmentDatabase.QUOTE + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.QUOTE + ", " +
           "'" + AttachmentDatabase.CONTENT_DISPOSITION + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.CONTENT_DISPOSITION + ", " +
           "'" + AttachmentDatabase.NAME + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.NAME + ", " +
-          "'" + AttachmentDatabase.TRANSFER_STATE + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.TRANSFER_STATE +
+          "'" + AttachmentDatabase.TRANSFER_STATE + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.TRANSFER_STATE + ", " +
+          "'" + AttachmentDatabase.CAPTION + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.CAPTION +
           ")) AS " + AttachmentDatabase.ATTACHMENT_JSON_ALIAS,
   };
 
@@ -715,7 +716,8 @@ public class MmsDatabase extends MessagingDatabase {
                                                databaseAttachment.isVoiceNote(),
                                                databaseAttachment.getWidth(),
                                                databaseAttachment.getHeight(),
-                                               databaseAttachment.isQuote()));
+                                               databaseAttachment.isQuote(),
+                                               databaseAttachment.getCaption()));
       }
 
       return insertMediaMessage(request.getBody(),
@@ -1053,6 +1055,17 @@ public class MmsDatabase extends MessagingDatabase {
     }
   }
 
+  public boolean isSent(long messageId) {
+    SQLiteDatabase database = databaseHelper.getReadableDatabase();
+    try (Cursor cursor = database.query(TABLE_NAME, new String[] {  MESSAGE_BOX }, ID + " = ?", new String[] { String.valueOf(messageId)}, null, null, null)) {
+      if (cursor != null && cursor.moveToNext()) {
+        long type = cursor.getLong(cursor.getColumnIndexOrThrow(MESSAGE_BOX));
+        return Types.isSentType(type);
+      }
+    }
+    return false;
+  }
+
   /*package*/ void deleteThreads(Set<Long> threadIds) {
     SQLiteDatabase db = databaseHelper.getWritableDatabase();
     String where      = "";
@@ -1090,7 +1103,6 @@ public class MmsDatabase extends MessagingDatabase {
 
       where += (" ELSE " + DATE_RECEIVED + " < " + date + " END)");
 
-      Log.i("MmsDatabase", "Executing trim query: " + where);
       cursor = db.query(TABLE_NAME, new String[] {ID}, where, new String[] {threadId+""}, null, null, null);
 
       while (cursor != null && cursor.moveToNext()) {

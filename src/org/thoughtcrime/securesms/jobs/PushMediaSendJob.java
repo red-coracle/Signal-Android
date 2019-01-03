@@ -13,7 +13,6 @@ import org.thoughtcrime.securesms.database.NoSuchMessageException;
 import org.thoughtcrime.securesms.database.RecipientDatabase.UnidentifiedAccessMode;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.jobmanager.SafeData;
-import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mms.MediaConstraints;
 import org.thoughtcrime.securesms.mms.MmsException;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
@@ -39,6 +38,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import androidx.work.Data;
+import androidx.work.WorkerParameters;
 
 public class PushMediaSendJob extends PushSendJob implements InjectableType {
 
@@ -52,8 +52,8 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
 
   private long messageId;
 
-  public PushMediaSendJob() {
-    super(null, null);
+  public PushMediaSendJob(@NonNull Context context, @NonNull WorkerParameters workerParameters) {
+    super(context, workerParameters);
   }
 
   public PushMediaSendJob(Context context, long messageId, Address destination) {
@@ -85,8 +85,13 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
     MmsDatabase            database          = DatabaseFactory.getMmsDatabase(context);
     OutgoingMediaMessage   message           = database.getOutgoingMessage(messageId);
 
+    if (database.isSent(messageId)) {
+      warn(TAG, "Message " + messageId + " was already sent. Ignoring.");
+      return;
+    }
+
     try {
-      Log.i(TAG, "Sending message: " + messageId);
+      log(TAG, "Sending message: " + messageId);
       
       Recipient              recipient  = message.getRecipient().resolve();
       byte[]                 profileKey = recipient.getProfileKey();
@@ -100,13 +105,13 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
 
       if (TextSecurePreferences.isUnidentifiedDeliveryEnabled(context)) {
         if (unidentified && accessMode == UnidentifiedAccessMode.UNKNOWN && profileKey == null) {
-          Log.i(TAG, "Marking recipient as UD-unrestricted following a UD send.");
+          log(TAG, "Marking recipient as UD-unrestricted following a UD send.");
           DatabaseFactory.getRecipientDatabase(context).setUnidentifiedAccessMode(recipient, UnidentifiedAccessMode.UNRESTRICTED);
         } else if (unidentified && accessMode == UnidentifiedAccessMode.UNKNOWN) {
-          Log.i(TAG, "Marking recipient as UD-enabled following a UD send.");
+          log(TAG, "Marking recipient as UD-enabled following a UD send.");
           DatabaseFactory.getRecipientDatabase(context).setUnidentifiedAccessMode(recipient, UnidentifiedAccessMode.ENABLED);
         } else if (!unidentified && accessMode != UnidentifiedAccessMode.DISABLED) {
-          Log.i(TAG, "Marking recipient as UD-disabled following a non-UD send.");
+          log(TAG, "Marking recipient as UD-disabled following a non-UD send.");
           DatabaseFactory.getRecipientDatabase(context).setUnidentifiedAccessMode(recipient, UnidentifiedAccessMode.DISABLED);
         }
       }
@@ -116,25 +121,23 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
         expirationManager.scheduleDeletion(messageId, true, message.getExpiresIn());
       }
 
-      Log.i(TAG, "Sent message: " + messageId);
+      log(TAG, "Sent message: " + messageId);
 
     } catch (InsecureFallbackApprovalException ifae) {
-      Log.w(TAG, ifae);
+      warn(TAG, "Failure", ifae);
       database.markAsPendingInsecureSmsFallback(messageId);
       notifyMediaMessageDeliveryFailed(context, messageId);
       ApplicationContext.getInstance(context).getJobManager().add(new DirectoryRefreshJob(context, false));
     } catch (UntrustedIdentityException uie) {
-      Log.w(TAG, uie);
+      warn(TAG, "Failure", uie);
       database.addMismatchedIdentity(messageId, Address.fromSerialized(uie.getE164Number()), uie.getIdentityKey());
       database.markAsSentFailed(messageId);
     }
   }
 
   @Override
-  public boolean onShouldRetryThrowable(Exception exception) {
-    if (exception instanceof RequirementNotMetException) return true;
-    if (exception instanceof RetryLaterException)        return true;
-
+  public boolean onShouldRetry(Exception exception) {
+    if (exception instanceof RetryLaterException) return true;
     return false;
   }
 
@@ -153,6 +156,8 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
     }
 
     try {
+      rotateSenderCertificateIfNecessary();
+
       SignalServiceAddress                     address           = getPushAddress(message.getRecipient().getAddress());
       MediaConstraints                         mediaConstraints  = MediaConstraints.getPushMediaConstraints();
       List<Attachment>                         scaledAttachments = scaleAndStripExifFromAttachments(mediaConstraints, message.getAttachments());
@@ -173,13 +178,13 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
 
       return messageSender.sendMessage(address, UnidentifiedAccessUtil.getAccessFor(context, message.getRecipient()), mediaMessage).getSuccess().isUnidentified();
     } catch (UnregisteredUserException e) {
-      Log.w(TAG, e);
+      warn(TAG, e);
       throw new InsecureFallbackApprovalException(e);
     } catch (FileNotFoundException e) {
-      Log.w(TAG, e);
+      warn(TAG, e);
       throw new UndeliverableMessageException(e);
     } catch (IOException e) {
-      Log.w(TAG, e);
+      warn(TAG, e);
       throw new RetryLaterException(e);
     }
   }

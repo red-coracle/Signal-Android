@@ -227,7 +227,8 @@ public class MmsSmsDatabase extends Database {
                                   "'" + AttachmentDatabase.QUOTE + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.QUOTE + ", " +
                                   "'" + AttachmentDatabase.CONTENT_DISPOSITION + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.CONTENT_DISPOSITION + ", " +
                                   "'" + AttachmentDatabase.NAME + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.NAME + ", " +
-                                  "'" + AttachmentDatabase.TRANSFER_STATE + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.TRANSFER_STATE +
+                                  "'" + AttachmentDatabase.TRANSFER_STATE + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.TRANSFER_STATE + ", " +
+                                  "'" + AttachmentDatabase.CAPTION + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.CAPTION +
                                   ")) AS " + AttachmentDatabase.ATTACHMENT_JSON_ALIAS,
                               SmsDatabase.BODY, MmsSmsColumns.READ, MmsSmsColumns.THREAD_ID,
                               SmsDatabase.TYPE, SmsDatabase.ADDRESS, SmsDatabase.ADDRESS_DEVICE_ID, SmsDatabase.SUBJECT, MmsDatabase.MESSAGE_TYPE,
@@ -326,6 +327,7 @@ public class MmsSmsDatabase extends Database {
     mmsColumnsPresent.add(AttachmentDatabase.WIDTH);
     mmsColumnsPresent.add(AttachmentDatabase.HEIGHT);
     mmsColumnsPresent.add(AttachmentDatabase.QUOTE);
+    mmsColumnsPresent.add(AttachmentDatabase.CAPTION);
     mmsColumnsPresent.add(AttachmentDatabase.CONTENT_DISPOSITION);
     mmsColumnsPresent.add(AttachmentDatabase.NAME);
     mmsColumnsPresent.add(AttachmentDatabase.TRANSFER_STATE);
@@ -372,7 +374,6 @@ public class MmsSmsDatabase extends Database {
     @SuppressWarnings("deprecation")
     String query      = outerQueryBuilder.buildQuery(projection, null, null, null, null, null, null);
 
-    Log.d(TAG, "Executing query: " + query);
     SQLiteDatabase db = databaseHelper.getReadableDatabase();
     return db.rawQuery(query, null);
   }

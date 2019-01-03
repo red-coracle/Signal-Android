@@ -39,6 +39,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import androidx.work.Data;
+import androidx.work.WorkerParameters;
 
 public class RetrieveProfileJob extends ContextJob implements InjectableType {
 
@@ -50,8 +51,8 @@ public class RetrieveProfileJob extends ContextJob implements InjectableType {
 
   private Recipient recipient;
 
-  public RetrieveProfileJob() {
-    super(null, null);
+  public RetrieveProfileJob(@NonNull Context context, @NonNull WorkerParameters workerParameters) {
+    super(context, workerParameters);
   }
 
   public RetrieveProfileJob(Context context, Recipient recipient) {
@@ -171,7 +172,7 @@ public class RetrieveProfileJob extends ContextJob implements InjectableType {
     RecipientDatabase recipientDatabase = DatabaseFactory.getRecipientDatabase(context);
     byte[]            profileKey        = recipient.getProfileKey();
 
-    if (unrestrictedUnidentifiedAccess) {
+    if (unrestrictedUnidentifiedAccess && unidentifiedAccessVerifier != null) {
       Log.i(TAG, "Marking recipient UD status as unrestricted.");
       recipientDatabase.setUnidentifiedAccessMode(recipient, UnidentifiedAccessMode.UNRESTRICTED);
     } else if (profileKey == null || unidentifiedAccessVerifier == null) {
