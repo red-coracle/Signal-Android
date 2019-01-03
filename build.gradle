@@ -349,7 +349,7 @@ android {
                           'proguard.cfg'
             testProguardFiles 'proguard-automation.pro',
                           'proguard.cfg'
-            signingConfig signingConfigs.release
+//            signingConfig signingConfigs.release
         }
         release {
             minifyEnabled true
@@ -464,7 +464,7 @@ def assembleWebsiteDescriptor = { variant, file ->
     }
 }
 
-def signProductionRelease = { variant ->
+/*def signProductionRelease = { variant ->
     String apkName    = variant.outputs[0].outputFile.name
     File   inputFile  = new File(variant.outputs[0].outputFile.path);
     File   outputFile = new File(variant.outputs[0].outputFile.parent, apkName.replace("-unsigned", ""));
@@ -501,7 +501,7 @@ tasks.whenTaskAdded { task ->
     if (task.name.equals("assembleWebsiteRelease")) {
         task.finalizedBy signProductionWebsiteRelease
     }
-}
+}*/
 
 def getLastCommitTimestamp() {
     new ByteArrayOutputStream().withStream { os ->
