@@ -39,7 +39,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
 import org.thoughtcrime.securesms.logging.Log;
 
-import org.thoughtcrime.securesms.ConversationActivity;
+import org.thoughtcrime.securesms.conversation.ConversationActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.contactshare.ContactUtil;
 import org.thoughtcrime.securesms.contactshare.Contact;
@@ -308,7 +308,6 @@ public class MessageNotifier {
     builder.setPrimaryMessageBody(recipient, notifications.get(0).getIndividualRecipient(),
                                   notifications.get(0).getText(), notifications.get(0).getSlideDeck());
     builder.setContentIntent(notifications.get(0).getPendingIntent(context));
-    builder.setGroup(NOTIFICATION_GROUP);
     builder.setDeleteIntent(notificationState.getDeleteIntent(context));
     builder.setOnlyAlertOnce(!signal);
     builder.setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY);
@@ -336,8 +335,9 @@ public class MessageNotifier {
                         notifications.get(0).getText());
     }
 
-    if (!bundled) {
-      builder.setGroupSummary(true);
+    if (bundled) {
+      builder.setGroup(NOTIFICATION_GROUP);
+      builder.setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY);
     }
 
     Notification notification = builder.build();

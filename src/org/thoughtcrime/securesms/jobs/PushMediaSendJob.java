@@ -7,10 +7,12 @@ import android.support.annotation.WorkerThread;
 import com.annimon.stream.Stream;
 
 import org.thoughtcrime.securesms.ApplicationContext;
+import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment;
 import org.thoughtcrime.securesms.crypto.UnidentifiedAccessUtil;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
+import org.thoughtcrime.securesms.database.MessagingDatabase.SyncMessageId;
 import org.thoughtcrime.securesms.database.MmsDatabase;
 import org.thoughtcrime.securesms.database.NoSuchMessageException;
 import org.thoughtcrime.securesms.database.RecipientDatabase.UnidentifiedAccessMode;
@@ -29,15 +31,19 @@ import org.thoughtcrime.securesms.transport.UndeliverableMessageException;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
+import org.whispersystems.signalservice.api.crypto.UnidentifiedAccessPair;
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachment;
 import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage;
+import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage.Preview;
+import org.whispersystems.signalservice.api.messages.multidevice.SignalServiceSyncMessage;
 import org.whispersystems.signalservice.api.messages.shared.SharedContact;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 import org.whispersystems.signalservice.api.push.exceptions.UnregisteredUserException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -69,9 +75,15 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
   @WorkerThread
   public static void enqueue(@NonNull Context context, @NonNull JobManager jobManager, long messageId, @NonNull Address destination) {
     try {
-      MmsDatabase               database       = DatabaseFactory.getMmsDatabase(context);
-      OutgoingMediaMessage      message        = database.getOutgoingMessage(messageId);
-      List<AttachmentUploadJob> attachmentJobs = Stream.of(message.getAttachments()).map(a -> new AttachmentUploadJob(context, ((DatabaseAttachment) a).getAttachmentId())).toList();
+      MmsDatabase          database    = DatabaseFactory.getMmsDatabase(context);
+      OutgoingMediaMessage message     = database.getOutgoingMessage(messageId);
+      List<Attachment>     attachments = new LinkedList<>();
+
+      attachments.addAll(message.getAttachments());
+      attachments.addAll(Stream.of(message.getLinkPreviews()).filter(p -> p.getThumbnail().isPresent()).map(p -> p.getThumbnail().get()).toList());
+      attachments.addAll(Stream.of(message.getSharedContacts()).filter(c -> c.getAvatar() != null).map(c -> c.getAvatar().getAttachment()).withoutNulls().toList());
+
+      List<AttachmentUploadJob> attachmentJobs = Stream.of(attachments).map(a -> new AttachmentUploadJob(context, ((DatabaseAttachment) a).getAttachmentId())).toList();
       ChainParameters           chainParams    = new ChainParameters.Builder().setGroupId(destination.serialize()).build();
 
       if (attachmentJobs.isEmpty()) {
@@ -120,7 +132,7 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
 
     try {
       log(TAG, "Sending message: " + messageId);
-      
+
       Recipient              recipient  = message.getRecipient().resolve();
       byte[]                 profileKey = recipient.getProfileKey();
       UnidentifiedAccessMode accessMode = recipient.getUnidentifiedAccessMode();
@@ -130,6 +142,12 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
       database.markAsSent(messageId, true);
       markAttachmentsUploaded(messageId, message.getAttachments());
       database.markUnidentified(messageId, unidentified);
+
+      if (recipient.isLocalNumber()) {
+        SyncMessageId id = new SyncMessageId(recipient.getAddress(), message.getSentTimeMillis());
+        DatabaseFactory.getMmsSmsDatabase(context).incrementDeliveryReceiptCount(id, System.currentTimeMillis());
+        DatabaseFactory.getMmsSmsDatabase(context).incrementReadReceiptCount(id, System.currentTimeMillis());
+      }
 
       if (TextSecurePreferences.isUnidentifiedDeliveryEnabled(context)) {
         if (unidentified && accessMode == UnidentifiedAccessMode.UNKNOWN && profileKey == null) {
@@ -191,6 +209,7 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
       Optional<byte[]>                         profileKey         = getProfileKey(message.getRecipient());
       Optional<SignalServiceDataMessage.Quote> quote              = getQuoteFor(message);
       List<SharedContact>                      sharedContacts     = getSharedContactsFor(message);
+      List<Preview>                            previews           = getPreviewsFor(message);
       SignalServiceDataMessage                 mediaMessage       = SignalServiceDataMessage.newBuilder()
                                                                                             .withBody(message.getBody())
                                                                                             .withAttachments(serviceAttachments)
@@ -199,10 +218,19 @@ public class PushMediaSendJob extends PushSendJob implements InjectableType {
                                                                                             .withProfileKey(profileKey.orNull())
                                                                                             .withQuote(quote.orNull())
                                                                                             .withSharedContacts(sharedContacts)
+                                                                                            .withPreviews(previews)
                                                                                             .asExpirationUpdate(message.isExpirationUpdate())
                                                                                             .build();
 
-      return messageSender.sendMessage(address, UnidentifiedAccessUtil.getAccessFor(context, message.getRecipient()), mediaMessage).getSuccess().isUnidentified();
+      if (address.getNumber().equals(TextSecurePreferences.getLocalNumber(context))) {
+        Optional<UnidentifiedAccessPair> syncAccess  = UnidentifiedAccessUtil.getAccessForSync(context);
+        SignalServiceSyncMessage         syncMessage = buildSelfSendSyncMessage(context, mediaMessage, syncAccess);
+
+        messageSender.sendMessage(syncMessage, syncAccess);
+        return syncAccess.isPresent();
+      } else {
+        return messageSender.sendMessage(address, UnidentifiedAccessUtil.getAccessFor(context, message.getRecipient()), mediaMessage).getSuccess().isUnidentified();
+      }
     } catch (UnregisteredUserException e) {
       warn(TAG, e);
       throw new InsecureFallbackApprovalException(e);

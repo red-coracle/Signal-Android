@@ -33,15 +33,20 @@ import org.thoughtcrime.securesms.util.MediaUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.libsignal.util.guava.Optional;
+import org.whispersystems.signalservice.api.crypto.UnidentifiedAccessPair;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachment;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachmentPointer;
 import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage;
+import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage.Preview;
+import org.whispersystems.signalservice.api.messages.multidevice.SentTranscriptMessage;
+import org.whispersystems.signalservice.api.messages.multidevice.SignalServiceSyncMessage;
 import org.whispersystems.signalservice.api.messages.shared.SharedContact;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +59,7 @@ public abstract class PushSendJob extends SendJob {
   private static final String TAG                           = PushSendJob.class.getSimpleName();
   private static final long   CERTIFICATE_EXPIRATION_BUFFER = TimeUnit.DAYS.toMillis(1);
 
-  protected  PushSendJob(@NonNull Context context, @NonNull WorkerParameters workerParameters) {
+  public PushSendJob(@NonNull Context context, @NonNull WorkerParameters workerParameters) {
     super(context, workerParameters);
   }
 
@@ -247,6 +252,13 @@ public abstract class PushSendJob extends SendJob {
     return sharedContacts;
   }
 
+  List<Preview> getPreviewsFor(OutgoingMediaMessage mediaMessage) {
+    return Stream.of(mediaMessage.getLinkPreviews()).map(lp -> {
+      SignalServiceAttachment attachment = lp.getThumbnail().isPresent() ? getAttachmentPointerFor(lp.getThumbnail().get()) : null;
+      return new Preview(lp.getUrl(), lp.getTitle(), Optional.fromNullable(attachment));
+    }).toList();
+  }
+
   protected void rotateSenderCertificateIfNecessary() throws IOException {
     try {
       byte[] certificateBytes = TextSecurePreferences.getUnidentifiedAccessCertificate(context);
@@ -270,6 +282,17 @@ public abstract class PushSendJob extends SendJob {
       certificateJob.onRun();
     }
   }
+
+  protected SignalServiceSyncMessage buildSelfSendSyncMessage(@NonNull Context context, @NonNull SignalServiceDataMessage message, Optional<UnidentifiedAccessPair> syncAccess) {
+    String                localNumber = TextSecurePreferences.getLocalNumber(context);
+    SentTranscriptMessage transcript  = new SentTranscriptMessage(localNumber,
+                                                                  message.getTimestamp(),
+                                                                  message,
+                                                                  message.getExpiresInSeconds(),
+                                                                  Collections.singletonMap(localNumber, syncAccess.isPresent()));
+    return SignalServiceSyncMessage.forSentTranscript(transcript);
+  }
+
 
   protected abstract void onPushSend() throws Exception;
 }

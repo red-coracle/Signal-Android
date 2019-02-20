@@ -32,8 +32,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+
+import org.thoughtcrime.securesms.conversation.ConversationActivity;
 import org.thoughtcrime.securesms.logging.Log;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.ImageView;
 
@@ -131,9 +133,10 @@ public class ShareActivity extends PassphraseRequiredActionBarActivity
     super.onPause();
     if (!isPassingAlongMedia && resolvedExtra != null) {
       PersistentBlobProvider.getInstance(this).delete(this, resolvedExtra);
-    }
-    if (!isFinishing()) {
-      finish();
+
+      if (!isFinishing()) {
+        finish();
+      }
     }
   }
 
@@ -200,22 +203,6 @@ public class ShareActivity extends PassphraseRequiredActionBarActivity
       progressWheel.setVisibility(View.VISIBLE);
       new ResolveMediaTask(context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, streamExtra);
     }
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    super.onOptionsItemSelected(item);
-    switch (item.getItemId()) {
-    case R.id.menu_new_message: handleNewConversation(); return true;
-    case android.R.id.home:     finish();                return true;
-    }
-    return false;
-  }
-
-  private void handleNewConversation() {
-    Intent intent = getBaseShareIntent(NewConversationActivity.class);
-    isPassingAlongMedia = true;
-    startActivity(intent);
   }
 
   private void handleResolvedMedia(Intent intent, boolean animate) {

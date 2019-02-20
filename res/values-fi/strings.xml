@@ -154,7 +154,7 @@
   <string name="ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video">Signal tarvitsee lupaa käyttää laitteesi kameraa kuvien ja videoiden ottamista varten, mutta tämä käyttöoikeus on pysyvästi evätty Signalilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Kamera\".</string>
   <string name="ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video">Signal tarvitsee kameran käyttöoikeutta kuvien ja videoiden ottamista varten.</string>
   <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
-  <string name="ConversationActivity_signal_cannot_sent_sms_mms_messages_because_it_is_not_your_default_sms_app">Signal ei voi lähettää SMS/MMS-viestejä, koska se ei ole oletus tekstiviestisovellus. Haluatko muuttaa tätä Android-asetuksissa?</string>
+  <string name="ConversationActivity_signal_cannot_sent_sms_mms_messages_because_it_is_not_your_default_sms_app">Signal ei voi lähettää SMS/MMS-viestejä, koska se ei ole oletus tekstiviestisovellus. Haluatko muuttaa tätä Androidin asetuksissa?</string>
   <string name="ConversationActivity_yes">Kyllä</string>
   <string name="ConversationActivity_no">Ei</string>
   <!--ConversationAdapter-->
@@ -284,6 +284,10 @@
   <string name="ExperienceUpgradeActivity_enable_typing_indicators">Ota käyttöön kirjoitustilaindikaattori</string>
   <string name="ExperienceUpgradeActivity_turn_on_typing_indicators">Ota käyttöön kirjoitustilaindikaattori</string>
   <string name="ExperienceUpgradeActivity_no_thanks">Ei kiitos</string>
+  <string name="ExperienceUpgradeActivity_introducing_link_previews">Esittelemme linkkien esikatselukuvat.</string>
+  <string name="ExperienceUpgradeActivity_optional_link_previews_are_now_supported">Linkkien esikatselukuvat ovat valinnaisia ja niitä tuetaan nyt joillakin Internetin suosituimmista sivustoista.</string>
+  <string name="ExperienceUpgradeActivity_you_can_disable_or_enable_this_feature_link_previews">Voit poistaa tämän ominaisuuden käytöstä tai ottaa sen käyttöön milloin tahansa Signalin asetuksissa (Yksityisyys &gt; Lähetä esikatselukuva linkeistä).</string>
+  <string name="ExperienceUpgradeActivity_got_it">Selvä</string>
   <!--GcmBroadcastReceiver-->
   <string name="GcmBroadcastReceiver_retrieving_a_message">Haetaan viestiä...</string>
   <!--GcmRefreshJob-->
@@ -960,6 +964,8 @@ Vastaanotetiin avaintenvaihtoviesti, joka kuuluu väärälle protokollaversiolle
   <string name="preferences__use_signal_for_viewing_and_storing_all_incoming_multimedia_messages">Käytä Signalia kaikkiin saapuviin multimediaviesteihin</string>
   <string name="preferences__pref_enter_sends_title">Rivinvaihto lähettää</string>
   <string name="preferences__pressing_the_enter_key_will_send_text_messages">Rivinvaihdon painallus lähettää viestin</string>
+  <string name="preferences__send_link_previews">Lähetä esikatselukuva linkeistä</string>
+  <string name="preferences__previews_are_supported_for">Esikatselu tukee sivustoja Imgur, Instagram, Reddit ja YouTube.</string>
   <string name="preferences__choose_identity">Valitse identiteetti</string>
   <string name="preferences__choose_your_contact_entry_from_the_contacts_list">Valitse yhteystieto osoitekirjasta.</string>
   <string name="preferences__change_passphrase">Salalauseen vaihto</string>
