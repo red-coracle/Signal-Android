@@ -26,7 +26,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.TransportOption;
@@ -41,7 +40,8 @@ import org.thoughtcrime.securesms.contactshare.SimpleTextWatcher;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mediapreview.MediaRailAdapter;
 import org.thoughtcrime.securesms.mms.GlideApp;
-import org.thoughtcrime.securesms.providers.PersistentBlobProvider;
+import org.thoughtcrime.securesms.providers.BlobProvider;
+import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.scribbles.widget.ScribbleView;
 import org.thoughtcrime.securesms.util.CharacterCalculator.CharacterState;
 import org.thoughtcrime.securesms.util.MediaUtil;
@@ -51,8 +51,10 @@ import org.thoughtcrime.securesms.util.ThemeUtil;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.concurrent.ListenableFuture;
 import org.thoughtcrime.securesms.util.views.Stub;
+import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,13 +73,12 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
 
   private static final String TAG = MediaSendFragment.class.getSimpleName();
 
-  private static final String KEY_BODY      = "body";
+  private static final String KEY_ADDRESS   = "address";
   private static final String KEY_TRANSPORT = "transport";
   private static final String KEY_LOCALE    = "locale";
 
   private InputAwareLayout  hud;
   private SendButton        sendButton;
-  private View              addButton;
   private ComposeText       composeText;
   private ViewGroup         composeContainer;
   private EmojiEditText     captionText;
@@ -98,9 +99,9 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
 
   private final Rect visibleBounds = new Rect();
 
-  public static MediaSendFragment newInstance(@NonNull String body, @NonNull TransportOption transport, @NonNull Locale locale) {
+  public static MediaSendFragment newInstance(@NonNull Recipient recipient, @NonNull TransportOption transport, @NonNull Locale locale) {
     Bundle args = new Bundle();
-    args.putString(KEY_BODY, body);
+    args.putParcelable(KEY_ADDRESS, recipient.getAddress());
     args.putParcelable(KEY_TRANSPORT, transport);
     args.putSerializable(KEY_LOCALE, locale);
 
@@ -133,9 +134,6 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
     locale = (Locale) getArguments().getSerializable(KEY_LOCALE);
 
     initViewModel();
-
-    requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
   }
 
   @Override
@@ -149,7 +147,6 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
     emojiDrawer               = new Stub<>(view.findViewById(R.id.mediasend_emoji_drawer_stub));
     fragmentPager             = view.findViewById(R.id.mediasend_pager);
     mediaRail                 = view.findViewById(R.id.mediasend_media_rail);
-    addButton                 = view.findViewById(R.id.mediasend_add_button);
     playbackControlsContainer = view.findViewById(R.id.mediasend_playback_controls_container);
     charactersLeft            = view.findViewById(R.id.mediasend_characters_left);
 
@@ -180,7 +177,7 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
     captionText.clearFocus();
     composeText.requestFocus();
 
-    fragmentPagerAdapter = new MediaSendFragmentPagerAdapter(requireActivity().getSupportFragmentManager(), locale);
+    fragmentPagerAdapter = new MediaSendFragmentPagerAdapter(getChildFragmentManager(), locale);
     fragmentPager.setAdapter(fragmentPagerAdapter);
 
     FragmentPageChangeListener pageChangeListener = new FragmentPageChangeListener();
@@ -207,8 +204,13 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
     sendButton.setTransport(transportOption);
     sendButton.disableTransport(transportOption.getType() == TransportOption.Type.SMS ? TransportOption.Type.TEXTSECURE : TransportOption.Type.SMS);
 
-    composeText.append(getArguments().getString(KEY_BODY));
+    composeText.append(viewModel.getBody());
 
+    Recipient recipient   = Recipient.from(requireContext(), getArguments().getParcelable(KEY_ADDRESS), false);
+    String    displayName = Optional.fromNullable(recipient.getName())
+                                    .or(Optional.fromNullable(recipient.getProfileName())
+                                                .or(recipient.getAddress().serialize()));
+    composeText.setHint(getString(R.string.MediaSendActivity_message_to_s, displayName), null);
 
     if (TextSecurePreferences.isSystemEmojiPreferred(getContext())) {
       emojiToggle.setVisibility(View.GONE);
@@ -220,12 +222,23 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
   @Override
   public void onStart() {
     super.onStart();
+
     fragmentPagerAdapter.restoreState(viewModel.getDrawState());
+    viewModel.onImageEditorStarted();
+
+    requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+  }
+
+  @Override
+  public void onHiddenChanged(boolean hidden) {
+    super.onHiddenChanged(hidden);
   }
 
   @Override
   public void onStop() {
     super.onStop();
+    fragmentPagerAdapter.saveAllState();
     viewModel.saveDrawState(fragmentPagerAdapter.getSavedState());
   }
 
@@ -251,17 +264,29 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
 
   @Override
   public void onRailItemDeleteClicked(int distanceFromActive) {
-    viewModel.onMediaItemRemoved(fragmentPager.getCurrentItem() + distanceFromActive);
+    viewModel.onMediaItemRemoved(requireContext(), fragmentPager.getCurrentItem() + distanceFromActive);
   }
 
   @Override
   public void onKeyboardShown() {
-    if (composeText.hasFocus()) {
+    if (sendButton.getSelectedTransport().isSms()) {
+      mediaRail.setVisibility(View.GONE);
       composeContainer.setVisibility(View.VISIBLE);
       captionText.setVisibility(View.GONE);
-    } else if (captionText.hasFocus()) {
-      mediaRail.setVisibility(View.GONE);
-      composeContainer.setVisibility(View.GONE);
+    } else {
+      if (captionText.hasFocus()) {
+        mediaRail.setVisibility(View.VISIBLE);
+        composeContainer.setVisibility(View.GONE);
+        captionText.setVisibility(View.VISIBLE);
+      } else if (composeText.hasFocus()) {
+        mediaRail.setVisibility(View.VISIBLE);
+        composeContainer.setVisibility(View.VISIBLE);
+        captionText.setVisibility(View.GONE);
+      } else {
+        mediaRail.setVisibility(View.GONE);
+        composeContainer.setVisibility(View.VISIBLE);
+        captionText.setVisibility(View.GONE);
+      }
     }
   }
 
@@ -269,9 +294,15 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
   public void onKeyboardHidden() {
     composeContainer.setVisibility(View.VISIBLE);
 
-    if (!Util.isEmpty(viewModel.getSelectedMedia().getValue()) && viewModel.getSelectedMedia().getValue().size() > 1) {
+    if (sendButton.getSelectedTransport().isSms()) {
+      mediaRail.setVisibility(View.GONE);
+      captionText.setVisibility(View.GONE);
+    } else {
       mediaRail.setVisibility(View.VISIBLE);
-      captionText.setVisibility(View.VISIBLE);
+
+      if (!Util.isEmpty(viewModel.getSelectedMedia().getValue()) && viewModel.getSelectedMedia().getValue().size() > 1) {
+        captionText.setVisibility(View.VISIBLE);
+      }
     }
   }
 
@@ -288,7 +319,7 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
   }
 
   private void initViewModel() {
-    viewModel = ViewModelProviders.of(requireActivity(), new MediaSendViewModel.Factory(new MediaRepository())).get(MediaSendViewModel.class);
+    viewModel = ViewModelProviders.of(requireActivity(), new MediaSendViewModel.Factory(requireActivity().getApplication(), new MediaRepository())).get(MediaSendViewModel.class);
 
     viewModel.getSelectedMedia().observe(this, media -> {
       if (Util.isEmpty(media)) {
@@ -298,7 +329,7 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
 
       fragmentPagerAdapter.setMedia(media);
 
-      mediaRail.setVisibility(media.size() > 1 ? View.VISIBLE :  View.GONE);
+      mediaRail.setVisibility(sendButton.getSelectedTransport().isSms() ? View.GONE : View.VISIBLE);
       captionText.setVisibility((media.size() > 1 || media.get(0).getCaption().isPresent()) ? View.VISIBLE : View.GONE);
       mediaRailAdapter.setMedia(media);
     });
@@ -310,7 +341,7 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
       mediaRailAdapter.setActivePosition(position);
       mediaRail.smoothScrollToPosition(position);
 
-      if (!fragmentPagerAdapter.getAllMedia().isEmpty()) {
+      if (fragmentPagerAdapter.getAllMedia().size() > position) {
         captionText.setText(fragmentPagerAdapter.getAllMedia().get(position).getCaption().or(""));
       }
 
@@ -327,18 +358,9 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
     });
 
     viewModel.getBucketId().observe(this, bucketId -> {
-      if (bucketId == null || !bucketId.isPresent() || sendButton.getSelectedTransport().isSms()) {
-        addButton.setVisibility(View.GONE);
-      } else {
-        addButton.setVisibility(View.VISIBLE);
-        addButton.setOnClickListener(v -> controller.onAddMediaClicked(bucketId.get()));
-      }
-    });
+      if (bucketId == null) return;
 
-    viewModel.getError().observe(this, error -> {
-      if (error == MediaSendViewModel.Error.ITEM_TOO_LARGE) {
-        Toast.makeText(requireContext(), R.string.MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit, Toast.LENGTH_LONG).show();
-      }
+      mediaRailAdapter.setAddButtonListener(() -> controller.onAddMediaClicked(bucketId));
     });
   }
 
@@ -433,13 +455,16 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
               ByteArrayOutputStream  baos     = new ByteArrayOutputStream();
               bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
 
-              Uri   uri     = PersistentBlobProvider.getInstance(context).create(context, baos.toByteArray(), MediaUtil.IMAGE_JPEG, null);
+              Uri uri = BlobProvider.getInstance()
+                                    .forData(baos.toByteArray())
+                                    .withMimeType(MediaUtil.IMAGE_JPEG)
+                                    .createForSingleSessionOnDisk(context, e -> Log.w(TAG, "Failed to write to disk.", e));
+
               Media updated = new Media(uri, MediaUtil.IMAGE_JPEG, media.getDate(), bitmap.getWidth(), bitmap.getHeight(), baos.size(), media.getBucketId(), media.getCaption());
 
               updatedMedia.add(updated);
               renderTimer.split("item");
-
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException | ExecutionException | IOException e) {
               Log.w(TAG, "Failed to render image. Using base image.");
               updatedMedia.add(media);
             }
@@ -500,6 +525,7 @@ public class MediaSendFragment extends Fragment implements ViewTreeObserver.OnGl
     @Override
     public void afterTextChanged(Editable s) {
       presentCharactersRemaining();
+      viewModel.onBodyChanged(s);
     }
 
     @Override

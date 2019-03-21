@@ -4,17 +4,13 @@ import java.security.MessageDigest
 
 buildscript {
     repositories {
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
+        google()
         maven {
             url "https://repo1.maven.org/maven2"
-            jcenter()
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.3.2'
         classpath files('libs/gradle-witness.jar')
     }
 }
@@ -53,9 +49,6 @@ repositories {
             includeGroupByRegex "com\\.amulyakhare.*"
         }
     }
-    maven {
-        url "https://maven.google.com"
-    }
     google()
     jcenter()
     mavenLocal()
@@ -77,7 +70,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.3'
     compile 'android.arch.lifecycle:extensions:1.1.1'
     compile 'android.arch.lifecycle:common-java8:1.1.1'
-    compile 'android.arch.work:work-runtime:1.0.0-beta05'
+    compile 'android.arch.work:work-runtime:1.0.0'
 
     compile('com.google.firebase:firebase-messaging:17.3.4') {
         exclude group: 'com.google.firebase', module: 'firebase-core'
@@ -93,7 +86,7 @@ dependencies {
     compile 'com.google.android.exoplayer:exoplayer-ui:2.9.1'
 
     compile 'org.whispersystems:signal-service-android:2.12.8'
-    compile 'org.whispersystems:webrtc-android:M72-S2'
+    compile 'org.whispersystems:webrtc-android:M73-S1'
 
     compile "me.leolin:ShortcutBadger:1.1.16"
     compile 'se.emilsjolander:stickylistheaders:2.7.0'
@@ -106,7 +99,7 @@ dependencies {
     compile 'com.pnikosis:materialish-progress:1.5'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'pl.tajchert:waitingdots:0.1.0'
-    compile 'com.soundcloud.android:android-crop:0.9.10@aar'
+    compile 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
     compile 'com.melnykov:floatingactionbutton:1.3.0'
     compile 'com.google.zxing:android-integration:3.1.0'
     compile 'com.squareup.dagger:dagger:1.2.2'
@@ -142,13 +135,14 @@ dependencies {
     }
 
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.assertj:assertj-core:1.7.1'
+    testImplementation 'org.assertj:assertj-core:3.11.1'
     testImplementation 'org.mockito:mockito-core:1.9.5'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.1'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.1'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.1'
     testImplementation 'org.powermock:powermock-classloading-xstream:1.6.1'
 
+    testImplementation 'androidx.test:core:1.1.1-alpha02'
     androidTestImplementation 'com.android.support:multidex:1.0.3'
     androidTestImplementation 'com.android.support:multidex-instrumentation:1.0.3'
     androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
@@ -160,6 +154,8 @@ dependencies {
         exclude group: 'org.hamcrest',        module: 'hamcrest-core'
         exclude group: 'com.android.support', module: 'support-annotations'
     }
+    testImplementation 'org.robolectric:robolectric:4.2'
+    testImplementation 'org.robolectric:shadows-multidex:4.2'
 }
 
 dependencyVerification {
@@ -169,6 +165,7 @@ dependencyVerification {
         'com.android.support:preference-v7:75eabe936d1fc3b178450a554c4d433466036f2be6d6dccdf971eac9590fdbf5',
         'com.pnikosis:materialish-progress:d71d80e00717a096784482aee21001a9d299fec3833e4ebd87739ed36cf77c54',
         'pl.tajchert:waitingdots:2835d49e0787dbcb606c5a60021ced66578503b1e9fddcd7a5ef0cd5f095ba2c',
+        'com.theartofdev.edmodo:android-image-cropper:72a1b03c5642fe8489061c732e43b10558c850129b576970e4f77a5d4c25317a',
         'mobi.upod:time-duration-picker:db469ce0f48dd96b892eac424ed76870e54bf00fe0a28cdcddfbe5f2a226a0e1',
         'com.codewaves.stickyheadergrid:stickyheadergrid:5b4aa6a52a957cfd55f60f4220c11c0c371385a3cb9786cae03c260dcdef5794',
         'com.android.support:appcompat-v7:a3a8e5230359746ed91801579b5fbe4668e3b1c4e6a14c7d67c8f58cb0311752',
@@ -180,7 +177,7 @@ dependencyVerification {
         'com.android.support:exifinterface:bbf44e519edd6333a24a3285aa21fd00181b920b81ca8aa89a8899f03ab4d6b0',
         'com.android.support.constraint:constraint-layout:27b4e5c0b80d3ff8b92f4c93b3b4d3ecf16c01589f4cdf70ca7cf64cb42d8122',
         'com.android.support:multidex:ecf6098572e23b5155bab3b9a82b2fd1530eda6c6c157745e0f5287c66eec60c',
-        'android.arch.work:work-runtime:a84a016b20a82fb67c59a4081d383a185b0f2affcadde2f435df7565d6843816',
+        'android.arch.work:work-runtime:51a3c9c85bef74d60737b40bb5ab5d1f5a2b825394d26e15f19b7316ac2bff20',
         'android.arch.lifecycle:extensions:429426b2feec2245ffc5e75b3b5309bedb36159cf06dc71843ae43526ac289b6',
         'android.arch.lifecycle:common-java8:7078b5c8ccb94203df9cc2a463c69cf0021596e6cf966d78fbfd697aaafe0630',
         'com.google.firebase:firebase-messaging:e42288e7950d7d3b033d3395a5ac9365d230da3e439a2794ec13e2ef0fbaf078',
@@ -190,7 +187,7 @@ dependencyVerification {
         'com.google.android.exoplayer:exoplayer-ui:7a942afcc402ff01e9bf48e8d3942850986710f06562d50a1408aaf04a683151',
         'com.google.android.exoplayer:exoplayer-core:b6ab34abac36bc2bc6934b7a50008162feca2c0fde91aaf1e8c1c22f2c16e2c0',
         'org.whispersystems:signal-service-android:68a349a9e05089f33ab5a9b9fc330526f59d31e8385ff9f5b70bc4a88bd0e297',
-        'org.whispersystems:webrtc-android:6b0a7e11c8d63e9a7ea523cd219247cf23e2919ce3411e7cd51e0f4446031597',
+        'org.whispersystems:webrtc-android:1ae3716728f2581724f982f5b4ded92d7aa33edf19d0daa35529d9529f8eb3a2',
         'me.leolin:ShortcutBadger:e3cb3e7625892129b0c92dd5e4bc649faffdd526d5af26d9c45ee31ff8851774',
         'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
         'com.jpardogo.materialtabstrip:library:c6ef812fba4f74be7dc4a905faa4c2908cba261a94c13d4f96d5e67e4aad4aaa',
@@ -199,7 +196,6 @@ dependencyVerification {
         'com.github.bumptech.glide:glide:997de7ac95be6c944d3b8cbe13de11307736ea45451c1b09a6cec7c328ead59f',
         'com.makeramen:roundedimageview:1f5a1865796b308c6cdd114acc6e78408b110f0a62fc63553278fbeacd489cd1',
         'org.greenrobot:eventbus:180d4212467df06f2fbc9c8d8a2984533ac79c87769ad883bc421612f0b4e17c',
-        'com.soundcloud.android:android-crop:ffd4b973cf6e97f7d64118a0dc088df50e9066fd5634fe6911dd0c0c5d346177',
         'com.google.zxing:android-integration:89e56aadf1164bd71e57949163c53abf90af368b51669c0d4a47a163335f95c4',
         'com.squareup.dagger:dagger:789aca24537022e49f91fc6444078d9de8f1dd99e1bfb090f18491b186967883',
         'com.amulyakhare:com.amulyakhare.textdrawable:54c92b5fba38cfd316a07e5a30528068f45ce8515a6890f1297df4c401af5dcb',
@@ -301,8 +297,8 @@ android {
     }
 
     defaultConfig {
-        versionCode 467
-        versionName "4.35.3"
+        versionCode 470
+        versionName "4.36.2"
 
         applicationId "org.libresignal"
         minSdkVersion 14
@@ -323,10 +319,13 @@ android {
         buildConfigField "boolean", "DEV_BUILD", "false"
         buildConfigField "String", "MRENCLAVE", "\"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9\""
         buildConfigField "String", "UNIDENTIFIED_SENDER_TRUST_ROOT", "\"BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF\""
+        buildConfigField "String[]", "LANGUAGES", "new String[]{\"" + autoResConfig().collect { s -> s.replace('-r', '_') }.join('", "') + '"}'
 
-//        ndk {
-//            abiFilters "armeabi-v7a", "arm64-v8a"
-//        }
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+
+        resConfigs autoResConfig()
     }
 
     compileOptions {
@@ -423,6 +422,12 @@ android {
 
      lintOptions {
         abortOnError false
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
     }
 
     if (project.hasProperty('signingStoreLocation') &&
@@ -538,4 +543,17 @@ def getLastCommitTimestamp() {
 
         return os.toString() + "000"
     }
+}
+
+/**
+ * Discovers supported languages listed as under the res/values- directory.
+ */
+static def autoResConfig() {
+    def files = new ArrayList<String>()
+    def root = new File('res')
+    root.eachFile { f -> files.add(f.name) }
+    ['en'] + files.collect { f -> f =~ /^values-([a-z]{2}(-r[A-Z]{2})?)$/ }
+         .findAll { matcher -> matcher.find() }
+         .collect { matcher -> matcher.group(1) }
+         .sort()
 }
