@@ -29,12 +29,12 @@ public class ExpiringMessageManager {
     this.smsDatabase = DatabaseFactory.getSmsDatabase(context);
     this.mmsDatabase = DatabaseFactory.getMmsDatabase(context);
 
-    executor.execute(new LoadTask());
-    executor.execute(new ProcessTask());
+    //executor.execute(new LoadTask());
+    //executor.execute(new ProcessTask());
   }
 
   public void scheduleDeletion(long id, boolean mms, long expiresInMillis) {
-    scheduleDeletion(id, mms, System.currentTimeMillis(), expiresInMillis);
+    //scheduleDeletion(id, mms, System.currentTimeMillis(), expiresInMillis);
   }
 
   public void scheduleDeletion(long id, boolean mms, long startedAtTimestamp, long expiresInMillis) {
