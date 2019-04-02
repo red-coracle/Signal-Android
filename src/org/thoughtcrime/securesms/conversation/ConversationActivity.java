@@ -68,7 +68,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -181,7 +180,6 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientFormattingException;
 import org.thoughtcrime.securesms.recipients.RecipientModifiedListener;
 import org.thoughtcrime.securesms.recipients.RecipientExporter;
-import org.thoughtcrime.securesms.scribbles.ScribbleActivity;
 import org.thoughtcrime.securesms.search.model.MessageResult;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.sms.MessageSender;
@@ -211,7 +209,6 @@ import org.whispersystems.libsignal.InvalidMessageException;
 import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -524,9 +521,6 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                MediaType.GIF,
                data.getIntExtra(GiphyActivity.EXTRA_WIDTH, 0),
                data.getIntExtra(GiphyActivity.EXTRA_HEIGHT, 0));
-      break;
-    case ScribbleActivity.SCRIBBLE_REQUEST_CODE:
-      setMedia(data.getData(), MediaType.IMAGE);
       break;
     case SMS_DEFAULT:
       initializeSecurity(isSecureText, isDefaultSms);
@@ -879,24 +873,20 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   private void handleInviteLink() {
-    try {
-      String inviteText;
+    String inviteText;
 
-      boolean a = SecureRandom.getInstance("SHA1PRNG").nextBoolean();
-      if (a) inviteText = getString(R.string.ConversationActivity_lets_switch_to_signal, "https://sgnl.link/1LoIMUl");
-      else   inviteText = getString(R.string.ConversationActivity_lets_use_this_to_chat, "https://sgnl.link/1MF56H1");
+    boolean a = new SecureRandom().nextBoolean();
+    if (a) inviteText = getString(R.string.ConversationActivity_lets_switch_to_signal, "https://sgnl.link/1LoIMUl");
+    else   inviteText = getString(R.string.ConversationActivity_lets_use_this_to_chat, "https://sgnl.link/1MF56H1");
 
-      if (isDefaultSms) {
-        composeText.appendInvite(inviteText);
-      } else {
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("smsto:" + recipient.getAddress().serialize()));
-        intent.putExtra("sms_body", inviteText);
-        intent.putExtra(Intent.EXTRA_TEXT, inviteText);
-        startActivity(intent);
-      }
-    } catch (NoSuchAlgorithmException e) {
-      throw new AssertionError(e);
+    if (isDefaultSms) {
+      composeText.appendInvite(inviteText);
+    } else {
+      Intent intent = new Intent(Intent.ACTION_SENDTO);
+      intent.setData(Uri.parse("smsto:" + recipient.getAddress().serialize()));
+      intent.putExtra("sms_body", inviteText);
+      intent.putExtra(Intent.EXTRA_TEXT, inviteText);
+      startActivity(intent);
     }
   }
 
@@ -1574,12 +1564,6 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     distributionType = getIntent().getIntExtra(DISTRIBUTION_TYPE_EXTRA, ThreadDatabase.DistributionTypes.DEFAULT);
     glideRequests    = GlideApp.with(this);
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-      LinearLayout conversationContainer = ViewUtil.findById(this, R.id.conversation_container);
-      conversationContainer.setClipChildren(true);
-      conversationContainer.setClipToPadding(true);
-    }
-
     recipient.addListener(this);
   }
 
@@ -2011,6 +1995,11 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   private void sendMessage() {
+    if (inputPanel.isRecordingInLockedMode()) {
+      inputPanel.releaseRecordingLock();
+      return;
+    }
+
     try {
       Recipient recipient = getRecipient();
 
@@ -2192,6 +2181,13 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   private void updateToggleButtonState() {
+    if (inputPanel.isRecordingInLockedMode()) {
+      buttonToggle.display(sendButton);
+      quickAttachmentToggle.show();
+      inlineAttachmentToggle.hide();
+      return;
+    }
+
     if (composeText.getText().length() == 0 && !attachmentManager.isAttachmentPresent()) {
       buttonToggle.display(attachButton);
       quickAttachmentToggle.show();
@@ -2249,7 +2245,13 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   @Override
+  public void onRecorderLocked() {
+    updateToggleButtonState();
+  }
+
+  @Override
   public void onRecorderFinished() {
+    updateToggleButtonState();
     Vibrator vibrator = ServiceUtil.getVibrator(this);
     vibrator.vibrate(20);
 
@@ -2290,6 +2292,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
   @Override
   public void onRecorderCanceled() {
+    updateToggleButtonState();
     Vibrator vibrator = ServiceUtil.getVibrator(this);
     vibrator.vibrate(50);
 
