@@ -28,14 +28,18 @@ import android.support.multidex.MultiDexApplication;
 
 import com.google.android.gms.security.ProviderInstaller;
 
-import org.conscrypt.Conscrypt;
 import org.thoughtcrime.securesms.components.TypingStatusRepository;
 import org.thoughtcrime.securesms.components.TypingStatusSender;
+import org.thoughtcrime.securesms.crypto.PRNGFixes;
+import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.dependencies.AxolotlStorageModule;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.dependencies.SignalCommunicationModule;
+import org.thoughtcrime.securesms.jobmanager.DependencyInjector;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
-import org.thoughtcrime.securesms.jobmanager.dependencies.DependencyInjector;
+import org.thoughtcrime.securesms.jobs.FastJobStorage;
+import org.thoughtcrime.securesms.jobs.JobManagerFactories;
+import org.thoughtcrime.securesms.jobmanager.impl.JsonDataSerializer;
 import org.thoughtcrime.securesms.jobs.CreateSignedPreKeyJob;
 import org.thoughtcrime.securesms.jobs.FcmRefreshJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob;
@@ -65,13 +69,10 @@ import org.webrtc.voiceengine.WebRtcAudioManager;
 import org.webrtc.voiceengine.WebRtcAudioUtils;
 import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
 
-import java.security.Security;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import androidx.work.Configuration;
-import androidx.work.WorkManager;
 import dagger.ObjectGraph;
 
 /**
@@ -89,7 +90,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
   private ExpiringMessageManager  expiringMessageManager;
   private TypingStatusRepository  typingStatusRepository;
   private TypingStatusSender      typingStatusSender;
-  private JobManager              jobManager;
+  private JobManager jobManager;
   private IncomingMessageObserver incomingMessageObserver;
   private ObjectGraph             objectGraph;
   private PersistentLogger        persistentLogger;
@@ -104,7 +105,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
   public void onCreate() {
     super.onCreate();
     Log.i(TAG, "onCreate()");
-    initializeSecurityProvider();
+    initializeRandomNumberFix();
     initializeLogging();
     initializeCrashHandling();
     initializeDependencyInjection();
@@ -171,8 +172,8 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     return persistentLogger;
   }
 
-  private void initializeSecurityProvider() {
-    Security.insertProviderAt(Conscrypt.newProvider(), 1);
+  private void initializeRandomNumberFix() {
+    PRNGFixes.apply();
   }
 
   private void initializeLogging() {
@@ -184,15 +185,18 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
 
   private void initializeCrashHandling() {
     final Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
-    Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionLogger(originalHandler, persistentLogger));
+    Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionLogger(originalHandler));
   }
 
   private void initializeJobManager() {
-    WorkManager.initialize(this, new Configuration.Builder()
-                                                  .setMinimumLoggingLevel(android.util.Log.INFO)
-                                                  .build());
-
-    this.jobManager = new JobManager(this, WorkManager.getInstance());
+    this.jobManager = new JobManager(this, new JobManager.Configuration.Builder()
+                                                                       .setDataSerializer(new JsonDataSerializer())
+                                                                       .setJobFactories(JobManagerFactories.getJobFactories(this))
+                                                                       .setConstraintFactories(JobManagerFactories.getConstraintFactories(this))
+                                                                       .setConstraintObservers(JobManagerFactories.getConstraintObservers(this))
+                                                                       .setJobStorage(new FastJobStorage(DatabaseFactory.getJobDatabase(this)))
+                                                                       .setDependencyInjector(this)
+                                                                       .build());
   }
 
   public void initializeMessageRetrieval() {
@@ -209,7 +213,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
       long nextSetTime = TextSecurePreferences.getFcmTokenLastSetTime(this) + TimeUnit.HOURS.toMillis(6);
 
       if (TextSecurePreferences.getFcmToken(this) == null || nextSetTime <= System.currentTimeMillis()) {
-        this.jobManager.add(new FcmRefreshJob(this));
+        this.jobManager.add(new FcmRefreshJob());
       }
     }
   }
@@ -311,7 +315,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
 
   private void initializeUnidentifiedDeliveryAbilityRefresh() {
     if (TextSecurePreferences.isMultiDevice(this) && !TextSecurePreferences.isUnidentifiedDeliveryEnabled(this)) {
-      jobManager.add(new RefreshUnidentifiedDeliveryAbilityJob(this));
+      jobManager.add(new RefreshUnidentifiedDeliveryAbilityJob());
     }
   }
 

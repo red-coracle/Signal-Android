@@ -135,6 +135,7 @@ import org.thoughtcrime.securesms.database.IdentityDatabase.IdentityRecord;
 import org.thoughtcrime.securesms.database.IdentityDatabase.VerifiedStatus;
 import org.thoughtcrime.securesms.database.MessagingDatabase.MarkedMessageInfo;
 import org.thoughtcrime.securesms.database.MmsSmsColumns.Types;
+import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.database.RecipientDatabase.RegisteredState;
 import org.thoughtcrime.securesms.database.ThreadDatabase;
 import org.thoughtcrime.securesms.database.identity.IdentityRecordList;
@@ -851,7 +852,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
                          ApplicationContext.getInstance(ConversationActivity.this)
                              .getJobManager()
-                             .add(new MultiDeviceBlockedUpdateJob(ConversationActivity.this));
+                             .add(new MultiDeviceBlockedUpdateJob());
 
                          return null;
                        }
@@ -1179,8 +1180,12 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     if (!isSecureText && !isPushGroupConversation()) sendButton.disableTransport(Type.TEXTSECURE);
     if (recipient.isPushGroupRecipient())            sendButton.disableTransport(Type.SMS);
 
-    if (isSecureText || isPushGroupConversation()) sendButton.setDefaultTransport(Type.TEXTSECURE);
-    else                                           sendButton.setDefaultTransport(Type.SMS);
+    if (recipient.isForceSmsSelection()) {
+      sendButton.setDefaultTransport(Type.SMS);
+    } else {
+      if (isSecureText || isPushGroupConversation()) sendButton.setDefaultTransport(Type.TEXTSECURE);
+      else                                           sendButton.setDefaultTransport(Type.SMS);
+    }
 
     calculateCharactersRemaining();
     supportInvalidateOptionsMenu();
@@ -1372,7 +1377,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     } /* else if (ExpiredBuildReminder.isEligible()) {
       reminderView.get().showReminder(new ExpiredBuildReminder(this));
     } else if (ServiceOutageReminder.isEligible(this)) {
-      ApplicationContext.getInstance(this).getJobManager().add(new ServiceOutageDetectionJob(this));
+      ApplicationContext.getInstance(this).getJobManager().add(new ServiceOutageDetectionJob());
       reminderView.get().showReminder(new ServiceOutageReminder(this));
     } else if (TextSecurePreferences.isPushRegistered(this)      &&
                TextSecurePreferences.isShowInviteReminders(this) &&
@@ -1517,7 +1522,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       composeText.setTransport(newTransport);
       buttonToggle.getBackground().setColorFilter(newTransport.getBackgroundColor(), Mode.MULTIPLY);
       buttonToggle.getBackground().invalidateSelf();
-      if (manuallySelected) recordSubscriptionIdPreference(newTransport.getSimSubscriptionId());
+      if (manuallySelected) recordTransportPreference(newTransport);
     });
 
     titleView.setOnClickListener(v -> handleConversationSettings());
@@ -1624,7 +1629,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
     ApplicationContext.getInstance(this)
                       .getJobManager()
-                      .add(new RetrieveProfileJob(this, recipient));
+                      .add(new RetrieveProfileJob(recipient));
   }
 
   @Override
@@ -2213,12 +2218,16 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     }
   }
 
-  private void recordSubscriptionIdPreference(final Optional<Integer> subscriptionId) {
+  private void recordTransportPreference(TransportOption transportOption) {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        DatabaseFactory.getRecipientDatabase(ConversationActivity.this)
-                       .setDefaultSubscriptionId(recipient, subscriptionId.or(-1));
+        RecipientDatabase recipientDatabase = DatabaseFactory.getRecipientDatabase(ConversationActivity.this);
+
+        recipientDatabase.setDefaultSubscriptionId(recipient, transportOption.getSimSubscriptionId().or(-1));
+
+        recipientDatabase.setForceSmsSelection(recipient, recipient.getRegistered() == RegisteredState.REGISTERED && transportOption.isSms());
+
         return null;
       }
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -2540,6 +2549,11 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   @Override
   public void onMessageActionToolbarOpened() {
     searchViewItem.collapseActionView();
+  }
+
+  @Override
+  public void onForwardClicked() {
+    inputPanel.clearQuote();
   }
 
   @Override
