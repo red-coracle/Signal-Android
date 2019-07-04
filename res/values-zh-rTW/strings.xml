@@ -51,12 +51,14 @@
   <string name="DraftDatabase_Draft_video_snippet">（影片）</string>
   <string name="DraftDatabase_Draft_location_snippet">（位置）</string>
   <string name="DraftDatabase_Draft_quote_snippet">（回覆）</string>
-  <!--AttchmentManager-->
+  <!--AttachmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">找不到合適的應用程式來選擇媒體檔案。</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Signal 需要儲存的權限，以存取照片、影片或聲音檔。但是現在被設定為永久拒絕存取。請到應用程式設定中，選擇「權限」及開啟「儲存」。 </string>
   <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Signal 需要聯絡人的權限以存取聯絡人資訊，但是現在被設定為永久拒絕存取。請到應用程式設定中，選取「權限」，並啟用「聯絡人」的權限。</string>
   <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Signal 需要位置的權限以存取位置資訊，但是現在被設定為永久拒絕存取。請到應用程式設定中，選取「權限」，並啟用「位置」的權限。</string>
   <string name="AttachmentManager_signal_requires_the_camera_permission_in_order_to_take_photos_but_it_has_been_permanently_denied">Signal 需要相機的權限用以拍照，但是現在被設定為永久拒絕使用。請到應用程式設定中，選取「權限」，並啟用「相機」的權限。</string>
+  <!--AttachmentUploadJob-->
+  <string name="AttachmentUploadJob_uploading_media">上傳媒體檔案</string>
   <!--AudioSlidePlayer-->
   <string name="AudioSlidePlayer_error_playing_audio">播放音訊時出現錯誤！</string>
   <!--BlockedContactsActivity-->
@@ -217,6 +219,8 @@
   <string name="ConversationListItem_key_exchange_message">金鑰交換訊息</string>
   <!--ConversationListItemAction-->
   <string name="ConversationListItemAction_archived_conversations_d">存檔對話 (%d)</string>
+  <!--ConversationTitleView-->
+  <string name="ConversationTitleView_verified">已驗證</string>
   <!--CreateProfileActivity-->
   <string name="CreateProfileActivity_your_profile_info">你的個人資訊</string>
   <string name="CreateProfileActivity_error_setting_profile_photo">頭像照片設定出現錯誤</string>
@@ -445,6 +449,11 @@
   <string name="PassphrasePromptActivity_watermark_content_description">Signal 圖示</string>
   <string name="PassphrasePromptActivity_ok_button_content_description">送出密碼</string>
   <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">無效的密碼！</string>
+  <!--PlacePickerActivity-->
+  <string name="PlacePickerActivity_title">地圖</string>
+  <string name="PlacePickerActivity_not_a_valid_address">非有效的地址</string>
+  <string name="PlacePickerActivity_drop_pin">標註地圖</string>
+  <string name="PlacePickerActivity_accept_address">接受地址</string>
   <!--PlayServicesProblemFragment-->
   <string name="PlayServicesProblemFragment_the_version_of_google_play_services_you_have_installed_is_not_functioning">您目前安裝的 Google Play 服務版本無法正常運作。請重新安裝 Google Play 服務然後重試。</string>
   <!--RatingManager-->
@@ -654,8 +663,8 @@
   <string name="MessageNotifier_reply">回覆</string>
   <string name="MessageNotifier_signal_message">Signal 訊息</string>
   <string name="MessageNotifier_unsecured_sms">不安全的簡訊</string>
-  <string name="MessageNotifier_pending_signal_messages">擱置的 Signal 訊息</string>
-  <string name="MessageNotifier_you_have_pending_signal_messages">你有擱置的 Signal 訊息，輕觸打開及取得訊息</string>
+  <string name="MessageNotifier_you_may_have_new_messages">你有新訊息</string>
+  <string name="MessageNotifier_open_signal_to_check_for_recent_notifications">開啟 Signal 以查驗最近的通知。</string>
   <string name="MessageNotifier_contact_message">%1$s %2$s</string>
   <string name="MessageNotifier_unknown_contact_message">聯絡人</string>
   <!--Notification Channels-->

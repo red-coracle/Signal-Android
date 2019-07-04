@@ -17,14 +17,17 @@
 package org.thoughtcrime.securesms;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.DefaultLifecycleObserver;
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.ProcessLifecycleOwner;
+
+import androidx.camera.camera2.Camera2AppConfig;
+import androidx.camera.core.CameraX;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.multidex.MultiDexApplication;
+import androidx.annotation.NonNull;
+import androidx.multidex.MultiDexApplication;
 
 import com.google.android.gms.security.ProviderInstaller;
 
@@ -36,6 +39,7 @@ import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.dependencies.AxolotlStorageModule;
 import org.thoughtcrime.securesms.dependencies.InjectableType;
 import org.thoughtcrime.securesms.dependencies.SignalCommunicationModule;
+import org.thoughtcrime.securesms.gcm.FcmJobService;
 import org.thoughtcrime.securesms.jobmanager.DependencyInjector;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.jobmanager.impl.JsonDataSerializer;
@@ -125,6 +129,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     initializePendingMessages();
     initializeUnidentifiedDeliveryAbilityRefresh();
     initializeBlobProvider();
+    initializeCameraX();
     NotificationChannels.create(this);
     ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
   }
@@ -135,6 +140,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     Log.i(TAG, "App is now visible.");
     executePendingContactSync();
     KeyCachingService.onAppForegrounded(this);
+    MessageNotifier.cancelMessagesPending(this);
   }
 
   @Override
@@ -334,7 +340,11 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
   private void initializePendingMessages() {
     if (TextSecurePreferences.getNeedsMessagePull(this)) {
       Log.i(TAG, "Scheduling a message fetch.");
-      ApplicationContext.getInstance(this).getJobManager().add(new PushNotificationReceiveJob(this));
+      if (Build.VERSION.SDK_INT >= 26) {
+        FcmJobService.schedule(this);
+      } else {
+        ApplicationContext.getInstance(this).getJobManager().add(new PushNotificationReceiveJob(this));
+      }
       TextSecurePreferences.setNeedsMessagePull(this, false);
     }
   }
@@ -349,6 +359,17 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
       BlobProvider.getInstance().onSessionStart(this);
     });
+  }
+
+  @SuppressLint("RestrictedApi")
+  private void initializeCameraX() {
+    if (Build.VERSION.SDK_INT >= 21) {
+      try {
+        CameraX.init(this, Camera2AppConfig.create(this));
+      } catch (Throwable t) {
+        Log.w(TAG, "Failed to initialize CameraX.");
+      }
+    }
   }
 
   @Override

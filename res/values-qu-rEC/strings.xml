@@ -52,12 +52,13 @@
   <string name="DraftDatabase_Draft_video_snippet">(shuyukuyurik)</string>
   <string name="DraftDatabase_Draft_location_snippet">(maypitak kanki)</string>
   <string name="DraftDatabase_Draft_quote_snippet">(kutichina)</string>
-  <!--AttchmentManager-->
+  <!--AttachmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">Kayta rikuchinkapakka mana aplicacionta taririnchu.</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Signal ari nichun munanmi shuyuman, uyayman, shuyukuyurikmanpash yaykunkapak, shinapash mana arinirishkachu.  \"Menú de configuración\" ukuman yaykushpa \"Permisos\" nikukta llapipay, \"Almacenamiento\" paskarichun.</string>
   <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Signal ari nichun munanmi kikinpa yupaymashikunapaman yaykunkapak, shinapash mana arinirishkachu. \"Menú de configuración\" ukuman yaykushpa \"Permisos\" nikukta llapipay, \"Contactos\" paskarichun.</string>
   <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Signal ari nichun munanmi kikin maypikakta yachankapak,  shinapash mana arinirishkachu. \"Menú de configuración\" ukuman yaykushpa \"Permisos\" nikukta llapipay, \"Ubicación\" paskarichun.</string>
   <string name="AttachmentManager_signal_requires_the_camera_permission_in_order_to_take_photos_but_it_has_been_permanently_denied">Signal ari nichun munanmi kikinpa shuyullukchikman yaykunkapak, shinapash mana arinirishkachu. \"Menú de configuración\" ukuman yaykushpa \"Permisos\" nikukta llapipay, \"Cámara\" paskarichun.</string>
+  <!--AttachmentUploadJob-->
   <!--AudioSlidePlayer-->
   <string name="AudioSlidePlayer_error_playing_audio">¡Uyayta mana uyay usharinchu!</string>
   <!--BlockedContactsActivity-->
@@ -216,6 +217,8 @@
   <string name="ConversationListItem_key_exchange_message">Ranti paskachik chaski</string>
   <!--ConversationListItemAction-->
   <string name="ConversationListItemAction_archived_conversations_d">Rimariykuna allichirishka (%d)</string>
+  <!--ConversationTitleView-->
+  <string name="ConversationTitleView_verified">Shinapachami</string>
   <!--CreateProfileActivity-->
   <string name="CreateProfileActivity_your_profile_info">Ñukanchikpa kallariwillaykuna</string>
   <string name="CreateProfileActivity_error_setting_profile_photo">Ñawishuyuta mana churay usharirkachu </string>
@@ -420,6 +423,7 @@
   <string name="PassphrasePromptActivity_watermark_content_description">Signalpa uchilla unancha</string>
   <string name="PassphrasePromptActivity_ok_button_content_description">Pakalla killkayta kachapay</string>
   <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">¡Pakalla killkayka mana chay kanchu!</string>
+  <!--PlacePickerActivity-->
   <!--PlayServicesProblemFragment-->
   <string name="PlayServicesProblemFragment_the_version_of_google_play_services_you_have_installed_is_not_functioning">Kunan Google Play Services tiyakuka mana alli katikunchu. Google Play Servicesta kutinlla churamupay.</string>
   <!--RatingManager-->
@@ -602,8 +606,6 @@ Shuk ranti pakallayupay chaski chayamurka, shuk ñawpa mana alli protocolo kashk
   <string name="MessageNotifier_reply">Kutichina</string>
   <string name="MessageNotifier_signal_message">Signal chaski</string>
   <string name="MessageNotifier_unsecured_sms">Kay killkaska SMS mana pakallachu</string>
-  <string name="MessageNotifier_pending_signal_messages">Signal chaskikuna shuyanakun</string>
-  <string name="MessageNotifier_you_have_pending_signal_messages">Signal chaskikuna shuyanakukta charinki, paskankapak uryakuchinkapakpash llapipay</string>
   <string name="MessageNotifier_contact_message">%1$s%2$s</string>
   <string name="MessageNotifier_unknown_contact_message">Yupay mashi</string>
   <!--Notification Channels-->

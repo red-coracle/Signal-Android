@@ -3,7 +3,7 @@ package org.thoughtcrime.securesms.jobmanager;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.thoughtcrime.securesms.jobmanager.impl.DefaultExecutorFactory;
 import org.thoughtcrime.securesms.jobmanager.impl.JsonDataSerializer;
@@ -38,7 +38,7 @@ public class JobManager implements ConstraintObserver.Notifier {
   private final Set<EmptyQueueListener> emptyQueueListeners = new CopyOnWriteArraySet<>();
 
   public JobManager(@NonNull Application application, @NonNull Configuration configuration) {
-    this.executor      = configuration.getExecutorFactory().newSingleThreadExecutor("JobManager");
+    this.executor      = configuration.getExecutorFactory().newSingleThreadExecutor("signal-JobManager");
     this.jobRunners    = new JobRunner[configuration.getJobThreadCount()];
     this.jobController = new JobController(application,
                                            configuration.getJobStorage(),
