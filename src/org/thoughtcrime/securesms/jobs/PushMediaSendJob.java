@@ -81,7 +81,7 @@ public class PushMediaSendJob extends PushSendJob {
       attachments.addAll(Stream.of(message.getLinkPreviews()).filter(p -> p.getThumbnail().isPresent()).map(p -> p.getThumbnail().get()).toList());
       attachments.addAll(Stream.of(message.getSharedContacts()).filter(c -> c.getAvatar() != null).map(c -> c.getAvatar().getAttachment()).withoutNulls().toList());
 
-      List<AttachmentUploadJob> attachmentJobs = Stream.of(attachments).map(a -> new AttachmentUploadJob(((DatabaseAttachment) a).getAttachmentId())).toList();
+      List<AttachmentUploadJob> attachmentJobs = Stream.of(attachments).map(a -> AttachmentUploadJob.fromAttachment((DatabaseAttachment) a)).toList();
 
       if (attachmentJobs.isEmpty()) {
         jobManager.add(new PushMediaSendJob(messageId, destination));
@@ -164,11 +164,8 @@ public class PushMediaSendJob extends PushSendJob {
         expirationManager.scheduleDeletion(messageId, true, message.getExpiresIn());
       }
 
-      if (message.getRevealDuration() > 0) {
-        database.markRevealStarted(messageId);
-        ApplicationContext.getInstance(context)
-                          .getRevealableMessageManager()
-                          .scheduleIfNecessary();
+      if (message.isViewOnce()) {
+        DatabaseFactory.getAttachmentDatabase(context).deleteAttachmentFilesForMessage(messageId);
       }
 
       log(TAG, "Sent message: " + messageId);
@@ -230,7 +227,7 @@ public class PushMediaSendJob extends PushSendJob {
                                                                                             .withAttachments(serviceAttachments)
                                                                                             .withTimestamp(message.getSentTimeMillis())
                                                                                             .withExpiration((int)(message.getExpiresIn() / 1000))
-                                                                                            .withMessageTimer((int) message.getRevealDuration() / 1000)
+                                                                                            .withViewOnce(message.isViewOnce())
                                                                                             .withProfileKey(profileKey.orNull())
                                                                                             .withQuote(quote.orNull())
                                                                                             .withSticker(sticker.orNull())

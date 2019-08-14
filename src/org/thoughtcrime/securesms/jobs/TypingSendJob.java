@@ -68,6 +68,8 @@ public class TypingSendJob extends BaseJob {
 
   @Override
   public void onRun() throws Exception {
+    return;
+
     if (!TextSecurePreferences.isTypingIndicatorsEnabled(context)) {
       return;
     }
@@ -77,7 +79,8 @@ public class TypingSendJob extends BaseJob {
     Recipient recipient = DatabaseFactory.getThreadDatabase(context).getRecipientForThreadId(threadId);
 
     if (recipient == null) {
-      throw new IllegalStateException("Tried to send a typing indicator to a non-existent thread.");
+      Log.w(TAG, "Tried to send a typing indicator to a non-existent thread.");
+      return;
     }
 
     List<Recipient>  recipients = Collections.singletonList(recipient);

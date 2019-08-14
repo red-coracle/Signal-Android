@@ -78,7 +78,9 @@
   <string name="CallScreen_Incoming_call">Apel de intrare</string>
   <!--CameraActivity-->
   <string name="CameraActivity_image_save_failure">Eroare la salvarea imaginii.</string>
+  <!--CameraXFragment-->
   <!--CameraContacts-->
+  <string name="CameraContacts__menu_search">Căutați</string>
   <!--ClearProfileActivity-->
   <string name="ClearProfileActivity_remove">Eliminați</string>
   <string name="ClearProfileActivity_remove_profile_photo">Elimin poza de profil?</string>
@@ -428,6 +430,7 @@
   <string name="MediaSendActivity_camera_unavailable">Cameră indisponibilă.</string>
   <string name="MediaSendActivity_message_to_s">Mesaj către %s</string>
   <string name="MediaSendActivity_message">Mesaj</string>
+  <string name="MediaSendActivity_signal_needs_access_to_your_contacts">Signal are nevoie de acces la contactele tale pentru a le afișa.</string>
   <plurals name="MediaSendActivity_cant_share_more_than_n_items">
     <item quantity="one">Nu puteți partaja mai mult de %d element.</item>
     <item quantity="few">Nu puteți partaja mai mult de %d element.</item>
@@ -759,6 +762,11 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="WebRtcCallScreen_end_call">Închide apelul</string>
   <!--WebRtcCallControls-->
   <string name="WebRtcCallControls_tap_to_enable_your_video">Apasă pentru a activa video-ul tău</string>
+  <!--WebRtcCallControls Content Descriptions-->
+  <string name="WebRtcCallControls_contact_photo_description">Poză contact</string>
+  <string name="WebRtcCallControls_speaker_button_description">Difuzor</string>
+  <string name="WebRtcCallControls_mute_button_description">Fără sunet</string>
+  <string name="WebRtcCallControls_answer_call_description">Răspundeți apelului</string>
   <!--attachment_type_selector-->
   <string name="attachment_type_selector__audio">Audio</string>
   <string name="attachment_type_selector__audio_description">Audio</string>
@@ -781,6 +789,7 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="change_passphrase_activity__repeat_new_passphrase">Repetă parola nouă</string>
   <!--contact_selection_activity-->
   <string name="contact_selection_activity__enter_name_or_number">Introduceți un nume sau un număr</string>
+  <!--contact_filter_toolbar-->
   <!--contact_selection_group_activity-->
   <string name="contact_selection_group_activity__no_contacts">Nu aveți contacte.</string>
   <string name="contact_selection_group_activity__finding_contacts">Se încarcă contactele...</string>
@@ -977,8 +986,6 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="recipient_preferences__ringtone">Sunet de apel</string>
   <!--- redphone_call_controls-->
   <string name="redphone_call_card__signal_call">Apel Signal</string>
-  <string name="redphone_call_controls__mute">Fără sunet</string>
-  <string name="redphone_call_controls__flip_camera_rear">Schimbă camerele</string>
   <!--registration_activity-->
   <string name="registration_activity__phone_number">NUMĂRUL DE TELEFON</string>
   <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">Signal facilitează comunicarea folosind numărul dvs. existent de telefon și agenda telefonului. Prietenii și contactele care știu deja cum să vă contacteze prin telefon vor putea să vă contacteze ușor prin Signal.\n\nÎnregistrarea trimite anumite informații ale contactelor la server. Acestea nu sunt stocate.</string>

@@ -75,7 +75,18 @@
   <string name="CallScreen_Incoming_call">Inkommande samtal</string>
   <!--CameraActivity-->
   <string name="CameraActivity_image_save_failure">Misslyckades med att spara bilden.</string>
+  <!--CameraXFragment-->
   <!--CameraContacts-->
+  <string name="CameraContacts_recent_contacts">Senaste kontakter</string>
+  <string name="CameraContacts_signal_contacts">Signal-kontakter</string>
+  <string name="CameraContacts_signal_groups">Signal-grupper</string>
+  <string name="CameraContacts_you_can_share_with_a_maximum_of_n_conversations">Du kan dela med högst %d konversationer.</string>
+  <string name="CameraContacts_select_signal_recipients">Välj Signal-mottagare</string>
+  <string name="CameraContacts_no_signal_contacts">Inga Signal-kontakter</string>
+  <string name="CameraContacts_you_can_only_use_the_camera_button">Du kan bara använda kameraknappen för att skicka foton till Signal-kontakter.</string>
+  <string name="CameraContacts_cant_find_who_youre_looking_for">Kan du inte hitta den du letar efter?</string>
+  <string name="CameraContacts_invite_a_contact_to_join_signal">Bjud in en kontakt för att gå med i Signal</string>
+  <string name="CameraContacts__menu_search">Sök</string>
   <!--ClearProfileActivity-->
   <string name="ClearProfileActivity_remove">Ta bort</string>
   <string name="ClearProfileActivity_remove_profile_photo">Ta bort profilbild?</string>
@@ -410,10 +421,14 @@
   <string name="MediaSendActivity_camera_unavailable">Kamera otillgänglig.</string>
   <string name="MediaSendActivity_message_to_s">Meddelande till %s</string>
   <string name="MediaSendActivity_message">Meddelande</string>
+  <string name="MediaSendActivity_select_recipients">Välj mottagare</string>
+  <string name="MediaSendActivity_signal_needs_access_to_your_contacts">Signal behöver tillgång till dina kontakter för att visa dem.</string>
+  <string name="MediaSendActivity_signal_needs_contacts_permission_in_order_to_show_your_contacts_but_it_has_been_permanently_denied">Signal behöver behörighet till Kontakter för att visa dina kontakter, men det har permanent nekats. Fortsätt till appinställningarna, välj \"Behörigheter\" och aktivera \"Kontakter\".</string>
   <plurals name="MediaSendActivity_cant_share_more_than_n_items">
     <item quantity="one">Du kan inte dela mer än %d objekt.</item>
     <item quantity="other">Du kan inte dela mer än %d objekt.</item>
   </plurals>
+  <string name="MediaSendActivity_select_recipients_description">Välj mottagare</string>
   <!--MediaRepository-->
   <string name="MediaRepository_all_media">All media</string>
   <!--MessageRecord-->
@@ -549,6 +564,8 @@ angav (%s) är ogiltigt.</string>
   <string name="RegistrationActivity_enter_the_code_we_sent_to_s">Ange koden vi skickade till %s</string>
   <string name="RegistrationActivity_call">Ring</string>
   <!--RevealableMessageView-->
+  <string name="RevealableMessageView_view_photo">Visa foto</string>
+  <string name="RevealableMessageView_viewed">Visat</string>
   <string name="RevealableMessageView_photo">Foto</string>
   <!--ScribbleActivity-->
   <string name="ScribbleActivity_save_failure">Misslyckades med att spara bildändringar</string>
@@ -609,6 +626,7 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="ThreadRecord_missed_call">Missat samtal</string>
   <string name="ThreadRecord_media_message">Mediameddelande</string>
   <string name="ThreadRecord_sticker">Klistermärke</string>
+  <string name="ThreadRecord_disappearing_photo">Försvinnande foto</string>
   <string name="ThreadRecord_s_is_on_signal">%s finns på Signal!</string>
   <string name="ThreadRecord_disappearing_messages_disabled">Försvinnande meddelanden inaktiverat</string>
   <string name="ThreadRecord_disappearing_message_time_updated_to_s">Tiden för försvinnande meddelanden inställd till %s</string>
@@ -683,6 +701,7 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="MessageNotifier_mark_read">Läst</string>
   <string name="MessageNotifier_media_message">Mediameddelande</string>
   <string name="MessageNotifier_sticker">Klistermärke</string>
+  <string name="MessageNotifier_disappearing_photo">Försvinnande foto</string>
   <string name="MessageNotifier_reply">Svara</string>
   <string name="MessageNotifier_signal_message">Signal-meddelande</string>
   <string name="MessageNotifier_unsecured_sms">Osäkert SMS</string>
@@ -735,6 +754,11 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="WebRtcCallScreen_end_call">Avsluta samtal</string>
   <!--WebRtcCallControls-->
   <string name="WebRtcCallControls_tap_to_enable_your_video">Tryck för att aktivera video</string>
+  <!--WebRtcCallControls Content Descriptions-->
+  <string name="WebRtcCallControls_contact_photo_description">Kontaktfoto</string>
+  <string name="WebRtcCallControls_speaker_button_description">Högtalare</string>
+  <string name="WebRtcCallControls_mute_button_description">Mikrofon av</string>
+  <string name="WebRtcCallControls_answer_call_description">Svara på samtal</string>
   <!--attachment_type_selector-->
   <string name="attachment_type_selector__audio">Ljud</string>
   <string name="attachment_type_selector__audio_description">Ljud</string>
@@ -757,6 +781,7 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="change_passphrase_activity__repeat_new_passphrase">Upprepa ny lösenfras</string>
   <!--contact_selection_activity-->
   <string name="contact_selection_activity__enter_name_or_number">Ange namn eller nummer</string>
+  <!--contact_filter_toolbar-->
   <!--contact_selection_group_activity-->
   <string name="contact_selection_group_activity__no_contacts">Inga kontakter.</string>
   <string name="contact_selection_group_activity__finding_contacts">Läser in kontakter…</string>
@@ -946,8 +971,6 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="recipient_preferences__ringtone">Rington</string>
   <!--- redphone_call_controls-->
   <string name="redphone_call_card__signal_call">Signal-samtal</string>
-  <string name="redphone_call_controls__mute">Tysta</string>
-  <string name="redphone_call_controls__flip_camera_rear">Byt kamera</string>
   <!--registration_activity-->
   <string name="registration_activity__phone_number">TELEFONNUMMER</string>
   <string name="registration_activity__registration_will_transmit_some_contact_information_to_the_server_temporariliy">Signal gör det lätt att kommunicera genom att använda ditt mobilnummer och din kontaktbok. Vänner och kontakter som redan har ditt nummer kommer lätt kunna kontakta dig med Signal.\n\nRegistreringen skickar viss kontaktinformation till servern. Informationen lagras ej.</string>
