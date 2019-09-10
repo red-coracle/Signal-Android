@@ -11,6 +11,8 @@
   <string name="AbstractNotificationBuilder_new_message">Tin nhắn mới</string>
   <!--AlbumThumbnailView-->
   <string name="AlbumThumbnailView_plus">\+%d</string>
+  <!--ApplicationMigrationActivity-->
+  <string name="ApplicationMigrationActivity__signal_is_updating">Signal đang cập nhật...</string>
   <!--ApplicationPreferencesActivity-->
   <string name="ApplicationPreferencesActivity_currently_s">Hiện thời: %s</string>
   <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Bạn chưa thiết lập mật khẩu!</string>
@@ -75,7 +77,7 @@
   <string name="CameraActivity_image_save_failure">Không thể lưu ảnh.</string>
   <!--CameraXFragment-->
   <string name="CameraXFragment_capture_description">Chụp</string>
-  <string name="CameraXFragment_change_camera_description">Thay đổi camera</string>
+  <string name="CameraXFragment_change_camera_description">Chuyển camera</string>
   <string name="CameraXFragment_open_gallery_description">Mở bộ sưu tập</string>
   <!--CameraContacts-->
   <string name="CameraContacts_recent_contacts">Liên hệ gần đây</string>
@@ -190,19 +192,19 @@
   <plurals name="ConversationFragment_this_will_permanently_delete_all_n_selected_messages">
     <item quantity="other">Thao tác này sẽ xóa vĩnh viễn %1$d tin nhắn đã chọn.</item>
   </plurals>
-  <string name="ConversationFragment_save_to_sd_card">Lưu vào thẻ nhớ?</string>
+  <string name="ConversationFragment_save_to_sd_card">Lưu vào bộ nhớ?</string>
   <plurals name="ConversationFragment_saving_n_media_to_storage_warning">
     <item quantity="other">Lưu %1$d tệp đa phương tiện vào bộ nhớ sẽ cho phép bất kì ứng dụng khác truy cập chúng.\n\nTiếp tục?</item>
   </plurals>
   <plurals name="ConversationFragment_error_while_saving_attachments_to_sd_card">
     <item quantity="other">Lỗi khi đang lưu tệp đính kèm vào thẻ nhớ!</item>
   </plurals>
-  <string name="ConversationFragment_unable_to_write_to_sd_card_exclamation">Không thể ghi vào thẻ nhớ!</string>
+  <string name="ConversationFragment_unable_to_write_to_sd_card_exclamation">Không thể ghi vào bộ nhớ!</string>
   <plurals name="ConversationFragment_saving_n_attachments">
     <item quantity="other">Đang lưu %1$d tệp đính kèm</item>
   </plurals>
   <plurals name="ConversationFragment_saving_n_attachments_to_sd_card">
-    <item quantity="other">Đang lưu %1$dtệp đính kèm vào thẻ nhớ...</item>
+    <item quantity="other">Đang lưu %1$dtệp đính kèm vào bộ nhớ...</item>
   </plurals>
   <string name="ConversationFragment_pending">Đang chờ...</string>
   <string name="ConversationFragment_push">Dữ liệu (Signal)</string>
@@ -212,6 +214,7 @@
   <string name="ConversationFragment_deleting_messages">Đang xóa tin nhắn...</string>
   <string name="ConversationFragment_quoted_message_not_found">Không tìm thấy tin nhắn ban đầu</string>
   <string name="ConversationFragment_quoted_message_no_longer_available">Tin nhắn ban đầu không khả dụng</string>
+  <string name="ConversationFragment_failed_to_open_message">Không thể mở tin nhắn</string>
   <!--ConversationListActivity-->
   <string name="ConversationListActivity_there_is_no_browser_installed_on_your_device">Bạn chưa cài trình duyệt nào trên điện thoại.</string>
   <!--ConversationListFragment-->
@@ -770,6 +773,7 @@ Nhận thông tin trao đổi chìa khóa về phiên bản giao thức không h
   <string name="change_passphrase_activity__repeat_new_passphrase">Lặp lại mật khẩu mới</string>
   <!--contact_selection_activity-->
   <string name="contact_selection_activity__enter_name_or_number">Điền tên hoặc số</string>
+  <string name="contact_selection_activity__invite_to_signal">Mời dùng Signal</string>
   <!--contact_filter_toolbar-->
   <string name="contact_filter_toolbar__clear_entered_text_description">Xóa văn bản đã nhập </string>
   <string name="contact_filter_toolbar__show_keyboard_description">Hiện bàn phím</string>
@@ -815,8 +819,6 @@ Nhận thông tin trao đổi chìa khóa về phiên bản giao thức không h
   <!--conversation_item_received-->
   <string name="conversation_item_received__contact_photo_description">Ảnh liên hệ</string>
   <!--audio_view-->
-  <string name="audio_view__play_accessibility_description">Chạy</string>
-  <string name="audio_view__pause_accessibility_description">Tạm ngưng</string>
   <string name="audio_view__download_accessibility_description">Tải xuống</string>
   <!--QuoteView-->
   <string name="QuoteView_audio">Âm thanh</string>
@@ -907,8 +909,6 @@ Nhận thông tin trao đổi chìa khóa về phiên bản giao thức không h
   <string name="database_migration_activity__import">Nhập</string>
   <string name="database_migration_activity__this_could_take_a_moment_please_be_patient">Việc này có thể mất chút thời gian. Vui lòng kiên nhẫn, chúng tôi sẽ thông báo cho bạn khi quá trình nhập hoàn tất.</string>
   <string name="database_migration_activity__importing">ĐANG NHẬP</string>
-  <!--database_upgrade_activity-->
-  <string name="database_upgrade_activity__updating_database">Đang cập nhật cơ sở dữ liệu...</string>
   <string name="import_fragment__import_system_sms_database">Nhập cơ sở dữ liệu SMS của hệ thống</string>
   <string name="import_fragment__import_the_database_from_the_default_system">Nhập cơ sở dữ liệu từ ứng dụng tin nhắn mặc định của hệ thống</string>
   <string name="import_fragment__import_plaintext_backup">Nhập sao lưu văn bản thường</string>
@@ -1175,6 +1175,7 @@ Các tin nhắn và cuộc gọi riêng tư miễn phí đến người dùng Si
   <string name="conversation_list_batch_unarchive__menu_unarchive_selected">Bỏ lưu trữ mục đã chọn</string>
   <!--conversation_list-->
   <string name="conversation_list_settings_shortcut">Cài đặt phím tắt</string>
+  <string name="conversation_list_search_description">Tìm kiếm</string>
   <!--conversation_list_item_view-->
   <string name="conversation_list_item_view__contact_photo_image">Ảnh Chân Dung Liên Hệ</string>
   <string name="conversation_list_item_view__archived">Đã lưu trữ</string>

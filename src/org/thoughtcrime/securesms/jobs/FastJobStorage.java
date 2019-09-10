@@ -3,15 +3,18 @@ package org.thoughtcrime.securesms.jobs;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
 import org.thoughtcrime.securesms.database.JobDatabase;
+import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.persistence.ConstraintSpec;
 import org.thoughtcrime.securesms.jobmanager.persistence.DependencySpec;
 import org.thoughtcrime.securesms.jobmanager.persistence.FullSpec;
 import org.thoughtcrime.securesms.jobmanager.persistence.JobSpec;
 import org.thoughtcrime.securesms.jobmanager.persistence.JobStorage;
 import org.thoughtcrime.securesms.util.Util;
+import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,13 +91,29 @@ public class FastJobStorage implements JobStorage {
 
   @Override
   public synchronized @NonNull List<JobSpec> getPendingJobsWithNoDependenciesInCreatedOrder(long currentTime) {
-    return Stream.of(jobs)
-                 .filterNot(JobSpec::isRunning)
-                 .filter(this::firstInQueue)
-                 .filter(j -> !dependenciesByJobId.containsKey(j.getId()) || dependenciesByJobId.get(j.getId()).isEmpty())
-                 .filter(j -> j.getNextRunAttemptTime() <= currentTime)
-                 .sorted((j1, j2) -> Long.compare(j1.getCreateTime(), j2.getCreateTime()))
-                 .toList();
+    Optional<JobSpec> migrationJob = getMigrationJob();
+
+    if (migrationJob.isPresent() && !migrationJob.get().isRunning()) {
+      return Collections.singletonList(migrationJob.get());
+    } else if (migrationJob.isPresent()) {
+      return Collections.emptyList();
+    } else {
+      return Stream.of(jobs)
+                   .filterNot(JobSpec::isRunning)
+                   .filter(this::firstInQueue)
+                   .filter(j -> !dependenciesByJobId.containsKey(j.getId()) || dependenciesByJobId.get(j.getId()).isEmpty())
+                   .filter(j -> j.getNextRunAttemptTime() <= currentTime)
+                   .sorted((j1, j2) -> Long.compare(j1.getCreateTime(), j2.getCreateTime()))
+                   .toList();
+    }
+  }
+
+  private Optional<JobSpec> getMigrationJob() {
+    return Optional.fromNullable(Stream.of(jobs)
+                                       .filter(j -> Job.Parameters.MIGRATION_QUEUE_KEY.equals(j.getQueueKey()))
+                                       .filter(this::firstInQueue)
+                                       .findFirst()
+                                       .orElse(null));
   }
 
   private boolean firstInQueue(@NonNull JobSpec job) {
@@ -194,6 +213,23 @@ public class FastJobStorage implements JobStorage {
   }
 
   @Override
+  public void updateJobs(@NonNull List<JobSpec> jobSpecs) {
+    jobDatabase.updateJobs(jobSpecs);
+
+    Map<String, JobSpec>  updates = Stream.of(jobSpecs).collect(Collectors.toMap(JobSpec::getId));
+    ListIterator<JobSpec> iter    = jobs.listIterator();
+
+    while (iter.hasNext()) {
+      JobSpec existing = iter.next();
+      JobSpec update   = updates.get(existing.getId());
+
+      if (update != null) {
+        iter.set(update);
+      }
+    }
+  }
+
+  @Override
   public synchronized void deleteJob(@NonNull String jobId) {
     deleteJobs(Collections.singletonList(jobId));
   }
@@ -242,6 +278,26 @@ public class FastJobStorage implements JobStorage {
 
   @Override
   public synchronized @NonNull List<DependencySpec> getDependencySpecsThatDependOnJob(@NonNull String jobSpecId) {
+    List<DependencySpec> layer = getSingleLayerOfDependencySpecsThatDependOnJob(jobSpecId);
+    List<DependencySpec> all   = new ArrayList<>(layer);
+
+    Set<String> activeJobIds;
+
+    do {
+      activeJobIds = Stream.of(layer).map(DependencySpec::getJobId).collect(Collectors.toSet());
+      layer.clear();
+
+      for (String activeJobId : activeJobIds) {
+        layer.addAll(getSingleLayerOfDependencySpecsThatDependOnJob(activeJobId));
+      }
+
+      all.addAll(layer);
+    } while (!layer.isEmpty());
+
+    return all;
+  }
+
+  private @NonNull List<DependencySpec> getSingleLayerOfDependencySpecsThatDependOnJob(@NonNull String jobSpecId) {
     return Stream.of(dependenciesByJobId.entrySet())
                  .map(Map.Entry::getValue)
                  .flatMap(Stream::of)

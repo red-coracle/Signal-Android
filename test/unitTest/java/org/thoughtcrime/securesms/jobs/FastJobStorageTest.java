@@ -7,6 +7,7 @@ import com.annimon.stream.Stream;
 import org.junit.Test;
 import org.thoughtcrime.securesms.database.JobDatabase;
 import org.thoughtcrime.securesms.jobmanager.Data;
+import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.impl.JsonDataSerializer;
 import org.thoughtcrime.securesms.jobmanager.persistence.ConstraintSpec;
 import org.thoughtcrime.securesms.jobmanager.persistence.DependencySpec;
@@ -98,6 +99,43 @@ public class FastJobStorageTest {
 
     assertFalse(subject.getJobSpec("1").isRunning());
     assertFalse(subject.getJobSpec("2").isRunning());
+  }
+
+  @Test
+  public void updateJobs_writesToDatabase() {
+    JobDatabase    database = noopDatabase();
+    FastJobStorage subject  = new FastJobStorage(database);
+    List<JobSpec>  jobs     = Collections.emptyList();
+
+    subject.updateJobs(jobs);
+
+    verify(database).updateJobs(jobs);
+  }
+
+  @Test
+  public void updateJobs_updatesAllFields() {
+
+    FullSpec fullSpec1 = new FullSpec(new JobSpec("1", "f1", null, 1, 1, 1, 1, 1, 1, 1, EMPTY_DATA, false),
+                                      Collections.emptyList(),
+                                      Collections.emptyList());
+    FullSpec fullSpec2 = new FullSpec(new JobSpec("2", "f2", null, 1, 1, 1, 1, 1, 1, 1, EMPTY_DATA, false),
+                                      Collections.emptyList(),
+                                      Collections.emptyList());
+    FullSpec fullSpec3 = new FullSpec(new JobSpec("3", "f3", null, 1, 1, 1, 1, 1, 1, 1, EMPTY_DATA, false),
+                                      Collections.emptyList(),
+                                      Collections.emptyList());
+
+    FastJobStorage subject = new FastJobStorage(fixedDataDatabase(Arrays.asList(fullSpec1, fullSpec2, fullSpec3)));
+
+    JobSpec update1 = new JobSpec("1", "g1", "q1", 2, 2, 2, 2, 2, 2, 2, "abc", true);
+    JobSpec update2 = new JobSpec("2", "g2", "q2", 3, 3, 3, 3, 3, 3, 3, "def", true);
+
+    subject.init();
+    subject.updateJobs(Arrays.asList(update1, update2));
+
+    assertEquals(update1, subject.getJobSpec("1"));
+    assertEquals(update2, subject.getJobSpec("2"));
+    assertEquals(fullSpec3.getJobSpec(), subject.getJobSpec("3"));
   }
 
   @Test
@@ -273,6 +311,76 @@ public class FastJobStorageTest {
   }
 
   @Test
+  public void getPendingJobsWithNoDependenciesInCreatedOrder_migrationJobTakesPrecedence() {
+    FullSpec plainSpec     = new FullSpec(new JobSpec("1", "f1", "q", 0, 0, 0, 0, 0, -1, -1, EMPTY_DATA, false),
+                                          Collections.emptyList(),
+                                          Collections.emptyList());
+    FullSpec migrationSpec = new FullSpec(new JobSpec("2", "f2", Job.Parameters.MIGRATION_QUEUE_KEY, 5, 0, 0, 0, 0, -1, -1, EMPTY_DATA, false),
+                                          Collections.emptyList(),
+                                          Collections.emptyList());
+
+    FastJobStorage subject = new FastJobStorage(fixedDataDatabase(Arrays.asList(plainSpec, migrationSpec)));
+    subject.init();
+
+    List<JobSpec> jobs = subject.getPendingJobsWithNoDependenciesInCreatedOrder(10);
+
+    assertEquals(1, jobs.size());
+    assertEquals("2", jobs.get(0).getId());
+  }
+
+  @Test
+  public void getPendingJobsWithNoDependenciesInCreatedOrder_runningMigrationBlocksNormalJobs() {
+    FullSpec plainSpec     = new FullSpec(new JobSpec("1", "f1", "q", 0, 0, 0, 0, 0, -1, -1, EMPTY_DATA, false),
+                                          Collections.emptyList(),
+                                          Collections.emptyList());
+    FullSpec migrationSpec = new FullSpec(new JobSpec("2", "f2", Job.Parameters.MIGRATION_QUEUE_KEY, 5, 0, 0, 0, 0, -1, -1, EMPTY_DATA, true),
+                                          Collections.emptyList(),
+                                          Collections.emptyList());
+
+    FastJobStorage subject = new FastJobStorage(fixedDataDatabase(Arrays.asList(plainSpec, migrationSpec)));
+    subject.init();
+
+    List<JobSpec> jobs = subject.getPendingJobsWithNoDependenciesInCreatedOrder(10);
+
+    assertEquals(0, jobs.size());
+  }
+
+  @Test
+  public void getPendingJobsWithNoDependenciesInCreatedOrder_runningMigrationBlocksLaterMigrationJobs() {
+    FullSpec migrationSpec1 = new FullSpec(new JobSpec("1", "f1", Job.Parameters.MIGRATION_QUEUE_KEY, 0, 0, 0, 0, 0, -1, -1, EMPTY_DATA, true),
+                                           Collections.emptyList(),
+                                           Collections.emptyList());
+    FullSpec migrationSpec2 = new FullSpec(new JobSpec("2", "f2", Job.Parameters.MIGRATION_QUEUE_KEY, 5, 0, 0, 0, 0, -1, -1, EMPTY_DATA, false),
+                                           Collections.emptyList(),
+                                           Collections.emptyList());
+
+    FastJobStorage subject = new FastJobStorage(fixedDataDatabase(Arrays.asList(migrationSpec1, migrationSpec2)));
+    subject.init();
+
+    List<JobSpec> jobs = subject.getPendingJobsWithNoDependenciesInCreatedOrder(10);
+
+    assertEquals(0, jobs.size());
+  }
+
+  @Test
+  public void getPendingJobsWithNoDependenciesInCreatedOrder_onlyReturnFirstEligibleMigrationJob() {
+    FullSpec migrationSpec1 = new FullSpec(new JobSpec("1", "f1", Job.Parameters.MIGRATION_QUEUE_KEY, 0, 0, 0, 0, 0, -1, -1, EMPTY_DATA, false),
+                                           Collections.emptyList(),
+                                           Collections.emptyList());
+    FullSpec migrationSpec2 = new FullSpec(new JobSpec("2", "f2", Job.Parameters.MIGRATION_QUEUE_KEY, 5, 0, 0, 0, 0, -1, -1, EMPTY_DATA, false),
+                                           Collections.emptyList(),
+                                           Collections.emptyList());
+
+    FastJobStorage subject = new FastJobStorage(fixedDataDatabase(Arrays.asList(migrationSpec1, migrationSpec2)));
+    subject.init();
+
+    List<JobSpec> jobs = subject.getPendingJobsWithNoDependenciesInCreatedOrder(10);
+
+    assertEquals(1, jobs.size());
+    assertEquals("1", jobs.get(0).getId());
+  }
+
+  @Test
   public void deleteJobs_writesToDatabase() {
     JobDatabase    database = noopDatabase();
     FastJobStorage subject  = new FastJobStorage(database);
@@ -294,13 +402,49 @@ public class FastJobStorageTest {
     List<ConstraintSpec> constraints  = subject.getAllConstraintSpecs();
     List<DependencySpec> dependencies = subject.getAllDependencySpecs();
 
-    assertEquals(1, jobs.size());
+    assertEquals(2, jobs.size());
     assertEquals(DataSet1.JOB_2, jobs.get(0));
+    assertEquals(DataSet1.JOB_3, jobs.get(1));
     assertEquals(1, constraints.size());
     assertEquals(DataSet1.CONSTRAINT_2, constraints.get(0));
-    assertEquals(0, dependencies.size());
+    assertEquals(1, dependencies.size());
   }
 
+  @Test
+  public void getDependencySpecsThatDependOnJob_startOfChain() {
+    FastJobStorage subject = new FastJobStorage(fixedDataDatabase(DataSet1.FULL_SPECS));
+
+    subject.init();
+
+    List<DependencySpec> result = subject.getDependencySpecsThatDependOnJob("id1");
+
+    assertEquals(2, result.size());
+    assertEquals(DataSet1.DEPENDENCY_2, result.get(0));
+    assertEquals(DataSet1.DEPENDENCY_3, result.get(1));
+  }
+
+  @Test
+  public void getDependencySpecsThatDependOnJob_midChain() {
+    FastJobStorage subject = new FastJobStorage(fixedDataDatabase(DataSet1.FULL_SPECS));
+
+    subject.init();
+
+    List<DependencySpec> result = subject.getDependencySpecsThatDependOnJob("id2");
+
+    assertEquals(1, result.size());
+    assertEquals(DataSet1.DEPENDENCY_3, result.get(0));
+  }
+
+  @Test
+  public void getDependencySpecsThatDependOnJob_endOfChain() {
+    FastJobStorage subject = new FastJobStorage(fixedDataDatabase(DataSet1.FULL_SPECS));
+
+    subject.init();
+
+    List<DependencySpec> result = subject.getDependencySpecsThatDependOnJob("id3");
+
+    assertTrue(result.isEmpty());
+  }
 
   private JobDatabase noopDatabase() {
     JobDatabase database = mock(JobDatabase.class);
@@ -325,17 +469,21 @@ public class FastJobStorageTest {
   private static final class DataSet1 {
     static final JobSpec        JOB_1        = new JobSpec("id1", "f1", "q1", 1, 2, 3, 4, 5, 6, 7, EMPTY_DATA, false);
     static final JobSpec        JOB_2        = new JobSpec("id2", "f2", "q2", 1, 2, 3, 4, 5, 6, 7, EMPTY_DATA, false);
+    static final JobSpec        JOB_3        = new JobSpec("id3", "f3", "q3", 1, 2, 3, 4, 5, 6, 7, EMPTY_DATA, false);
     static final ConstraintSpec CONSTRAINT_1 = new ConstraintSpec("id1", "f1");
     static final ConstraintSpec CONSTRAINT_2 = new ConstraintSpec("id2", "f2");
     static final DependencySpec DEPENDENCY_2 = new DependencySpec("id2", "id1");
+    static final DependencySpec DEPENDENCY_3 = new DependencySpec("id3", "id2");
     static final FullSpec       FULL_SPEC_1  = new FullSpec(JOB_1, Collections.singletonList(CONSTRAINT_1), Collections.emptyList());
     static final FullSpec       FULL_SPEC_2  = new FullSpec(JOB_2, Collections.singletonList(CONSTRAINT_2), Collections.singletonList(DEPENDENCY_2));
-    static final List<FullSpec> FULL_SPECS   = Arrays.asList(FULL_SPEC_1, FULL_SPEC_2);
+    static final FullSpec       FULL_SPEC_3  = new FullSpec(JOB_3, Collections.emptyList(), Collections.singletonList(DEPENDENCY_3));
+    static final List<FullSpec> FULL_SPECS   = Arrays.asList(FULL_SPEC_1, FULL_SPEC_2, FULL_SPEC_3);
 
     static void assertJobsMatch(@NonNull List<JobSpec> jobs) {
-      assertEquals(jobs.size(), 2);
+      assertEquals(jobs.size(), 3);
       assertTrue(jobs.contains(DataSet1.JOB_1));
       assertTrue(jobs.contains(DataSet1.JOB_1));
+      assertTrue(jobs.contains(DataSet1.JOB_3));
     }
 
     static void assertConstraintsMatch(@NonNull List<ConstraintSpec> constraints) {
@@ -345,8 +493,9 @@ public class FastJobStorageTest {
     }
 
     static void assertDependenciesMatch(@NonNull List<DependencySpec> dependencies) {
-      assertEquals(dependencies.size(), 1);
+      assertEquals(dependencies.size(), 2);
       assertTrue(dependencies.contains(DataSet1.DEPENDENCY_2));
+      assertTrue(dependencies.contains(DataSet1.DEPENDENCY_3));
     }
   }
 }

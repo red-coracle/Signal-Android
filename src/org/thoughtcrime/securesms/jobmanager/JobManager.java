@@ -4,13 +4,15 @@ import android.app.Application;
 import android.content.Intent;
 import android.os.Build;
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import org.thoughtcrime.securesms.jobmanager.impl.DefaultExecutorFactory;
 import org.thoughtcrime.securesms.jobmanager.impl.JsonDataSerializer;
-import org.thoughtcrime.securesms.jobmanager.migration.WorkManagerMigrator;
+import org.thoughtcrime.securesms.jobmanager.workmanager.WorkManagerMigrator;
 import org.thoughtcrime.securesms.jobmanager.persistence.JobStorage;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.util.Debouncer;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,15 +33,17 @@ public class JobManager implements ConstraintObserver.Notifier {
 
   private static final String TAG = JobManager.class.getSimpleName();
 
+  private final Application     application;
+  private final Configuration   configuration;
   private final ExecutorService executor;
   private final JobController   jobController;
-  private final JobRunner[]     jobRunners;
 
   private final Set<EmptyQueueListener> emptyQueueListeners = new CopyOnWriteArraySet<>();
 
   public JobManager(@NonNull Application application, @NonNull Configuration configuration) {
+    this.application   = application;
+    this.configuration = configuration;
     this.executor      = configuration.getExecutorFactory().newSingleThreadExecutor("signal-JobManager");
-    this.jobRunners    = new JobRunner[configuration.getJobThreadCount()];
     this.jobController = new JobController(application,
                                            configuration.getJobStorage(),
                                            configuration.getJobInstantiator(),
@@ -56,12 +60,13 @@ public class JobManager implements ConstraintObserver.Notifier {
         WorkManagerMigrator.migrate(application, configuration.getJobStorage(), configuration.getDataSerializer());
       }
 
-      jobController.init();
+      JobStorage jobStorage = configuration.getJobStorage();
+      jobStorage.init();
 
-      for (int i = 0; i < jobRunners.length; i++) {
-        jobRunners[i] = new JobRunner(application, i + 1, jobController);
-        jobRunners[i].start();
-      }
+      int latestVersion = configuration.getJobMigrator().migrate(jobStorage, configuration.getDataSerializer());
+      TextSecurePreferences.setJobManagerVersion(application, latestVersion);
+
+      jobController.init();
 
       for (ConstraintObserver constraintObserver : configuration.getConstraintObservers()) {
         constraintObserver.register(this);
@@ -70,7 +75,17 @@ public class JobManager implements ConstraintObserver.Notifier {
       if (Build.VERSION.SDK_INT < 26) {
         application.startService(new Intent(application, KeepAliveService.class));
       }
+    });
+  }
 
+  /**
+   * Begins the execution of jobs.
+   */
+  public void beginJobLoop() {
+    executor.execute(() -> {
+      for (int i = 0; i < configuration.getJobThreadCount(); i++) {
+        new JobRunner(application, i + 1, jobController).start();
+      }
       wakeUp();
     });
   }
@@ -112,7 +127,7 @@ public class JobManager implements ConstraintObserver.Notifier {
   }
 
   /**
-   * Adds a listener to that will be notified when the job queue has been drained.
+   * Adds a listener that will be notified when the job queue has been drained.
    */
   void addOnEmptyQueueListener(@NonNull EmptyQueueListener listener) {
     executor.execute(() -> {
@@ -207,6 +222,7 @@ public class JobManager implements ConstraintObserver.Notifier {
     private final List<ConstraintObserver> constraintObservers;
     private final Data.Serializer          dataSerializer;
     private final JobStorage               jobStorage;
+    private final JobMigrator              jobMigrator;
 
     private Configuration(int jobThreadCount,
                           @NonNull ExecutorFactory executorFactory,
@@ -214,7 +230,8 @@ public class JobManager implements ConstraintObserver.Notifier {
                           @NonNull ConstraintInstantiator constraintInstantiator,
                           @NonNull List<ConstraintObserver> constraintObservers,
                           @NonNull Data.Serializer dataSerializer,
-                          @NonNull JobStorage jobStorage)
+                          @NonNull JobStorage jobStorage,
+                          @NonNull JobMigrator jobMigrator)
     {
       this.executorFactory        = executorFactory;
       this.jobThreadCount         = jobThreadCount;
@@ -223,6 +240,7 @@ public class JobManager implements ConstraintObserver.Notifier {
       this.constraintObservers    = constraintObservers;
       this.dataSerializer         = dataSerializer;
       this.jobStorage             = jobStorage;
+      this.jobMigrator            = jobMigrator;
     }
 
     int getJobThreadCount() {
@@ -254,6 +272,10 @@ public class JobManager implements ConstraintObserver.Notifier {
       return jobStorage;
     }
 
+    @NonNull JobMigrator getJobMigrator() {
+      return jobMigrator;
+    }
+
     public static class Builder {
 
       private ExecutorFactory                 executorFactory     = new DefaultExecutorFactory();
@@ -263,6 +285,7 @@ public class JobManager implements ConstraintObserver.Notifier {
       private List<ConstraintObserver>        constraintObservers = new ArrayList<>();
       private Data.Serializer                 dataSerializer      = new JsonDataSerializer();
       private JobStorage                      jobStorage          = null;
+      private JobMigrator                     jobMigrator         = null;
 
       public @NonNull Builder setJobThreadCount(int jobThreadCount) {
         this.jobThreadCount = jobThreadCount;
@@ -299,6 +322,11 @@ public class JobManager implements ConstraintObserver.Notifier {
         return this;
       }
 
+      public @NonNull Builder setJobMigrator(@NonNull JobMigrator jobMigrator) {
+        this.jobMigrator = jobMigrator;
+        return this;
+      }
+
       public @NonNull Configuration build() {
         return new Configuration(jobThreadCount,
                                  executorFactory,
@@ -306,7 +334,8 @@ public class JobManager implements ConstraintObserver.Notifier {
                                  new ConstraintInstantiator(constraintFactories),
                                  new ArrayList<>(constraintObservers),
                                  dataSerializer,
-                                 jobStorage);
+                                 jobStorage,
+                                 jobMigrator);
       }
     }
   }

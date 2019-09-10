@@ -11,6 +11,8 @@
   <string name="AbstractNotificationBuilder_new_message">Nauja žinutė</string>
   <!--AlbumThumbnailView-->
   <string name="AlbumThumbnailView_plus">\+%d</string>
+  <!--ApplicationMigrationActivity-->
+  <string name="ApplicationMigrationActivity__signal_is_updating">Signal atsinaujina...</string>
   <!--ApplicationPreferencesActivity-->
   <string name="ApplicationPreferencesActivity_currently_s">Šiuo metu: %s</string>
   <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Jūs dar nesate nustatę slaptafrazės!</string>
@@ -242,6 +244,7 @@
   <string name="ConversationFragment_deleting_messages">Ištrinamos žinutės...</string>
   <string name="ConversationFragment_quoted_message_not_found">Pradinė žinutė nerasta</string>
   <string name="ConversationFragment_quoted_message_no_longer_available">Pradinė žinutė daugiau nebeprieinama</string>
+  <string name="ConversationFragment_failed_to_open_message">Nepavyko atverti žinutės</string>
   <!--ConversationListActivity-->
   <string name="ConversationListActivity_there_is_no_browser_installed_on_your_device">Jūsų įrenginyje nėra įdiegtos naršyklės.</string>
   <!--ConversationListFragment-->
@@ -839,6 +842,7 @@
   <string name="change_passphrase_activity__repeat_new_passphrase">Pakartokite naują slaptafrazę</string>
   <!--contact_selection_activity-->
   <string name="contact_selection_activity__enter_name_or_number">Įveskite vardą ar numerį</string>
+  <string name="contact_selection_activity__invite_to_signal">Pakviesti į Signal</string>
   <!--contact_filter_toolbar-->
   <string name="contact_filter_toolbar__clear_entered_text_description">Išvalyti įvestą tekstą</string>
   <string name="contact_filter_toolbar__show_keyboard_description">Rodyti klaviatūrą</string>
@@ -884,8 +888,7 @@
   <!--conversation_item_received-->
   <string name="conversation_item_received__contact_photo_description">Adresato nuotrauka</string>
   <!--audio_view-->
-  <string name="audio_view__play_accessibility_description">Groti</string>
-  <string name="audio_view__pause_accessibility_description">Pristabdyti</string>
+  <string name="audio_view__play_pause_accessibility_description">Atkurti ... Pristabdyti</string>
   <string name="audio_view__download_accessibility_description">Atsisiųsti</string>
   <!--QuoteView-->
   <string name="QuoteView_audio">Garso įrašai</string>
@@ -994,8 +997,6 @@
   <string name="database_migration_activity__import">Importuoti</string>
   <string name="database_migration_activity__this_could_take_a_moment_please_be_patient">Tai gali šiek tiek užtrukti. Būkite kantrūs, mes pranešime, kai importavimas bus užbaigtas.</string>
   <string name="database_migration_activity__importing">IMPORTUOJAMA</string>
-  <!--database_upgrade_activity-->
-  <string name="database_upgrade_activity__updating_database">Atnaujinama duomenų bazė...</string>
   <string name="import_fragment__import_system_sms_database">Importuoti sistemos SMS duomenų bazę</string>
   <string name="import_fragment__import_the_database_from_the_default_system">Importuoti duomenų bazę iš numatytosios sistemos pokalbių programėlės</string>
   <string name="import_fragment__import_plaintext_backup">Importuoti grynojo teksto atsarginę kopiją</string>
@@ -1266,6 +1267,7 @@
   <string name="conversation_list_batch_unarchive__menu_unarchive_selected">Išarchyvuoti pasirinktus</string>
   <!--conversation_list-->
   <string name="conversation_list_settings_shortcut">Nustatymų šaukinys</string>
+  <string name="conversation_list_search_description">Ieškoti</string>
   <!--conversation_list_item_view-->
   <string name="conversation_list_item_view__contact_photo_image">Adresato nuotraukos paveikslas</string>
   <string name="conversation_list_item_view__archived">Archyvuota</string>

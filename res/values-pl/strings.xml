@@ -11,6 +11,8 @@
   <string name="AbstractNotificationBuilder_new_message">Nowa wiadomość</string>
   <!--AlbumThumbnailView-->
   <string name="AlbumThumbnailView_plus">\+%d</string>
+  <!--ApplicationMigrationActivity-->
+  <string name="ApplicationMigrationActivity__signal_is_updating">Aktualizacja Signal...</string>
   <!--ApplicationPreferencesActivity-->
   <string name="ApplicationPreferencesActivity_currently_s">Obecnie: %s</string>
   <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Nie masz jeszcze ustawionego hasła!</string>
@@ -242,6 +244,7 @@
   <string name="ConversationFragment_deleting_messages">Usuwanie wiadomości...</string>
   <string name="ConversationFragment_quoted_message_not_found">Nie znaleziono oryginalnej wiadomości</string>
   <string name="ConversationFragment_quoted_message_no_longer_available">Oryginalna wiadomość nie jest już dostępna</string>
+  <string name="ConversationFragment_failed_to_open_message">Nie udało się otworzyć wiadomości</string>
   <!--ConversationListActivity-->
   <string name="ConversationListActivity_there_is_no_browser_installed_on_your_device">Twoje urządzenie nie ma zainstalowanej przeglądarki.</string>
   <!--ConversationListFragment-->
@@ -830,6 +833,7 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="change_passphrase_activity__repeat_new_passphrase">Powtórz hasło</string>
   <!--contact_selection_activity-->
   <string name="contact_selection_activity__enter_name_or_number">Wprowadź nazwę lub numer</string>
+  <string name="contact_selection_activity__invite_to_signal">Zaproś do Signal</string>
   <!--contact_filter_toolbar-->
   <string name="contact_filter_toolbar__clear_entered_text_description">Wyczyść wprowadzony tekst</string>
   <string name="contact_filter_toolbar__show_keyboard_description">Pokaż klawiaturę</string>
@@ -875,8 +879,7 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <!--conversation_item_received-->
   <string name="conversation_item_received__contact_photo_description">Zdjęcie kontaktu</string>
   <!--audio_view-->
-  <string name="audio_view__play_accessibility_description">Odtwórz</string>
-  <string name="audio_view__pause_accessibility_description">Pauza</string>
+  <string name="audio_view__play_pause_accessibility_description">Play ... Pauza</string>
   <string name="audio_view__download_accessibility_description">Pobierz</string>
   <!--QuoteView-->
   <string name="QuoteView_audio">Dźwięk</string>
@@ -985,8 +988,6 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="database_migration_activity__import">Import</string>
   <string name="database_migration_activity__this_could_take_a_moment_please_be_patient">To może zająć chwilę. Prosimy o cierpliwość, powiadomimy Cię gdy importowanie zostanie ukończone.</string>
   <string name="database_migration_activity__importing">IMPORTOWANIE</string>
-  <!--database_upgrade_activity-->
-  <string name="database_upgrade_activity__updating_database">Aktualizowanie bazy danych...</string>
   <string name="import_fragment__import_system_sms_database">Importuj systemową bazę danych SMS</string>
   <string name="import_fragment__import_the_database_from_the_default_system">Importuj wiadomości z domyślnej aplikacji SMS</string>
   <string name="import_fragment__import_plaintext_backup">Importuj nieszyfrowaną kopię zapasową</string>
@@ -1257,6 +1258,7 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="conversation_list_batch_unarchive__menu_unarchive_selected">Przenieś do skrzynki odbiorczej</string>
   <!--conversation_list-->
   <string name="conversation_list_settings_shortcut">Skrót do ustawień</string>
+  <string name="conversation_list_search_description">Szukaj</string>
   <!--conversation_list_item_view-->
   <string name="conversation_list_item_view__contact_photo_image">Zdjęcie kontaktu</string>
   <string name="conversation_list_item_view__archived">Archiwum</string>

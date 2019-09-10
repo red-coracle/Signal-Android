@@ -188,7 +188,7 @@ public class AttachmentDatabase extends Database {
     String   selection = STICKER_PACK_ID + " = ?";
     String[] args      = new String[] { stickerPackId };
 
-    try (Cursor cursor = databaseHelper.getReadableDatabase().query(TABLE_NAME, null, selection, args, null, null, "1")) {
+    try (Cursor cursor = databaseHelper.getReadableDatabase().query(TABLE_NAME, null, selection, args, null, null, null, "1")) {
       return cursor != null && cursor.moveToFirst();
     }
   }
@@ -497,8 +497,8 @@ public class AttachmentDatabase extends Database {
     return insertedAttachments;
   }
 
-  public @NonNull DatabaseAttachment updateAttachmentData(@NonNull DatabaseAttachment databaseAttachment,
-                                                          @NonNull MediaStream mediaStream)
+  public void updateAttachmentData(@NonNull DatabaseAttachment databaseAttachment,
+                                   @NonNull MediaStream mediaStream)
       throws MmsException
   {
     SQLiteDatabase database = databaseHelper.getWritableDatabase();
@@ -518,28 +518,7 @@ public class AttachmentDatabase extends Database {
     contentValues.put(DATA_RANDOM, dataInfo.random);
 
     database.update(TABLE_NAME, contentValues, PART_ID_WHERE, databaseAttachment.getAttachmentId().toStrings());
-
-    return new DatabaseAttachment(databaseAttachment.getAttachmentId(),
-                                  databaseAttachment.getMmsId(),
-                                  databaseAttachment.hasData(),
-                                  databaseAttachment.hasThumbnail(),
-                                  mediaStream.getMimeType(),
-                                  databaseAttachment.getTransferState(),
-                                  dataInfo.length,
-                                  databaseAttachment.getFileName(),
-                                  databaseAttachment.getLocation(),
-                                  databaseAttachment.getKey(),
-                                  databaseAttachment.getRelay(),
-                                  databaseAttachment.getDigest(),
-                                  databaseAttachment.getFastPreflightId(),
-                                  databaseAttachment.isVoiceNote(),
-                                  mediaStream.getWidth(),
-                                  mediaStream.getHeight(),
-                                  databaseAttachment.isQuote(),
-                                  databaseAttachment.getCaption(),
-                                  databaseAttachment.getSticker());
   }
-
 
   public void updateAttachmentFileName(@NonNull AttachmentId attachmentId,
                                        @Nullable String fileName)
@@ -584,9 +563,14 @@ public class AttachmentDatabase extends Database {
    * database.
    */
   public @Nullable Cursor getUnavailableStickerPacks() {
-    String query = "SELECT DISTINCT " + STICKER_PACK_ID + ", " + STICKER_PACK_KEY + " FROM " + TABLE_NAME + " WHERE " + STICKER_PACK_ID + " NOT IN (" +
-                     "SELECT DISTINCT " + StickerDatabase.PACK_ID + " FROM " + StickerDatabase.TABLE_NAME +
-                   ")";
+    String query = "SELECT DISTINCT " + STICKER_PACK_ID + ", " + STICKER_PACK_KEY +
+                   " FROM " + TABLE_NAME +
+                   " WHERE " +
+                     STICKER_PACK_ID  + " NOT NULL AND " +
+                     STICKER_PACK_KEY + " NOT NULL AND " +
+                     STICKER_PACK_ID  + " NOT IN (" +
+                       "SELECT DISTINCT " + StickerDatabase.PACK_ID + " FROM " + StickerDatabase.TABLE_NAME +
+                     ")";
 
     return databaseHelper.getReadableDatabase().rawQuery(query, null);
   }
