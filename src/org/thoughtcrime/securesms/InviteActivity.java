@@ -27,7 +27,6 @@ import android.widget.Toast;
 import org.thoughtcrime.securesms.components.ContactFilterToolbar;
 import org.thoughtcrime.securesms.components.ContactFilterToolbar.OnFilterChangedListener;
 import org.thoughtcrime.securesms.contacts.ContactsCursorLoader.DisplayMode;
-import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.MessageSender;
@@ -217,13 +216,13 @@ public class InviteActivity extends PassphraseRequiredActionBarActivity implemen
       if (context == null) return null;
 
       for (String number : numbers) {
-        Recipient recipient      = Recipient.from(context, Address.fromExternal(context, number), false);
+        Recipient recipient      = Recipient.external(context, number);
         int       subscriptionId = recipient.getDefaultSubscriptionId().or(-1);
 
         MessageSender.send(context, new OutgoingTextMessage(recipient, message, subscriptionId), -1L, true, null);
 
         if (recipient.getContactUri() != null) {
-          DatabaseFactory.getRecipientDatabase(context).setSeenInviteReminder(recipient, true);
+          DatabaseFactory.getRecipientDatabase(context).setSeenInviteReminder(recipient.getId(), true);
         }
       }
 

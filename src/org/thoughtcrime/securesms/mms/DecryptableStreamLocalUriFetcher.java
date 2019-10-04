@@ -4,10 +4,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import org.thoughtcrime.securesms.logging.Log;
 
 import com.bumptech.glide.load.data.StreamLocalUriFetcher;
 
+import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.util.MediaUtil;
 
 import java.io.ByteArrayInputStream;
@@ -40,7 +40,7 @@ class DecryptableStreamLocalUriFetcher extends StreamLocalUriFetcher {
     }
 
     try {
-      return PartAuthority.getAttachmentStream(context, uri);
+      return PartAuthority.getAttachmentThumbnailStream(context, uri);
     } catch (IOException ioe) {
       Log.w(TAG, ioe);
       throw new FileNotFoundException("PartAuthority couldn't load Uri resource.");

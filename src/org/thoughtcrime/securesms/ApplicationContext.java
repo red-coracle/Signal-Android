@@ -33,10 +33,10 @@ import com.google.android.gms.security.ProviderInstaller;
 
 import org.conscrypt.Conscrypt;
 import org.signal.aesgcmprovider.AesGcmProvider;
-import org.signal.ringrtc.CallConnectionFactory;
 import org.thoughtcrime.securesms.components.TypingStatusRepository;
 import org.thoughtcrime.securesms.components.TypingStatusSender;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
+import org.thoughtcrime.securesms.database.helpers.SQLCipherOpenHelper;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencyProvider;
 import org.thoughtcrime.securesms.gcm.FcmJobService;
@@ -70,7 +70,10 @@ import org.thoughtcrime.securesms.service.RotateSenderCertificateListener;
 import org.thoughtcrime.securesms.service.RotateSignedPreKeyListener;
 import org.thoughtcrime.securesms.service.UpdateApkRefreshListener;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.VersionTracker;
 import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWrapper;
+import org.webrtc.PeerConnectionFactory;
+import org.webrtc.PeerConnectionFactory.InitializationOptions;
 import org.webrtc.voiceengine.WebRtcAudioManager;
 import org.webrtc.voiceengine.WebRtcAudioUtils;
 import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
@@ -93,7 +96,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
   private static final String TAG = ApplicationContext.class.getSimpleName();
 
   private ExpiringMessageManager   expiringMessageManager;
-  private ViewOnceMessageManager viewOnceMessageManager;
+  private ViewOnceMessageManager   viewOnceMessageManager;
   private TypingStatusRepository   typingStatusRepository;
   private TypingStatusSender       typingStatusSender;
   private JobManager               jobManager;
@@ -113,6 +116,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
     initializeSecurityProvider();
     initializeLogging();
     initializeCrashHandling();
+    initializeFirstEverAppLaunch();
     initializeAppDependencies();
     initializeJobManager();
     initializeApplicationMigrations();
@@ -125,7 +129,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
     initializeSignedPreKeyCheck();
     initializePeriodicTasks();
     initializeCircumvention();
-    initializeRingRtc();
+    initializeWebRtc();
     initializePendingMessages();
     initializeUnidentifiedDeliveryAbilityRefresh();
     initializeBlobProvider();
@@ -222,7 +226,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
                                                                        .setConstraintFactories(JobManagerFactories.getConstraintFactories(this))
                                                                        .setConstraintObservers(JobManagerFactories.getConstraintObservers(this))
                                                                        .setJobStorage(new FastJobStorage(DatabaseFactory.getJobDatabase(this)))
-                                                                       .setJobMigrator(new JobMigrator(TextSecurePreferences.getJobManagerVersion(this), 1, JobManagerFactories.getJobMigrations()))
+                                                                       .setJobMigrator(new JobMigrator(TextSecurePreferences.getJobManagerVersion(this), JobManager.CURRENT_VERSION, JobManagerFactories.getJobMigrations(this)))
                                                                        .build());
   }
 
@@ -236,6 +240,20 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
 
   private void initializeAppDependencies() {
     ApplicationDependencies.init(this, new ApplicationDependencyProvider(this, new SignalServiceNetworkAccess(this)));
+  }
+
+  private void initializeFirstEverAppLaunch() {
+    if (TextSecurePreferences.getFirstInstallVersion(this) == -1) {
+      if (!SQLCipherOpenHelper.databaseFileExists(this)) {
+        Log.i(TAG, "First ever app launch!");
+
+        TextSecurePreferences.setAppMigrationVersion(this, ApplicationMigrations.CURRENT_VERSION);
+        TextSecurePreferences.setJobManagerVersion(this, JobManager.CURRENT_VERSION);
+      }
+
+      Log.i(TAG, "Setting first install version to " + BuildConfig.CANONICAL_VERSION_CODE);
+      TextSecurePreferences.setFirstInstallVersion(this, BuildConfig.CANONICAL_VERSION_CODE);
+    }
   }
 
   private void initializeGcmCheck() {
@@ -281,7 +299,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
     //}
   }
 
-  private void initializeRingRtc() {
+  private void initializeWebRtc() {
     try {
       Set<String> HARDWARE_AEC_BLACKLIST = new HashSet<String>() {{
         add("Pixel");
@@ -310,7 +328,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
         WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(true);
       }
 
-      CallConnectionFactory.initialize(this);
+      PeerConnectionFactory.initialize(InitializationOptions.builder(this).createInitializationOptions());
     } catch (UnsatisfiedLinkError e) {
       Log.w(TAG, e);
     }
@@ -337,7 +355,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
 
   private void executePendingContactSync() {
     if (TextSecurePreferences.needsFullContactSync(this)) {
-      ApplicationContext.getInstance(this).getJobManager().add(new MultiDeviceContactUpdateJob(this, true));
+      ApplicationContext.getInstance(this).getJobManager().add(new MultiDeviceContactUpdateJob(true));
     }
   }
 
@@ -368,11 +386,13 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
   @SuppressLint("RestrictedApi")
   private void initializeCameraX() {
     if (Build.VERSION.SDK_INT >= 21) {
-      try {
-        CameraX.init(this, Camera2AppConfig.create(this));
-      } catch (Throwable t) {
-        Log.w(TAG, "Failed to initialize CameraX.");
-      }
+      new Thread(() -> {
+        try {
+          CameraX.init(this, Camera2AppConfig.create(this));
+        } catch (Throwable t) {
+          Log.w(TAG, "Failed to initialize CameraX.");
+        }
+      }, "signal-camerax-initialization").start();
     }
   }
 

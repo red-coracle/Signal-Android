@@ -87,7 +87,7 @@
   <!--CameraXFragment-->
   <string name="CameraXFragment_capture_description">Przechwyć</string>
   <string name="CameraXFragment_change_camera_description">Zmień aparat</string>
-  <string name="CameraXFragment_open_gallery_description">Otwórz galerie</string>
+  <string name="CameraXFragment_open_gallery_description">Otwórz galerię</string>
   <!--CameraContacts-->
   <string name="CameraContacts_recent_contacts">Ostatnie kontakty</string>
   <string name="CameraContacts_signal_contacts">Kontakty Signal</string>
@@ -97,7 +97,7 @@
   <string name="CameraContacts_no_signal_contacts">Brak kontaktów Signal</string>
   <string name="CameraContacts_you_can_only_use_the_camera_button">Aby wysłać zdjęcia kontaktom Signal, możesz użyć tylko przycisku aparatu.</string>
   <string name="CameraContacts_cant_find_who_youre_looking_for">Nie możesz znaleźć kontaktu?</string>
-  <string name="CameraContacts_invite_a_contact_to_join_signal">Zaproś kontakt do korzystania z Signal</string>
+  <string name="CameraContacts_invite_a_contact_to_join_signal">Zaproś do korzystania z Signal</string>
   <string name="CameraContacts__menu_search">Szukaj</string>
   <!--ClearProfileActivity-->
   <string name="ClearProfileActivity_remove">Usuń</string>
@@ -245,6 +245,8 @@
   <string name="ConversationFragment_quoted_message_not_found">Nie znaleziono oryginalnej wiadomości</string>
   <string name="ConversationFragment_quoted_message_no_longer_available">Oryginalna wiadomość nie jest już dostępna</string>
   <string name="ConversationFragment_failed_to_open_message">Nie udało się otworzyć wiadomości</string>
+  <string name="ConversationFragment_you_can_swipe_to_the_right_reply">Możesz przesunąć wiadomość w prawo, by szybko odpowiedzieć.</string>
+  <string name="ConversationFragment_you_can_swipe_to_the_left_reply">Możesz przesunąć wiadomość w lewo, by szybko odpowiedzieć.</string>
   <!--ConversationListActivity-->
   <string name="ConversationListActivity_there_is_no_browser_installed_on_your_device">Twoje urządzenie nie ma zainstalowanej przeglądarki.</string>
   <!--ConversationListFragment-->
@@ -879,7 +881,7 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <!--conversation_item_received-->
   <string name="conversation_item_received__contact_photo_description">Zdjęcie kontaktu</string>
   <!--audio_view-->
-  <string name="audio_view__play_pause_accessibility_description">Play ... Pauza</string>
+  <string name="audio_view__play_pause_accessibility_description">Odtwarzanie ... Pauza</string>
   <string name="audio_view__download_accessibility_description">Pobierz</string>
   <!--QuoteView-->
   <string name="QuoteView_audio">Dźwięk</string>
@@ -1322,7 +1324,7 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="reminder_header_share_title">Zaproś swoich znajomych!</string>
   <string name="reminder_header_share_text">Im więcej twoich znajomych używa Signal, tym bardziej staje się on użyteczny.</string>
   <string name="reminder_header_service_outage_text">Signal ma problemy techniczne. Dokładamy wszelkich starań, aby przywrócić usługę tak szybko, jak to możliwe.</string>
-  <string name="reminder_header_the_latest_signal_features_wont_work">Najnowsze funkcje Signal nie będą działać na tej wersji Androida. Zaktualizuj urządzenie, aby otrzymywać przyszłe aktualizacje Signal.</string>
+  <string name="reminder_header_the_latest_signal_features_wont_work">Najnowsze funkcje Signal nie będą działać na tej wersji Androida. Zaktualizuj urządzenie, aby uzyskać nowe funkcje Signal.</string>
   <!--media_preview-->
   <string name="media_preview__save_title">Zapisz</string>
   <string name="media_preview__forward_title">Przekaż dalej</string>

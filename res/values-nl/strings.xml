@@ -225,6 +225,8 @@
   <string name="ConversationFragment_quoted_message_not_found">Oorspronkelijk bericht niet gevonden</string>
   <string name="ConversationFragment_quoted_message_no_longer_available">Het oorspronkelijke bericht is niet langer beschikbaar</string>
   <string name="ConversationFragment_failed_to_open_message">Openen van bericht is mislukt</string>
+  <string name="ConversationFragment_you_can_swipe_to_the_right_reply">Je kunt elk bericht naar rechts vegen om snel een reactie te schijven</string>
+  <string name="ConversationFragment_you_can_swipe_to_the_left_reply">Je kunt elk bericht naar links vegen om snel een reactie te schijven</string>
   <!--ConversationListActivity-->
   <string name="ConversationListActivity_there_is_no_browser_installed_on_your_device">Er is geen browser op je apparaat geïnstalleerd.</string>
   <!--ConversationListFragment-->
@@ -490,7 +492,7 @@ weergaven.</string>
   <!--ExpirationDialog-->
   <string name="ExpirationDialog_disappearing_messages">Zelf-wissende berichten</string>
   <string name="ExpirationDialog_your_messages_will_not_expire">Berichten zullen zichzelf niet wissen.</string>
-  <string name="ExpirationDialog_your_messages_will_disappear_s_after_they_have_been_seen">Nieuwe berichten die in dit gesprek verzonden en ontvangen worden zullen %s nadat ze gelezen zijn zichzelf wissen.</string>
+  <string name="ExpirationDialog_your_messages_will_disappear_s_after_they_have_been_seen">Nieuwe berichten die in dit gesprek verzonden en ontvangen worden, zullen zichzelf wissen %s nadat ze gelezen zijn.</string>
   <!--PassphrasePromptActivity-->
   <string name="PassphrasePromptActivity_enter_passphrase">Voer wachtwoord in</string>
   <string name="PassphrasePromptActivity_watermark_content_description">Signal-pictogram</string>
@@ -646,7 +648,7 @@ Signal heeft ook toegang nodig tot de media op je apparaat, om bestanden bij te 
   <string name="ThreadRecord_disappearing_photo">Zelf-wissende foto</string>
   <string name="ThreadRecord_s_is_on_signal">%s maakt gebruik van Signal!</string>
   <string name="ThreadRecord_disappearing_messages_disabled">Zelf-wissende berichten uitgeschakeld</string>
-  <string name="ThreadRecord_disappearing_message_time_updated_to_s">Berichten zullen zichzelf wissen na %s</string>
+  <string name="ThreadRecord_disappearing_message_time_updated_to_s">Berichten zullen zichzelf wissen %s nadat ze gelezen zijn</string>
   <string name="ThreadRecord_safety_number_changed">Veiligheidsnummer veranderd</string>
   <string name="ThreadRecord_your_safety_number_with_s_has_changed">Je veiligheidsnummer met %s is veranderd.</string>
   <string name="ThreadRecord_you_marked_verified">Door jou als geverifieerd gemarkeerd</string>
@@ -1211,7 +1213,7 @@ Signal heeft ook toegang nodig tot de media op je apparaat, om bestanden bij te 
   <string name="conversation_list_batch_unarchive__menu_unarchive_selected">Selectie dearchiveren</string>
   <!--conversation_list-->
   <string name="conversation_list_settings_shortcut">Snelkoppeling naar instellingen</string>
-  <string name="conversation_list_search_description">Zoek</string>
+  <string name="conversation_list_search_description">Zoeken</string>
   <!--conversation_list_item_view-->
   <string name="conversation_list_item_view__contact_photo_image">Afbeelding van contactpersoon</string>
   <string name="conversation_list_item_view__archived">Gearchiveerd</string>

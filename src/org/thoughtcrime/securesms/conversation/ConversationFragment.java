@@ -63,13 +63,13 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.ShareActivity;
 import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.components.ConversationTypingView;
+import org.thoughtcrime.securesms.components.TooltipPopup;
 import org.thoughtcrime.securesms.components.recyclerview.SmoothScrollingLinearLayoutManager;
 import org.thoughtcrime.securesms.contactshare.Contact;
 import org.thoughtcrime.securesms.contactshare.ContactUtil;
 import org.thoughtcrime.securesms.contactshare.SharedContactDetailsActivity;
 import org.thoughtcrime.securesms.conversation.ConversationAdapter.HeaderViewHolder;
 import org.thoughtcrime.securesms.conversation.ConversationAdapter.ItemClickListener;
-import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.database.MmsSmsDatabase;
@@ -90,7 +90,9 @@ import org.thoughtcrime.securesms.mms.PartAuthority;
 import org.thoughtcrime.securesms.mms.Slide;
 import org.thoughtcrime.securesms.profiles.UnknownSenderView;
 import org.thoughtcrime.securesms.providers.BlobProvider;
+import org.thoughtcrime.securesms.recipients.LiveRecipient;
 import org.thoughtcrime.securesms.recipients.Recipient;
+import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.revealable.ViewOnceMessageActivity;
 import org.thoughtcrime.securesms.revealable.ViewOnceUtil;
 import org.thoughtcrime.securesms.sms.MessageSender;
@@ -134,7 +136,7 @@ public class ConversationFragment extends Fragment
 
   private ConversationFragmentListener listener;
 
-  private Recipient                   recipient;
+  private LiveRecipient               recipient;
   private long                        threadId;
   private long                        lastSeen;
   private int                         startingPosition;
@@ -181,6 +183,12 @@ public class ConversationFragment extends Fragment
     initializeLoadMoreView(bottomLoadMoreView);
 
     typingView = (ConversationTypingView) inflater.inflate(R.layout.conversation_typing_view, container, false);
+
+    new ConversationItemSwipeCallback(
+            messageRecord -> actionMode == null &&
+                             canReplyToMessage(isActionMessage(messageRecord), messageRecord),
+            this::handleReplyMessage
+    ).attachToRecyclerView(list);
 
     return view;
   }
@@ -253,12 +261,12 @@ public class ConversationFragment extends Fragment
   }
 
   private void initializeResources() {
-    this.recipient         = Recipient.from(getActivity(), getActivity().getIntent().getParcelableExtra(ConversationActivity.ADDRESS_EXTRA), true);
+    this.recipient         = Recipient.live(getActivity().getIntent().getParcelableExtra(ConversationActivity.RECIPIENT_EXTRA));
     this.threadId          = this.getActivity().getIntent().getLongExtra(ConversationActivity.THREAD_ID_EXTRA, -1);
     this.lastSeen          = this.getActivity().getIntent().getLongExtra(ConversationActivity.LAST_SEEN_EXTRA, -1);
     this.startingPosition  = this.getActivity().getIntent().getIntExtra(ConversationActivity.STARTING_POSITION_EXTRA, -1);
     this.firstLoad         = true;
-    this.unknownSenderView = new UnknownSenderView(getActivity(), recipient, threadId);
+    this.unknownSenderView = new UnknownSenderView(getActivity(), recipient.get(), threadId);
 
     OnScrollListener scrollListener = new ConversationScrollListener(getActivity());
     list.addOnScrollListener(scrollListener);
@@ -266,7 +274,8 @@ public class ConversationFragment extends Fragment
 
   private void initializeListAdapter() {
     if (this.recipient != null && this.threadId != -1) {
-      ConversationAdapter adapter = new ConversationAdapter(getActivity(), GlideApp.with(this), locale, selectionClickListener, null, this.recipient);
+      Log.d(TAG, "Initializing adapter for " + recipient.getId());
+      ConversationAdapter adapter = new ConversationAdapter(requireContext(), GlideApp.with(this), locale, selectionClickListener, null, this.recipient.get());
       list.setAdapter(adapter);
       list.addItemDecoration(new StickyHeaderDecoration(adapter, false, false));
 
@@ -302,7 +311,7 @@ public class ConversationFragment extends Fragment
         replacedByIncomingMessage = false;
       }
 
-      typingView.setTypists(GlideApp.with(ConversationFragment.this), recipients, recipient.isGroupRecipient());
+      typingView.setTypists(GlideApp.with(ConversationFragment.this), recipients, recipient.get().isGroup());
 
       ConversationAdapter adapter = getListAdapter();
 
@@ -358,10 +367,7 @@ public class ConversationFragment extends Fragment
     }
 
     for (MessageRecord messageRecord : messageRecords) {
-      if (messageRecord.isGroupAction() || messageRecord.isCallLog() ||
-          messageRecord.isJoined() || messageRecord.isExpirationTimerUpdate() ||
-          messageRecord.isEndSession() || messageRecord.isIdentityUpdate() ||
-          messageRecord.isIdentityVerified() || messageRecord.isIdentityDefault())
+      if (isActionMessage(messageRecord))
       {
         actionMessage = true;
       }
@@ -393,12 +399,27 @@ public class ConversationFragment extends Fragment
 
       menu.findItem(R.id.menu_context_forward).setVisible(!actionMessage && !sharedContact);
       menu.findItem(R.id.menu_context_details).setVisible(!actionMessage);
-      menu.findItem(R.id.menu_context_reply).setVisible(!actionMessage             &&
-                                                        !messageRecord.isPending() &&
-                                                        !messageRecord.isFailed()  &&
-                                                        messageRecord.isSecure());
+      menu.findItem(R.id.menu_context_reply).setVisible(canReplyToMessage(actionMessage, messageRecord));
     }
     menu.findItem(R.id.menu_context_copy).setVisible(!actionMessage && hasText);
+  }
+
+  private static boolean canReplyToMessage(boolean actionMessage, MessageRecord messageRecord) {
+    return !actionMessage             &&
+           !messageRecord.isPending() &&
+           !messageRecord.isFailed()  &&
+           messageRecord.isSecure();
+  }
+
+  private static boolean isActionMessage(MessageRecord messageRecord) {
+    return messageRecord.isGroupAction()           ||
+           messageRecord.isCallLog()               ||
+           messageRecord.isJoined()                ||
+           messageRecord.isExpirationTimerUpdate() ||
+           messageRecord.isEndSession()            ||
+           messageRecord.isIdentityUpdate()        ||
+           messageRecord.isIdentityVerified()      ||
+           messageRecord.isIdentityDefault();
   }
 
   private ConversationAdapter getListAdapter() {
@@ -417,7 +438,7 @@ public class ConversationFragment extends Fragment
   }
 
   public void reload(Recipient recipient, long threadId) {
-    this.recipient = recipient;
+    this.recipient = recipient.live();
 
     if (this.threadId != threadId) {
       this.threadId = threadId;
@@ -521,8 +542,8 @@ public class ConversationFragment extends Fragment
     intent.putExtra(MessageDetailsActivity.MESSAGE_ID_EXTRA, message.getId());
     intent.putExtra(MessageDetailsActivity.THREAD_ID_EXTRA, threadId);
     intent.putExtra(MessageDetailsActivity.TYPE_EXTRA, message.isMms() ? MmsSmsDatabase.MMS_TRANSPORT : MmsSmsDatabase.SMS_TRANSPORT);
-    intent.putExtra(MessageDetailsActivity.ADDRESS_EXTRA, recipient.getAddress());
-    intent.putExtra(MessageDetailsActivity.IS_PUSH_GROUP_EXTRA, recipient.isGroupRecipient() && message.isPush());
+    intent.putExtra(MessageDetailsActivity.RECIPIENT_EXTRA, recipient.getId());
+    intent.putExtra(MessageDetailsActivity.IS_PUSH_GROUP_EXTRA, recipient.get().isGroup() && message.isPush());
     startActivity(intent);
   }
 
@@ -663,7 +684,7 @@ public class ConversationFragment extends Fragment
       setLastSeen(loader.getLastSeen());
     }
 
-    if (!loader.hasSent() && !recipient.isSystemContact() && !recipient.isGroupRecipient() && recipient.getRegistered() == RecipientDatabase.RegisteredState.REGISTERED) {
+    if (!loader.hasSent() && !recipient.get().isSystemContact() && !recipient.get().isGroup() && recipient.get().getRegistered() == RecipientDatabase.RegisteredState.REGISTERED) {
       adapter.setHeaderView(unknownSenderView);
     } else {
       clearHeaderIfNotTyping(adapter);
@@ -789,7 +810,7 @@ public class ConversationFragment extends Fragment
     }
   }
 
-  public void jumpToMessage(@NonNull Address author, long timestamp, @Nullable Runnable onMessageNotFound) {
+  public void jumpToMessage(@NonNull RecipientId author, long timestamp, @Nullable Runnable onMessageNotFound) {
     SimpleTask.run(getLifecycle(), () -> {
       return DatabaseFactory.getMmsSmsDatabase(getContext())
                             .getMessagePositionInConversation(threadId, timestamp, author);
@@ -814,6 +835,20 @@ public class ConversationFragment extends Fragment
       firstLoad        = true;
       startingPosition = position;
       getLoaderManager().restartLoader(0, Bundle.EMPTY, ConversationFragment.this);
+    }
+  }
+
+  private void maybeShowSwipeToReplyTooltip() {
+    if (!TextSecurePreferences.hasSeenSwipeToReplyTooltip(requireContext())) {
+      int text = getResources().getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_LTR ? R.string.ConversationFragment_you_can_swipe_to_the_right_reply
+                                                                                                     : R.string.ConversationFragment_you_can_swipe_to_the_left_reply;
+      TooltipPopup.forTarget(requireActivity().findViewById(R.id.menu_context_reply))
+                  .setText(text)
+                  .setTextColor(getResources().getColor(R.color.core_white))
+                  .setBackgroundTint(getResources().getColor(R.color.core_blue))
+                  .show(TooltipPopup.POSITION_BELOW);
+
+      TextSecurePreferences.setHasSeenSwipeToReplyTooltip(requireContext(), true);
     }
   }
 
@@ -951,9 +986,9 @@ public class ConversationFragment extends Fragment
     }
 
     @Override
-    public void onMoreTextClicked(@NonNull Address conversationAddress, long messageId, boolean isMms) {
+    public void onMoreTextClicked(@NonNull RecipientId conversationRecipientId, long messageId, boolean isMms) {
       if (getContext() != null && getActivity() != null) {
-        startActivity(LongMessageActivity.getIntent(getContext(), conversationAddress, messageId, isMms));
+        startActivity(LongMessageActivity.getIntent(getContext(), conversationRecipientId, messageId, isMms));
       }
     }
 
@@ -990,7 +1025,7 @@ public class ConversationFragment extends Fragment
 
           ApplicationContext.getInstance(requireContext())
                             .getJobManager()
-                            .add(new MultiDeviceViewOnceOpenJob(new MessagingDatabase.SyncMessageId(messageRecord.getIndividualRecipient().getAddress(), messageRecord.getDateSent())));
+                            .add(new MultiDeviceViewOnceOpenJob(new MessagingDatabase.SyncMessageId(messageRecord.getIndividualRecipient().getId(), messageRecord.getDateSent())));
 
           return tempUri;
         } catch (IOException e) {
@@ -1046,7 +1081,7 @@ public class ConversationFragment extends Fragment
       if (getContext() == null) return;
 
       ContactUtil.selectRecipientThroughDialog(getContext(), choices, locale, recipient -> {
-        CommunicationActions.composeSmsThroughDefaultApp(getContext(), recipient.getAddress(), getString(R.string.InviteActivity_lets_switch_to_signal, getString(R.string.install_url)));
+        CommunicationActions.composeSmsThroughDefaultApp(getContext(), recipient.requireAddress(), getString(R.string.InviteActivity_lets_switch_to_signal, getString(R.string.install_url)));
       });
     }
   }
@@ -1131,6 +1166,7 @@ public class ConversationFragment extends Fragment
           actionMode.finish();
           return true;
         case R.id.menu_context_reply:
+          maybeShowSwipeToReplyTooltip();
           handleReplyMessage(getSelectedMessageRecord());
           actionMode.finish();
           return true;
