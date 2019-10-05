@@ -69,8 +69,7 @@ public class TypingSendJob extends BaseJob {
   @Override
   public void onRun() throws Exception {
     return;
-
-    if (!TextSecurePreferences.isTypingIndicatorsEnabled(context)) {
+    /*if (!TextSecurePreferences.isTypingIndicatorsEnabled(context)) {
       return;
     }
 
@@ -96,7 +95,7 @@ public class TypingSendJob extends BaseJob {
     List<Optional<UnidentifiedAccessPair>> unidentifiedAccess = Stream.of(recipients).map(r -> UnidentifiedAccessUtil.getAccessFor(context, r)).toList();
     SignalServiceTypingMessage             typingMessage      = new SignalServiceTypingMessage(typing ? Action.STARTED : Action.STOPPED, System.currentTimeMillis(), groupId);
 
-    messageSender.sendTyping(addresses, unidentifiedAccess, typingMessage);
+    messageSender.sendTyping(addresses, unidentifiedAccess, typingMessage);*/
   }
 
   @Override
