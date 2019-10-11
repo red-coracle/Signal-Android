@@ -44,7 +44,7 @@ import java.util.Objects;
 
 public class Recipient {
 
-  public static final Recipient UNKNOWN = new Recipient(RecipientId.UNKNOWN);
+  public static final Recipient UNKNOWN = new Recipient(RecipientId.UNKNOWN, new RecipientDetails());
 
   private final RecipientId            id;
   private final boolean                resolving;
@@ -199,7 +199,7 @@ public class Recipient {
   }
 
   public @Nullable String getName() {
-    if (this.name == null && isMmsGroup()) {
+    if (this.name == null && address != null && address.isMmsGroup()) {
       List<String> names = new LinkedList<>();
 
       for (Recipient recipient : participants) {
@@ -227,10 +227,10 @@ public class Recipient {
   }
 
   public @NonNull MaterialColor getColor() {
-    if      (isGroup()) return MaterialColor.GROUP;
-    else if (color != null)      return color;
-    else if (name != null)       return ContactColors.generateFor(name);
-    else                         return ContactColors.UNKNOWN_COLOR;
+    if      (isGroupInternal()) return MaterialColor.GROUP;
+    else if (color != null)     return color;
+    else if (name != null)      return ContactColors.generateFor(name);
+    else                        return ContactColors.UNKNOWN_COLOR;
   }
 
   public @NonNull Address requireAddress() {
@@ -262,15 +262,20 @@ public class Recipient {
   }
 
   public boolean isGroup() {
+    return requireAddress().isGroup();
+  }
+
+  private boolean isGroupInternal() {
     return address != null && address.isGroup();
   }
 
   public boolean isMmsGroup() {
-    return address != null && address.isMmsGroup();
+    return requireAddress().isMmsGroup();
   }
 
   public boolean isPushGroup() {
-    return address != null && address.isGroup() && !address.isMmsGroup();
+    Address address = requireAddress();
+    return address.isGroup() && !address.isMmsGroup();
   }
 
   public @NonNull List<Recipient> getParticipants() {
@@ -278,9 +283,7 @@ public class Recipient {
   }
 
   public @NonNull String toShortString() {
-    return getName() == null ? address == null ? ""
-                                               : address.serialize()
-                             : getName();
+    return Optional.fromNullable(getName()).or(Optional.fromNullable(address != null ? address.serialize() : null)).or("");
   }
 
   public @NonNull Drawable getFallbackContactPhotoDrawable(Context context, boolean inverted) {
@@ -290,17 +293,17 @@ public class Recipient {
   public @NonNull FallbackContactPhoto getFallbackContactPhoto() {
     if      (localNumber)              return new ResourceContactPhoto(R.drawable.ic_note_to_self);
     if      (isResolving())            return new TransparentContactPhoto();
-    else if (isGroup())                return new ResourceContactPhoto(R.drawable.ic_group_white_24dp, R.drawable.ic_group_large);
+    else if (isGroupInternal())        return new ResourceContactPhoto(R.drawable.ic_group_white_24dp, R.drawable.ic_group_large);
     else if (!TextUtils.isEmpty(name)) return new GeneratedContactPhoto(name, R.drawable.ic_profile_default);
     else                               return new ResourceContactPhoto(R.drawable.ic_profile_default, R.drawable.ic_person_large);
   }
 
   public @Nullable ContactPhoto getContactPhoto() {
-    if      (localNumber)                                     return null;
-    else if (isGroup() && groupAvatarId.isPresent()) return new GroupRecordContactPhoto(address, groupAvatarId.get());
-    else if (systemContactPhoto != null)                      return new SystemContactPhoto(address, systemContactPhoto, 0);
-    else if (profileAvatar != null)                           return new ProfileContactPhoto(address, profileAvatar);
-    else                                                      return null;
+    if      (localNumber)                                    return null;
+    else if (isGroupInternal() && groupAvatarId.isPresent()) return new GroupRecordContactPhoto(address, groupAvatarId.get());
+    else if (systemContactPhoto != null)                     return new SystemContactPhoto(address, systemContactPhoto, 0);
+    else if (profileAvatar != null)                          return new ProfileContactPhoto(address, profileAvatar);
+    else                                                     return null;
   }
 
   public @Nullable Uri getMessageRingtone() {
