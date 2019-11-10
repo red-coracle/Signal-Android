@@ -16,6 +16,8 @@ import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -26,6 +28,8 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.telephony.PhoneNumberUtils;
 
 import org.thoughtcrime.securesms.components.SwitchPreferenceCompat;
@@ -34,11 +38,14 @@ import org.thoughtcrime.securesms.contacts.avatars.FallbackContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.ProfileContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.ResourceContactPhoto;
 import org.thoughtcrime.securesms.database.GroupDatabase;
+import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.jobs.RotateProfileKeyJob;
 import org.thoughtcrime.securesms.logging.Log;
 import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -73,12 +80,13 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.util.CommunicationActions;
 import org.thoughtcrime.securesms.util.Dialogs;
+import org.thoughtcrime.securesms.util.DynamicDarkToolbarTheme;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
-import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.GroupUtil;
 import org.thoughtcrime.securesms.util.IdentityUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.ThemeUtil;
 import org.thoughtcrime.securesms.util.ViewUtil;
 import org.thoughtcrime.securesms.util.concurrent.ListenableFuture;
 import org.whispersystems.libsignal.util.guava.Optional;
@@ -104,7 +112,7 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
   private static final String PREFERENCE_ABOUT                 = "pref_key_number";
   private static final String PREFERENCE_CUSTOM_NOTIFICATIONS  = "pref_key_recipient_custom_notifications";
 
-  private final DynamicTheme    dynamicTheme    = new DynamicNoActionBarTheme();
+  private final DynamicTheme    dynamicTheme    = new DynamicDarkToolbarTheme();
   private final DynamicLanguage dynamicLanguage = new DynamicLanguage();
 
   private ImageView               avatar;
@@ -173,8 +181,8 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
     this.threadPhotoRailView  = ViewUtil.findById(this, R.id.recent_photos);
     this.threadPhotoRailLabel = ViewUtil.findById(this, R.id.rail_label);
 
-    this.toolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.white));
-    this.toolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.white));
+    this.toolbarLayout.setExpandedTitleColor(ThemeUtil.getThemedColor(this, R.attr.conversation_title_color));
+    this.toolbarLayout.setCollapsedTitleTextColor(ThemeUtil.getThemedColor(this, R.attr.conversation_title_color));
 
     this.threadPhotoRailView.setListener(mediaRecord -> {
       Intent intent = new Intent(RecipientPreferenceActivity.this, MediaPreviewActivity.class);
@@ -206,9 +214,9 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
   }
 
   private void setHeader(@NonNull Recipient recipient) {
-    ContactPhoto         contactPhoto  = recipient.isLocalNumber() ? new ProfileContactPhoto(recipient.requireAddress(), String.valueOf(TextSecurePreferences.getProfileAvatarId(this)))
+    ContactPhoto         contactPhoto  = recipient.isLocalNumber() ? new ProfileContactPhoto(recipient.getId(), String.valueOf(TextSecurePreferences.getProfileAvatarId(this)))
                                                                    : recipient.getContactPhoto();
-    FallbackContactPhoto fallbackPhoto = recipient.isLocalNumber() ? new ResourceContactPhoto(R.drawable.ic_profile_default, R.drawable.ic_person_large)
+    FallbackContactPhoto fallbackPhoto = recipient.isLocalNumber() ? new ResourceContactPhoto(R.drawable.ic_profile_outline_40, R.drawable.ic_profile_outline_20, R.drawable.ic_person_large)
                                                                    : recipient.getFallbackContactPhoto();
 
     glideRequests.load(contactPhoto)
@@ -347,6 +355,14 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
 
         findPreference(PREFERENCE_CALL_TONE).getOnPreferenceChangeListener().onPreferenceChange(findPreference(PREFERENCE_CALL_TONE), uri);
       }
+    }
+
+    @Override
+    public RecyclerView onCreateRecyclerView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+      RecyclerView recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState);
+      recyclerView.setItemAnimator(null);
+      recyclerView.setLayoutAnimation(null);
+      return recyclerView;
     }
 
     private void initializeRecipients() {
@@ -598,9 +614,7 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
               DatabaseFactory.getRecipientDatabase(context).setColor(recipient.getId(), selectedColor);
 
               if (recipient.get().resolve().getRegistered() == RecipientDatabase.RegisteredState.REGISTERED) {
-                ApplicationContext.getInstance(context)
-                                  .getJobManager()
-                                  .add(new MultiDeviceContactUpdateJob(recipient.getId()));
+                ApplicationDependencies.getJobManager().add(new MultiDeviceContactUpdateJob(recipient.getId()));
               }
               return null;
             }
@@ -749,14 +763,11 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
             }
 
             if (blocked && (recipient.resolve().isSystemContact() || recipient.resolve().isProfileSharing())) {
-              ApplicationContext.getInstance(context)
-                                .getJobManager()
-                                .add(new RotateProfileKeyJob());
+              ApplicationDependencies.getJobManager().add(new RotateProfileKeyJob());
             }
 
-            ApplicationContext.getInstance(context)
-                              .getJobManager()
-                              .add(new MultiDeviceBlockedUpdateJob());
+            ApplicationDependencies.getJobManager().add(new MultiDeviceBlockedUpdateJob());
+
             return null;
           }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

@@ -42,6 +42,8 @@ import androidx.appcompat.widget.SwitchCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+
+import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.logging.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -74,6 +76,7 @@ import org.thoughtcrime.securesms.qr.ScanningThread;
 import org.thoughtcrime.securesms.recipients.LiveRecipient;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.thoughtcrime.securesms.util.DynamicDarkActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.IdentityUtil;
@@ -106,7 +109,7 @@ public class VerifyIdentityActivity extends PassphraseRequiredActionBarActivity 
   public static final String IDENTITY_EXTRA  = "recipient_identity";
   public static final String VERIFIED_EXTRA  = "verified_state";
 
-  private final DynamicTheme    dynamicTheme    = new DynamicTheme();
+  private final DynamicTheme    dynamicTheme    = new DynamicDarkActionBarTheme();
   private final DynamicLanguage dynamicLanguage = new DynamicLanguage();
 
   private VerifyDisplayFragment displayFragment = new VerifyDisplayFragment();
@@ -583,12 +586,11 @@ public class VerifyIdentityActivity extends PassphraseRequiredActionBarActivity 
                                           VerifiedStatus.DEFAULT);
             }
 
-            ApplicationContext.getInstance(getActivity())
-                              .getJobManager()
-                              .add(new MultiDeviceVerifiedUpdateJob(recipient.getId(),
-                                                                    remoteIdentity,
-                                                                    isChecked ? VerifiedStatus.VERIFIED :
-                                                                                VerifiedStatus.DEFAULT));
+            ApplicationDependencies.getJobManager()
+                                   .add(new MultiDeviceVerifiedUpdateJob(recipient.getId(),
+                                                                         remoteIdentity,
+                                                                         isChecked ? VerifiedStatus.VERIFIED :
+                                                                                     VerifiedStatus.DEFAULT));
 
             IdentityUtil.markIdentityVerified(getActivity(), recipient.get(), isChecked, false);
           }

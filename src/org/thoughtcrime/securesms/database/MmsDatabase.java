@@ -50,6 +50,7 @@ import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.NotificationMmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.Quote;
+import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.jobs.TrimThreadJob;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.logging.Log;
@@ -173,7 +174,9 @@ public class MmsDatabase extends MessagingDatabase {
           "'" + AttachmentDatabase.CAPTION + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.CAPTION + ", " +
           "'" + AttachmentDatabase.STICKER_PACK_ID + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.STICKER_PACK_ID+ ", " +
           "'" + AttachmentDatabase.STICKER_PACK_KEY + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.STICKER_PACK_KEY + ", " +
-          "'" + AttachmentDatabase.STICKER_ID + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.STICKER_ID +
+          "'" + AttachmentDatabase.STICKER_ID + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.STICKER_ID + ", " +
+          "'" + AttachmentDatabase.BLUR_HASH + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.BLUR_HASH + ", " +
+          "'" + AttachmentDatabase.TRANSFORM_PROPERTIES + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.TRANSFORM_PROPERTIES +
           ")) AS " + AttachmentDatabase.ATTACHMENT_JSON_ALIAS,
   };
 
@@ -622,7 +625,7 @@ public class MmsDatabase extends MessagingDatabase {
         String           networkDocument    = cursor.getString(cursor.getColumnIndexOrThrow(MmsDatabase.NETWORK_FAILURE));
 
         long              quoteId            = cursor.getLong(cursor.getColumnIndexOrThrow(QUOTE_ID));
-        RecipientId       quoteAuthor        = RecipientId.from(cursor.getLong(cursor.getColumnIndexOrThrow(QUOTE_AUTHOR)));
+        long              quoteAuthor        = cursor.getLong(cursor.getColumnIndexOrThrow(QUOTE_AUTHOR));
         String            quoteText          = cursor.getString(cursor.getColumnIndexOrThrow(QUOTE_BODY));
         boolean           quoteMissing       = cursor.getInt(cursor.getColumnIndexOrThrow(QUOTE_MISSING)) == 1;
         List<Attachment>  quoteAttachments   = Stream.of(associatedAttachments).filter(Attachment::isQuote).map(a -> (Attachment)a).toList();
@@ -640,8 +643,8 @@ public class MmsDatabase extends MessagingDatabase {
         List<IdentityKeyMismatch> mismatches      = new LinkedList<>();
         QuoteModel                quote           = null;
 
-        if (quoteId > 0 && (!TextUtils.isEmpty(quoteText) || !quoteAttachments.isEmpty())) {
-          quote = new QuoteModel(quoteId, quoteAuthor, quoteText, quoteMissing, quoteAttachments);
+        if (quoteId > 0 && quoteAuthor > 0 && (!TextUtils.isEmpty(quoteText) || !quoteAttachments.isEmpty())) {
+          quote = new QuoteModel(quoteId, RecipientId.from(quoteAuthor), quoteText, quoteMissing, quoteAttachments);
         }
 
         if (!TextUtils.isEmpty(mismatchDocument)) {
@@ -794,7 +797,9 @@ public class MmsDatabase extends MessagingDatabase {
                                                databaseAttachment.getHeight(),
                                                databaseAttachment.isQuote(),
                                                databaseAttachment.getCaption(),
-                                               databaseAttachment.getSticker()));
+                                               databaseAttachment.getSticker(),
+                                               databaseAttachment.getBlurHash(),
+                                               databaseAttachment.getTransformProperties()));
       }
 
       return insertMediaMessage(request.getBody(),
@@ -864,7 +869,7 @@ public class MmsDatabase extends MessagingDatabase {
     }
 
     notifyConversationListeners(threadId);
-    ApplicationContext.getInstance(context).getJobManager().add(new TrimThreadJob(threadId));
+    ApplicationDependencies.getJobManager().add(new TrimThreadJob(threadId));
 
     return Optional.of(new InsertResult(messageId, threadId));
   }
@@ -921,6 +926,8 @@ public class MmsDatabase extends MessagingDatabase {
     if (notification.getFrom() != null) {
       Recipient recipient = Recipient.external(context, Util.toIsoString(notification.getFrom().getTextString()));
       contentValues.put(RECIPIENT_ID, recipient.getId().serialize());
+    } else {
+      contentValues.put(RECIPIENT_ID, RecipientId.UNKNOWN.serialize());
     }
 
     contentValues.put(MESSAGE_BOX, Types.BASE_INBOX_TYPE);
@@ -946,7 +953,7 @@ public class MmsDatabase extends MessagingDatabase {
       DatabaseFactory.getThreadDatabase(context).incrementUnread(threadId, 1);
     }
 
-    ApplicationContext.getInstance(context).getJobManager().add(new TrimThreadJob(threadId));
+    ApplicationDependencies.getJobManager().add(new TrimThreadJob(threadId));
   }
 
   public long insertMessageOutbox(@NonNull OutgoingMediaMessage message,
@@ -1020,7 +1027,7 @@ public class MmsDatabase extends MessagingDatabase {
 
     DatabaseFactory.getThreadDatabase(context).setLastSeen(threadId);
     DatabaseFactory.getThreadDatabase(context).setHasSent(threadId, true);
-    ApplicationContext.getInstance(context).getJobManager().add(new TrimThreadJob(threadId));
+    ApplicationDependencies.getJobManager().add(new TrimThreadJob(threadId));
 
     return messageId;
   }
@@ -1535,15 +1542,15 @@ public class MmsDatabase extends MessagingDatabase {
 
     private @Nullable Quote getQuote(@NonNull Cursor cursor) {
       long                       quoteId          = cursor.getLong(cursor.getColumnIndexOrThrow(MmsDatabase.QUOTE_ID));
-      RecipientId                quoteAuthor      = RecipientId.from(cursor.getLong(cursor.getColumnIndexOrThrow(MmsDatabase.QUOTE_AUTHOR)));
+      long                       quoteAuthor      = cursor.getLong(cursor.getColumnIndexOrThrow(MmsDatabase.QUOTE_AUTHOR));
       String                     quoteText        = cursor.getString(cursor.getColumnIndexOrThrow(MmsDatabase.QUOTE_BODY));
       boolean                    quoteMissing     = cursor.getInt(cursor.getColumnIndexOrThrow(MmsDatabase.QUOTE_MISSING)) == 1;
       List<DatabaseAttachment>   attachments      = DatabaseFactory.getAttachmentDatabase(context).getAttachment(cursor);
       List<? extends Attachment> quoteAttachments = Stream.of(attachments).filter(Attachment::isQuote).toList();
       SlideDeck                  quoteDeck        = new SlideDeck(context, quoteAttachments);
 
-      if (quoteId > 0 && !quoteAuthor.isUnknown()) {
-        return new Quote(quoteId, quoteAuthor, quoteText, quoteMissing, quoteDeck);
+      if (quoteId > 0 && quoteAuthor > 0) {
+        return new Quote(quoteId, RecipientId.from(quoteAuthor), quoteText, quoteMissing, quoteDeck);
       } else {
         return null;
       }

@@ -11,17 +11,16 @@ import com.annimon.stream.Stream;
 import org.greenrobot.eventbus.EventBus;
 import org.signal.libsignal.metadata.certificate.InvalidCertificateException;
 import org.signal.libsignal.metadata.certificate.SenderCertificate;
-import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.TextSecureExpiredException;
 import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment;
+import org.thoughtcrime.securesms.blurhash.BlurHash;
 import org.thoughtcrime.securesms.contactshare.Contact;
 import org.thoughtcrime.securesms.contactshare.ContactModelMapper;
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil;
 import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
-import org.thoughtcrime.securesms.database.MmsDatabase;
-import org.thoughtcrime.securesms.database.NoSuchMessageException;
+import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.events.PartProgressEvent;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
@@ -29,7 +28,6 @@ import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mms.DecryptableStreamUriLoader;
-import org.thoughtcrime.securesms.mms.MmsException;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
 import org.thoughtcrime.securesms.mms.PartAuthority;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
@@ -82,10 +80,7 @@ public abstract class PushSendJob extends SendJob {
   @Override
   protected final void onSend() throws Exception {
     if (TextSecurePreferences.getSignedPreKeyFailureCount(context) > 5) {
-      ApplicationContext.getInstance(context)
-                        .getJobManager()
-                        .add(new RotateSignedPreKeyJob());
-
+      ApplicationDependencies.getJobManager().add(new RotateSignedPreKeyJob());
       throw new TextSecureExpiredException("Too many signed prekey rotation failures");
     }
 
@@ -99,7 +94,7 @@ public abstract class PushSendJob extends SendJob {
 
     if (getRunAttempt() > 1) {
       Log.i(TAG, "Scheduling service outage detection job.");
-      ApplicationContext.getInstance(context).getJobManager().add(new ServiceOutageDetectionJob());
+      ApplicationDependencies.getJobManager().add(new ServiceOutageDetectionJob());
     }
   }
 
@@ -203,7 +198,8 @@ public abstract class PushSendJob extends SendJob {
                                                 Optional.fromNullable(attachment.getDigest()),
                                                 Optional.fromNullable(attachment.getFileName()),
                                                 attachment.isVoiceNote(),
-                                                Optional.fromNullable(attachment.getCaption()));
+                                                Optional.fromNullable(attachment.getCaption()),
+                                                Optional.fromNullable(attachment.getBlurHash()).transform(BlurHash::getHash));
     } catch (IOException | ArithmeticException e) {
       Log.w(TAG, e);
       return null;

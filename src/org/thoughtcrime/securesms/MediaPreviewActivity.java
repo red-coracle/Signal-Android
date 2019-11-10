@@ -68,6 +68,7 @@ import org.thoughtcrime.securesms.util.AttachmentUtil;
 import org.thoughtcrime.securesms.util.DateUtils;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask.Attachment;
+import org.thoughtcrime.securesms.util.Util;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -236,6 +237,11 @@ public final class MediaPreviewActivity extends PassphraseRequiredActionBarActiv
     viewModel.getPreviewData().observe(this, previewData -> {
       if (previewData == null || mediaPager == null || mediaPager.getAdapter() == null) {
         return;
+      }
+
+      if (!((MediaItemAdapter) mediaPager.getAdapter()).hasFragmentFor(mediaPager.getCurrentItem())) {
+        Log.d(TAG, "MediaItemAdapter wasn't ready. Posting again...");
+        viewModel.resubmitPreviewData();
       }
 
       View playbackControls = ((MediaItemAdapter) mediaPager.getAdapter()).getPlaybackControls(mediaPager.getCurrentItem());
@@ -562,6 +568,11 @@ public final class MediaPreviewActivity extends PassphraseRequiredActionBarActiv
       }
       return null;
     }
+
+    @Override
+    public boolean hasFragmentFor(int position) {
+      return mediaPreviewFragment != null;
+    }
   }
 
   private static void anchorMarginsToBottomInsets(@NonNull View viewToAnchor) {
@@ -700,6 +711,11 @@ public final class MediaPreviewActivity extends PassphraseRequiredActionBarActiv
       return null;
     }
 
+    @Override
+    public boolean hasFragmentFor(int position) {
+      return mediaFragments.containsKey(position);
+    }
+
     private int getCursorPosition(int position) {
       if (leftIsRecent) return position;
       else              return cursor.getCount() - 1 - position;
@@ -734,5 +750,6 @@ public final class MediaPreviewActivity extends PassphraseRequiredActionBarActiv
     MediaItem getMediaItemFor(int position);
     void pause(int position);
     @Nullable View getPlaybackControls(int position);
+    boolean hasFragmentFor(int position);
   }
 }

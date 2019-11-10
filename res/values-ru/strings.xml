@@ -34,7 +34,7 @@
   <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">После этого приложение Signal и его уведомления всегда будут видны без ввода пароля.</string>
   <string name="ApplicationPreferencesActivity_disable">Отключить</string>
   <string name="ApplicationPreferencesActivity_unregistering">Отмена регистрации</string>
-  <string name="ApplicationPreferencesActivity_unregistering_from_signal_messages_and_calls">Отменяем регистрацию в Signal...</string>
+  <string name="ApplicationPreferencesActivity_unregistering_from_signal_messages_and_calls">Отменяем регистрацию в Signal…</string>
   <string name="ApplicationPreferencesActivity_disable_signal_messages_and_calls">Отключить сообщения и звонки через Signal?</string>
   <string name="ApplicationPreferencesActivity_disable_signal_messages_and_calls_by_unregistering">Отключить сообщения и звонки через Signal, отменив регистрацию на сервере. Вам нужно будет заново зарегистрировать свой номер телефона, чтобы воспользоваться ими в будущем.</string>
   <string name="ApplicationPreferencesActivity_error_connecting_to_server">Ошибка подключения к серверу!</string>
@@ -85,6 +85,7 @@
   <!--CameraActivity-->
   <string name="CameraActivity_image_save_failure">Не удалось сохранить изображение.</string>
   <!--CameraXFragment-->
+  <string name="CameraXFragment_tap_for_photo_hold_for_video">Нажмите для фото, удерживайте для видео</string>
   <string name="CameraXFragment_capture_description">Снять</string>
   <string name="CameraXFragment_change_camera_description">Сменить камеру</string>
   <string name="CameraXFragment_open_gallery_description">Открыть галерею</string>
@@ -182,6 +183,9 @@
   <string name="ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera">Для создания фото и видео разрешите Signal доступ к камере.</string>
   <string name="ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video">Signal требуется разрешение на доступ к камере, чтобы снимать фото или видео, но оно было вами отклонено. Нажмите «Продолжить», чтобы перейти в настройки приложения, откройте «Разрешения» и включите «Камера».</string>
   <string name="ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video">Signal требуется разрешение на доступ к камере, чтобы снимать фото или видео </string>
+  <string name="ConversationActivity_enable_the_microphone_permission_to_capture_videos_with_sound">Предоставьте разрешение на доступ к микрофону, чтобы снимать видео со звуком.</string>
+  <string name="ConversationActivity_signal_needs_the_recording_permissions_to_capture_video">Signal требуется разрешение на доступ к микрофону, чтобы снимать видео, но оно было вами отклонено. Нажмите «Продолжить», чтобы перейти в настройки приложения, откройте «Разрешения» и включите «Микрофон» и «Камера».</string>
+  <string name="ConversationActivity_signal_needs_recording_permissions_to_capture_video">Signal требуется разрешение на доступ к микрофону, чтобы записывать видео.</string>
   <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
   <string name="ConversationActivity_signal_cannot_sent_sms_mms_messages_because_it_is_not_your_default_sms_app">Signal не может отправлять SMS/MMS-сообщения, так как не является приложением по умолчанию для SMS. Хотите изменить это в настройках Android?</string>
   <string name="ConversationActivity_yes">Да</string>
@@ -245,8 +249,8 @@
   <string name="ConversationFragment_quoted_message_not_found">Исходное сообщение не найдено</string>
   <string name="ConversationFragment_quoted_message_no_longer_available">Исходное сообщение больше не доступно</string>
   <string name="ConversationFragment_failed_to_open_message">Не удалось открыть сообщение</string>
-  <string name="ConversationFragment_you_can_swipe_to_the_right_reply">Вы можете провести вправо на любом сообщении, чтобы быстро ответить</string>
-  <string name="ConversationFragment_you_can_swipe_to_the_left_reply">Вы можете провести влево на любом сообщении, чтобы быстро ответить</string>
+  <string name="ConversationFragment_you_can_swipe_to_the_right_reply">Вы можете провести вправо по любому сообщению, чтобы быстро ответить</string>
+  <string name="ConversationFragment_you_can_swipe_to_the_left_reply">Вы можете провести влево по любому сообщению, чтобы быстро ответить</string>
   <!--ConversationListActivity-->
   <string name="ConversationListActivity_there_is_no_browser_installed_on_your_device">На вашем устройстве не установлен браузер.</string>
   <!--ConversationListFragment-->
@@ -300,7 +304,7 @@
   <string name="CustomDefaultPreference_none">Нет</string>
   <!--DateUtils-->
   <string name="DateUtils_just_now">Только что</string>
-  <string name="DateUtils_minutes_ago">%d мин</string>
+  <string name="DateUtils_minutes_ago">%dм.</string>
   <string name="DateUtils_today">Сегодня</string>
   <string name="DateUtils_yesterday">Вчера</string>
   <!--DeliveryStatus-->
@@ -313,7 +317,7 @@
   <string name="DeviceListActivity_by_unlinking_this_device_it_will_no_longer_be_able_to_send_or_receive">После отвязки это устройство больше не сможет отправлять или получать сообщения.</string>
   <string name="DeviceListActivity_network_connection_failed">Не удалось установить сетевое соединение</string>
   <string name="DeviceListActivity_try_again">Повторить</string>
-  <string name="DeviceListActivity_unlinking_device">Отвязываем устройство...</string>
+  <string name="DeviceListActivity_unlinking_device">Отвязываем устройство…</string>
   <string name="DeviceListActivity_unlinking_device_no_ellipsis">Отвязка устройства</string>
   <string name="DeviceListActivity_network_failed">Ошибка сети!</string>
   <!--DeviceListItem-->
@@ -514,7 +518,7 @@
 • Читать все ваши сообщения
 • Отправлять сообщения от вашего имени</string>
   <string name="DeviceProvisioningActivity_content_progress_title">Привязка устройства</string>
-  <string name="DeviceProvisioningActivity_content_progress_content">Привязываем новое устройство...</string>
+  <string name="DeviceProvisioningActivity_content_progress_content">Привязываем новое устройство…</string>
   <string name="DeviceProvisioningActivity_content_progress_success">Устройство подтверждено!</string>
   <string name="DeviceProvisioningActivity_content_progress_no_device">Устройство не найдено.</string>
   <string name="DeviceProvisioningActivity_content_progress_network_error">Ошибка сети.</string>
@@ -610,11 +614,14 @@
   <string name="RegistrationActivity_enter_your_phone_number_to_get_started">Введите свой номер телефона, чтобы начать</string>
   <string name="RegistrationActivity_you_will_receive_a_verification_code">Вы получите код подтверждения. Вашим оператором может взиматься плата за входящее SMS.</string>
   <string name="RegistrationActivity_enter_the_code_we_sent_to_s">Введите код, который мы отправили на %s</string>
+  <string name="RegistrationActivity_phone_number_description">Номер телефона</string>
+  <string name="RegistrationActivity_country_code_description">Код страны</string>
   <string name="RegistrationActivity_call">Позвонить</string>
   <!--RevealableMessageView-->
-  <string name="RevealableMessageView_view_photo">Просмотреть фотографию</string>
-  <string name="RevealableMessageView_viewed">Просмотрено</string>
   <string name="RevealableMessageView_photo">Фото</string>
+  <string name="RevealableMessageView_video">Видео</string>
+  <string name="RevealableMessageView_viewed">Просмотрено</string>
+  <string name="RevealableMessageView_outgoing_media">Медиа</string>
   <!--ScribbleActivity-->
   <string name="ScribbleActivity_save_failure">Не удалось сохранить изменения изображения</string>
   <!--Search-->
@@ -677,6 +684,7 @@
   <string name="ThreadRecord_media_message">Медиа-сообщение</string>
   <string name="ThreadRecord_sticker">Стикер</string>
   <string name="ThreadRecord_disappearing_photo">Исчезающая фотография</string>
+  <string name="ThreadRecord_disappearing_video">Исчезающее видео</string>
   <string name="ThreadRecord_s_is_on_signal">%s теперь в Signal!</string>
   <string name="ThreadRecord_disappearing_messages_disabled">Исчезающие сообщения отключены</string>
   <string name="ThreadRecord_disappearing_message_time_updated_to_s">Время исчезновения сообщений – %s</string>
@@ -711,6 +719,7 @@
   <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">В буфере обмена код безопасности не найден</string>
   <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Signal требуется разрешение на доступ к камере для сканирования QR-кода, но оно было вами отклонено. Нажмите «Продолжить», чтобы перейти в настройки приложения, откройте «Разрешения» и включите «Камера».</string>
   <string name="VerifyIdentityActivity_unable_to_scan_qr_code_without_camera_permission">Не удалось просканировать QR-код из-за отсутствия разрешения на доступ к камере</string>
+  <!--ViewOnceMessageActivity-->
   <!--MessageDisplayHelper-->
   <string name="MessageDisplayHelper_bad_encrypted_message">Сообщение испорчено</string>
   <string name="MessageDisplayHelper_message_encrypted_for_non_existing_session">Сообщение зашифровано для несуществующей сессии</string>
@@ -752,6 +761,7 @@
   <string name="MessageNotifier_media_message">Медиа-сообщение</string>
   <string name="MessageNotifier_sticker">Стикер</string>
   <string name="MessageNotifier_disappearing_photo">Исчезающая фотография</string>
+  <string name="MessageNotifier_disappearing_video">Исчезающее видео</string>
   <string name="MessageNotifier_reply">Ответить</string>
   <string name="MessageNotifier_signal_message">Сообщение Signal</string>
   <string name="MessageNotifier_unsecured_sms">Незащищенное SMS</string>
@@ -844,7 +854,7 @@
   <string name="contact_filter_toolbar__show_dial_pad_description">Показать кнопки набора номера</string>
   <!--contact_selection_group_activity-->
   <string name="contact_selection_group_activity__no_contacts">Нет контактов.</string>
-  <string name="contact_selection_group_activity__finding_contacts">Загружаем контакты...</string>
+  <string name="contact_selection_group_activity__finding_contacts">Загружаем контакты…</string>
   <!--single_contact_selection_activity-->
   <string name="SingleContactSelectionActivity_contact_photo">Фото контакта</string>
   <!--ContactSelectionListFragment-->
@@ -889,6 +899,7 @@
   <string name="QuoteView_audio">Аудио</string>
   <string name="QuoteView_video">Видео</string>
   <string name="QuoteView_photo">Фото</string>
+  <string name="QuoteView_media">Медиа-сообщение</string>
   <string name="QuoteView_sticker">Стикер</string>
   <string name="QuoteView_document">Документ</string>
   <string name="QuoteView_you">Вы</string>
@@ -977,7 +988,7 @@
   <string name="log_submit_activity__button_got_it">Понятно</string>
   <string name="log_submit_activity__button_compose_email">Написать письмо</string>
   <string name="log_submit_activity__this_log_will_be_posted_online">Этот журнал будет опубликован в интернете, чтобы разработчики смогли его просмотреть. Вы можете изучить и отредактировать его перед отправкой.</string>
-  <string name="log_submit_activity__loading_logs">Загружаем журналы...</string>
+  <string name="log_submit_activity__loading_logs">Загружаем журналы…</string>
   <string name="log_submit_activity__uploading_logs">Выгрузка журналов…</string>
   <string name="log_submit_activity__success">Успешно!</string>
   <string name="log_submit_activity__copy_this_url_and_add_it_to_your_issue">Скопируйте этот URL-адрес и добавьте его в отчет о проблеме или в письмо в службу поддержки:\n\n<b>%1$s</b>\n</string>
@@ -1004,7 +1015,7 @@
   <!--message_recipients_list_item-->
   <string name="message_recipients_list_item__view">ПРОСМОТРЕТЬ</string>
   <string name="message_recipients_list_item__resend">ОТПРАВИТЬ ЕЩЁ РАЗ</string>
-  <string name="message_recipients_list_item__resending">Отправляем ещё раз...</string>
+  <string name="message_recipients_list_item__resending">Отправляем ещё раз…</string>
   <!--GroupUtil-->
   <plurals name="GroupUtil_joined_the_group">
     <item quantity="one">%1$s присоединился(-лась) к группе.</item>
@@ -1114,10 +1125,10 @@
   <string name="arrays__max">Максимальный</string>
   <!--plurals.xml-->
   <plurals name="hours_ago">
-    <item quantity="one">%d час</item>
-    <item quantity="few">%d часа</item>
-    <item quantity="many">%d часов</item>
-    <item quantity="other">%d часов</item>
+    <item quantity="one">%dч.</item>
+    <item quantity="few">%dч.</item>
+    <item quantity="many">%dч.</item>
+    <item quantity="other">%dч.</item>
   </plurals>
   <!--preferences.xml-->
   <string name="preferences__sms_mms">SMS и MMS</string>
@@ -1186,6 +1197,7 @@
   <string name="preferences__linked_devices">Привязанные устройства</string>
   <string name="preferences__light_theme">Светлая</string>
   <string name="preferences__dark_theme">Темная</string>
+  <string name="preferences__system_theme">Системная</string>
   <string name="preferences__appearance">Внешний вид</string>
   <string name="preferences__theme">Тема</string>
   <string name="preferences__default">По умолчанию</string>
@@ -1391,6 +1403,9 @@
   <string name="RegistrationActivity_please_enter_the_verification_code_sent_to_s">Пожалуйста, введите код подтверждения, отправленный на %s.</string>
   <string name="RegistrationActivity_wrong_number">Неправильный номер</string>
   <string name="RegistrationActivity_call_me_instead_available_in">Позвоните мне вместо SMS \n (Доступно через %1$02d:%2$02d)</string>
+  <string name="RegistrationActivity_contact_signal_support">Связаться со поддержкой Signal</string>
+  <string name="RegistrationActivity_code_support_subject">Регистрация в Signal - код подтверждения для Android</string>
+  <string name="RegistrationActivity_code_support_body">Тема: Регистрация в Signal - код подтверждения для Android\nИнформация об устройстве: %1$s\nВерсия Android: %2$s\n Версия Signal: %3$s\nРегион: %4$s</string>
   <string name="BackupUtil_never">Никогда</string>
   <string name="BackupUtil_unknown">Неизвестно</string>
   <string name="preferences_app_protection__screen_lock">Блокировка экрана</string>

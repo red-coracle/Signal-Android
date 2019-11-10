@@ -28,10 +28,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.widget.TooltipCompat;
+
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -59,13 +61,14 @@ import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.ViewUtil;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.util.List;
 
 public class ConversationListActivity extends PassphraseRequiredActionBarActivity
-    implements ConversationListFragment.ConversationSelectedListener
+    implements ConversationListFragment.Controller
 {
   @SuppressWarnings("unused")
   private static final String TAG = ConversationListActivity.class.getSimpleName();
@@ -78,6 +81,7 @@ public class ConversationListActivity extends PassphraseRequiredActionBarActivit
   private SearchToolbar            searchToolbar;
   private ImageView                searchAction;
   private ViewGroup                fragmentContainer;
+  private View                     toolbarShadow;
 
   @Override
   protected void onPreCreate() {
@@ -95,6 +99,7 @@ public class ConversationListActivity extends PassphraseRequiredActionBarActivit
     searchToolbar            = findViewById(R.id.search_toolbar);
     searchAction             = findViewById(R.id.search_action);
     fragmentContainer        = findViewById(R.id.fragment_container);
+    toolbarShadow            = findViewById(R.id.conversation_list_toolbar_shadow);
     conversationListFragment = initFragment(R.id.fragment_container, new ConversationListFragment(), dynamicLanguage.getCurrentLocale());
 
     initializeSearchListener();
@@ -185,10 +190,10 @@ public class ConversationListActivity extends PassphraseRequiredActionBarActivit
       fallbackColor = ContactColors.generateFor(name);
     }
 
-    Drawable fallback = new GeneratedContactPhoto(name, R.drawable.ic_profile_default).asDrawable(this, fallbackColor.toAvatarColor(this));
+    Drawable fallback = new GeneratedContactPhoto(name, R.drawable.ic_profile_outline_40).asDrawable(this, fallbackColor.toAvatarColor(this));
 
     GlideApp.with(this)
-            .load(new ProfileContactPhoto(recipient.requireAddress(), String.valueOf(TextSecurePreferences.getProfileAvatarId(this))))
+            .load(new ProfileContactPhoto(recipient.getId(), String.valueOf(TextSecurePreferences.getProfileAvatarId(this))))
             .error(fallback)
             .circleCrop()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -243,6 +248,20 @@ public class ConversationListActivity extends PassphraseRequiredActionBarActivit
   public void onBackPressed() {
     if (searchToolbar.isVisible()) searchToolbar.collapse();
     else                           super.onBackPressed();
+  }
+
+  @Override
+  public void onListScrolledToTop() {
+    if (toolbarShadow.getVisibility() != View.GONE) {
+      ViewUtil.fadeOut(toolbarShadow, 250);
+    }
+  }
+
+  @Override
+  public void onListScrolledAwayFromTop() {
+    if (toolbarShadow.getVisibility() != View.VISIBLE) {
+      ViewUtil.fadeIn(toolbarShadow, 250);
+    }
   }
 
   private void createGroup() {

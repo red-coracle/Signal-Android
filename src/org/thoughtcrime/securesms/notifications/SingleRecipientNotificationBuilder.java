@@ -10,6 +10,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Action;
 import androidx.core.app.RemoteInput;
@@ -49,7 +50,7 @@ public class SingleRecipientNotificationBuilder extends AbstractNotificationBuil
 
   public SingleRecipientNotificationBuilder(@NonNull Context context, @NonNull NotificationPrivacyPreference privacy)
   {
-    super(context, privacy);
+    super(new ContextThemeWrapper(context, R.style.TextSecure_LightTheme), privacy);
 
     setSmallIcon(R.drawable.icon_notification);
     setColor(context.getResources().getColor(R.color.textsecure_primary));
@@ -93,7 +94,7 @@ public class SingleRecipientNotificationBuilder extends AbstractNotificationBuil
 
     } else {
       setContentTitle(context.getString(R.string.SingleRecipientNotificationBuilder_signal));
-      setLargeIcon(new GeneratedContactPhoto("Unknown", R.drawable.ic_profile_default).asDrawable(context, ContactColors.UNKNOWN_COLOR.toConversationColor(context)));
+      setLargeIcon(new GeneratedContactPhoto("Unknown", R.drawable.ic_profile_outline_40).asDrawable(context, ContactColors.UNKNOWN_COLOR.toConversationColor(context)));
     }
   }
 
