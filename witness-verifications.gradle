@@ -276,8 +276,8 @@ dependencyVerification {
         ['com.google.guava:listenablefuture:1.0',
          'e4ad7607e5c0477c6f890ef26a49cb8d1bb4dffb650bab4502afee64644e3069'],
 
-        ['com.google.protobuf:protobuf-java:2.5.0',
-         'e0c1c64575c005601725e7c6a02cebf9e1285e888f756b2a1d73ffa8d725cc74'],
+        ['com.google.protobuf:protobuf-javalite:3.10.0',
+         '215a94dbe100130295906b531bb72a26965c7ac8fcd9a75bf8054a8ac2abf4b4'],
 
         ['com.google.zxing:android-integration:3.1.0',
          '89e56aadf1164bd71e57949163c53abf90af368b51669c0d4a47a163335f95c4'],
@@ -351,14 +351,14 @@ dependencyVerification {
         ['org.signal:android-database-sqlcipher:3.5.9-S3',
          '33d4063336893af00b9d68b418e7b290cace74c20ce8aacffddc0911010d3d73'],
 
-        ['org.signal:ringrtc-android:0.1.7.2',
-         '7b39083b011ac754117d2b74e26ec8323278ece7656be3ba8c766cae523d378f'],
+        ['org.signal:ringrtc-android:0.2.0',
+         'bce32dfe6c4fe107ccd4b9f155dcfaefe574e7740ef57190614b7e34c914f5f0'],
 
-        ['org.signal:signal-metadata-android:0.0.3',
-         '02323bc29317fa9d3b62fab0b507c94ba2e9bcc4a78d588888ffd313853757b3'],
+        ['org.signal:signal-metadata-android:0.1.0',
+         'e79ca9231ec07b05849bc048c643fe2cec48ee781ba5aa8165847a3c90178684'],
 
-        ['org.signal:signal-metadata-java:0.0.3',
-         '2ce71cc4ec5dacfbaef4a265fceef61b8a09696b541994106a22a946762cbdcc'],
+        ['org.signal:signal-metadata-java:0.1.0',
+         'f3faa23b7d9b5096d12979c35679d1e3b5e007522d8bef167a28e456f2a7c7d9'],
 
         ['org.threeten:threetenbp:1.3.6',
          'f4c23ffaaed717c3b99c003e0ee02d6d66377fd47d866fec7d971bd8644fc1a7'],
@@ -369,17 +369,17 @@ dependencyVerification {
         ['org.whispersystems:curve25519-java:0.5.0',
          '0aadd43cf01d11e9b58f867b3c4f25c3194e8b0623d1953d32dfbfbee009e38d'],
 
-        ['org.whispersystems:signal-protocol-android:2.7.1',
-         'c80aac5f93114da2810e2e89437831f79fcbc8bece652f64aeab313a651cba85'],
+        ['org.whispersystems:signal-protocol-android:2.8.1',
+         '9eff33fa6a541334f647906cb6f4a9bb26efa6988c7abdb985f3995a6d10aa48'],
 
-        ['org.whispersystems:signal-protocol-java:2.7.1',
-         '7f6df67a963acbab7716424b01b12fa7279f18a9623a2a7c8ba7b1c285830168'],
+        ['org.whispersystems:signal-protocol-java:2.8.1',
+         'b19db36839ab008fdccefc7f8c005f2ea43dc7c7298a209bc424e6f9b6d5617b'],
 
-        ['org.whispersystems:signal-service-android:2.13.9',
-         'e0a85fa937f7ad0a446ea65405204ab69533339a78d3aa098921cf43c7997348'],
+        ['org.whispersystems:signal-service-android:2.15.3',
+         '24e7a7760f14a261d44b8d76fe6004157f7e09d7898c88ddb501ceabea47b6f6'],
 
-        ['org.whispersystems:signal-service-java:2.13.9',
-         '5d833e946dbbfb7b4f5dbcf26c1585376e92645aa2958503047ee7a17357897f'],
+        ['org.whispersystems:signal-service-java:2.15.3',
+         'bc6d58924daf7c15e700164ce602e2647260c41820a43837f3f48f3d5be2e963'],
 
         ['pl.tajchert:waitingdots:0.1.0',
          '2835d49e0787dbcb606c5a60021ced66578503b1e9fddcd7a5ef0cd5f095ba2c'],

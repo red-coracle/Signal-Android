@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">Signal</string>
   <string name="yes">Có</string>
   <string name="no">Không</string>
   <string name="delete">Xóa</string>
@@ -10,7 +9,6 @@
   <!--AbstractNotificationBuilder-->
   <string name="AbstractNotificationBuilder_new_message">Tin nhắn mới</string>
   <!--AlbumThumbnailView-->
-  <string name="AlbumThumbnailView_plus">\+%d</string>
   <!--ApplicationMigrationActivity-->
   <string name="ApplicationMigrationActivity__signal_is_updating">Signal đang cập nhật…</string>
   <!--ApplicationPreferencesActivity-->
@@ -261,7 +259,7 @@
   <string name="CustomDefaultPreference_using_default">Dùng mặc định: %s</string>
   <string name="CustomDefaultPreference_none">Không</string>
   <!--DateUtils-->
-  <string name="DateUtils_just_now">Vừa xong</string>
+  <string name="DateUtils_just_now">Bây giờ</string>
   <string name="DateUtils_minutes_ago">%dphút</string>
   <string name="DateUtils_today">Hôm nay</string>
   <string name="DateUtils_yesterday">Hôm qua</string>
@@ -355,7 +353,7 @@
   <string name="InviteActivity_share">Chia sẻ</string>
   <string name="InviteActivity_choose_contacts">Chọn liên hệ</string>
   <string name="InviteActivity_cancel">Hủy bỏ</string>
-  <string name="InviteActivity_sending">Đang gửi..</string>
+  <string name="InviteActivity_sending">Đang gửi…</string>
   <string name="InviteActivity_heart_content_description">Thích</string>
   <string name="InviteActivity_invitations_sent">Đã gửi lời mời!</string>
   <string name="InviteActivity_invite_to_signal">Mời dùng Signal</string>
@@ -413,7 +411,7 @@
   <!--MediaPickerItemFragment-->
   <string name="MediaPickerItemFragment_tap_to_select">Nhấn để chọn</string>
   <!--MediaSendActivity-->
-  <string name="MediaSendActivity_add_a_caption">Thêm tiêu đề…</string>
+  <string name="MediaSendActivity_add_a_caption">Thêm chú thích…</string>
   <string name="MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit">Một mục đã bị loại bỏ vì quá kích cỡ giới hạn</string>
   <string name="MediaSendActivity_camera_unavailable">Máy ảnh không khả dụng</string>
   <string name="MediaSendActivity_message_to_s">Tin nhắn đến %s</string>
@@ -482,6 +480,7 @@
   <string name="PassphrasePromptActivity_watermark_content_description">Biểu tượng Signal</string>
   <string name="PassphrasePromptActivity_ok_button_content_description">Gửi mật khẩu</string>
   <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Mật khẩu không đúng!</string>
+  <string name="PassphrasePromptActivity_unlock_signal">Mở khóa Signal</string>
   <!--PlacePickerActivity-->
   <string name="PlacePickerActivity_title">Bản đồ</string>
   <string name="PlacePickerActivity_not_a_valid_address">Không phải địa chỉ hợp lệ</string>
@@ -1250,6 +1249,7 @@ Nhận thông tin trao đổi mã khóa về phiên bản giao thức không h�
   <string name="reminder_header_share_text">Càng đông bạn dùng Signal càng vui.</string>
   <string name="reminder_header_service_outage_text">Signal đang gặp trục trặc kĩ thuật. Chúng thôi đang cố hết sức để khôi phục dịch vụ càng sớm càng tốt.</string>
   <string name="reminder_header_the_latest_signal_features_wont_work">Tính năng mới nhất của Signal không hoạt động trên phiên bản Android này. Vui lòng nâng cấp thiết bị để nhận những bản cập nhật Signal trong tương lai.</string>
+  <string name="reminder_header_progress">%1$d%%</string>
   <!--media_preview-->
   <string name="media_preview__save_title">Lưu</string>
   <string name="media_preview__forward_title">Chuyển tiếp</string>
@@ -1265,6 +1265,30 @@ Nhận thông tin trao đổi mã khóa về phiên bản giao thức không h�
   <string name="trimmer__deleting">Đang xóa</string>
   <string name="trimmer__deleting_old_messages">Đang xóa tin nhắn cũ…</string>
   <string name="trimmer__old_messages_successfully_deleted">Xóa thành công các tin nhắn cũ</string>
+  <!--Insights-->
+  <string name="Insights__title">Phân tích</string>
+  <string name="InsightsDashboardFragment__title">Phân tích</string>
+  <!-- Removed by excludeNonTranslatables <string name="InsightsDashboardFragment__tagline">%1$d%% trong tổng số tin nhắn gửi đi trong 7 ngày của bạn đã được mã hóa đầu cuối bởi Giao thức Signal.</string> -->
+  <string name="InsightsDashboardFragment__boost_your_signal">Tăng tỉ lệ Signal</string>
+  <!-- Removed by excludeNonTranslatables <string name="InsightsDashboardFragment__100_title">Tỉ lệ Signal cao</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="InsightsDashboardFragment__no_signal_yet">Chưa có Signal</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="InsightsDashboardFragment__youre_just_getting_started">Bạn mới chỉ đang bắt đầu. Dữ liệu phân tích sẽ hiển thị sau khi bạn gửi vài tin nhắn.</string> -->
+  <string name="InsightsDashboardFragment__start_a_conversation">Bắt đầu cuộc trò chuyện</string>
+  <!-- Removed by excludeNonTranslatables <string name="InsightsDashboardFragment__100_description">Công nghệ tiên tiến của Signal tự động bảo mật tất cả tin nhắn gửi đi gần đây của bạn.</string> -->
+  <string name="InsightsDashboardFragment__invite_your_contacts">Hãy trò chuyện riêng tư và kích hoạt những tính năng mới vượt trên giới hạn của SMS lỗi thời bằng cách mời liên hệ của bạn sử dụng Signal.</string>
+  <string name="InsightsDashboardFragment__this_stat_was_generated_locally">Số liệu này được tạo trên thiết bị của bạn và chỉ được truy cập bởi bạn. Nó không được gửi đi bất cứ đâu.</string>
+  <string name="InsightsDashboardFragment__encrypted_messages">Tin nhắn mã hóa</string>
+  <string name="InsightsDashboardFragment__cancel">Hủy</string>
+  <string name="InsightsDashboardFragment__send">Gửi</string>
+  <string name="InsightsModalFragment__title">Xin giới thiệu tính năng Phân tích</string>
+  <string name="InsightsModalFragment__description">Tìm hiểu xem bao nhiêu tin nhắn của bạn được gửi đi một cách bảo mật và mời liên hệ để tăng tỉ lệ Signal.</string>
+  <string name="InsightsModalFragment__view_insights">Xem Phân tích</string>
+  <string name="FirstInviteReminder__title">Mời dùng Signal</string>
+  <string name="FirstInviteReminder__description">Bạn có thể tăng %1$d%% số lượng tin nhắn mã hóa gửi đi.</string>
+  <string name="SecondInviteReminder__title">Tăng tỉ lệ Signal</string>
+  <string name="SecondInviteReminder__description">Mời %1$s</string>
+  <string name="InsightsReminder__view_insights">Xem Phân tích</string>
+  <string name="InsightsReminder__invite">Mời</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Biểu tượng chuyển tải</string>
   <string name="ConversationListFragment_loading">Đang tải…</string>
@@ -1359,5 +1383,6 @@ Nhận thông tin trao đổi mã khóa về phiên bản giao thức không h�
   <string name="prompt_passphrase_activity__tap_to_unlock">NHẤN ĐỂ MỞ KHOÁ</string>
   <string name="RegistrationLockDialog_reminder">Nhắc nhở:</string>
   <string name="recipient_preferences__about">Thông tin</string>
+  <string name="Recipient_unknown">Vô danh</string>
   <!--EOF-->
 </resources>

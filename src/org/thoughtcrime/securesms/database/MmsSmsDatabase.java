@@ -18,6 +18,7 @@ package org.thoughtcrime.securesms.database;
 
 import android.content.Context;
 import android.database.Cursor;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -151,6 +152,27 @@ public class MmsSmsDatabase extends Database {
   public int getConversationCount(long threadId) {
     int count = DatabaseFactory.getSmsDatabase(context).getMessageCountForThread(threadId);
     count    += DatabaseFactory.getMmsDatabase(context).getMessageCountForThread(threadId);
+
+    return count;
+  }
+
+  public int getInsecureSentCount(long threadId) {
+    int count  = DatabaseFactory.getSmsDatabase(context).getInsecureMessagesSentForThread(threadId);
+    count     += DatabaseFactory.getMmsDatabase(context).getInsecureMessagesSentForThread(threadId);
+
+    return count;
+  }
+
+  public int getInsecureMessageCountForInsights() {
+    int count = DatabaseFactory.getSmsDatabase(context).getInsecureMessageCountForInsights();
+    count    += DatabaseFactory.getMmsDatabase(context).getInsecureMessageCountForInsights();
+
+    return count;
+  }
+
+  public int getSecureMessageCountForInsights() {
+    int count = DatabaseFactory.getSmsDatabase(context).getSecureMessageCountForInsights();
+    count    += DatabaseFactory.getMmsDatabase(context).getSecureMessageCountForInsights();
 
     return count;
   }

@@ -106,6 +106,7 @@ import org.thoughtcrime.securesms.revealable.ViewOnceUtil;
 import org.thoughtcrime.securesms.stickers.StickerUrl;
 import org.thoughtcrime.securesms.util.DateUtils;
 import org.thoughtcrime.securesms.util.DynamicTheme;
+import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.LongClickCopySpan;
 import org.thoughtcrime.securesms.util.LongClickMovementMethod;
 import org.thoughtcrime.securesms.util.SearchUtil;
@@ -944,14 +945,20 @@ public class ConversationItem extends LinearLayout implements BindableConversati
   @SuppressLint("SetTextI18n")
   private void setGroupMessageStatus(MessageRecord messageRecord, Recipient recipient) {
     if (groupThread && !messageRecord.isOutgoing()) {
-      this.groupSender.setText(recipient.toShortString());
 
-      if (recipient.getName() == null && !TextUtils.isEmpty(recipient.getProfileName())) {
-        this.groupSenderProfileName.setText("~" + recipient.getProfileName());
-        this.groupSenderProfileName.setVisibility(View.VISIBLE);
-      } else {
-        this.groupSenderProfileName.setText(null);
+      if (FeatureFlags.PROFILE_DISPLAY) {
+        this.groupSender.setText(recipient.getDisplayName(getContext()));
         this.groupSenderProfileName.setVisibility(View.GONE);
+      } else {
+        this.groupSender.setText(recipient.toShortString(context));
+
+        if (recipient.getName(context) == null && !TextUtils.isEmpty(recipient.getProfileName())) {
+          this.groupSenderProfileName.setText("~" + recipient.getProfileName());
+          this.groupSenderProfileName.setVisibility(View.VISIBLE);
+        } else {
+          this.groupSenderProfileName.setText(null);
+          this.groupSenderProfileName.setVisibility(View.GONE);
+        }
       }
     }
   }

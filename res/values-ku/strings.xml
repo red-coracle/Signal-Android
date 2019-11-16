@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">Signal</string>
   <string name="yes">Erê</string>
   <string name="no">Na</string>
   <string name="delete">Jê bibe</string>
@@ -10,7 +9,6 @@
   <!--AbstractNotificationBuilder-->
   <string name="AbstractNotificationBuilder_new_message">Peyama nû</string>
   <!--AlbumThumbnailView-->
-  <string name="AlbumThumbnailView_plus">%d+\</string>
   <!--ApplicationMigrationActivity-->
   <!--ApplicationPreferencesActivity-->
   <string name="ApplicationPreferencesActivity_currently_s">Vê gavê: %s</string>
@@ -452,6 +450,7 @@
   <string name="PassphrasePromptActivity_watermark_content_description">Sembola Signalê</string>
   <string name="PassphrasePromptActivity_ok_button_content_description">Borînbiwêjê radest bike</string>
   <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Borînbiwêja nederbasdar!</string>
+  <string name="PassphrasePromptActivity_unlock_signal">Rakirina qilfê Signalê</string>
   <!--PlacePickerActivity-->
   <!--PlayServicesProblemFragment-->
   <string name="PlayServicesProblemFragment_the_version_of_google_play_services_you_have_installed_is_not_functioning">Guhertoya Google Play Servicesê ya di amûra te da sazkirî baş naxebite. Ji kerema xwe dîsa saz bike û biceribîne.</string>
@@ -1189,6 +1188,11 @@
   <string name="trimmer__deleting">Tê jêbirin</string>
   <string name="trimmer__deleting_old_messages">Peyamên kevin tên jêbirin…</string>
   <string name="trimmer__old_messages_successfully_deleted">Peyamên kevin hatin jêbirin</string>
+  <!--Insights-->
+  <string name="InsightsDashboardFragment__cancel">Betal</string>
+  <string name="InsightsDashboardFragment__send">Bişîne</string>
+  <string name="FirstInviteReminder__title">Vexwîne Signalê</string>
+  <string name="InsightsReminder__invite">Vexwîne</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Nîşaneka raguhastinê</string>
   <string name="ConversationListFragment_loading">Tê barkirin…</string>
@@ -1279,5 +1283,6 @@
   <string name="prompt_passphrase_activity__tap_to_unlock">BO RAKIRINA QUFLEYÊ BITEPÎNE</string>
   <string name="RegistrationLockDialog_reminder">Bi bîr anîn:</string>
   <string name="recipient_preferences__about">Derbar</string>
+  <string name="Recipient_unknown">Nenas</string>
   <!--EOF-->
 </resources>

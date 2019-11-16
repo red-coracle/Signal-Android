@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">Signal</string>
   <string name="yes">Ja</string>
   <string name="no">Nei</string>
   <string name="delete">Slett</string>
@@ -10,7 +9,6 @@
   <!--AbstractNotificationBuilder-->
   <string name="AbstractNotificationBuilder_new_message">Ny melding</string>
   <!--AlbumThumbnailView-->
-  <string name="AlbumThumbnailView_plus">\+%d</string>
   <!--ApplicationMigrationActivity-->
   <string name="ApplicationMigrationActivity__signal_is_updating">Signal oppdateres…</string>
   <!--ApplicationPreferencesActivity-->
@@ -368,7 +366,7 @@
   <string name="InviteActivity_share">Del</string>
   <string name="InviteActivity_choose_contacts">Velg kontakter</string>
   <string name="InviteActivity_cancel">Avbryt</string>
-  <string name="InviteActivity_sending">Sender …</string>
+  <string name="InviteActivity_sending">Sender…</string>
   <string name="InviteActivity_heart_content_description">Hjerte</string>
   <string name="InviteActivity_invitations_sent">Invitasjoner sendt.</string>
   <string name="InviteActivity_invite_to_signal">Inviter til Signal</string>
@@ -430,7 +428,7 @@
   <!--MediaPickerItemFragment-->
   <string name="MediaPickerItemFragment_tap_to_select">Trykk for å velge</string>
   <!--MediaSendActivity-->
-  <string name="MediaSendActivity_add_a_caption">Legg til bildetekst…</string>
+  <string name="MediaSendActivity_add_a_caption">Legg til tekst…</string>
   <string name="MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit">En gjenstand ble fjernet fordi den overskride størrelsesgrensen</string>
   <string name="MediaSendActivity_camera_unavailable">Kamera utilgjengelig.</string>
   <string name="MediaSendActivity_message_to_s">Melding til %s</string>
@@ -500,6 +498,7 @@
   <string name="PassphrasePromptActivity_watermark_content_description">Signal-ikon</string>
   <string name="PassphrasePromptActivity_ok_button_content_description">Send inn passord</string>
   <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Ugyldig passord!</string>
+  <string name="PassphrasePromptActivity_unlock_signal">Lås opp Signal</string>
   <!--PlacePickerActivity-->
   <string name="PlacePickerActivity_title">Kart</string>
   <string name="PlacePickerActivity_not_a_valid_address">Ikke en gyldig adresse</string>
@@ -645,6 +644,7 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversion.</string>
   <string name="ThreadRecord_media_message">Mediemelding</string>
   <string name="ThreadRecord_sticker">Klistremerke</string>
   <string name="ThreadRecord_disappearing_photo">Forsvinner foto</string>
+  <string name="ThreadRecord_disappearing_video">Forsvinnende video</string>
   <string name="ThreadRecord_s_is_on_signal"> %s er på Signal!</string>
   <string name="ThreadRecord_disappearing_messages_disabled">Forsvinnende meldinger deaktivert</string>
   <string name="ThreadRecord_disappearing_message_time_updated_to_s">Utløpstid for meldinger endret til %s</string>
@@ -721,6 +721,7 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversion.</string>
   <string name="MessageNotifier_media_message">Mediemelding</string>
   <string name="MessageNotifier_sticker">Klistremerke</string>
   <string name="MessageNotifier_disappearing_photo">Forsvinner foto</string>
+  <string name="MessageNotifier_disappearing_video">Forsvinnende video</string>
   <string name="MessageNotifier_reply">Svar</string>
   <string name="MessageNotifier_signal_message">Signal-melding</string>
   <string name="MessageNotifier_unsecured_sms">Usikret SMS</string>
@@ -1068,6 +1069,10 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversion.</string>
   <string name="arrays__high">Høy</string>
   <string name="arrays__max">Maks</string>
   <!--plurals.xml-->
+  <plurals name="hours_ago">
+    <item quantity="one">%dt</item>
+    <item quantity="other">%dt</item>
+  </plurals>
   <!--preferences.xml-->
   <string name="preferences__sms_mms">SMS og MMS</string>
   <string name="preferences__pref_all_sms_title">Ta imot alle SMS</string>
@@ -1275,6 +1280,7 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversion.</string>
   <string name="reminder_header_share_text">Jo flere venner som bruker Signal, desto bedre blir det.</string>
   <string name="reminder_header_service_outage_text">Signal har tekniske problemer. Vi jobber med å få tjenesten i gang igjen så fort som mulig.</string>
   <string name="reminder_header_the_latest_signal_features_wont_work">De nyeste Signal-funksjonene vil ikke fungere på denne versjonen av Android. Oppgrader denne enheten for å motta fremtidige Signal-oppdateringer.</string>
+  <string name="reminder_header_progress">%1$d %%</string>
   <!--media_preview-->
   <string name="media_preview__save_title">Lagre</string>
   <string name="media_preview__forward_title">Videresend</string>
@@ -1290,6 +1296,21 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversion.</string>
   <string name="trimmer__deleting">Sletter</string>
   <string name="trimmer__deleting_old_messages">Sletter gamle meldinger…</string>
   <string name="trimmer__old_messages_successfully_deleted">Gamle meldinger ble slettet</string>
+  <!--Insights-->
+  <string name="Insights__percent">%</string>
+  <string name="Insights__title">Innsikt</string>
+  <string name="InsightsDashboardFragment__title">Innsikt</string>
+  <!-- Removed by excludeNonTranslatables <string name="InsightsDashboardFragment__youre_just_getting_started">Du er bare så vidt i gang. Innsikt vises etter at du har sendt noen få meldinger.</string> -->
+  <string name="InsightsDashboardFragment__start_a_conversation">Start en samtale</string>
+  <string name="InsightsDashboardFragment__encrypted_messages">Krypterte meldinger</string>
+  <string name="InsightsDashboardFragment__cancel">Avbryt</string>
+  <string name="InsightsDashboardFragment__send">Send</string>
+  <string name="InsightsModalFragment__title">Vi presenterer Innsikt</string>
+  <string name="InsightsModalFragment__view_insights">Se Innsikt</string>
+  <string name="FirstInviteReminder__title">Inviter til Signal</string>
+  <string name="SecondInviteReminder__description">Inviter %1$s</string>
+  <string name="InsightsReminder__view_insights">Se Innsikt</string>
+  <string name="InsightsReminder__invite">Inviter</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Transport-ikon</string>
   <string name="ConversationListFragment_loading">Laster…</string>
@@ -1383,5 +1404,6 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversion.</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">TRYKK FOR Å LÅSE OPP</string>
   <string name="RegistrationLockDialog_reminder">Påminnelse:</string>
   <string name="recipient_preferences__about">Om</string>
+  <string name="Recipient_unknown">Ukjent</string>
   <!--EOF-->
 </resources>

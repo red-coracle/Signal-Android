@@ -45,6 +45,7 @@ import org.thoughtcrime.securesms.recipients.LiveRecipient;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientForeverObserver;
 import org.thoughtcrime.securesms.ringrtc.CameraState;
+import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.VerifySpan;
 import org.thoughtcrime.securesms.util.ViewUtil;
 import org.webrtc.SurfaceViewRenderer;
@@ -124,7 +125,7 @@ public class WebRtcCallScreen extends FrameLayout implements RecipientForeverObs
   }
 
   public void setUntrustedIdentity(Recipient personInfo, IdentityKey untrustedIdentity) {
-    String          name            = recipient.get().toShortString();
+    String          name            = recipient.get().toShortString(getContext());
     String          introduction    = String.format(getContext().getString(R.string.WebRtcCallScreen_new_safety_numbers), name, name);
     SpannableString spannableString = new SpannableString(introduction + " " + getContext().getString(R.string.WebRtcCallScreen_you_may_wish_to_verify_this_contact));
 
@@ -305,12 +306,23 @@ public class WebRtcCallScreen extends FrameLayout implements RecipientForeverObs
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(this.photo);
 
-    this.name.setText(recipient.getName());
+    if (FeatureFlags.PROFILE_DISPLAY) {
+      this.name.setText(recipient.getDisplayName(getContext()));
 
-    if (recipient.getName() == null && !TextUtils.isEmpty(recipient.getProfileName())) {
-      this.phoneNumber.setText(recipient.requireAddress().serialize() + " (~" + recipient.getProfileName() + ")");
+      if (recipient.getE164().isPresent()) {
+        this.phoneNumber.setText(recipient.requireE164());
+        this.phoneNumber.setVisibility(View.VISIBLE);
+      } else {
+        this.phoneNumber.setVisibility(View.GONE);
+      }
     } else {
-      this.phoneNumber.setText(recipient.requireAddress().serialize());
+      this.name.setText(recipient.getName(getContext()));
+
+      if (recipient.getName(getContext()) == null && !TextUtils.isEmpty(recipient.getProfileName())) {
+        this.phoneNumber.setText(recipient.requireE164() + " (~" + recipient.getProfileName() + ")");
+      } else {
+        this.phoneNumber.setText(recipient.requireE164());
+      }
     }
   }
 

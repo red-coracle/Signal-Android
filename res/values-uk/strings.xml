@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">Signal</string>
   <string name="yes">Так</string>
   <string name="no">Ні</string>
   <string name="delete">Видалити</string>
@@ -10,7 +9,6 @@
   <!--AbstractNotificationBuilder-->
   <string name="AbstractNotificationBuilder_new_message">Нове повідомлення</string>
   <!--AlbumThumbnailView-->
-  <string name="AlbumThumbnailView_plus">\+%d</string>
   <!--ApplicationMigrationActivity-->
   <!--ApplicationPreferencesActivity-->
   <string name="ApplicationPreferencesActivity_currently_s">Поточний: %s</string>
@@ -431,7 +429,7 @@
   <!--MediaPickerItemFragment-->
   <string name="MediaPickerItemFragment_tap_to_select">Нажміть щоб обрати</string>
   <!--MediaSendActivity-->
-  <string name="MediaSendActivity_add_a_caption">Добавити заголовок…</string>
+  <string name="MediaSendActivity_add_a_caption">Додати підпис…</string>
   <string name="MediaSendActivity_camera_unavailable">Камера не доступна</string>
   <string name="MediaSendActivity_message_to_s">Відправити до %s</string>
   <string name="MediaSendActivity_message">Повідомлення</string>
@@ -491,6 +489,7 @@
   <string name="PassphrasePromptActivity_watermark_content_description">Значок Signal</string>
   <string name="PassphrasePromptActivity_ok_button_content_description">Ввести фразу-пароль</string>
   <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Хибна фраза-пароль!</string>
+  <string name="PassphrasePromptActivity_unlock_signal">Розблокувати Signal</string>
   <!--PlacePickerActivity-->
   <!--PlayServicesProblemFragment-->
   <string name="PlayServicesProblemFragment_the_version_of_google_play_services_you_have_installed_is_not_functioning">Встановлена версія сервісів Google Play працює некоректно. Перевстановіть сервіси Google Play та спробуйте знову.</string>
@@ -1244,10 +1243,15 @@
   <string name="trimmer__deleting">Видалення</string>
   <string name="trimmer__deleting_old_messages">Видалення старих повідомлень…</string>
   <string name="trimmer__old_messages_successfully_deleted">Старі повідомлення було успішно видалено</string>
+  <!--Insights-->
+  <string name="InsightsDashboardFragment__cancel">Скасувати</string>
+  <string name="InsightsDashboardFragment__send">Надіслати</string>
+  <string name="FirstInviteReminder__title">Запросити до Signal</string>
+  <string name="InsightsReminder__invite">Запросити</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Логотип типу зв\'язку</string>
   <string name="ConversationListFragment_loading">Завантаження…</string>
-  <string name="CallNotificationBuilder_connecting">Підключення…</string>
+  <string name="CallNotificationBuilder_connecting">З’єднання…</string>
   <string name="Permissions_permission_required">Необхідний дозвіл</string>
   <string name="ConversationActivity_signal_needs_sms_permission_in_order_to_send_an_sms">Signal потребує дозволу \"SMS\", але наразі дозволу немає. Будь-ласка, перейдіть до налаштувань додатку, оберіть \"Дозволи\" та увімкніть \"SMS\".</string>
   <string name="Permissions_continue">Продовжити</string>
@@ -1335,5 +1339,6 @@
   <string name="prompt_passphrase_activity__tap_to_unlock">НАТИСНІТЬ ДЛЯ РОЗБЛОКУВАННЯ</string>
   <string name="RegistrationLockDialog_reminder">Нагадування:</string>
   <string name="recipient_preferences__about">Про додаток</string>
+  <string name="Recipient_unknown">Невідомо</string>
   <!--EOF-->
 </resources>

@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">Signal</string>
   <string name="yes">ใช่</string>
   <string name="no">ไม่</string>
   <string name="delete">ลบ</string>
@@ -415,6 +414,7 @@
   <string name="PassphrasePromptActivity_watermark_content_description">ไอคอน Signal</string>
   <string name="PassphrasePromptActivity_ok_button_content_description">ส่งวลีรหัสผ่าน</string>
   <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">วลีรหัสผ่านไม่ถูกต้อง</string>
+  <string name="PassphrasePromptActivity_unlock_signal">ปลดล็อก Signal</string>
   <!--PlacePickerActivity-->
   <!--PlayServicesProblemFragment-->
   <string name="PlayServicesProblemFragment_the_version_of_google_play_services_you_have_installed_is_not_functioning">เวอร์ชันของ Google Play Services ที่คุณมีอยู่ทำงานไม่ถูกต้อง โปรดติดตั้ง Google Play Services ใหม่และลองอีกครั้ง</string>
@@ -1125,6 +1125,11 @@
   <string name="trimmer__deleting">กำลังลบ</string>
   <string name="trimmer__deleting_old_messages">กำลังลบข้อความเก่า…</string>
   <string name="trimmer__old_messages_successfully_deleted">ลบข้อความเก่าสำเร็จ</string>
+  <!--Insights-->
+  <string name="InsightsDashboardFragment__cancel">ยกเลิก</string>
+  <string name="InsightsDashboardFragment__send">ส่ง</string>
+  <string name="FirstInviteReminder__title">เชิญมาใช้ Signal</string>
+  <string name="InsightsReminder__invite">เชิญ</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">ไอคอนขนส่ง</string>
   <string name="ConversationListFragment_loading">กำลังโหลด…</string>
@@ -1213,5 +1218,6 @@
   <string name="prompt_passphrase_activity__tap_to_unlock">แตะเพื่อปลดล็อก</string>
   <string name="RegistrationLockDialog_reminder">เตือนความจำ:</string>
   <string name="recipient_preferences__about">เกี่ยวกับ</string>
+  <string name="Recipient_unknown">ไม่ทราบ</string>
   <!--EOF-->
 </resources>

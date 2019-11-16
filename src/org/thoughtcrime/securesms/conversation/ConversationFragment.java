@@ -323,8 +323,9 @@ public class ConversationFragment extends Fragment
 
       if (recipients.size() > 0) {
         if (!isTypingIndicatorShowing() && isAtBottom()) {
+          Context context = requireContext();
           list.setVerticalScrollBarEnabled(false);
-          list.post(() -> getListLayoutManager().smoothScrollToPosition(requireContext(), 0, 250));
+          list.post(() -> getListLayoutManager().smoothScrollToPosition(context, 0, 250));
           list.postDelayed(() -> list.setVerticalScrollBarEnabled(true), 300);
           adapter.setHeaderView(typingView);
           adapter.notifyItemInserted(0);
@@ -1083,7 +1084,7 @@ public class ConversationFragment extends Fragment
       if (getContext() == null) return;
 
       ContactUtil.selectRecipientThroughDialog(getContext(), choices, locale, recipient -> {
-        CommunicationActions.composeSmsThroughDefaultApp(getContext(), recipient.requireAddress(), getString(R.string.InviteActivity_lets_switch_to_signal, getString(R.string.install_url)));
+        CommunicationActions.composeSmsThroughDefaultApp(getContext(), recipient, getString(R.string.InviteActivity_lets_switch_to_signal, getString(R.string.install_url)));
       });
     }
   }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -18,8 +19,12 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.AvatarImageView;
 import org.thoughtcrime.securesms.mms.GlideRequests;
 import org.thoughtcrime.securesms.recipients.Recipient;
+import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.ViewUtil;
+
+import java.util.UUID;
 
 public class ConversationTitleView extends RelativeLayout {
 
@@ -105,32 +110,21 @@ public class ConversationTitleView extends RelativeLayout {
   }
 
   private void setRecipientTitle(Recipient recipient) {
-    if      (recipient.isGroup())           setGroupRecipientTitle(recipient);
-    else if (recipient.isLocalNumber())              setSelfTitle();
-    else if (TextUtils.isEmpty(recipient.getName())) setNonContactRecipientTitle(recipient);
-    else                                             setContactRecipientTitle(recipient);
-  }
-
-  private void setGroupRecipientTitle(Recipient recipient) {
-    String localNumber = TextSecurePreferences.getLocalNumber(getContext());
-
-    this.title.setText(recipient.getName());
-    this.subtitle.setText(Stream.of(recipient.getParticipants())
-                                .filter(r -> !r.requireAddress().serialize().equals(localNumber))
-                                .map(Recipient::toShortString)
-                                .collect(Collectors.joining(", ")));
-
-    this.subtitle.setVisibility(View.VISIBLE);
-  }
-
-  private void setSelfTitle() {
-    this.title.setText(R.string.note_to_self);
-    this.subtitleContainer.setVisibility(View.GONE);
+    if (FeatureFlags.PROFILE_DISPLAY) {
+      if      (recipient.isGroup())       setGroupRecipientTitle(recipient);
+      else if (recipient.isLocalNumber()) setSelfTitle();
+      else                                setIndividualRecipientTitle(recipient);
+    } else {
+      if      (recipient.isGroup())                                setGroupRecipientTitle(recipient);
+      else if (recipient.isLocalNumber())                          setSelfTitle();
+      else if (TextUtils.isEmpty(recipient.getName(getContext()))) setNonContactRecipientTitle(recipient);
+      else                                                         setContactRecipientTitle(recipient);
+    }
   }
 
   @SuppressLint("SetTextI18n")
   private void setNonContactRecipientTitle(Recipient recipient) {
-    this.title.setText(recipient.requireAddress().serialize());
+    this.title.setText(Util.getFirstNonEmpty(recipient.getE164().orNull(), recipient.getUuid().transform(UUID::toString).orNull()));
 
     if (TextUtils.isEmpty(recipient.getProfileName())) {
       this.subtitle.setText(null);
@@ -142,7 +136,7 @@ public class ConversationTitleView extends RelativeLayout {
   }
 
   private void setContactRecipientTitle(Recipient recipient) {
-    this.title.setText(recipient.getName());
+    this.title.setText(recipient.getName(getContext()));
 
     if (TextUtils.isEmpty(recipient.getCustomLabel())) {
       this.subtitle.setText(null);
@@ -151,6 +145,35 @@ public class ConversationTitleView extends RelativeLayout {
       this.subtitle.setText(recipient.getCustomLabel());
       this.subtitle.setVisibility(View.VISIBLE);
     }
+  }
+
+  private void setGroupRecipientTitle(Recipient recipient) {
+    String localNumber = TextSecurePreferences.getLocalNumber(getContext());
+
+    if (FeatureFlags.PROFILE_DISPLAY) {
+      this.title.setText(recipient.getDisplayName(getContext()));
+    } else {
+      this.title.setText(recipient.getName(getContext()));
+    }
+
+    this.subtitle.setText(Stream.of(recipient.getParticipants())
+                                .filterNot(Recipient::isLocalNumber)
+                                .map(r -> r.toShortString(getContext()))
+                                .collect(Collectors.joining(", ")));
+
+    this.subtitle.setVisibility(View.VISIBLE);
+  }
+
+  private void setSelfTitle() {
+    this.title.setText(R.string.note_to_self);
+    this.subtitleContainer.setVisibility(View.GONE);
+  }
+
+  private void setIndividualRecipientTitle(Recipient recipient) {
+    final String displayName = recipient.getDisplayName(getContext());
+    this.title.setText(displayName);
+    this.subtitle.setText(null);
+    this.subtitle.setVisibility(View.GONE);
   }
 
   private void updateVerifiedSubtitleVisibility() {

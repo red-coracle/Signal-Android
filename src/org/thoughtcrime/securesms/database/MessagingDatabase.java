@@ -13,6 +13,7 @@ import org.thoughtcrime.securesms.database.documents.Document;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatch;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatchList;
 import org.thoughtcrime.securesms.database.helpers.SQLCipherOpenHelper;
+import org.thoughtcrime.securesms.insights.InsightsConstants;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.JsonUtils;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public abstract class MessagingDatabase extends Database implements MmsSmsColumns {
 
@@ -32,12 +34,61 @@ public abstract class MessagingDatabase extends Database implements MmsSmsColumn
   }
 
   protected abstract String getTableName();
+  protected abstract String getTypeField();
+  protected abstract String getDateSentColumnName();
 
   public abstract void markExpireStarted(long messageId);
   public abstract void markExpireStarted(long messageId, long startTime);
 
   public abstract void markAsSent(long messageId, boolean secure);
   public abstract void markUnidentified(long messageId, boolean unidentified);
+
+  final int getInsecureMessagesSentForThread(long threadId) {
+    SQLiteDatabase db         = databaseHelper.getReadableDatabase();
+    String[]       projection = new String[]{"COUNT(*)"};
+    String         query      = THREAD_ID + " = ? AND " + getOutgoingInsecureMessageClause() + " AND " + getDateSentColumnName() + " > ?";
+    String[]       args       = new String[]{String.valueOf(threadId), String.valueOf(System.currentTimeMillis() - InsightsConstants.PERIOD_IN_MILLIS)};
+
+    try (Cursor cursor = db.query(getTableName(), projection, query, args, null, null, null, null)) {
+      if (cursor != null && cursor.moveToFirst()) {
+        return cursor.getInt(0);
+      } else {
+        return 0;
+      }
+    }
+  }
+
+  final int getInsecureMessageCountForInsights() {
+    return getMessageCountForRecipientsAndType(getOutgoingInsecureMessageClause());
+  }
+
+  final int getSecureMessageCountForInsights() {
+    return getMessageCountForRecipientsAndType(getOutgoingSecureMessageClause());
+  }
+
+  private int getMessageCountForRecipientsAndType(String typeClause) {
+
+    SQLiteDatabase db           = databaseHelper.getReadableDatabase();
+    String[]       projection   = new String[] {"COUNT(*)"};
+    String         query        = typeClause + " AND " + getDateSentColumnName() + " > ?";
+    String[]       args         = new String[]{String.valueOf(System.currentTimeMillis() - InsightsConstants.PERIOD_IN_MILLIS)};
+
+    try (Cursor cursor = db.query(getTableName(), projection, query, args, null, null, null, null)) {
+      if (cursor != null && cursor.moveToFirst()) {
+        return cursor.getInt(0);
+      } else {
+        return 0;
+      }
+    }
+  }
+
+  private String getOutgoingInsecureMessageClause() {
+    return "(" + getTypeField() + " & " + Types.BASE_TYPE_MASK + ") = " + Types.BASE_SENT_TYPE + " AND NOT (" + getTypeField() + " & " + Types.SECURE_MESSAGE_BIT + ")";
+  }
+
+  private String getOutgoingSecureMessageClause() {
+    return "(" + getTypeField() + " & " + Types.BASE_TYPE_MASK + ") = " + Types.BASE_SENT_TYPE + " AND (" + getTypeField() + " & " + (Types.SECURE_MESSAGE_BIT | Types.PUSH_MESSAGE_BIT) + ")";
+  }
 
   public void addMismatchedIdentity(long messageId, @NonNull RecipientId recipientId, IdentityKey identityKey) {
     try {
