@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.thoughtcrime.securesms.color.MaterialColor;
 import org.thoughtcrime.securesms.database.RecipientDatabase.InsightsBannerTier;
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil;
+import org.thoughtcrime.securesms.database.IdentityDatabase.VerifiedStatus;
 import org.thoughtcrime.securesms.database.RecipientDatabase.RecipientSettings;
 import org.thoughtcrime.securesms.database.RecipientDatabase.RegisteredState;
 import org.thoughtcrime.securesms.database.RecipientDatabase.UnidentifiedAccessMode;
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class RecipientDetails {
 
   final UUID                   uuid;
+  final String                 username;
   final String                 e164;
   final String                 email;
   final String                 groupId;
@@ -54,6 +56,9 @@ public class RecipientDetails {
   final boolean                forceSmsSelection;
   final boolean                uuidSuported;
   final InsightsBannerTier     insightsBannerTier;
+  final byte[]                 storageKey;
+  final byte[]                 identityKey;
+  final VerifiedStatus         identityStatus;
 
   RecipientDetails(@NonNull Context context,
                    @Nullable String name,
@@ -68,6 +73,7 @@ public class RecipientDetails {
     this.customLabel                     = settings.getSystemPhoneLabel();
     this.contactUri                      = Util.uri(settings.getSystemContactUri());
     this.uuid                            = settings.getUuid();
+    this.username                        = settings.getUsername();
     this.e164                            = settings.getE164();
     this.email                           = settings.getEmail();
     this.groupId                         = settings.getGroupId();
@@ -93,17 +99,24 @@ public class RecipientDetails {
     this.forceSmsSelection               = settings.isForceSmsSelection();
     this.uuidSuported                    = settings.isUuidSupported();
     this.insightsBannerTier              = settings.getInsightsBannerTier();
+    this.storageKey                      = settings.getStorageKey();
+    this.identityKey                     = settings.getIdentityKey();
+    this.identityStatus                  = settings.getIdentityStatus();
 
     if (name == null) this.name = settings.getSystemDisplayName();
     else              this.name = name;
   }
 
-  public RecipientDetails() {
+  /**
+   * Only used for {@link Recipient#UNKNOWN}.
+   */
+  RecipientDetails() {
     this.groupAvatarId          = null;
     this.systemContactPhoto     = null;
     this.customLabel            = null;
     this.contactUri             = null;
     this.uuid                   = null;
+    this.username               = null;
     this.e164                   = null;
     this.email                  = null;
     this.groupId                = null;
@@ -130,5 +143,8 @@ public class RecipientDetails {
     this.forceSmsSelection      = false;
     this.name                   = null;
     this.uuidSuported           = false;
+    this.storageKey             = null;
+    this.identityKey            = null;
+    this.identityStatus         = VerifiedStatus.DEFAULT;
   }
 }

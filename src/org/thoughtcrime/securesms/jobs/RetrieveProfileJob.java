@@ -21,6 +21,7 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.service.IncomingMessageObserver;
 import org.thoughtcrime.securesms.util.Base64;
+import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.IdentityUtil;
 import org.thoughtcrime.securesms.util.ProfileUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
@@ -80,6 +81,8 @@ public class RetrieveProfileJob extends BaseJob {
 
   @Override
   public void onRun() throws IOException {
+    Log.i(TAG, "Retrieving profile of " + recipient.getId());
+
     Recipient resolved = recipient.resolve();
 
     if (resolved.isGroup()) handleGroupRecipient(resolved);
@@ -102,8 +105,15 @@ public class RetrieveProfileJob extends BaseJob {
   private void handlePhoneNumberRecipient(Recipient recipient) throws IOException {
     SignalServiceProfile profile = ProfileUtil.retrieveProfile(context, recipient);
 
+    if (recipient.getProfileKey() == null) {
+      Log.i(TAG, "No profile key available for " + recipient.getId());
+    } else {
+      Log.i(TAG, "Profile key available for " + recipient.getId());
+    }
+
     setProfileName(recipient, profile.getName());
     setProfileAvatar(recipient, profile.getAvatar());
+    if (FeatureFlags.USERNAMES) setUsername(recipient, profile.getUsername());
     setProfileCapabilities(recipient, profile.getCapabilities());
     setIdentityKey(recipient, profile.getIdentityKey());
     setUnidentifiedAccessMode(recipient, profile.getUnidentifiedAccess(), profile.isUnrestrictedUnidentifiedAccess());
@@ -182,7 +192,12 @@ public class RetrieveProfileJob extends BaseJob {
       String plaintextProfileName = ProfileUtil.decryptName(profileKey, profileName);
 
       if (!Util.equals(plaintextProfileName, recipient.getProfileName())) {
+        Log.i(TAG, "Profile name updated. Writing new value.");
         DatabaseFactory.getRecipientDatabase(context).setProfileName(recipient.getId(), plaintextProfileName);
+      }
+
+      if (TextUtils.isEmpty(plaintextProfileName)) {
+        Log.i(TAG, "No profile name set.");
       }
     } catch (InvalidCiphertextException | IOException e) {
       Log.w(TAG, e);
@@ -194,7 +209,13 @@ public class RetrieveProfileJob extends BaseJob {
 
     if (!Util.equals(profileAvatar, recipient.getProfileAvatar())) {
       ApplicationDependencies.getJobManager().add(new RetrieveProfileAvatarJob(recipient, profileAvatar));
+    } else {
+      Log.d(TAG, "Skipping avatar fetch for " + recipient.getId());
     }
+  }
+
+  private void setUsername(Recipient recipient, @Nullable String username) {
+    DatabaseFactory.getRecipientDatabase(context).setUsername(recipient.getId(), username);
   }
 
   private void setProfileCapabilities(@NonNull Recipient recipient, @Nullable SignalServiceProfile.Capabilities capabilities) {

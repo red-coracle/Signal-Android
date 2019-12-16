@@ -49,6 +49,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -56,6 +57,7 @@ import android.view.View.OnKeyListener;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,12 +81,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.thoughtcrime.securesms.ApplicationContext;
-import org.thoughtcrime.securesms.ConversationListActivity;
-import org.thoughtcrime.securesms.ConversationListArchiveActivity;
 import org.thoughtcrime.securesms.ExpirationDialog;
 import org.thoughtcrime.securesms.GroupCreateActivity;
 import org.thoughtcrime.securesms.GroupMembersDialog;
-import org.thoughtcrime.securesms.MediaOverviewActivity;
+import org.thoughtcrime.securesms.MainActivity;
 import org.thoughtcrime.securesms.MuteDialog;
 import org.thoughtcrime.securesms.PassphraseRequiredActionBarActivity;
 import org.thoughtcrime.securesms.PromptMmsActivity;
@@ -127,6 +127,7 @@ import org.thoughtcrime.securesms.contactshare.Contact;
 import org.thoughtcrime.securesms.contactshare.ContactShareEditActivity;
 import org.thoughtcrime.securesms.contactshare.ContactUtil;
 import org.thoughtcrime.securesms.contactshare.SimpleTextWatcher;
+import org.thoughtcrime.securesms.conversationlist.model.MessageResult;
 import org.thoughtcrime.securesms.crypto.IdentityKeyParcelable;
 import org.thoughtcrime.securesms.crypto.SecurityEvent;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
@@ -145,6 +146,7 @@ import org.thoughtcrime.securesms.database.ThreadDatabase;
 import org.thoughtcrime.securesms.database.identity.IdentityRecordList;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
+import org.thoughtcrime.securesms.database.model.ReactionRecord;
 import org.thoughtcrime.securesms.database.model.StickerRecord;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.events.ReminderUpdateEvent;
@@ -152,7 +154,6 @@ import org.thoughtcrime.securesms.giph.ui.GiphyActivity;
 import org.thoughtcrime.securesms.insights.InsightsLauncher;
 import org.thoughtcrime.securesms.invites.InviteReminderModel;
 import org.thoughtcrime.securesms.invites.InviteReminderRepository;
-import org.thoughtcrime.securesms.jobs.MultiDeviceBlockedUpdateJob;
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
 import org.thoughtcrime.securesms.jobs.ServiceOutageDetectionJob;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
@@ -160,8 +161,11 @@ import org.thoughtcrime.securesms.linkpreview.LinkPreviewRepository;
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewViewModel;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.maps.PlacePickerActivity;
+import org.thoughtcrime.securesms.mediaoverview.MediaOverviewActivity;
 import org.thoughtcrime.securesms.mediasend.Media;
 import org.thoughtcrime.securesms.mediasend.MediaSendActivity;
+import org.thoughtcrime.securesms.messagerequests.MessageRequestFragment;
+import org.thoughtcrime.securesms.messagerequests.MessageRequestFragmentViewModel;
 import org.thoughtcrime.securesms.mms.AttachmentManager;
 import org.thoughtcrime.securesms.mms.AttachmentManager.MediaType;
 import org.thoughtcrime.securesms.mms.AudioSlide;
@@ -193,8 +197,8 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientExporter;
 import org.thoughtcrime.securesms.recipients.RecipientFormattingException;
 import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.registration.RegistrationNavigationActivity;
-import org.thoughtcrime.securesms.search.model.MessageResult;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.sms.OutgoingEncryptedMessage;
@@ -213,6 +217,7 @@ import org.thoughtcrime.securesms.util.DynamicDarkToolbarTheme;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.ExpirationUtil;
+import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.GroupUtil;
 import org.thoughtcrime.securesms.util.IdentityUtil;
 import org.thoughtcrime.securesms.util.MediaUtil;
@@ -225,6 +230,7 @@ import org.thoughtcrime.securesms.util.concurrent.AssertedSuccessListener;
 import org.thoughtcrime.securesms.util.concurrent.ListenableFuture;
 import org.thoughtcrime.securesms.util.concurrent.SettableFuture;
 import org.thoughtcrime.securesms.util.concurrent.SignalExecutors;
+import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.thoughtcrime.securesms.util.views.Stub;
 import org.whispersystems.libsignal.InvalidMessageException;
 import org.whispersystems.libsignal.util.guava.Optional;
@@ -271,7 +277,6 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   public static final String MEDIA_EXTRA             = "media_list";
   public static final String STICKER_EXTRA           = "sticker_extra";
   public static final String DISTRIBUTION_TYPE_EXTRA = "distribution_type";
-  public static final String TIMING_EXTRA            = "timing";
   public static final String LAST_SEEN_EXTRA         = "last_seen";
   public static final String STARTING_POSITION_EXTRA = "starting_position";
 
@@ -307,6 +312,8 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   private   TypingStatusTextWatcher     typingTextWatcher;
   private   ConversationSearchBottomBar searchNav;
   private   MenuItem                    searchViewItem;
+  private   FrameLayout                 messageRequestOverlay;
+  private   ConversationReactionOverlay reactionOverlay;
 
   private   AttachmentTypeSelector attachmentTypeSelector;
   private   AttachmentManager      attachmentManager;
@@ -335,6 +342,23 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   private final DynamicTheme       dynamicTheme    = new DynamicDarkToolbarTheme();
   private final DynamicLanguage    dynamicLanguage = new DynamicLanguage();
 
+  public static @NonNull Intent buildIntent(@NonNull Context context,
+                                            @NonNull RecipientId recipientId,
+                                            long threadId,
+                                            int distributionType,
+                                            long lastSeen,
+                                            int startingPosition)
+  {
+    Intent intent = new Intent(context, ConversationActivity.class);
+    intent.putExtra(ConversationActivity.RECIPIENT_EXTRA, recipientId);
+    intent.putExtra(ConversationActivity.THREAD_ID_EXTRA, threadId);
+    intent.putExtra(ConversationActivity.DISTRIBUTION_TYPE_EXTRA, distributionType);
+    intent.putExtra(ConversationActivity.LAST_SEEN_EXTRA, lastSeen);
+    intent.putExtra(ConversationActivity.STARTING_POSITION_EXTRA, startingPosition);
+
+    return intent;
+  }
+
   @Override
   protected void onPreCreate() {
     dynamicTheme.onCreate(this);
@@ -343,13 +367,12 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
   @Override
   protected void onCreate(Bundle state, boolean ready) {
-    Log.i(TAG, "onCreate()");
-
     RecipientId recipientId = getIntent().getParcelableExtra(RECIPIENT_EXTRA);
 
     if (recipientId == null) {
       Log.w(TAG, "[onCreate] Missing recipientId!");
-      startActivity(new Intent(this, ConversationListActivity.class));
+      // TODO [greyson] Navigation
+      startActivity(new Intent(this, MainActivity.class));
       finish();
       return;
     }
@@ -421,7 +444,8 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
     if (recipientId == null) {
       Log.w(TAG, "[onNewIntent] Missing recipientId!");
-      startActivity(new Intent(this, ConversationListActivity.class));
+      // TODO [greyson] Navigation
+      startActivity(new Intent(this, MainActivity.class));
       finish();
       return;
     }
@@ -464,8 +488,6 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
     MessageNotifier.setVisibleThread(threadId);
     markThreadAsRead();
-
-    Log.i(TAG, "onResume() Finished: " + (System.currentTimeMillis() - getIntent().getLongExtra(TIMING_EXTRA, 0)));
   }
 
   @Override
@@ -503,6 +525,11 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     saveDraft();
     if (securityUpdateReceiver != null)  unregisterReceiver(securityUpdateReceiver);
     super.onDestroy();
+  }
+
+  @Override
+  public boolean dispatchTouchEvent(MotionEvent ev) {
+    return reactionOverlay.applyTouchEvent(ev) || super.dispatchTouchEvent(ev);
   }
 
   @Override
@@ -664,15 +691,10 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     if (isSecureText) {
       if (recipient.get().getExpireMessages() > 0) {
         inflater.inflate(R.menu.conversation_expiring_on, menu);
-
-        final MenuItem item       = menu.findItem(R.id.menu_expiring_messages);
-        final View     actionView = MenuItemCompat.getActionView(item);
-        final TextView badgeView  = actionView.findViewById(R.id.expiration_badge);
-
-        badgeView.setText(ExpirationUtil.getExpirationAbbreviatedDisplayValue(this, recipient.get().getExpireMessages()));
-        actionView.setOnClickListener(v -> onOptionsItemSelected(item));
+        titleView.showExpiring(recipient);
       } else {
         inflater.inflate(R.menu.conversation_expiring_off, menu);
+        titleView.clearExpiring();
       }
     }
 
@@ -710,8 +732,12 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     }
 
     if (recipient != null && recipient.get().isLocalNumber()) {
-      if (isSecureText) menu.findItem(R.id.menu_call_secure).setVisible(false);
-      else              menu.findItem(R.id.menu_call_insecure).setVisible(false);
+      if (isSecureText) {
+        menu.findItem(R.id.menu_call_secure).setVisible(false);
+        menu.findItem(R.id.menu_video_secure).setVisible(false);
+      } else {
+        menu.findItem(R.id.menu_call_insecure).setVisible(false);
+      }
 
       MenuItem muteItem = menu.findItem(R.id.menu_mute_notifications);
 
@@ -779,6 +805,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     super.onOptionsItemSelected(item);
     switch (item.getItemId()) {
     case R.id.menu_call_secure:               handleDial(getRecipient(), true);                  return true;
+    case R.id.menu_video_secure:              handleVideo(getRecipient());                       return true;
     case R.id.menu_call_insecure:             handleDial(getRecipient(), false);                 return true;
     case R.id.menu_view_media:                handleViewMedia();                                 return true;
     case R.id.menu_add_shortcut:              handleAddShortcut();                               return true;
@@ -796,7 +823,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     case R.id.menu_conversation_settings:     handleConversationSettings();                      return true;
     case R.id.menu_expiring_messages_off:
     case R.id.menu_expiring_messages:         handleSelectMessageExpiration();                   return true;
-    case android.R.id.home:                   handleReturnToConversationList();                  return true;
+    case android.R.id.home:                   onBackPressed();                                   return true;
     }
 
     return false;
@@ -825,13 +852,6 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   //////// Event Handlers
-
-  private void handleReturnToConversationList() {
-    Intent intent = new Intent(this, (archived ? ConversationListArchiveActivity.class : ConversationListActivity.class));
-    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    startActivity(intent);
-    finish();
-  }
 
   private void handleSelectMessageExpiration() {
     if (isPushGroupConversation() && !isActiveGroup()) {
@@ -909,16 +929,14 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                    .setMessage(bodyRes)
                    .setNegativeButton(android.R.string.cancel, null)
                    .setPositiveButton(R.string.ConversationActivity_unblock, (dialog, which) -> {
-                     new AsyncTask<Void, Void, Void>() {
-                       @Override
-                       protected Void doInBackground(Void... params) {
-                         DatabaseFactory.getRecipientDatabase(ConversationActivity.this)
-                                        .setBlocked(recipient.getId(), false);
-                         ApplicationDependencies.getJobManager().add(new MultiDeviceBlockedUpdateJob());
-
-                         return null;
+                     SimpleTask.run(() -> {
+                       RecipientUtil.unblock(ConversationActivity.this, recipient.get());
+                       return RecipientUtil.isRecipientMessageRequestAccepted(ConversationActivity.this, recipient.get());
+                     }, messageRequestAccepted -> {
+                       if (!messageRequestAccepted) {
+                         onMessageRequest();
                        }
-                     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                     });
                    }).show();
   }
 
@@ -978,9 +996,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   private void handleViewMedia() {
-    Intent intent = new Intent(this, MediaOverviewActivity.class);
-    intent.putExtra(MediaOverviewActivity.RECIPIENT_EXTRA, recipient.getId());
-    startActivity(intent);
+    startActivity(MediaOverviewActivity.forThread(this, threadId));
   }
 
   private void handleAddShortcut() {
@@ -1123,6 +1139,12 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                                 getString(R.string.ConversationActivity_this_device_does_not_appear_to_support_dial_actions));
       }
     }
+  }
+
+  private void handleVideo(final Recipient recipient) {
+    if (recipient == null) return;
+
+    CommunicationActions.startVideoCall(this, recipient);
   }
 
   private void handleDisplayGroupRecipients() {
@@ -1564,6 +1586,8 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     inlineAttachmentToggle = ViewUtil.findById(this, R.id.inline_attachment_container);
     inputPanel             = ViewUtil.findById(this, R.id.bottom_panel);
     searchNav              = ViewUtil.findById(this, R.id.conversation_search_nav);
+    messageRequestOverlay  = ViewUtil.findById(this, R.id.fragment_overlay_container);
+    reactionOverlay        = ViewUtil.findById(this, R.id.conversation_reaction_scrubber);
 
     ImageButton quickCameraToggle      = ViewUtil.findById(this, R.id.quick_camera_toggle);
     ImageButton inlineAttachmentButton = ViewUtil.findById(this, R.id.inline_attachment_button);
@@ -1619,6 +1643,8 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     searchNav.setEventListener(this);
 
     inlineAttachmentButton.setOnClickListener(v -> handleAddAttachment());
+
+    reactionOverlay.setOnReactionSelectedListener(this::onReactionSelected);
   }
 
   protected void initializeActionBar() {
@@ -1729,6 +1755,24 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                   EventBus.getDefault().removeStickyEvent(StickerPackInstallEvent.class);
                 })
                 .show(TooltipPopup.POSITION_ABOVE);
+  }
+
+
+  private void onReactionSelected(MessageRecord messageRecord, String emoji) {
+    final Context context = getApplicationContext();
+
+    SignalExecutors.BOUNDED.execute(() -> {
+      ReactionRecord oldRecord = Stream.of(messageRecord.getReactions())
+                                       .filter(record -> record.getAuthor().equals(Recipient.self().getId()))
+                                       .findFirst()
+                                       .orElse(null);
+
+      if (oldRecord != null && oldRecord.getEmoji().equals(emoji)) {
+        MessageSender.sendReactionRemoval(context, messageRecord.getId(), messageRecord.isMms(), oldRecord);
+      } else {
+        MessageSender.sendNewReaction(context, messageRecord.getId(), messageRecord.isMms(), emoji);
+      }
+    });
   }
 
   @Override
@@ -1977,7 +2021,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   }
 
   private void setGroupShareProfileReminder(@NonNull Recipient recipient) {
-    if (recipient.isPushGroup() && !recipient.isProfileSharing()) {
+    if (!FeatureFlags.MESSAGE_REQUESTS && recipient.isPushGroup() && !recipient.isProfileSharing()) {
       groupShareProfileView.get().setRecipient(recipient);
       groupShareProfileView.get().setVisibility(View.VISIBLE);
     } else if (groupShareProfileView.resolved()) {
@@ -2694,6 +2738,73 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     public void setEnabled(boolean enabled) {
       this.enabled = enabled;
     }
+  }
+
+  @Override
+  public void onMessageRequest() {
+    long        threadId    = getIntent().getLongExtra(THREAD_ID_EXTRA, -1);
+    RecipientId recipientId = getIntent().getParcelableExtra(RECIPIENT_EXTRA);
+
+    if (threadId == -1) {
+      throw new IllegalStateException("MessageRequest is not supported here");
+    }
+
+    if (recipientId == null) {
+      Log.w(TAG, "onMessageRequest: " + threadId + ": null recipient. finishing...");
+      finish();
+    }
+
+    Log.i(TAG, "onMessageRequest: " + threadId + ", " + recipientId.serialize());
+
+    MessageRequestFragmentViewModel.Factory factory   = new MessageRequestFragmentViewModel.Factory(this, threadId, recipientId);
+    MessageRequestFragmentViewModel         viewModel = ViewModelProviders.of(this, factory).get(MessageRequestFragmentViewModel.class);
+    MessageRequestFragment                  fragment  = new MessageRequestFragment();
+
+    messageRequestOverlay.setVisibility(View.VISIBLE);
+    container.setVisibility(View.GONE);
+    getSupportFragmentManager().beginTransaction()
+                               .add(R.id.fragment_overlay_container, fragment)
+                               .commit();
+
+    viewModel.getState().observe(this, state -> {
+      switch (state.messageRequestState) {
+        case ACCEPTED:
+          getSupportFragmentManager().popBackStack();
+          messageRequestOverlay.setVisibility(View.GONE);
+          container.setVisibility(View.VISIBLE);
+          return;
+        case DELETED:
+        case BLOCKED:
+          finish();
+      }
+    });
+  }
+
+  public void handleReaction(@NonNull View maskTarget,
+                             @NonNull MessageRecord messageRecord,
+                             @NonNull Toolbar.OnMenuItemClickListener toolbarListener,
+                             @NonNull ConversationReactionOverlay.OnHideListener onHideListener)
+  {
+    reactionOverlay.setOnToolbarItemClickedListener(toolbarListener);
+    reactionOverlay.setOnHideListener(onHideListener);
+    reactionOverlay.show(this, maskTarget, messageRecord);
+  }
+
+  @Override
+  public void onCursorChanged() {
+    if (!reactionOverlay.isShowing()) {
+      return;
+    }
+
+    SimpleTask.run(() -> {
+          //noinspection CodeBlock2Expr
+          return DatabaseFactory.getMmsSmsDatabase(this)
+                                .checkMessageExists(reactionOverlay.getMessageRecord());
+        }, messageExists -> {
+          if (!messageExists) {
+            reactionOverlay.hide();
+          }
+        });
   }
 
   @Override

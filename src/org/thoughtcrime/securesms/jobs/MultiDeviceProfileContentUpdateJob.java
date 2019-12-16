@@ -22,6 +22,7 @@ public class MultiDeviceProfileContentUpdateJob extends BaseJob {
   public MultiDeviceProfileContentUpdateJob() {
     this(new Parameters.Builder()
                        .setQueue("MultiDeviceProfileUpdateJob")
+                       .setMaxInstances(2)
                        .addConstraint(NetworkConstraint.KEY)
                        .setMaxAttempts(10)
                        .build());
@@ -58,7 +59,6 @@ public class MultiDeviceProfileContentUpdateJob extends BaseJob {
   protected boolean onShouldRetry(@NonNull Exception e) {
     return e instanceof PushNetworkException;
   }
-
 
   @Override
   public void onCanceled() {

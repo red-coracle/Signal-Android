@@ -14,15 +14,16 @@ import android.provider.ContactsContract;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
-import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.contacts.ContactAccessor;
 import org.thoughtcrime.securesms.crypto.SessionUtil;
+import org.thoughtcrime.securesms.crypto.UnidentifiedAccessUtil;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MessagingDatabase.InsertResult;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
@@ -35,13 +36,20 @@ import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.thoughtcrime.securesms.recipients.RecipientUtil;
+import org.thoughtcrime.securesms.service.IncomingMessageObserver;
 import org.thoughtcrime.securesms.sms.IncomingJoinedMessage;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.concurrent.SignalExecutors;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.SignalServiceAccountManager;
+import org.whispersystems.signalservice.api.SignalServiceMessagePipe;
+import org.whispersystems.signalservice.api.crypto.UnidentifiedAccessPair;
 import org.whispersystems.signalservice.api.push.ContactTokenDetails;
+import org.whispersystems.signalservice.api.util.UuidUtil;
+import org.whispersystems.signalservice.api.push.SignalServiceAddress;
+import org.whispersystems.signalservice.api.push.exceptions.NotFoundException;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -105,7 +113,19 @@ class DirectoryHelperV1 {
 
   @WorkerThread
   static RegisteredState refreshDirectoryFor(@NonNull Context context, @NonNull Recipient recipient, boolean notifyOfNewUsers) throws IOException {
-    RecipientDatabase           recipientDatabase = DatabaseFactory.getRecipientDatabase(context);
+    RecipientDatabase recipientDatabase = DatabaseFactory.getRecipientDatabase(context);
+
+    if (recipient.getUuid().isPresent() && !recipient.getE164().isPresent()) {
+      boolean isRegistered = isUuidRegistered(context, recipient);
+      if (isRegistered) {
+        recipientDatabase.markRegistered(recipient.getId(), recipient.getUuid().get());
+      } else {
+        recipientDatabase.markUnregistered(recipient.getId());
+      }
+
+      return isRegistered ? RegisteredState.REGISTERED : RegisteredState.NOT_REGISTERED;
+    }
+
     SignalServiceAccountManager accountManager    = ApplicationDependencies.getSignalServiceAccountManager();
     Future<RegisteredState>     legacyRequest     = getLegacyRegisteredState(context, accountManager, recipientDatabase, recipient);
 
@@ -134,14 +154,14 @@ class DirectoryHelperV1 {
         DatabaseFactory.getContactsDatabase(context).setRegisteredUsers(account.get().getAccount(), activeAddresses, removeMissing);
 
         Cursor                                 cursor = ContactAccessor.getInstance().getAllSystemContacts(context);
-        RecipientDatabase.BulkOperationsHandle handle = DatabaseFactory.getRecipientDatabase(context).resetAllSystemContactInfo();
+        RecipientDatabase.BulkOperationsHandle handle = DatabaseFactory.getRecipientDatabase(context).beginBulkSystemContactUpdate();
 
         try {
           while (cursor != null && cursor.moveToNext()) {
             String number = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
-            if (!TextUtils.isEmpty(number)) {
-              RecipientId recipientId     = Recipient.external(context, number).getId();
+            if (isValidContactNumber(number)) {
+              RecipientId recipientId     = Recipient.externalContact(context, number).getId();
               String      displayName     = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
               String      contactPhotoUri = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
               String      contactLabel    = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.LABEL));
@@ -303,6 +323,35 @@ class DirectoryHelperV1 {
     });
   }
 
+  private static boolean isValidContactNumber(@Nullable String number) {
+    return !TextUtils.isEmpty(number) && !UuidUtil.isUuid(number);
+  }
+
+  private static boolean isUuidRegistered(@NonNull Context context, @NonNull Recipient recipient) throws IOException {
+    Optional<UnidentifiedAccessPair> unidentifiedAccess = UnidentifiedAccessUtil.getAccessFor(context, recipient);
+    SignalServiceMessagePipe         authPipe           = IncomingMessageObserver.getPipe();
+    SignalServiceMessagePipe         unidentifiedPipe   = IncomingMessageObserver.getUnidentifiedPipe();
+    SignalServiceMessagePipe         pipe               = unidentifiedPipe != null && unidentifiedAccess.isPresent() ? unidentifiedPipe : authPipe;
+    SignalServiceAddress             address            = RecipientUtil.toSignalServiceAddress(context, recipient);
+
+    if (pipe != null) {
+      try {
+        pipe.getProfile(address, unidentifiedAccess.get().getTargetUnidentifiedAccess());
+        return true;
+      } catch (NotFoundException e) {
+        return false;
+      } catch (IOException e) {
+        Log.w(TAG, "Websocket request failed. Falling back to REST.");
+      }
+    }
+
+    try {
+      ApplicationDependencies.getSignalServiceMessageReceiver().retrieveProfile(address, unidentifiedAccess.get().getTargetUnidentifiedAccess());
+      return true;
+    } catch (NotFoundException e) {
+      return false;
+    }
+  }
 
   private static class DirectoryResult {
 

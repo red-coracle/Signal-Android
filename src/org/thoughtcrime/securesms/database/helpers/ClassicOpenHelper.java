@@ -789,7 +789,7 @@ public class ClassicOpenHelper extends SQLiteOpenHelper {
       db.execSQL("UPDATE part SET pending_push = '2' WHERE pending_push = '1'");
     }
 
-    if (oldVersion < NO_MORE_CANONICAL_ADDRESS_DATABASE) {
+    if (oldVersion < NO_MORE_CANONICAL_ADDRESS_DATABASE && isValidNumber(TextSecurePreferences.getLocalNumber(context))) {
       SQLiteOpenHelper canonicalAddressDatabaseHelper = new SQLiteOpenHelper(context, "canonical_address.db", null, 1) {
         @Override
         public void onCreate(SQLiteDatabase db) {
@@ -1186,24 +1186,26 @@ public class ClassicOpenHelper extends SQLiteOpenHelper {
     if (oldVersion < INTERNAL_DIRECTORY) {
       db.execSQL("ALTER TABLE recipient_preferences ADD COLUMN registered INTEGER DEFAULT 0");
 
-      OldDirectoryDatabaseHelper directoryDatabaseHelper = new OldDirectoryDatabaseHelper(context);
-      SQLiteDatabase             directoryDatabase       = directoryDatabaseHelper.getWritableDatabase();
+      if (isValidNumber(TextSecurePreferences.getLocalNumber(context))) {
+        OldDirectoryDatabaseHelper directoryDatabaseHelper = new OldDirectoryDatabaseHelper(context);
+        SQLiteDatabase             directoryDatabase       = directoryDatabaseHelper.getWritableDatabase();
 
-      Cursor cursor = directoryDatabase.query("directory", new String[] {"number", "registered"}, null, null, null, null, null);
+        Cursor cursor = directoryDatabase.query("directory", new String[] {"number", "registered"}, null, null, null, null, null);
 
-      while (cursor != null && cursor.moveToNext()) {
-        String        address       = new NumberMigrator(TextSecurePreferences.getLocalNumber(context)).migrate(cursor.getString(0));
-        ContentValues contentValues = new ContentValues(1);
+        while (cursor != null && cursor.moveToNext()) {
+          String        address       = new NumberMigrator(TextSecurePreferences.getLocalNumber(context)).migrate(cursor.getString(0));
+          ContentValues contentValues = new ContentValues(1);
 
-        contentValues.put("registered", cursor.getInt(1) == 1 ? 1 : 2);
+          contentValues.put("registered", cursor.getInt(1) == 1 ? 1 : 2);
 
-        if (db.update("recipient_preferences", contentValues, "recipient_ids = ?", new String[] {address}) < 1) {
-          contentValues.put("recipient_ids", address);
-          db.insert("recipient_preferences", null, contentValues);
+          if (db.update("recipient_preferences", contentValues, "recipient_ids = ?", new String[] {address}) < 1) {
+            contentValues.put("recipient_ids", address);
+            db.insert("recipient_preferences", null, contentValues);
+          }
         }
-      }
 
-      if (cursor != null) cursor.close();
+        if (cursor != null) cursor.close();
+      }
     }
 
     if (oldVersion < INTERNAL_SYSTEM_DISPLAY_NAME) {
@@ -1371,6 +1373,19 @@ public class ClassicOpenHelper extends SQLiteOpenHelper {
 
     public PostCanonicalAddressNetworkFailureDocument(String address) {
       this.address = address;
+    }
+  }
+
+  private static boolean isValidNumber(@Nullable String number) {
+    if (TextUtils.isEmpty(number)) {
+      return false;
+    }
+
+    try {
+      PhoneNumberUtil.getInstance().parse(number, null);
+      return true;
+    } catch (NumberParseException e) {
+      return false;
     }
   }
 

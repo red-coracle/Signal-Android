@@ -22,6 +22,8 @@ import org.thoughtcrime.securesms.contacts.avatars.ResourceContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.SystemContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.TransparentContactPhoto;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
+import org.thoughtcrime.securesms.database.IdentityDatabase;
+import org.thoughtcrime.securesms.database.IdentityDatabase.VerifiedStatus;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.database.RecipientDatabase.RegisteredState;
 import org.thoughtcrime.securesms.database.RecipientDatabase.UnidentifiedAccessMode;
@@ -59,6 +61,7 @@ public class Recipient {
   private final RecipientId            id;
   private final boolean                resolving;
   private final UUID                   uuid;
+  private final String                 username;
   private final String                 e164;
   private final String                 email;
   private final String                 groupId;
@@ -88,6 +91,9 @@ public class Recipient {
   private final boolean                forceSmsSelection;
   private final boolean                uuidSupported;
   private final InsightsBannerTier     insightsBannerTier;
+  private final byte[]                 storageKey;
+  private final byte[]                 identityKey;
+  private final VerifiedStatus         identityStatus;
 
 
   /**
@@ -109,6 +115,16 @@ public class Recipient {
   public static @NonNull Recipient resolved(@NonNull RecipientId id) {
     Preconditions.checkNotNull(id, "ID cannot be null.");
     return live(id).resolve();
+  }
+
+  /**
+   * Returns a fully-populated {@link Recipient} and associates it with the provided username.
+   */
+  @WorkerThread
+  public static @NonNull Recipient externalUsername(@NonNull Context context, @NonNull UUID uuid, @NonNull String username) {
+    Recipient recipient = externalPush(context, uuid, null);
+    DatabaseFactory.getRecipientDatabase(context).setUsername(recipient.getId(), username);
+    return recipient;
   }
 
   /**
@@ -152,8 +168,10 @@ public class Recipient {
       } else if (!recipient.isRegistered()) {
         db.markRegistered(recipient.getId());
 
-        Log.i(TAG, "No UUID! Scheduling a fetch.");
-        ApplicationDependencies.getJobManager().add(new DirectoryRefreshJob(recipient, false));
+        if (FeatureFlags.UUIDS) {
+          Log.i(TAG, "No UUID! Scheduling a fetch.");
+          ApplicationDependencies.getJobManager().add(new DirectoryRefreshJob(recipient, false));
+        }
       }
 
       return resolved(recipient.getId());
@@ -176,13 +194,31 @@ public class Recipient {
       if (!recipient.isRegistered()) {
         db.markRegistered(recipient.getId());
 
-        Log.i(TAG, "No UUID! Scheduling a fetch.");
-        ApplicationDependencies.getJobManager().add(new DirectoryRefreshJob(recipient, false));
+        if (FeatureFlags.UUIDS) {
+          Log.i(TAG, "No UUID! Scheduling a fetch.");
+          ApplicationDependencies.getJobManager().add(new DirectoryRefreshJob(recipient, false));
+        }
       }
 
       return resolved(recipient.getId());
     } else {
       throw new AssertionError("You must provide either a UUID or phone number!");
+    }
+  }
+
+  /**
+   * A safety wrapper around {@link #external(Context, String)} for when you know you're using an
+   * identifier for a system contact, and therefore always want to prevent interpreting it as a
+   * UUID. This will crash if given a UUID.
+   *
+   * (This may seem strange, but apparently some devices are returning valid UUIDs for contacts)
+   */
+  @WorkerThread
+  public static @NonNull Recipient externalContact(@NonNull Context context, @NonNull String identifier) {
+    if (UuidUtil.isUuid(identifier)) {
+      throw new UuidRecipientError();
+    } else {
+      return external(context, identifier);
     }
   }
 
@@ -236,6 +272,7 @@ public class Recipient {
     this.id                     = id;
     this.resolving              = true;
     this.uuid                   = null;
+    this.username               = null;
     this.e164                   = null;
     this.email                  = null;
     this.groupId                = null;
@@ -265,12 +302,16 @@ public class Recipient {
     this.unidentifiedAccessMode = UnidentifiedAccessMode.DISABLED;
     this.forceSmsSelection      = false;
     this.uuidSupported          = false;
+    this.storageKey             = null;
+    this.identityKey            = null;
+    this.identityStatus         = VerifiedStatus.DEFAULT;
   }
 
   Recipient(@NonNull RecipientId id, @NonNull RecipientDetails details) {
     this.id                     = id;
     this.resolving              = false;
     this.uuid                   = details.uuid;
+    this.username               = details.username;
     this.e164                   = details.e164;
     this.email                  = details.email;
     this.groupId                = details.groupId;
@@ -300,6 +341,9 @@ public class Recipient {
     this.unidentifiedAccessMode = details.unidentifiedAccessMode;
     this.forceSmsSelection      = details.forceSmsSelection;
     this.uuidSupported          = details.uuidSuported;
+    this.storageKey             = details.storageKey;
+    this.identityKey            = details.identityKey;
+    this.identityStatus         = details.identityStatus;
   }
 
   public @NonNull RecipientId getId() {
@@ -340,18 +384,10 @@ public class Recipient {
   public @NonNull String getDisplayName(@NonNull Context context) {
     return Util.getFirstNonEmpty(getName(context),
                                  getProfileName(),
-                                 getUsername(),
+                                 getDisplayUsername(),
                                  e164,
                                  email,
                                  context.getString(R.string.Recipient_unknown));
-  }
-
-  private @NonNull String getUsername() {
-    if (FeatureFlags.USERNAMES) {
-      // TODO [greyson] Replace with actual username
-      return "@caycepollard";
-    }
-    return "";
   }
 
   public @NonNull MaterialColor getColor() {
@@ -363,6 +399,14 @@ public class Recipient {
 
   public @NonNull Optional<UUID> getUuid() {
     return Optional.fromNullable(uuid);
+  }
+
+  public @NonNull Optional<String> getUsername() {
+    if (FeatureFlags.USERNAMES) {
+      return Optional.fromNullable(username);
+    } else {
+      return Optional.absent();
+    }
   }
 
   public @NonNull Optional<String> getE164() {
@@ -605,11 +649,27 @@ public class Recipient {
    * @return True if this recipient can support receiving UUID-only messages, otherwise false.
    */
   public boolean isUuidSupported() {
-    return FeatureFlags.UUIDS && uuidSupported;
+    if (FeatureFlags.USERNAMES) {
+      return true;
+    } else {
+      return FeatureFlags.UUIDS && uuidSupported;
+    }
   }
 
   public @Nullable byte[] getProfileKey() {
     return profileKey;
+  }
+
+  public @Nullable byte[] getStorageServiceKey() {
+    return storageKey;
+  }
+
+  public @NonNull VerifiedStatus getIdentityVerifiedStatus() {
+    return identityStatus;
+  }
+
+  public @Nullable byte[] getIdentityKey() {
+    return identityKey;
   }
 
   public @NonNull UnidentifiedAccessMode getUnidentifiedAccessMode() {
@@ -634,6 +694,14 @@ public class Recipient {
 
   public @NonNull LiveRecipient live() {
     return ApplicationDependencies.getRecipientCache().getLive(id);
+  }
+
+  private @Nullable String getDisplayUsername() {
+    if (!TextUtils.isEmpty(username)) {
+      return "@" + username;
+    } else {
+      return null;
+    }
   }
 
   @Override
