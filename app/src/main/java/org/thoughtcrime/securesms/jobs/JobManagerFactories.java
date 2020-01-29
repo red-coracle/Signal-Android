@@ -18,6 +18,7 @@ import org.thoughtcrime.securesms.jobmanager.impl.SqlCipherMigrationConstraintOb
 import org.thoughtcrime.securesms.jobmanager.migrations.RecipientIdFollowUpJobMigration;
 import org.thoughtcrime.securesms.jobmanager.migrations.RecipientIdFollowUpJobMigration2;
 import org.thoughtcrime.securesms.jobmanager.migrations.RecipientIdJobMigration;
+import org.thoughtcrime.securesms.migrations.Argon2TestMigrationJob;
 import org.thoughtcrime.securesms.migrations.AvatarMigrationJob;
 import org.thoughtcrime.securesms.migrations.CachedAttachmentsMigrationJob;
 import org.thoughtcrime.securesms.migrations.DatabaseMigrationJob;
@@ -74,6 +75,7 @@ public final class JobManagerFactories {
       put(RefreshAttributesJob.KEY,                  new RefreshAttributesJob.Factory());
       put(RefreshOwnProfileJob.KEY,                  new RefreshOwnProfileJob.Factory());
       put(RefreshPreKeysJob.KEY,                     new RefreshPreKeysJob.Factory());
+      put(RemoteConfigRefreshJob.KEY,                new RemoteConfigRefreshJob.Factory());
       put(RequestGroupInfoJob.KEY,                   new RequestGroupInfoJob.Factory());
       put(RetrieveProfileAvatarJob.KEY,              new RetrieveProfileAvatarJob.Factory());
       put(RetrieveProfileJob.KEY,                    new RetrieveProfileJob.Factory());
@@ -94,6 +96,8 @@ public final class JobManagerFactories {
       put(TypingSendJob.KEY,                         new TypingSendJob.Factory());
       put(UpdateApkJob.KEY,                          new UpdateApkJob.Factory());
       put(MarkerJob.KEY,                             new MarkerJob.Factory());
+      put(Argon2TestJob.KEY,                         new Argon2TestJob.Factory());
+      put(ProfileUploadJob.KEY,                      new ProfileUploadJob.Factory());
 
       // Migrations
       put(AvatarMigrationJob.KEY,                    new AvatarMigrationJob.Factory());
@@ -105,6 +109,7 @@ public final class JobManagerFactories {
       put(StickerLaunchMigrationJob.KEY,             new StickerLaunchMigrationJob.Factory());
       put(UuidMigrationJob.KEY,                      new UuidMigrationJob.Factory());
       put(RegistrationPinV2MigrationJob.KEY,         new RegistrationPinV2MigrationJob.Factory());
+      put(Argon2TestMigrationJob.KEY,                new Argon2TestMigrationJob.Factory());
 
       // Dead jobs
       put("PushContentReceiveJob",                   new FailingJob.Factory());

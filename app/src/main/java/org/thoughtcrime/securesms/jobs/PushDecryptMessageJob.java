@@ -126,7 +126,7 @@ public final class PushDecryptMessageJob extends BaseJob {
   }
 
   @Override
-  public void onCanceled() {
+  public void onFailure() {
   }
 
   private boolean needsMigration() {
@@ -158,7 +158,9 @@ public final class PushDecryptMessageJob extends BaseJob {
 
       List<Job> jobs = new ArrayList<>(2);
 
-      jobs.add(new PushProcessMessageJob(content.serialize(), messageId, smsMessageId, envelope.getTimestamp()));
+      if (content != null) {
+        jobs.add(new PushProcessMessageJob(content.serialize(), messageId, smsMessageId, envelope.getTimestamp()));
+      }
 
       if (envelope.isPreKeySignalMessage()) {
         jobs.add(new RefreshPreKeysJob());

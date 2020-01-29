@@ -713,7 +713,7 @@ public class ConversationFragment extends Fragment
       setLastSeen(loader.getLastSeen());
     }
 
-    if (FeatureFlags.MESSAGE_REQUESTS) {
+    if (FeatureFlags.messageRequests()) {
       if (!loader.hasSent() && !recipient.get().isSystemContact() && !recipient.get().isProfileSharing() && !recipient.get().isBlocked() && recipient.get().isRegistered()) {
         listener.onMessageRequest();
       } else {
@@ -994,8 +994,9 @@ public class ConversationFragment extends Fragment
 
       if (actionMode != null) return;
 
-      if (FeatureFlags.REACTION_SENDING &&
-          messageRecord.isSecure()      &&
+      if (FeatureFlags.reactionSending() &&
+          messageRecord.isSecure()       &&
+          !messageRecord.isUpdate()      &&
           ((ConversationAdapter) list.getAdapter()).getSelectedItems().isEmpty())
       {
         isReacting = true;
@@ -1063,7 +1064,7 @@ public class ConversationFragment extends Fragment
       }
 
       if (!ViewOnceUtil.isViewable(messageRecord)) {
-        int stringRes = messageRecord.isOutgoing() ? R.string.ConversationFragment_view_once_message_are_not_stored_in_your_conversation_history
+        int stringRes = messageRecord.isOutgoing() ? R.string.ConversationFragment_outgoing_view_once_media_files_are_automatically_removed
                                                    : R.string.ConversationFragment_you_already_viewed_this_message;
         Toast.makeText(requireContext(), stringRes, Toast.LENGTH_SHORT).show();
         return;
