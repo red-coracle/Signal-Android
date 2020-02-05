@@ -60,10 +60,10 @@ public final class FeatureFlags {
    * for flags that you plan on updating remotely.
    */
   private static final Map<String, Boolean> FORCED_VALUES = new HashMap<String, Boolean>() {{
-    put(UUIDS, false);
+    put(UUIDS, true);
     put(PROFILE_DISPLAY, false);
     put(MESSAGE_REQUESTS, false);
-    put(USERNAMES, false);
+    put(USERNAMES, true);
     put(STORAGE_SERVICE, false);
   }};
 
