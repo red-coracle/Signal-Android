@@ -17,6 +17,7 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.lock.v2.CreateKbsPinActivity;
 import org.thoughtcrime.securesms.lock.v2.PinUtil;
 import org.thoughtcrime.securesms.profiles.edit.EditProfileActivity;
+import org.thoughtcrime.securesms.util.CensorshipUtil;
 import org.thoughtcrime.securesms.util.FeatureFlags;
 
 public final class RegistrationCompleteFragment extends BaseRegistrationFragment {
@@ -35,16 +36,16 @@ public final class RegistrationCompleteFragment extends BaseRegistrationFragment
 
 
     if (!isReregister()) {
-      final Intent main = new Intent(activity, MainActivity.class);
-      final Intent next = chainIntents(new Intent(activity, EditProfileActivity.class), main);
+      final Intent main    = new Intent(activity, MainActivity.class);
+      final Intent profile = new Intent(activity, EditProfileActivity.class);
 
-      next.putExtra(EditProfileActivity.SHOW_TOOLBAR, false);
+      profile.putExtra(EditProfileActivity.SHOW_TOOLBAR, false);
 
-      Context context = requireContext();
-      if (FeatureFlags.pinsForAll() && !PinUtil.userHasPin(context)) {
-        activity.startActivity(chainIntents(CreateKbsPinActivity.getIntentForPinCreate(context), next));
+      if (PinUtil.shouldShowPinCreationDuringRegistration(requireContext())) {
+        Intent kbs = CreateKbsPinActivity.getIntentForPinCreate(requireContext());
+        activity.startActivity(chainIntents(chainIntents(profile, kbs), main));
       } else {
-        activity.startActivity(next);
+        activity.startActivity(chainIntents(profile, main));
       }
     }
 

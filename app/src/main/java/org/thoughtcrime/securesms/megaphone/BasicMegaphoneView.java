@@ -20,8 +20,8 @@ public class BasicMegaphoneView extends FrameLayout {
   private Button     actionButton;
   private Button     snoozeButton;
 
-  private Megaphone         megaphone;
-  private MegaphoneListener megaphoneListener;
+  private Megaphone                 megaphone;
+  private MegaphoneActionController megaphoneListener;
 
   public BasicMegaphoneView(@NonNull Context context) {
     super(context);
@@ -52,7 +52,7 @@ public class BasicMegaphoneView extends FrameLayout {
     }
   }
 
-  public void present(@NonNull Megaphone megaphone, @NonNull MegaphoneListener megaphoneListener) {
+  public void present(@NonNull Megaphone megaphone, @NonNull MegaphoneActionController megaphoneListener) {
     this.megaphone         = megaphone;
     this.megaphoneListener = megaphoneListener;
 
@@ -77,7 +77,7 @@ public class BasicMegaphoneView extends FrameLayout {
       bodyText.setVisibility(GONE);
     }
 
-    if (megaphone.getButtonText() != 0) {
+    if (megaphone.hasButton()) {
       actionButton.setVisibility(VISIBLE);
       actionButton.setText(megaphone.getButtonText());
       actionButton.setOnClickListener(v -> {
@@ -92,14 +92,14 @@ public class BasicMegaphoneView extends FrameLayout {
     if (megaphone.canSnooze()) {
       snoozeButton.setVisibility(VISIBLE);
       snoozeButton.setOnClickListener(v -> {
-        megaphoneListener.onMegaphoneSnooze(megaphone);
+        megaphoneListener.onMegaphoneSnooze(megaphone.getEvent());
 
         if (megaphone.getSnoozeListener() != null) {
           megaphone.getSnoozeListener().onEvent(megaphone, megaphoneListener);
         }
       });
     } else {
-      actionButton.setVisibility(GONE);
+      snoozeButton.setVisibility(GONE);
     }
   }
 }

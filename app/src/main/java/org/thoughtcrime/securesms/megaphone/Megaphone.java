@@ -70,6 +70,10 @@ public class Megaphone {
     return buttonTextRes;
   }
 
+  public boolean hasButton() {
+    return buttonTextRes != 0;
+  }
+
   public @Nullable EventListener getButtonClickListener() {
     return buttonListener;
   }
@@ -135,7 +139,7 @@ public class Megaphone {
       return this;
     }
 
-    public @NonNull Builder setButtonText(@StringRes int buttonTextRes, @NonNull EventListener listener) {
+    public @NonNull Builder setActionButton(@StringRes int buttonTextRes, @NonNull EventListener listener) {
       this.buttonTextRes  = buttonTextRes;
       this.buttonListener = listener;
       return this;
@@ -156,6 +160,6 @@ public class Megaphone {
   }
 
   public interface EventListener {
-    void onEvent(@NonNull Megaphone megaphone, @NonNull MegaphoneListener listener);
+    void onEvent(@NonNull Megaphone megaphone, @NonNull MegaphoneActionController listener);
   }
 }

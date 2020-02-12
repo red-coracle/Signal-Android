@@ -42,6 +42,7 @@
   <string name="ApplicationPreferencesActivity_Off">Off</string>
   <string name="ApplicationPreferencesActivity_sms_mms_summary">SMS %1$s, MMS %2$s</string>
   <string name="ApplicationPreferencesActivity_privacy_summary">Blocco schermo %1$s, Sicurezza schermo %2$s</string>
+  <string name="ApplicationPreferencesActivity_privacy_summary_screen_lock">Blocco schermo %1$s</string>
   <string name="ApplicationPreferencesActivity_appearance_summary">Tema %1$s, Lingua %2$s</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
@@ -60,6 +61,8 @@
   <string name="AttachmentKeyboard_file">File</string>
   <string name="AttachmentKeyboard_contact">Contatto</string>
   <string name="AttachmentKeyboard_location">Posizione</string>
+  <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Signal ha bisogno dell\'autorizzazione per mostrare le tue foto e i tuoi video.</string>
+  <string name="AttachmentKeyboard_give_access">Dai l\'accesso</string>
   <!--AttachmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">Impossibile trovare un\'app per selezionare il file.</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Signal richiede l\'autorizzazione all\'accesso della memoria per allegare foto, video o audio, ma questa è stata negata in modo permanente. Si prega di aprire il menu delle impostazioni dell\'app, selezionare \"Autorizzazioni\" e abilitare \"Archiviazione\".</string>
@@ -460,7 +463,11 @@
   <string name="MediaOverviewActivity_sent_by_you_to_s">Inviato da te a %1$s</string>
   <!--Megaphones-->
   <string name="Megaphones_introducing_reactions">Ti presentiamo le reazioni</string>
+  <string name="Megaphones_tap_and_hold_any_message_to_quicky_share_how_you_feel">Tieni premuto qualsiasi messaggio per rispondere rapidamente con una reazione.</string>
   <string name="Megaphones_remind_me_later">Ricordamelo più tardi</string>
+  <string name="Megaphones_verify_your_signal_pin">Verifica il tuo PIN di Signal</string>
+  <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">Occasionalmente ti chiederemo di verificare il tuo PIN in modo che te lo ricordi.</string>
+  <string name="Megaphones_verify_pin">Verifica PIN</string>
   <!--NotificationBarManager-->
   <string name="NotificationBarManager_signal_call_in_progress">Chiamata con Signal in corso</string>
   <string name="NotificationBarManager__establishing_signal_call">Preparazione chiamata Signal</string>
@@ -566,7 +573,9 @@
   <string name="RatingManager_later">Più tardi</string>
   <string name="RatingManager_whoops_the_play_store_app_does_not_appear_to_be_installed">Oops, sembra che l\'app del Play Store non sia installata sul tuo dispositivo.</string>
   <!--ReactionsBottomSheetDialogFragment-->
+  <string name="ReactionsBottomSheetDialogFragment_all">Tutte %1$d</string>
   <!--ReactionsConversationView-->
+  <string name="ReactionsConversationView_plus">+%1$d</string>
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block_this_contact_question">Bloccare questo contatto?</string>
   <string name="RecipientPreferenceActivity_you_will_no_longer_receive_messages_and_calls_from_this_contact">Non riceverai più messaggi e chiamate da questo contatto.</string>
@@ -589,7 +598,7 @@
   <string name="RedPhone_answering">In risposta</string>
   <string name="RedPhone_ending_call">Chiamata in chiusura</string>
   <string name="RedPhone_dialing">Composizione numero</string>
-  <string name="RedPhone_ringing">Suona</string>
+  <string name="RedPhone_ringing">Sta squillando</string>
   <string name="RedPhone_busy">Occupato</string>
   <string name="RedPhone_connected">Connesso</string>
   <string name="RedPhone_recipient_unavailable">Destinatario non disponibile</string>
@@ -659,6 +668,12 @@
   <string name="SharedContactView_add_to_contacts">Aggiungi ai contatti</string>
   <string name="SharedContactView_invite_to_signal">Invita su Signal</string>
   <string name="SharedContactView_message">Messaggio Signal</string>
+  <!--SignalPinReminders-->
+  <string name="SignalPinReminders_well_remind_you_again_later">Te lo ricorderemo di nuovo più tardi.</string>
+  <string name="SignalPinReminders_well_remind_you_again_tomorrow">Te lo ricorderemo di nuovo domani.</string>
+  <string name="SignalPinReminders_well_remind_you_again_in_a_few_days">Te lo ricorderemo di nuovo tra qualche giorno.</string>
+  <string name="SignalPinReminders_well_remind_you_again_in_a_week">Te lo ricorderemo di nuovo tra una settimana.</string>
+  <string name="SignalPinReminders_well_remind_you_again_in_a_couple_weeks">Te lo ricorderemo di nuovo tra un paio di settimane.</string>
   <!--Slide-->
   <string name="Slide_image">Immagini</string>
   <string name="Slide_sticker">Adesivo</string>
@@ -896,7 +911,7 @@
   <string name="change_passphrase_activity__repeat_new_passphrase">Ripeti la nuova password</string>
   <!--contact_selection_activity-->
   <string name="contact_selection_activity__enter_name_or_number">Inserisci nome o numero</string>
-  <string name="contact_selection_activity__invite_to_signal">Invita a Signal</string>
+  <string name="contact_selection_activity__invite_to_signal">Invita ad usare Signal</string>
   <!--contact_filter_toolbar-->
   <string name="contact_filter_toolbar__clear_entered_text_description">Cancella testo inserito</string>
   <string name="contact_filter_toolbar__show_keyboard_description">Mostra tastiera</string>
@@ -1252,8 +1267,8 @@
   <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">Se gli indicatori di scrittura sono disabilitati, non sarai in grado di vedere quando gli altri utenti stanno digitando.</string>
   <string name="preferences__request_keyboard_to_disable_personalized_learning">Richiedi alla tastiera di disattivare l\'apprendimento delle parole digitate</string>
   <string name="preferences_app_protection__blocked_contacts">Contatti bloccati</string>
-  <string name="preferences_chats__when_using_mobile_data">Su rete cellulare</string>
-  <string name="preferences_chats__when_using_wifi">Su Wi-Fi</string>
+  <string name="preferences_chats__when_using_mobile_data">Via rete cellulare</string>
+  <string name="preferences_chats__when_using_wifi">Via Wi-Fi</string>
   <string name="preferences_chats__when_roaming">In roaming</string>
   <string name="preferences_chats__media_auto_download">Download automatico file</string>
   <string name="preferences_chats__message_trimming">Cancellazione messaggi</string>
@@ -1279,7 +1294,7 @@
   <string name="preferences_chats__show_invitation_prompts">Mostra i messaggi di invito</string>
   <string name="preferences_chats__display_invitation_prompts_for_contacts_without_signal">Visualizza messaggio di invito per i contatti senza Signal</string>
   <string name="preferences_chats__message_text_size">Dimensione carattere messaggio</string>
-  <string name="preferences_events__contact_joined_signal">Quando un nuovo contatto si unisce a Signal</string>
+  <string name="preferences_events__contact_joined_signal">Quando un contatto si unisce a Signal</string>
   <string name="preferences_notifications__priority">Priorità</string>
   <string name="preferences_communication__category_sealed_sender">Mittente sigillato</string>
   <string name="preferences_communication__sealed_sender_display_indicators">Mostra indicatori</string>
@@ -1377,8 +1392,8 @@
   <string name="reminder_header_sms_import_title">Importa gli SMS di sistema</string>
   <string name="reminder_header_sms_import_text">Tocca per copiare i messaggi SMS del tuo telefono nel database criptato di Signal.</string>
   <string name="reminder_header_push_title">Attiva i messaggi e le chiamate con Signal</string>
-  <string name="reminder_header_push_text">Migliora la tua esperienza messaggi.</string>
-  <string name="reminder_header_invite_title">Invita su Signal</string>
+  <string name="reminder_header_push_text">Migliora la tua esperienza nel comunicare.</string>
+  <string name="reminder_header_invite_title">Invita ad usare Signal</string>
   <string name="reminder_header_invite_text">Porta la tua conversazione con %1$s ad un nuovo livello.</string>
   <string name="reminder_header_share_title">Invita i tuoi amici!</string>
   <string name="reminder_header_share_text">Più amici usano Signal, più migliora.</string>
@@ -1427,8 +1442,21 @@
   <string name="BaseKbsPinFragment__create_alphanumeric_pin">Crea PIN alfanumerico</string>
   <string name="BaseKbsPinFragment__create_numeric_pin">Crea PIN numerico</string>
   <!--CreateKbsPinFragment-->
+  <plurals name="CreateKbsPinFragment__pin_must_be_at_least_characters">
+    <item quantity="one">Il PIN deve essere almeno di %1$d carattere</item>
+    <item quantity="other">Il PIN deve essere almeno di %1$d caratteri</item>
+  </plurals>
+  <plurals name="CreateKbsPinFragment__pin_must_be_at_least_digits">
+    <item quantity="one">Il PIN deve essere almeno di %1$d cifra</item>
+    <item quantity="other">Il PIN deve essere almeno di %1$d cifre</item>
+  </plurals>
   <string name="CreateKbsPinFragment__create_a_new_pin">Crea un nuovo PIN</string>
+  <plurals name="CreateKbsPinFragment__you_can_choose_a_new_pin_because_this_device_is_registered">
+    <item quantity="one">Puoi scegliere un nuovo PIN poiché questo dispositivo è registrato. Se ti dimentichi il tuo PIN, potresti dover attendere %1$d giorno per registrarti di nuovo.</item>
+    <item quantity="other">Puoi scegliere un nuovo PIN poiché questo dispositivo è registrato. Se ti dimentichi il tuo PIN, potresti dover attendere %1$d giorni per registrarti di nuovo.</item>
+  </plurals>
   <string name="CreateKbsPinFragment__create_your_pin">Crea il tuo PIN</string>
+  <string name="CreateKbsPinFragment__pins_add_extra_security_to_your_account">I PIN aggiungono ulteriore sicurezza al tuo account e non possono essere recuperati. Avrai bisogno del tuo PIN per registrarti di nuovo con Signal.</string>
   <!--ConfirmKbsPinFragment-->
   <string name="ConfirmKbsPinFragment__pins_dont_match">I PIN non corrispondono. Riprova.</string>
   <string name="ConfirmKbsPinFragment__confirm_your_pin">Conferma il tuo PIN</string>
@@ -1436,9 +1464,12 @@
   <string name="ConfirmKbsPinFragment__your_pin_was_not_saved">Il tuo PIN non è stato salvato. Ti chiederemo di creare un PIN più tardi.</string>
   <string name="ConfirmKbsPinFragment__pin_created">PIN creato.</string>
   <string name="ConfirmKbsPinFragment__re_enter_pin">Reinserisci PIN</string>
+  <string name="ConfirmKbsPinFragment__creating_pin">Creazione PIN…</string>
   <!--KbsSplashFragment-->
   <string name="KbsSplashFragment__introducing_pins">Ti presentiamo i PIN</string>
+  <string name="KbsSplashFragment__pins_add_another_level_of_security_to_your_account">I PIN aggiungono un altro livello di sicurezza al tuo account. Creane uno ora.</string>
   <string name="KbsSplashFragment__learn_more">Scopri di più</string>
+  <string name="KbsSplashFragment__learn_more_link">https://support.signal.org/hc/en-us/articles/360007059792-Registration-Lock</string>
   <string name="KbsSplashFragment__registration_lock_equals_pin">Blocco registrazione = PIN</string>
   <string name="KbsSplashFragment__your_registration_lock_is_now_called_a_pin">Il tuo blocco registrazione ora è chiamato PIN e fa di più. Aggiornalo ora.</string>
   <string name="KbsSplashFragment__read_more_about_pins">Scopri di più sui PIN.</string>
@@ -1456,6 +1487,7 @@
   <string name="AccountLockedFragment__your_account_has_been_locked_to_protect_your_privacy">Il tuo account è stato bloccato per proteggere la tua privacy e la tua sicurezza. Dopo %1$d giorni di inattività sarai in grado di registrare nuovamente questo numero di telefono senza bisogno del tuo PIN. Tutti i contenuti saranno cancellati.</string>
   <string name="AccountLockedFragment__next">Avanti</string>
   <string name="AccountLockedFragment__learn_more">Scopri di più</string>
+  <string name="AccountLockedFragment__learn_more_url">https://support.signal.org/hc/en-us/articles/360007059792-Registration-Lock</string>
   <!--KbsLockFragment-->
   <string name="RegistrationLockFragment__enter_your_pin">Inserisci il tuo PIN</string>
   <string name="RegistrationLockFragment__enter_the_pin_you_created">Inserisci il PIN che hai creato per il tuo account. Questo è diverso dal tuo codice di verifica SMS.</string>
@@ -1466,6 +1498,27 @@
   <string name="RegistrationLockFragment__forgot_pin">PIN dimenticato?</string>
   <string name="RegistrationLockFragment__incorrect_pin">PIN errato</string>
   <string name="RegistrationLockFragment__forgot_your_pin">Hai dimenticato il tuo PIN?</string>
+  <string name="RegistrationLockFragment__not_many_tries_left">Non molti tentativi rimanenti!</string>
+  <plurals name="RegistrationLockFragment__for_your_privacy_and_security_there_is_no_way_to_recover">
+    <item quantity="one">Per la tua privacy e sicurezza, non c\'è modo di recuperare il tuo PIN. Se non riesci a ricordare il tuo PIN, puoi ripetere la verifica con SMS dopo %1$d giorno di inattività. In questo caso, il tuo account sarà cancellato e tutti i contenuti eliminati.</item>
+    <item quantity="other">Per la tua privacy e sicurezza, non c\'è modo di recuperare il tuo PIN. Se non riesci a ricordare il tuo PIN, puoi ripetere la verifica con SMS dopo %1$d giorni di inattività. In questo caso, il tuo account sarà cancellato e tutti i contenuti eliminati.</item>
+  </plurals>
+  <plurals name="RegistrationLockFragment__incorrect_pin_d_attempts_remaining">
+    <item quantity="one">PIN errato. %1$d tentativo rimanente.</item>
+    <item quantity="other">PIN errato. %1$d tentativi rimanenti.</item>
+  </plurals>
+  <plurals name="RegistrationLockFragment__if_you_run_out_of_attempts_your_account_will_be_locked_for_d_days">
+    <item quantity="one">Se esaurisci i tentativi il tuo account verrà bloccato per %1$d giorno. Dopo %1$d giorno di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</item>
+    <item quantity="other">Se esaurisci i tentativi il tuo account verrà bloccato per %1$d giorni. Dopo %1$d giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</item>
+  </plurals>
+  <plurals name="RegistrationLockFragment__you_have_d_attempts_remaining">
+    <item quantity="one">Hai %1$d tentativo rimanente.</item>
+    <item quantity="other">Hai %1$d tentativi rimanenti.</item>
+  </plurals>
+  <plurals name="RegistrationLockFragment__d_attempts_remaining">
+    <item quantity="one">%1$d tentativo rimanente.</item>
+    <item quantity="other">%1$d tentativi rimanenti.</item>
+  </plurals>
   <!--KBS Megaphone-->
   <string name="KbsMegaphone__create_a_pin">Crea un PIN</string>
   <string name="KbsMegaphone__pins_add_another_layer_of_security_to_your_signal_account">I PIN aggiungono un altro livello di sicurezza al tuo account Signal.</string>
@@ -1473,6 +1526,8 @@
   <string name="KbsMegaphone__introducing_pins">Ti presentiamo i PIN</string>
   <string name="KbsMegaphone__your_registration_lock_is_now_called_a_pin">Il tuo blocco registrazione ora è chiamato PIN. Aggiornarlo richiede pochi secondi.</string>
   <string name="KbsMegaphone__update_pin">Aggiorna PIN</string>
+  <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra %1$d giorni.</string>
+  <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Te lo ricorderemo più tardi. Confermare il tuo PIN diventerà obbligatorio tra %1$d giorni.</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Icona trasporto</string>
   <string name="ConversationListFragment_loading">Caricamento…</string>
@@ -1481,7 +1536,7 @@
   <string name="ConversationActivity_signal_needs_sms_permission_in_order_to_send_an_sms">Signal necessita l\'accesso agli SMS per poterli inviare, ma è stato negato in modo permanente. Si prega di continuare con le impostazioni dell\'app, selezionare \"Autorizzazioni\" e abilitare \"SMS\".</string>
   <string name="Permissions_continue">Continua</string>
   <string name="Permissions_not_now">Non ora</string>
-  <string name="ConversationListActivity_signal_needs_contacts_permission_in_order_to_search_your_contacts_but_it_has_been_permanently_denied">Signal richiede l\'autorizzazione alla lettura dei contatti per permetterti la ricerca, ma è stata negata in modo permanente. Si prega di continuare con il menu delle impostazioni dell\'app, selezionare \"Autorizzazioni\" e abilitare \"Contatti\".</string>
+  <string name="ConversationListActivity_signal_needs_contacts_permission_in_order_to_search_your_contacts_but_it_has_been_permanently_denied">Signal richiede l\'autorizzazione alla lettura dei contatti per permetterti la ricerca, ma questa è stata negata in modo permanente. Si prega di aprire il menu delle impostazioni dell\'app, selezionare \"Autorizzazioni\" e abilitare \"Contatti\".</string>
   <string name="conversation_activity__enable_signal_messages">ABILITA MESSAGGI SIGNAL</string>
   <string name="SQLCipherMigrationHelper_migrating_signal_database">Migrazione del database di Signal</string>
   <string name="PushDecryptJob_new_locked_message">Nuovo messaggio bloccato</string>
@@ -1497,6 +1552,8 @@
   <string name="preferences_chats__chat_backups">Backup delle chat</string>
   <string name="preferences_chats__backup_chats_to_external_storage">Backup delle chat sulla memoria esterna</string>
   <string name="preferences_chats__create_backup">Crea backup</string>
+  <string name="preferences_chats__verify_backup_passphrase">Verifica la passphrase del backup</string>
+  <string name="preferences_chats__test_your_backup_passphrase_and_verify_that_it_matches">Testa la passphrase del tuo backup e verifica che corrisponda</string>
   <string name="RegistrationActivity_enter_backup_passphrase">Inserire passphrase del backup</string>
   <string name="RegistrationActivity_restore">Ripristina</string>
   <string name="RegistrationActivity_backup_failure_downgrade">Impossibile importare backup da versioni più recenti di Signal</string>
@@ -1514,7 +1571,10 @@
   <string name="BackupDialog_disable_and_delete_all_local_backups">Disabilitare e cancellare tutti i backup locali?</string>
   <string name="BackupDialog_delete_backups_statement">Cancellare i backup</string>
   <string name="BackupDialog_copied_to_clipboard">Aggiunto agli appunti</string>
+  <string name="BackupDialog_enter_backup_passphrase_to_verify">Inserisci la passphrase del tuo backup per verificarla</string>
   <string name="BackupDialog_verify">Verifica</string>
+  <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">Hai inserito correttamente la passphrase del tuo backup</string>
+  <string name="BackupDialog_passphrase_was_not_correct">La passphrase non è corretta</string>
   <string name="ChatsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Signal richiede l\'autorizzazione per creare backup in memoria, ma è stata negata in modo permanente. Si prega di continuare con le impostazioni dell\'app, selezionare \"Autorizzazioni\", quindi abilitare \"Archiviazione\".</string>
   <string name="ChatsPreferenceFragment_last_backup_s">Ultimo backup: %s</string>
   <string name="ChatsPreferenceFragment_in_progress">In corso</string>
@@ -1525,7 +1585,7 @@
   <string name="RegistrationActivity_call_me_instead_available_in">Chiamami \n (Disponibile tra %1$02d:%2$02d)</string>
   <string name="RegistrationActivity_contact_signal_support">Contatta l\'assistenza Signal</string>
   <string name="RegistrationActivity_code_support_subject">Registrazione Signal - Codice di verifica per Android</string>
-  <string name="RegistrationActivity_code_support_body">Oggetto: Registrazione Signal - Codice di verifica per Android\nInformazioni dispositivo: %1$s\nVersione Android: %2$s\nVersione Signal: %3$s\nLocalità: %4$s</string>
+  <string name="RegistrationActivity_code_support_body">Oggetto: Registrazione Signal - Codice di verifica per Android\nInformazioni dispositivo: %1$s\nVersione Android: %2$s\nVersione Signal: %3$s\nLocazione: %4$s</string>
   <string name="BackupUtil_never">Mai</string>
   <string name="BackupUtil_unknown">Sconosciuto</string>
   <string name="preferences_app_protection__screen_lock">Blocco schermo</string>
@@ -1549,6 +1609,7 @@
   <string name="preferences_app_protection__registration_lock_pin">PIN di blocco della registrazione</string>
   <string name="preferences_app_protection__registration_lock">Blocco registrazione</string>
   <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Devi inserire il tuo PIN di blocco registrazione</string>
+  <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">Il tuo PIN ha almeno %d cifre o caratteri</string>
   <string name="RegistrationActivity_incorrect_registration_lock_pin">PIN errato</string>
   <string name="RegistrationActivity_too_many_attempts">Troppi tentativi</string>
   <string name="RegistrationActivity_you_have_made_too_many_incorrect_registration_lock_pin_attempts_please_try_again_in_a_day">Hai sbagliato il PIN di blocco registrazione troppe volte. Per favore riprova tra un giorno.</string>

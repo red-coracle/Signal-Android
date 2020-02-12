@@ -246,7 +246,7 @@
     <item quantity="two">حفظ %1$d وسيط في الذاكرة يسمح ﻷي تطبيق آخر على الهاتف من النفاذ له. \n\nاستمر؟</item>
     <item quantity="few">حفظ %1$d وسيط في الذاكرة يسمح ﻷي تطبيق آخر على الهاتف من النفاذ له. \n\nاستمر؟</item>
     <item quantity="many">حفظ %1$d وسيط في الذاكرة يسمح ﻷي تطبيق آخر على الهاتف من النفاذ له. \n\nاستمر؟</item>
-    <item quantity="other">حفظ جميع ال %1$d ملف متعدد الوسائط في الذاكرة سيسمح ﻷي تطبيق آخر على جهازك بالنفاذ إليها.\n\n استمرار؟</item>
+    <item quantity="other">حفظ جميع الـ %1$d ملف متعدد الوسائط في الذاكرة سيسمح ﻷي تطبيق آخر على جهازك بالنفاذ إليها.\n\n استمرار؟</item>
   </plurals>
   <plurals name="ConversationFragment_error_while_saving_attachments_to_sd_card">
     <item quantity="zero">وقع خطأ أثناء حفظ المرفقات في مساحة التخزين!</item>
@@ -744,6 +744,7 @@
   <string name="SharedContactView_add_to_contacts">الإضافة إلى جهات الاتصال</string>
   <string name="SharedContactView_invite_to_signal">الدعوة إلى Signal</string>
   <string name="SharedContactView_message">رسالة Signal</string>
+  <!--SignalPinReminders-->
   <!--Slide-->
   <string name="Slide_image">صورة</string>
   <string name="Slide_sticker">ملصق</string>
@@ -1018,7 +1019,7 @@
   <string name="conversation_activity__quick_attachment_drawer_lock_record_description">قفل التسجيل الصوتي</string>
   <string name="conversation_activity__enable_signal_for_sms">تفعيل Signal لرسائل SMS</string>
   <!--conversation_input_panel-->
-  <string name="conversation_input_panel__slide_to_cancel">مرر للإلغاء</string>
+  <string name="conversation_input_panel__slide_to_cancel">مرِّر للإلغاء</string>
   <string name="conversation_input_panel__cancel">إلغاء</string>
   <!--conversation_item-->
   <string name="conversation_item__mms_image_description">رسالة وسائط متعددة</string>
@@ -1577,7 +1578,6 @@
   <string name="KbsReminderDialog__incorrect_pin_try_again">الرقم التعريفي الشخصي غير صحيح. يرجى إعادة المحاولة.</string>
   <!--AccountLockedFragment-->
   <string name="AccountLockedFragment__account_locked">تم إقفال الحساب</string>
-  <string name="AccountLockedFragment__your_account_has_been_locked_to_protect_your_privacy">تم إقفال حسابك لحماية خصوصيتك وأمنك.بعد مرور %1$d يوم من عدم وجود نشاط على  حسابك، سيكون بإمكانك إعادة التسجيل برقم هاتفك دون الحاجة إلى الرقم التعريفي الشخصي . سيتم حذف جميع المحتوى على حسابك.</string>
   <string name="AccountLockedFragment__next">التالي</string>
   <string name="AccountLockedFragment__learn_more">أعرف أكثر</string>
   <!--KbsLockFragment-->

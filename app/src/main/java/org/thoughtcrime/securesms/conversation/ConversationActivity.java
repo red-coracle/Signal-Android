@@ -516,6 +516,10 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     if (emojiDrawerStub.resolved() && container.getCurrentInput() == emojiDrawerStub.get()) {
       container.hideAttachedInput(true);
     }
+
+    if (reactionOverlay != null && reactionOverlay.isShowing()) {
+      reactionOverlay.hide();
+    }
   }
 
   @Override
@@ -827,8 +831,9 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   @Override
   public void onBackPressed() {
     Log.d(TAG, "onBackPressed()");
-    if (container.isInputOpen()) container.hideCurrentInput(composeText);
-    else                         super.onBackPressed();
+    if (reactionOverlay.isShowing())  reactionOverlay.hide();
+    else if (container.isInputOpen()) container.hideCurrentInput(composeText);
+    else                              super.onBackPressed();
   }
 
   @Override
@@ -2796,7 +2801,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   {
     reactionOverlay.setOnToolbarItemClickedListener(toolbarListener);
     reactionOverlay.setOnHideListener(onHideListener);
-    reactionOverlay.show(this, maskTarget, messageRecord);
+    reactionOverlay.show(this, maskTarget, messageRecord, inputPanel.getMeasuredHeight());
   }
 
   @Override

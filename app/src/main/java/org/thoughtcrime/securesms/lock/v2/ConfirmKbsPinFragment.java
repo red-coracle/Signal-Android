@@ -19,6 +19,7 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.animation.AnimationCompleteListener;
 import org.thoughtcrime.securesms.animation.AnimationRepeatListener;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.megaphone.Megaphones;
 import org.thoughtcrime.securesms.util.SpanUtil;
 
@@ -106,6 +107,8 @@ public class ConfirmKbsPinFragment extends BaseKbsPinFragment<ConfirmKbsPinViewM
           public void onAnimationEnd(Animator animation) {
             requireActivity().setResult(Activity.RESULT_OK);
             closeNavGraphBranch();
+            SignalStore.registrationValues().setRegistrationComplete();
+            SignalStore.pinValues().onPinChange();
           }
         });
         break;
@@ -113,6 +116,7 @@ public class ConfirmKbsPinFragment extends BaseKbsPinFragment<ConfirmKbsPinViewM
         startEndAnimationOnNextProgressRepetition(R.raw.lottie_kbs_failure, new AnimationCompleteListener() {
           @Override
           public void onAnimationEnd(Animator animation) {
+            SignalStore.registrationValues().setRegistrationComplete();
             displayFailedDialog();
           }
         });
