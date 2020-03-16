@@ -404,6 +404,10 @@
               android:theme="@style/TextSecure.LightNoActionBar"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
 
+    <activity android:name=".mediasend.AvatarSelectionActivity"
+              android:theme="@style/TextSecure.FullScreenMedia"
+              android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
+
     <activity android:name=".BlockedContactsActivity"
               android:theme="@style/TextSecure.LightTheme"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
@@ -411,9 +415,6 @@
     <activity android:name=".scribbles.ImageEditorStickerSelectActivity"
               android:theme="@style/TextSecure.DarkTheme"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
-
-    <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-              android:theme="@style/TextSecure.DarkTheme"/>
 
     <activity android:name=".profiles.edit.EditProfileActivity"
             android:theme="@style/TextSecure.LightRegistrationTheme"

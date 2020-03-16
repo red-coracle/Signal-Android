@@ -62,7 +62,7 @@
   <string name="AttachmentKeyboard_contact">Kontaktua</string>
   <string name="AttachmentKeyboard_location">Kokalekua</string>
   <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Signalek baimena behar du zue argazkiak eta bideoak erakutsi ahal izateko.</string>
-  <string name="AttachmentKeyboard_give_access">Baimena Eman</string>
+  <string name="AttachmentKeyboard_give_access">Baimena eman</string>
   <!--AttachmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">Ez da euskarria aukeratzeko aplikaziorik aurkitu.</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Signal aplikazioak Gordailu baimena behar du argazkiak, bideoak edo audioak bidaltzeko baina ukatu egin diozu. Joan aplikazioaren ezarpenetara, aukeratu \"Baimenak\" eta aktibatu \"Gordailua\".</string>
@@ -204,7 +204,7 @@
   <string name="ConversationActivity_no_results">Ez da emaitzarik aurkitu.</string>
   <string name="ConversationActivity_sticker_pack_installed">Eranskailuen multzoa instalatu da</string>
   <string name="ConversationActivity_new_say_it_with_stickers">Berria! Esan eranskailuen bidez</string>
-  <string name="ConversationActivity_block_s">%1$s blokeatu?</string>
+  <string name="ConversationActivity_block_s">Blokeatu %1$s?</string>
   <string name="ConversationActivity_block_and_leave_s">%1$s blokeatu eta irten?</string>
   <string name="ConversationActivity_unblock_s">%1$s desblokeatu?</string>
   <string name="ConversationActivity_you_will_be_able_to_message_and_call_each_other">Elkarri deitzeko eta mezuak bidaltzeko gai izango zarete.</string>
@@ -309,6 +309,8 @@
   <string name="CustomDefaultPreference_using_custom">Pertsonalizatua: %s</string>
   <string name="CustomDefaultPreference_using_default">Lehenetsia: %s</string>
   <string name="CustomDefaultPreference_none">Bat ere ez</string>
+  <!--AvatarSelectionBottomSheetDialogFragment-->
+  <string name="AvatarSelectionBottomSheetDialogFragment__remove_photo">Argazkia ezabatu</string>
   <!--DateUtils-->
   <string name="DateUtils_just_now">Orain</string>
   <string name="DateUtils_minutes_ago">%dm</string>
@@ -1211,6 +1213,9 @@ Inportatu \'SMSBackup and Restorekin\' bateragarria den enkriptatu gabeko babesk
   <string name="MessageRequestsMegaphone__new_message_requests">Berria: Mezuen eskaerak</string>
   <string name="MessageRequestsMegaphone__add_name">Gehitu izena</string>
   <string name="MessageRequestsMegaphone__you_can_now_choose_whether_to_accept">Orain aukeratu dezakezu solasaldi berri bat onartu nahi duzun ala ez. \"Onartu\", \"Ezabatu\" edo \"Blokeatu\" aukerak ikusiko dituzu.</string>
+  <!--HelpFragment-->
+  <string name="HelpFragment__help">Laguntza</string>
+  <string name="HelpFragment__next">Hurrengoa</string>
   <!--arrays.xml-->
   <string name="arrays__import_export">Inportatu</string>
   <string name="arrays__use_default">Erabili lehenetsia</string>
@@ -1289,6 +1294,7 @@ Inportatu \'SMSBackup and Restorekin\' bateragarria den enkriptatu gabeko babesk
   <string name="preferences__fast">Arina</string>
   <string name="preferences__normal">Normala</string>
   <string name="preferences__slow">Motela</string>
+  <string name="preferences__help">Laguntza</string>
   <string name="preferences__advanced">Aurreratua</string>
   <string name="preferences__privacy">Pribatutasuna</string>
   <string name="preferences__mms_user_agent">MMS erabiltzaile-agentea</string>
@@ -1529,6 +1535,7 @@ Inportatu \'SMSBackup and Restorekin\' bateragarria den enkriptatu gabeko babesk
   <string name="KbsSplashFragment__introducing_pins">PIN-ak sartzen</string>
   <string name="KbsSplashFragment__pins_add_another_level_of_security_to_your_account">PINek beste segurtasun maila bat ematen diote zure kontuari. Sortu bat orain.</string>
   <string name="KbsSplashFragment__learn_more">Gehiago jakin</string>
+  <string name="KbsSplashFragment__learn_more_link">https://support.signal.org/hc/en-us/articles/360007059792-Registration-Lock</string>
   <string name="KbsSplashFragment__registration_lock_equals_pin">Errejistratze-blokeoa = PIN</string>
   <string name="KbsSplashFragment__your_registration_lock_is_now_called_a_pin">Zure Errejistrate-blokeoa orain PIN deitzen da eta gehiago egin dezake. Eguneratu orain.</string>
   <string name="KbsSplashFragment__read_more_about_pins">Irakurri gehiago PIN-ei buruz.</string>
@@ -1546,11 +1553,12 @@ Inportatu \'SMSBackup and Restorekin\' bateragarria den enkriptatu gabeko babesk
   <string name="AccountLockedFragment__your_account_has_been_locked_to_protect_your_privacy">Zure kontua blokeatu egin da zure pribatutasuna eta segurtasuna babesteko. %1$d egun aktibitaterik gabe egon ondore, telefono zenbaki hau berriro errejistratu ahal izango duzu PIN bat erabili gabe. Eduki guztia ezabatuko da.</string>
   <string name="AccountLockedFragment__next">Hurrengoa</string>
   <string name="AccountLockedFragment__learn_more">Gehiago jakin</string>
+  <string name="AccountLockedFragment__learn_more_url">https://support.signal.org/hc/en-us/articles/360007059792-Registration-Lock</string>
   <!--KbsLockFragment-->
-  <string name="RegistrationLockFragment__enter_your_pin">Sartu zure PIN-a</string>
+  <string name="RegistrationLockFragment__enter_your_pin">Sartu zure PINa</string>
   <string name="RegistrationLockFragment__enter_the_pin_you_created">Idatzi konturako sortu duzun PIN-a. PIN hau ez da zure SMS berifikazio gakoa.</string>
   <string name="RegistrationLockFragment__enter_alphanumeric_pin">Idatzi PIN alfanumerikoa</string>
-  <string name="RegistrationLockFragment__enter_numeric_pin">Idatzi zenbakizko PIN-a</string>
+  <string name="RegistrationLockFragment__enter_numeric_pin">Idatzi zenbakizko PINa</string>
   <string name="RegistrationLockFragment__next">Hurrengoa</string>
   <string name="RegistrationLockFragment__incorrect_pin_try_again">PIN okerra. Saia zaitez berriro.</string>
   <string name="RegistrationLockFragment__forgot_pin">PINa ahaztu al duzu?</string>
@@ -1581,18 +1589,18 @@ Inportatu \'SMSBackup and Restorekin\' bateragarria den enkriptatu gabeko babesk
   <string name="KbsMegaphone__create_a_pin">PIN bat sortu</string>
   <string name="KbsMegaphone__pins_add_another_layer_of_security_to_your_signal_account">PINek beste segurtasun geruza bat gehitzen diote zure Signal kontuari.</string>
   <string name="KbsMegaphone__create_pin">PINa sortu</string>
-  <string name="KbsMegaphone__introducing_pins">PIN-ak sartzen</string>
+  <string name="KbsMegaphone__introducing_pins">PINak sartzen</string>
   <string name="KbsMegaphone__your_registration_lock_is_now_called_a_pin">Zure Errejistratze-blokeoa orain PIN deitzen da. Eguneratzeko segunduak behar dira bakarrik.</string>
-  <string name="KbsMegaphone__update_pin">Eguneratu PIN-a</string>
+  <string name="KbsMegaphone__update_pin">Eguneratu PINa</string>
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Beranduago gogoraraziko dizugu. PIN bat sortzea beharrezkoa izango da %1$d eguneta.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Beranduago gogoraraziko dizugu. Zure PINa baieztatzea derrigorrezkoa izango da %1$d egunetan.</string>
   <!--Profile Names Megaphone-->
   <string name="ProfileNamesMegaphone__add_a_profile_name">Gehitu profil izen bat</string>
   <string name="ProfileNamesMegaphone__this_will_be_displayed_when_you_start">Hau erakutsiko da solasaldi berri bat hasterakoan edo partekatzerakoan.</string>
-  <string name="ProfileNamesMegaphone__add_profile_name">Gehitu Profil Izena</string>
-  <string name="ProfileNamesMegaphone__confirm_your_profile_name">Baieztatu zure Profil Izena</string>
+  <string name="ProfileNamesMegaphone__add_profile_name">Gehitu profil izena</string>
+  <string name="ProfileNamesMegaphone__confirm_your_profile_name">Baieztatu zure profil izena</string>
   <string name="ProfileNamesMegaphone__your_profile_can_now_include">Zure profilak orain aukerazko abizen bat eduki dezake.</string>
-  <string name="ProfileNamesMegaphone__confirm_name">Baieztatu Izena</string>
+  <string name="ProfileNamesMegaphone__confirm_name">Baieztatu izena</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Garraio ikonoa</string>
   <string name="ConversationListFragment_loading">Kargatzen…</string>
@@ -1660,7 +1668,7 @@ Inportatu \'SMSBackup and Restorekin\' bateragarria den enkriptatu gabeko babesk
   <string name="preferences_app_protection__pin">PIN</string>
   <string name="preferences_app_protection__change">Aldatu</string>
   <string name="preferences_app_protection__create">Sortu</string>
-  <string name="preferences_app_protection__your_pin_adds_an_extra_layer_of_security_to_your_account">Zure PINak beste segurtasun geruza bat gehitzen dio zure kontuari. Eskatuko zaizu zure telefono zenbakia Signael errejistratzerakoan. Zure PINa ahaztuz gero, zure kontua 7 egunez blokeatuta egongo da.</string>
+  <string name="preferences_app_protection__your_pin_adds_an_extra_layer_of_security_to_your_account">Zure PINak beste segurtasun geruza bat gehitzen dio zure kontuari. Hau zure telefono zenbakia Signal-en erregistratzen duzunean eskatuko zaizu. PINa ahaztuz gero, zure kontua 7 egunez blokeatuta egongo da.</string>
   <string name="AppProtectionPreferenceFragment_none">Bat ere ez</string>
   <string name="registration_activity__the_registration_lock_pin_is_not_the_same_as_the_sms_verification_code_you_just_received_please_enter_the_pin_you_previously_configured_in_the_application">Erregistratzea blokeatzeko PINa ez da jaso berri duzun SMS bidezko egiaztapen-kodearen berdina. Sartu aurrez aplikazioan konfiguratu duzun PINa.</string>
   <string name="registration_activity__registration_lock_pin">Erregistratzea blokeatzeko PINa</string>
