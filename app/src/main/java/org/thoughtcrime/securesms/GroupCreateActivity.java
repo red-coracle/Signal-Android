@@ -20,6 +20,7 @@ package org.thoughtcrime.securesms;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -54,6 +55,7 @@ import org.thoughtcrime.securesms.database.GroupDatabase;
 import org.thoughtcrime.securesms.database.GroupDatabase.GroupRecord;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.database.ThreadDatabase;
+import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.groups.GroupManager;
 import org.thoughtcrime.securesms.groups.GroupManager.GroupActionResult;
 import org.thoughtcrime.securesms.logging.Log;
@@ -62,6 +64,7 @@ import org.thoughtcrime.securesms.mediasend.AvatarSelectionBottomSheetDialogFrag
 import org.thoughtcrime.securesms.mediasend.Media;
 import org.thoughtcrime.securesms.mms.DecryptableStreamUriLoader.DecryptableUri;
 import org.thoughtcrime.securesms.mms.GlideApp;
+import org.thoughtcrime.securesms.profiles.AvatarHelper;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.BitmapUtil;
@@ -75,6 +78,7 @@ import org.thoughtcrime.securesms.util.task.ProgressDialogAsyncTask;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.util.InvalidNumberException;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -101,7 +105,6 @@ public class GroupCreateActivity extends PassphraseRequiredActionBarActivity
 
   private static final short REQUEST_CODE_SELECT_AVATAR = 26165;
   private static final int   PICK_CONTACT               = 1;
-  public static final  int   AVATAR_SIZE                = 210;
 
   private EditText     groupName;
   private ListView     lv;
@@ -208,7 +211,7 @@ public class GroupCreateActivity extends PassphraseRequiredActionBarActivity
   }
 
   private void initializeExistingGroup() {
-    final String groupId = getIntent().getStringExtra(GROUP_ID_EXTRA);
+    final GroupId groupId = GroupId.parseNullable(getIntent().getStringExtra(GROUP_ID_EXTRA));
 
     if (groupId != null) {
       new FillExistingGroupInfoAsyncTask(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, groupId);
@@ -320,7 +323,7 @@ public class GroupCreateActivity extends PassphraseRequiredActionBarActivity
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .centerCrop()
-                .override(AVATAR_SIZE, AVATAR_SIZE)
+                .override(AvatarHelper.AVATAR_DIMENSIONS, AvatarHelper.AVATAR_DIMENSIONS)
                 .into(new SimpleTarget<Bitmap>() {
                   @Override
                   public void onResourceReady(@NonNull Bitmap resource, Transition<? super Bitmap> transition) {
@@ -361,7 +364,7 @@ public class GroupCreateActivity extends PassphraseRequiredActionBarActivity
       }
       memberAddresses.add(Recipient.self().getId());
 
-      String      groupId          = DatabaseFactory.getGroupDatabase(activity).getOrCreateGroupForMembers(memberAddresses, true);
+      GroupId.Mms groupId          = DatabaseFactory.getGroupDatabase(activity).getOrCreateMmsGroupForMembers(memberAddresses);
       RecipientId groupRecipientId = DatabaseFactory.getRecipientDatabase(activity).getOrInsertFromGroupId(groupId);
       Recipient   groupRecipient   = Recipient.resolved(groupRecipientId);
       long        threadId         = DatabaseFactory.getThreadDatabase(activity).getThreadIdFor(groupRecipient, ThreadDatabase.DistributionTypes.DEFAULT);
@@ -443,9 +446,9 @@ public class GroupCreateActivity extends PassphraseRequiredActionBarActivity
   }
 
   private static class UpdateSignalGroupTask extends SignalGroupTask {
-    private String groupId;
+    private final GroupId groupId;
 
-    public UpdateSignalGroupTask(GroupCreateActivity activity, String groupId,
+    public UpdateSignalGroupTask(GroupCreateActivity activity, GroupId groupId,
                                  Bitmap avatar, String name, Set<Recipient> members)
     {
       super(activity, avatar, name, members);
@@ -467,7 +470,7 @@ public class GroupCreateActivity extends PassphraseRequiredActionBarActivity
         if (!activity.isFinishing()) {
           Intent intent = activity.getIntent();
           intent.putExtra(GROUP_THREAD_EXTRA, result.get().getThreadId());
-          intent.putExtra(GROUP_ID_EXTRA, result.get().getGroupRecipient().requireGroupId());
+          intent.putExtra(GROUP_ID_EXTRA, result.get().getGroupRecipient().requireGroupId().toString());
           activity.setResult(RESULT_OK, intent);
           activity.finish();
         }
@@ -534,7 +537,7 @@ public class GroupCreateActivity extends PassphraseRequiredActionBarActivity
     }
   }
 
-  private static class FillExistingGroupInfoAsyncTask extends ProgressDialogAsyncTask<String,Void,Optional<GroupData>> {
+  private static class FillExistingGroupInfoAsyncTask extends ProgressDialogAsyncTask<GroupId, Void, Optional<GroupData>> {
     private GroupCreateActivity activity;
 
     public FillExistingGroupInfoAsyncTask(GroupCreateActivity activity) {
@@ -545,18 +548,24 @@ public class GroupCreateActivity extends PassphraseRequiredActionBarActivity
     }
 
     @Override
-    protected Optional<GroupData> doInBackground(String... groupIds) {
+    protected Optional<GroupData> doInBackground(GroupId... groupIds) {
       final GroupDatabase         db               = DatabaseFactory.getGroupDatabase(activity);
-      final List<Recipient>       recipients       = db.getGroupMembers(groupIds[0], false);
+      final List<Recipient>       recipients       = db.getGroupMembers(groupIds[0], GroupDatabase.MemberSet.FULL_MEMBERS_EXCLUDING_SELF);
       final Optional<GroupRecord> group            = db.getGroup(groupIds[0]);
       final Set<Recipient>        existingContacts = new HashSet<>(recipients.size());
       existingContacts.addAll(recipients);
 
       if (group.isPresent()) {
+        Bitmap avatar = null;
+        try {
+          avatar = BitmapFactory.decodeStream(AvatarHelper.getAvatar(getContext(), group.get().getRecipientId()));
+        } catch (IOException e) {
+          Log.w(TAG, "Failed to read avatar.");
+        }
         return Optional.of(new GroupData(groupIds[0],
                                          existingContacts,
-                                         BitmapUtil.fromByteArray(group.get().getAvatar()),
-                                         group.get().getAvatar(),
+                                         avatar,
+                                         BitmapUtil.toByteArray(avatar),
                                          group.get().getTitle()));
       } else {
         return Optional.absent();
@@ -593,13 +602,13 @@ public class GroupCreateActivity extends PassphraseRequiredActionBarActivity
   }
 
   private static class GroupData {
-    String         id;
+    GroupId        id;
     Set<Recipient> recipients;
     Bitmap         avatarBmp;
     byte[]         avatarBytes;
     String         name;
 
-    public GroupData(String id, Set<Recipient> recipients, Bitmap avatarBmp, byte[] avatarBytes, String name) {
+    GroupData(GroupId id, Set<Recipient> recipients, Bitmap avatarBmp, byte[] avatarBytes, String name) {
       this.id          = id;
       this.recipients  = recipients;
       this.avatarBmp   = avatarBmp;

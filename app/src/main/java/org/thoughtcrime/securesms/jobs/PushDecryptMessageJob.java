@@ -137,7 +137,7 @@ public final class PushDecryptMessageJob extends BaseJob {
     // TODO [greyson] Navigation
     NotificationManagerCompat.from(context).notify(494949,
                                                    new NotificationCompat.Builder(context, NotificationChannels.getMessagesChannel(context))
-                                                                         .setSmallIcon(R.drawable.icon_notification)
+                                                                         .setSmallIcon(R.drawable.ic_notification)
                                                                          .setPriority(NotificationCompat.PRIORITY_HIGH)
                                                                          .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                                                                          .setContentTitle(context.getString(R.string.PushDecryptJob_new_locked_message))
@@ -233,7 +233,7 @@ public final class PushDecryptMessageJob extends BaseJob {
 
     return new PushProcessMessageJob.ExceptionMetadata(sender,
                                                        e.getSenderDevice(),
-                                                       e.getGroup().transform(g -> GroupUtil.getEncodedId(g.getGroupId(), false)).orNull());
+                                                       e.getGroup().transform(GroupUtil::idFromGroupContext).orNull());
   }
 
   private static PushProcessMessageJob.ExceptionMetadata toExceptionMetadata(@NonNull ProtocolException e) throws NoSenderException {
