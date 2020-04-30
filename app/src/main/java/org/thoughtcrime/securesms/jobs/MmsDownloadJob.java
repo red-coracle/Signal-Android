@@ -100,6 +100,10 @@ public class MmsDownloadJob extends BaseJob {
 
   @Override
   public void onRun() {
+    if (TextSecurePreferences.getLocalUuid(context) == null && TextSecurePreferences.getLocalNumber(context) == null) {
+      throw new NotReadyException();
+    }
+
     MmsDatabase                               database     = DatabaseFactory.getMmsDatabase(context);
     Optional<MmsDatabase.MmsNotificationInfo> notification = database.getNotification(messageId);
 
@@ -235,7 +239,7 @@ public class MmsDownloadJob extends BaseJob {
       group = Optional.of(DatabaseFactory.getGroupDatabase(context).getOrCreateMmsGroupForMembers(recipients));
     }
 
-    IncomingMediaMessage   message      = new IncomingMediaMessage(from, group, body, retrieved.getDate() * 1000L, attachments, subscriptionId, 0, false, false, false);
+    IncomingMediaMessage   message      = new IncomingMediaMessage(from, group, body, retrieved.getDate() * 1000L, -1, attachments, subscriptionId, 0, false, false, false);
     Optional<InsertResult> insertResult = database.insertMessageInbox(message, contentLocation, threadId);
 
     if (insertResult.isPresent()) {
@@ -264,5 +268,8 @@ public class MmsDownloadJob extends BaseJob {
                                 data.getLong(KEY_THREAD_ID),
                                 data.getBoolean(KEY_AUTOMATIC));
     }
+  }
+
+  private static class NotReadyException extends RuntimeException {
   }
 }
