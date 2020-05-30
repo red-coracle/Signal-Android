@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -34,7 +33,6 @@ import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.events.WebRtcViewModel;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.notifications.DoNotDisturbUtil;
-import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.ringrtc.CallState;
@@ -58,10 +56,8 @@ import org.thoughtcrime.securesms.webrtc.audio.OutgoingRinger;
 import org.thoughtcrime.securesms.webrtc.audio.SignalAudioManager;
 import org.thoughtcrime.securesms.webrtc.locks.LockManager;
 import org.webrtc.EglBase;
-import org.webrtc.EglRenderer;
 import org.webrtc.IceCandidate;
 import org.webrtc.PeerConnection;
-import org.webrtc.SurfaceViewRenderer;
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.signalservice.api.SignalServiceAccountManager;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
@@ -431,6 +427,7 @@ public class WebRtcCallService extends Service implements CallManager.Observer,
     }
 
     Log.i(TAG, "handleOutgoingCall():");
+    EventBus.getDefault().removeStickyEvent(WebRtcViewModel.class);
 
     initializeVideo();
 
@@ -454,7 +451,7 @@ public class WebRtcCallService extends Service implements CallManager.Observer,
 
   private void insertMissedCall(@NonNull RemotePeer remotePeer, boolean signal) {
     Pair<Long, Long> messageAndThreadId = DatabaseFactory.getSmsDatabase(this).insertMissedCall(remotePeer.getId());
-    MessageNotifier.updateNotification(this, messageAndThreadId.second, signal);
+    ApplicationDependencies.getMessageNotifier().updateNotification(this, messageAndThreadId.second, signal);
   }
 
   private void handleDenyCall(Intent intent) {
@@ -482,12 +479,8 @@ public class WebRtcCallService extends Service implements CallManager.Observer,
     boolean      isSpeaker    = intent.getBooleanExtra(EXTRA_SPEAKER, false);
     AudioManager audioManager = ServiceUtil.getAudioManager(this);
 
+    bluetoothStateManager.setWantsConnection(false);
     audioManager.setSpeakerphoneOn(isSpeaker);
-
-    if (isSpeaker && audioManager.isBluetoothScoOn()) {
-      audioManager.stopBluetoothSco();
-      audioManager.setBluetoothScoOn(false);
-    }
 
     if (!localCameraState.isEnabled()) {
       lockManager.updatePhoneState(getInCallPhoneState());
@@ -500,15 +493,8 @@ public class WebRtcCallService extends Service implements CallManager.Observer,
 
   private void handleSetBluetoothAudio(Intent intent) {
     boolean      isBluetooth  = intent.getBooleanExtra(EXTRA_BLUETOOTH, false);
-    AudioManager audioManager = ServiceUtil.getAudioManager(this);
 
-    if (isBluetooth) {
-      audioManager.startBluetoothSco();
-      audioManager.setBluetoothScoOn(true);
-    } else {
-      audioManager.stopBluetoothSco();
-      audioManager.setBluetoothScoOn(false);
-    }
+    bluetoothStateManager.setWantsConnection(isBluetooth);
 
     if (!localCameraState.isEnabled()) {
       lockManager.updatePhoneState(getInCallPhoneState());
@@ -1053,6 +1039,12 @@ public class WebRtcCallService extends Service implements CallManager.Observer,
     RemotePeer remotePeer = getRemotePeer(intent);
 
     Log.i(TAG, "handleEndedReceivedOfferWhileActive(): call_id: " + remotePeer.getCallId());
+
+    if (activePeer == null) {
+      Log.w(TAG, "handleEndedReceivedOfferWhileActive(): ignoring call with null activePeer");
+      return;
+    }
+
     switch (activePeer.getState()) {
       case DIALING:
       case REMOTE_RINGING: setCallInProgressNotification(TYPE_OUTGOING_RINGING,    activePeer); break;

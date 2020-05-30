@@ -11,24 +11,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
-import org.thoughtcrime.securesms.ContactSelectionListFragment;
+import org.thoughtcrime.securesms.AvatarPreviewActivity;
 import org.thoughtcrime.securesms.MediaPreviewActivity;
 import org.thoughtcrime.securesms.MuteDialog;
 import org.thoughtcrime.securesms.PushContactSelectionActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.AvatarImageView;
 import org.thoughtcrime.securesms.components.ThreadPhotoRailView;
-import org.thoughtcrime.securesms.contacts.ContactsCursorLoader;
 import org.thoughtcrime.securesms.contacts.avatars.FallbackContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.ResourceContactPhoto;
 import org.thoughtcrime.securesms.groups.GroupId;
@@ -61,8 +61,9 @@ public class ManageGroupFragment extends Fragment {
 
   private ManageGroupViewModel               viewModel;
   private GroupMemberListView                groupMemberList;
-  private View                               listPending;
-  private TextView                           groupTitle;
+  private View                               pendingMembersRow;
+  private TextView                           pendingMembersCount;
+  private Toolbar                            toolbar;
   private TextView                           memberCountUnderAvatar;
   private TextView                           memberCountAboveList;
   private AvatarImageView                    avatar;
@@ -81,7 +82,7 @@ public class ManageGroupFragment extends Fragment {
   private TextView                           blockGroup;
   private TextView                           leaveGroup;
   private TextView                           addMembers;
-  private Switch                             muteNotificationsSwitch;
+  private SwitchCompat                       muteNotificationsSwitch;
   private View                               muteNotificationsRow;
   private TextView                           muteNotificationsUntilLabel;
   private TextView                           customNotificationsButton;
@@ -106,12 +107,6 @@ public class ManageGroupFragment extends Fragment {
   }
 
   @Override
-  public void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setHasOptionsMenu(true);
-  }
-
-  @Override
   public @Nullable View onCreateView(@NonNull LayoutInflater inflater,
                                      @Nullable ViewGroup container,
                                      @Nullable Bundle savedInstanceState)
@@ -119,11 +114,12 @@ public class ManageGroupFragment extends Fragment {
     View view = inflater.inflate(R.layout.group_manage_fragment, container, false);
 
     avatar                      = view.findViewById(R.id.group_avatar);
-    groupTitle                  = view.findViewById(R.id.group_title);
+    toolbar                     = view.findViewById(R.id.toolbar);
     memberCountUnderAvatar      = view.findViewById(R.id.member_count);
     memberCountAboveList        = view.findViewById(R.id.member_count_2);
     groupMemberList             = view.findViewById(R.id.group_members);
-    listPending                 = view.findViewById(R.id.listPending);
+    pendingMembersRow           = view.findViewById(R.id.pending_members_row);
+    pendingMembersCount         = view.findViewById(R.id.pending_members_count);
     threadPhotoRailView         = view.findViewById(R.id.recent_photos);
     groupMediaCard              = view.findViewById(R.id.group_media_card);
     accessControlCard           = view.findViewById(R.id.group_access_control_card);
@@ -170,25 +166,36 @@ public class ManageGroupFragment extends Fragment {
     });
 
     viewModel.getPendingMemberCount().observe(getViewLifecycleOwner(),
-      members -> {
-        if (members > 0) {
-          listPending.setEnabled(true);
-          listPending.setOnClickListener(v -> {
-            FragmentActivity activity = requireActivity();
-            activity.startActivity(PendingMemberInvitesActivity.newIntent(activity, groupId.requireV2()));
-          });
+      pendingInviteCount -> {
+        pendingMembersRow.setOnClickListener(v -> {
+          FragmentActivity activity = requireActivity();
+          activity.startActivity(PendingMemberInvitesActivity.newIntent(activity, groupId.requireV2()));
+        });
+        if (pendingInviteCount == 0) {
+          pendingMembersCount.setText(R.string.ManageGroupActivity_none);
         } else {
-          listPending.setEnabled(false);
-          listPending.setOnClickListener(null);
+          pendingMembersCount.setText(getResources().getQuantityString(R.plurals.ManageGroupActivity_invited, pendingInviteCount, pendingInviteCount));
         }
       });
 
     avatar.setFallbackPhotoProvider(fallbackPhotoProvider);
 
-    viewModel.getTitle().observe(getViewLifecycleOwner(), groupTitle::setText);
+    toolbar.setNavigationOnClickListener(v -> requireActivity().finish());
+    toolbar.setOnMenuItemClickListener(this::onMenuItemSelected);
+    toolbar.inflateMenu(R.menu.manage_group_fragment);
+
+    viewModel.getCanEditGroupAttributes().observe(getViewLifecycleOwner(), canEdit -> toolbar.getMenu().findItem(R.id.action_edit).setVisible(canEdit));
+    viewModel.getTitle().observe(getViewLifecycleOwner(), toolbar::setTitle);
     viewModel.getMemberCountSummary().observe(getViewLifecycleOwner(), memberCountUnderAvatar::setText);
     viewModel.getFullMemberCountSummary().observe(getViewLifecycleOwner(), memberCountAboveList::setText);
-    viewModel.getGroupRecipient().observe(getViewLifecycleOwner(), avatar::setRecipient);
+    viewModel.getGroupRecipient().observe(getViewLifecycleOwner(), groupRecipient -> {
+      avatar.setRecipient(groupRecipient);
+      avatar.setOnClickListener(v -> {
+        FragmentActivity activity = requireActivity();
+        activity.startActivity(AvatarPreviewActivity.intentFromRecipientId(activity, groupRecipient.getId()),
+                               AvatarPreviewActivity.createTransitionBundle(activity, avatar));
+      });
+    });
 
     viewModel.getGroupViewState().observe(getViewLifecycleOwner(), vs -> {
       if (vs == null) return;
@@ -216,11 +223,7 @@ public class ManageGroupFragment extends Fragment {
     disappearingMessagesRow.setOnClickListener(v -> viewModel.handleExpirationSelection());
     blockGroup.setOnClickListener(v -> viewModel.blockAndLeave(requireActivity()));
 
-    addMembers.setOnClickListener(v -> {
-      Intent intent = new Intent(requireActivity(), PushContactSelectionActivity.class);
-      intent.putExtra(ContactSelectionListFragment.DISPLAY_MODE, ContactsCursorLoader.DisplayMode.FLAG_PUSH);
-      startActivityForResult(intent, PICK_CONTACT);
-    });
+    addMembers.setOnClickListener(v -> viewModel.onAddMembersClick(this, PICK_CONTACT));
 
     viewModel.getMembershipRights().observe(getViewLifecycleOwner(), r -> {
         if (r != null) {
@@ -250,6 +253,7 @@ public class ManageGroupFragment extends Fragment {
     viewModel.getCanAddMembers().observe(getViewLifecycleOwner(), canEdit -> addMembers.setVisibility(canEdit ? View.VISIBLE : View.GONE));
 
     groupMemberList.setRecipientClickListener(recipient -> RecipientBottomSheetDialogFragment.create(recipient.getId(), groupId).show(requireFragmentManager(), "BOTTOM"));
+    groupMemberList.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
     final CompoundButton.OnCheckedChangeListener muteSwitchListener = (buttonView, isChecked) -> {
       if (isChecked) {
@@ -301,13 +305,10 @@ public class ManageGroupFragment extends Fragment {
 
   @Override
   public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-    inflater.inflate(R.menu.manage_group_fragment, menu);
 
-    viewModel.getCanEditGroupAttributes().observe(getViewLifecycleOwner(), canEdit -> menu.findItem(R.id.action_edit).setVisible(canEdit));
   }
 
-  @Override
-  public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+  public boolean onMenuItemSelected(@NonNull MenuItem item) {
     if (item.getItemId() == R.id.action_edit) {
       startActivity(EditProfileActivity.getIntentForGroupProfile(requireActivity(), getPushGroupId()));
       return true;

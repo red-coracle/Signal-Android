@@ -267,6 +267,8 @@
     <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone">To call %1$s, Signal needs access to your microphone</string>
     <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone_and_camera">To call %1$s, Signal needs access to your microphone and camera.</string>
 
+    <string name="ConversationActivity__more_options_now_in_group_settings">More options now in \"Group settings\"</string>
+
     <!-- ConversationAdapter -->
     <plurals name="ConversationAdapter_n_unread_messages">
         <item quantity="one">%d unread message</item>
@@ -353,6 +355,7 @@
 
     <!-- ConversationTitleView -->
     <string name="ConversationTitleView_verified">Verified</string>
+    <string name="ConversationTitleView_you">You</string>
 
     <!-- CreateProfileActivity -->
     <string name="CreateProfileActivity__profile">Profile</string>
@@ -499,6 +502,7 @@
     <string name="AddGroupDetailsFragment__youve_selected_a_contact_that_doesnt">You\'ve selected a contact that doesn\'t support Signal groups, so this group will be MMS.</string>
     <string name="AddGroupDetailsFragment__remove">Remove</string>
     <string name="AddGroupDetailsFragment__sms_contact">SMS contact</string>
+    <string name="AddGroupDetailsFragment__remove_s_from_this_group">Remove %1$s from this group?</string>
 
     <!-- ManageGroupActivity -->
     <string name="ManageGroupActivity_disappearing_messages">Disappearing messages</string>
@@ -514,6 +518,12 @@
     <string name="ManageGroupActivity_on">On</string>
     <string name="ManageGroupActivity_add_members">Add members</string>
     <string name="ManageGroupActivity_view_all_members">View all members</string>
+    <string name="ManageGroupActivity_see_all">See all</string>
+
+    <string name="ManageGroupActivity_none">None</string>
+    <plurals name="ManageGroupActivity_invited">
+        <item quantity="other">%d invited</item>
+    </plurals>
 
     <string name="ManageGroupActivity_you_dont_have_the_rights_to_do_this">You don\'t have the rights to do this</string>
     <string name="ManageGroupActivity_not_capable">Someone you added does not support new groups and needs to update Signal</string>
@@ -1156,6 +1166,9 @@
     <!-- ViewOnceMessageActivity -->
     <string name="ViewOnceMessageActivity_video_duration" translatable="false">%1$02d:%2$02d</string>
 
+    <!-- AudioView -->
+    <string name="AudioView_duration" translatable="false">%1$02d:%2$02d</string>
+
     <!-- MessageDisplayHelper -->
     <string name="MessageDisplayHelper_bad_encrypted_message">Bad encrypted message</string>
     <string name="MessageDisplayHelper_message_encrypted_for_non_existing_session">Message encrypted for non-existing session</string>
@@ -1294,7 +1307,8 @@
     <string name="WebRtcCallScreen__answer_without_video">Answer without video</string>
 
     <!-- WebRtcAudioOutputToggle -->
-    <string name="WebRtcAudioOutputToggle__phone">Phone</string>
+    <string name="WebRtcAudioOutputToggle__audio_output">Audio output</string>
+    <string name="WebRtcAudioOutputToggle__phone_earpiece">Phone earpiece</string>
     <string name="WebRtcAudioOutputToggle__speaker">Speaker</string>
     <string name="WebRtcAudioOutputToggle__bluetooth">Bluetooth</string>
 
@@ -1339,6 +1353,8 @@
     <string name="contact_selection_activity__enter_name_or_number">Enter name or number</string>
     <string name="contact_selection_activity__invite_to_signal">Invite to Signal</string>
     <string name="contact_selection_activity__new_group">New group</string>
+    <!-- temporary for internal testing -->
+    <string name="contact_selection_activity__new_gv1_group" translatable="false">New old style group (GV1)</string>
 
     <!-- contact_filter_toolbar -->
     <string name="contact_filter_toolbar__clear_entered_text_description">Clear entered text</string>
@@ -1358,6 +1374,7 @@
     <string name="ContactSelectionListFragment_username_not_found">Username not found</string>
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"%1$s" is not a Signal user. Please check the username and try again.</string>
     <string name="ContactSelectionListFragment_okay">Okay</string>
+    <string name="ContactSelectionListFragment_the_group_is_full">The group is full</string>
 
     <!-- blocked_contacts_fragment -->
     <string name="blocked_contacts_fragment__no_blocked_contacts">No blocked contacts</string>
@@ -1889,6 +1906,9 @@
     <string name="conversation_list_batch__menu_select_all">Select all</string>
     <string name="conversation_list_batch_archive__menu_archive_selected">Archive selected</string>
     <string name="conversation_list_batch_unarchive__menu_unarchive_selected">Unarchive selected</string>
+    <string name="conversation_list_batch__menu_unarchive_selected">Unarchive selected</string>
+    <string name="conversation_list_batch__menu_mark_as_read">Mark as read</string>
+    <string name="conversation_list_batch__menu_mark_as_unread">Mark as unread</string>
 
     <!-- conversation_list -->
     <string name="conversation_list_settings_shortcut">Settings shortcut</string>
@@ -1920,7 +1940,7 @@
     <!-- conversation -->
     <string name="conversation__menu_add_attachment">Add attachment</string>
     <string name="conversation__menu_edit_group">Edit group</string>
-    <string name="conversation__menu_manage_group">Manage group</string>
+    <string name="conversation__menu_group_settings">Group settings</string>
     <string name="conversation__menu_leave_group">Leave group</string>
     <string name="conversation__menu_view_all_media">All media</string>
     <string name="conversation__menu_conversation_settings">Conversation settings</string>
@@ -2196,8 +2216,15 @@
     <string name="preferences_app_protection__signal_pin">Signal PIN</string>
     <string name="preferences_app_protection__create_a_pin">Create a PIN</string>
     <string name="preferences_app_protection__change_your_pin">Change your PIN</string>
+    <string name="preferences_app_protection__pin_reminders">PIN reminders</string>
     <string name="preferences_app_protection__pins_keep_information_stored_with_signal_encrypted">PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.</string>
     <string name="preferences_app_protection__add_extra_security_by_requiring_your_signal_pin_to_register">Add extra security by requiring your Signal PIN to register your phone number with Signal again.</string>
+    <string name="preferences_app_protection__reminders_help_you_remember_your_pin">Reminders help you remember your PIN since it can\'t be recovered. You\'ll be asked less frequently over time.</string>
+    <string name="preferences_app_protection__turn_off">Turn off</string>
+    <string name="preferences_app_protection__confirm_pin">Confirm PIN</string>
+    <string name="preferences_app_protection__confirm_your_signal_pin">Confirm your Signal PIN</string>
+    <string name="preferences_app_protection__make_sure_you_memorize_or_securely_store_your_pin">Make sure you memorize or securely store your PIN as it can\'t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.</string>
+    <string name="preferences_app_protection__incorrect_pin_try_again">Incorrect PIN. Try again.</string>
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Failed to enable registration lock.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Failed to disable registration lock.</string>
     <string name="AppProtectionPreferenceFragment_none">None</string>
@@ -2217,6 +2244,7 @@
     <string name="RegistrationActivity_incorrect_registration_lock_pin">Incorrect Registration Lock PIN</string>
     <string name="RegistrationActivity_too_many_attempts">Too many attempts</string>
     <string name="RegistrationActivity_you_have_made_too_many_incorrect_registration_lock_pin_attempts_please_try_again_in_a_day">You\'ve made too many incorrect Registration Lock PIN attempts. Please try again in a day.</string>
+    <string name="RegistrationActivity_you_have_made_too_many_attempts_please_try_again_later">You\'ve made too many attempts. Please try again later.</string>
     <string name="RegistrationActivity_error_connecting_to_service">Error connecting to service</string>
     <string name="RegistrationActivity_oh_no">Oh no!</string>
     <string name="RegistrationActivity_registration_of_this_phone_number_will_be_possible_without_your_registration_lock_pin_after_seven_days_have_passed">Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since this phone number was last active on Signal. You have %d days remaining.</string>
@@ -2226,7 +2254,7 @@
     <string name="RegistrationLockDialog_i_forgot_my_pin">I forgot my PIN.</string>
     <string name="RegistrationLockDialog_forgotten_pin">Forgotten PIN?</string>
     <string name="RegistrationLockDialog_registration_lock_helps_protect_your_phone_number_from_unauthorized_registration_attempts">Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings</string>
-    <string name="RegistrationLockDialog_registration_lock">Registration Lock</string>
+    <string name="RegistrationLockDialog_registration_lock">Registration lock</string>
     <string name="RegistrationLockDialog_enable">Enable</string>
     <string name="RegistrationLockDialog_the_registration_lock_pin_must_be_at_least_d_digits">The Registration Lock PIN must be at least %d digits.</string>
     <string name="RegistrationLockDialog_the_two_pins_you_entered_do_not_match">The two PINs you entered do not match.</string>
