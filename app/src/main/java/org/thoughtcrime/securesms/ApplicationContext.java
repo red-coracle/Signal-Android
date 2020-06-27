@@ -45,6 +45,7 @@ import org.thoughtcrime.securesms.jobs.FcmRefreshJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob;
 import org.thoughtcrime.securesms.jobs.PushNotificationReceiveJob;
 import org.thoughtcrime.securesms.jobs.RefreshPreKeysJob;
+import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
 import org.thoughtcrime.securesms.logging.AndroidLogger;
 import org.thoughtcrime.securesms.logging.CustomSignalProtocolLogger;
 import org.thoughtcrime.securesms.logging.Log;
@@ -107,10 +108,11 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
 
   @Override
   public void onCreate() {
+    long startTime = System.currentTimeMillis();
     super.onCreate();
-    Log.i(TAG, "onCreate()");
     initializeSecurityProvider();
     initializeLogging();
+    Log.i(TAG, "onCreate()");
     initializeCrashHandling();
     initializeAppDependencies();
     initializeFirstEverAppLaunch();
@@ -133,6 +135,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
     NotificationChannels.create(this);
     RefreshPreKeysJob.scheduleIfNecessary();
     StorageSyncHelper.scheduleRoutineSync();
+    RetrieveProfileJob.enqueueRoutineFetchIfNeccessary(this);
     RegistrationUtil.markRegistrationPossiblyComplete();
     ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
@@ -141,6 +144,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
     }
 
     ApplicationDependencies.getJobManager().beginJobLoop();
+    Log.d(TAG, "onCreate() took " + (System.currentTimeMillis() - startTime) + " ms");
   }
 
   @Override

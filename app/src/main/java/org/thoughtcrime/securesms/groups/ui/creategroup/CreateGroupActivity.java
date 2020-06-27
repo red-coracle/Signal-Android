@@ -13,7 +13,6 @@ import com.annimon.stream.Stream;
 
 import org.thoughtcrime.securesms.ContactSelectionActivity;
 import org.thoughtcrime.securesms.ContactSelectionListFragment;
-import org.thoughtcrime.securesms.GroupCreateActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.contacts.ContactsCursorLoader;
 import org.thoughtcrime.securesms.groups.ui.creategroup.details.AddGroupDetailsActivity;
@@ -29,11 +28,7 @@ public class CreateGroupActivity extends ContactSelectionActivity {
 
   private View next;
 
-  public static Intent newIntent(@NonNull Context context, boolean forceV1) {
-    if (forceV1 || !FeatureFlags.newGroupUI() || !FeatureFlags.groupsV2create()) {
-      return new Intent(context, GroupCreateActivity.class);
-    }
-
+  public static Intent newIntent(@NonNull Context context) {
     Intent intent = new Intent(context, CreateGroupActivity.class);
 
     intent.putExtra(ContactSelectionListFragment.MULTI_SELECT, true);
@@ -44,7 +39,8 @@ public class CreateGroupActivity extends ContactSelectionActivity {
                                                                   : ContactsCursorLoader.DisplayMode.FLAG_PUSH;
 
     intent.putExtra(ContactSelectionListFragment.DISPLAY_MODE, displayMode);
-    intent.putExtra(ContactSelectionListFragment.SELECTION_LIMIT, FeatureFlags.gv2GroupCapacity() - 1);
+    intent.putExtra(ContactSelectionListFragment.TOTAL_CAPACITY, FeatureFlags.groupsV2create() ? FeatureFlags.gv2GroupCapacity() - 1
+                                                                                               : ContactSelectionListFragment.NO_LIMIT);
 
     return intent;
   }
@@ -82,6 +78,10 @@ public class CreateGroupActivity extends ContactSelectionActivity {
 
   @Override
   public void onContactSelected(Optional<RecipientId> recipientId, String number) {
+    if (contactsFragment.hasQueryFilter()) {
+      getToolbar().clear();
+    }
+
     if (contactsFragment.getSelectedContactsCount() >= MINIMUM_GROUP_SIZE) {
       enableNext();
     }
@@ -89,6 +89,10 @@ public class CreateGroupActivity extends ContactSelectionActivity {
 
   @Override
   public void onContactDeselected(Optional<RecipientId> recipientId, String number) {
+    if (contactsFragment.hasQueryFilter()) {
+      getToolbar().clear();
+    }
+
     if (contactsFragment.getSelectedContactsCount() < MINIMUM_GROUP_SIZE) {
       disableNext();
     }

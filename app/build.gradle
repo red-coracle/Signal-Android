@@ -80,8 +80,8 @@ protobuf {
     }
 }
 
-def canonicalVersionCode = 641
-def canonicalVersionName = "4.61.0"
+def canonicalVersionCode = 666
+def canonicalVersionName = "4.65.1"
 
 def postFixSize = 2
 def abiPostFix = ['universal'   : 0,
@@ -309,9 +309,10 @@ dependencies {
     implementation "androidx.autofill:autofill:1.0.0"
     implementation "androidx.paging:paging-common:2.1.2"
     implementation "androidx.paging:paging-runtime:2.1.2"
+    implementation 'com.google.firebase:firebase-ml-vision:24.0.3'
+    implementation 'com.google.firebase:firebase-ml-vision-face-model:20.0.1'
 
-
-    implementation('com.google.firebase:firebase-messaging:17.3.4') {
+    implementation ('com.google.firebase:firebase-messaging:20.2.0') {
         exclude group: 'com.google.firebase', module: 'firebase-core'
         exclude group: 'com.google.firebase', module: 'firebase-analytics'
         exclude group: 'com.google.firebase', module: 'firebase-measurement-connector'
@@ -331,7 +332,7 @@ dependencies {
 
     implementation 'org.signal:argon2:13.1@aar'
 
-    implementation 'org.signal:ringrtc-android:2.0.3'
+    implementation 'org.signal:ringrtc-android:2.2.0'
 
     implementation "me.leolin:ShortcutBadger:1.1.16"
     implementation 'se.emilsjolander:stickylistheaders:2.7.0'

@@ -6,7 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Consumer;
 
+import org.thoughtcrime.securesms.contacts.sync.DirectoryHelper;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
+import org.thoughtcrime.securesms.database.GroupDatabase;
 import org.thoughtcrime.securesms.database.IdentityDatabase;
 import org.thoughtcrime.securesms.groups.GroupChangeBusyException;
 import org.thoughtcrime.securesms.groups.GroupChangeFailedException;
@@ -23,6 +25,8 @@ import org.thoughtcrime.securesms.util.concurrent.SignalExecutors;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 final class RecipientDialogRepository {
@@ -50,18 +54,27 @@ final class RecipientDialogRepository {
     return groupId;
   }
 
-  void getIdentity(@NonNull IdentityCallback callback) {
-    SimpleTask.run(SignalExecutors.BOUNDED,
-                   () -> DatabaseFactory.getIdentityDatabase(context)
-                                        .getIdentity(recipientId)
-                                        .orNull(),
-                   callback::remoteIdentity);
+  void getIdentity(@NonNull Consumer<IdentityDatabase.IdentityRecord> callback) {
+    SignalExecutors.BOUNDED.execute(
+      () -> callback.accept(DatabaseFactory.getIdentityDatabase(context)
+                                           .getIdentity(recipientId)
+                                           .orNull()));
   }
 
   void getRecipient(@NonNull RecipientCallback recipientCallback) {
     SimpleTask.run(SignalExecutors.BOUNDED,
                    () -> Recipient.resolved(recipientId),
                    recipientCallback::onRecipient);
+  }
+
+  void refreshRecipient() {
+    SignalExecutors.UNBOUNDED.execute(() -> {
+      try {
+        DirectoryHelper.refreshDirectoryFor(context, Recipient.resolved(recipientId), false);
+      } catch (IOException e) {
+        Log.w(TAG, "Failed to refresh user after adding to contacts.");
+      }
+    });
   }
 
   void getGroupName(@NonNull Consumer<String> stringConsumer) {
@@ -106,8 +119,20 @@ final class RecipientDialogRepository {
                    onComplete::accept);
   }
 
-  interface IdentityCallback {
-    void remoteIdentity(@Nullable IdentityDatabase.IdentityRecord identityRecord);
+  void getGroupMembership(@NonNull Consumer<List<RecipientId>> onComplete) {
+    SimpleTask.run(SignalExecutors.UNBOUNDED,
+                   () -> {
+                     GroupDatabase                   groupDatabase   = DatabaseFactory.getGroupDatabase(context);
+                     List<GroupDatabase.GroupRecord> groupRecords    = groupDatabase.getPushGroupsContainingMember(recipientId);
+                     ArrayList<RecipientId>          groupRecipients = new ArrayList<>(groupRecords.size());
+
+                     for (GroupDatabase.GroupRecord groupRecord : groupRecords) {
+                       groupRecipients.add(groupRecord.getRecipientId());
+                     }
+
+                     return groupRecipients;
+                   },
+                   onComplete::accept);
   }
 
   interface RecipientCallback {

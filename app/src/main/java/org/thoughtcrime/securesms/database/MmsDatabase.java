@@ -76,6 +76,7 @@ import org.whispersystems.libsignal.util.guava.Optional;
 import java.io.Closeable;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -218,7 +219,7 @@ public class MmsDatabase extends MessagingDatabase {
           "'" + AttachmentDatabase.STICKER_PACK_ID + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.STICKER_PACK_ID+ ", " +
           "'" + AttachmentDatabase.STICKER_PACK_KEY + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.STICKER_PACK_KEY + ", " +
           "'" + AttachmentDatabase.STICKER_ID + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.STICKER_ID + ", " +
-          "'" + AttachmentDatabase.BLUR_HASH + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.BLUR_HASH + ", " +
+          "'" + AttachmentDatabase.VISUAL_HASH + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.VISUAL_HASH + ", " +
           "'" + AttachmentDatabase.TRANSFORM_PROPERTIES + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.TRANSFORM_PROPERTIES + ", " +
           "'" + AttachmentDatabase.DISPLAY_ORDER + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.DISPLAY_ORDER + ", " +
           "'" + AttachmentDatabase.UPLOAD_TIMESTAMP + "', " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.UPLOAD_TIMESTAMP +
@@ -337,12 +338,11 @@ public class MmsDatabase extends MessagingDatabase {
 
   public boolean incrementReceiptCount(SyncMessageId messageId, long timestamp, boolean deliveryReceipt) {
     SQLiteDatabase database = databaseHelper.getWritableDatabase();
-    Cursor         cursor   = null;
     boolean        found    = false;
 
-    try {
-      cursor = database.query(TABLE_NAME, new String[] {ID, THREAD_ID, MESSAGE_BOX, RECIPIENT_ID}, DATE_SENT + " = ?", new String[] {String.valueOf(messageId.getTimetamp())}, null, null, null, null);
-
+    try (Cursor cursor = database.query(TABLE_NAME, new String[] {ID, THREAD_ID, MESSAGE_BOX, RECIPIENT_ID, DELIVERY_RECEIPT_COUNT, READ_RECEIPT_COUNT},
+                                        DATE_SENT + " = ?", new String[] {String.valueOf(messageId.getTimetamp())},
+                                        null, null, null, null)) {
       while (cursor.moveToNext()) {
         if (Types.isOutgoingMessageType(cursor.getLong(cursor.getColumnIndexOrThrow(MESSAGE_BOX)))) {
           RecipientId theirRecipientId = RecipientId.from(cursor.getLong(cursor.getColumnIndexOrThrow(RECIPIENT_ID)));
@@ -350,9 +350,10 @@ public class MmsDatabase extends MessagingDatabase {
           String      columnName       = deliveryReceipt ? DELIVERY_RECEIPT_COUNT : READ_RECEIPT_COUNT;
 
           if (ourRecipientId.equals(theirRecipientId) || Recipient.resolved(theirRecipientId).isGroup()) {
-            long id       = cursor.getLong(cursor.getColumnIndexOrThrow(ID));
-            long threadId = cursor.getLong(cursor.getColumnIndexOrThrow(THREAD_ID));
-            int  status   = deliveryReceipt ? GroupReceiptDatabase.STATUS_DELIVERED : GroupReceiptDatabase.STATUS_READ;
+            long    id               = cursor.getLong(cursor.getColumnIndexOrThrow(ID));
+            long    threadId         = cursor.getLong(cursor.getColumnIndexOrThrow(THREAD_ID));
+            int     status           = deliveryReceipt ? GroupReceiptDatabase.STATUS_DELIVERED : GroupReceiptDatabase.STATUS_READ;
+            boolean isFirstIncrement = cursor.getLong(cursor.getColumnIndexOrThrow(columnName)) == 0;
 
             found = true;
 
@@ -362,7 +363,12 @@ public class MmsDatabase extends MessagingDatabase {
 
             DatabaseFactory.getGroupReceiptDatabase(context).update(ourRecipientId, id, status, timestamp);
             DatabaseFactory.getThreadDatabase(context).update(threadId, false);
-            notifyConversationListeners(threadId);
+
+            if (isFirstIncrement) {
+              notifyConversationListeners(threadId);
+            } else {
+              notifyVerboseConversationListeners(threadId);
+            }
           }
         }
       }
@@ -373,9 +379,6 @@ public class MmsDatabase extends MessagingDatabase {
       }
 
       return found;
-    } finally {
-      if (cursor != null)
-        cursor.close();
     }
   }
 
@@ -426,9 +429,19 @@ public class MmsDatabase extends MessagingDatabase {
   }
 
   public Cursor getMessage(long messageId) {
-    Cursor cursor = rawQuery(RAW_ID_WHERE, new String[] {messageId + ""});
-    setNotifyConverationListeners(cursor, getThreadIdForMessage(messageId));
+    Cursor cursor = internalGetMessage(messageId);
+    setNotifyConversationListeners(cursor, getThreadIdForMessage(messageId));
     return cursor;
+  }
+
+  public Cursor getVerboseMessage(long messageId) {
+    Cursor cursor = internalGetMessage(messageId);
+    setNotifyVerboseConversationListeners(cursor, getThreadIdForMessage(messageId));
+    return cursor;
+  }
+
+  private Cursor internalGetMessage(long messageId) {
+    return rawQuery(RAW_ID_WHERE, new String[] {messageId + ""});
   }
 
   public MessageRecord getMessageRecord(long messageId) throws NoSuchMessageException {
@@ -570,19 +583,41 @@ public class MmsDatabase extends MessagingDatabase {
   }
 
   @Override
-  public void markExpireStarted(long messageId) {
-    markExpireStarted(messageId, System.currentTimeMillis());
+  public void markExpireStarted(long id) {
+    markExpireStarted(id, System.currentTimeMillis());
   }
 
   @Override
-  public void markExpireStarted(long messageId, long startedTimestamp) {
-    ContentValues contentValues = new ContentValues();
-    contentValues.put(EXPIRE_STARTED, startedTimestamp);
+  public void markExpireStarted(long id, long startedTimestamp) {
+    markExpireStarted(Collections.singleton(id), startedTimestamp);
+  }
 
-    SQLiteDatabase db = databaseHelper.getWritableDatabase();
-    db.update(TABLE_NAME, contentValues, ID_WHERE, new String[] {String.valueOf(messageId)});
+  @Override
+  public void markExpireStarted(Collection<Long> ids, long startedAtTimestamp) {
+    SQLiteDatabase db       = databaseHelper.getWritableDatabase();
+    long           threadId = -1;
 
-    long threadId = getThreadIdForMessage(messageId);
+    db.beginTransaction();
+    try {
+      String query = ID + " = ? AND (" + EXPIRE_STARTED + " = 0 OR " + EXPIRE_STARTED + " > ?)";
+
+      for (long id : ids) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(EXPIRE_STARTED, startedAtTimestamp);
+
+        db.update(TABLE_NAME, contentValues, query, new String[]{String.valueOf(id), String.valueOf(startedAtTimestamp)});
+
+        if (threadId < 0) {
+          threadId = getThreadIdForMessage(id);
+        }
+      }
+
+      db.setTransactionSuccessful();
+    } finally {
+      db.endTransaction();
+    }
+
+    DatabaseFactory.getThreadDatabase(context).update(threadId, false);
     notifyConversationListeners(threadId);
   }
 

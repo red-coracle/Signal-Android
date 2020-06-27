@@ -14,6 +14,8 @@ import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.concurrent.SignalExecutors;
+import org.thoughtcrime.securesms.util.paging.Invalidator;
+import org.thoughtcrime.securesms.util.paging.SizeFixResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,16 +32,13 @@ class ConversationDataSource extends PositionalDataSource<MessageRecord> {
 
   private final Context             context;
   private final long                threadId;
-  private final DataUpdatedCallback dataUpdateCallback;
 
   private ConversationDataSource(@NonNull Context context,
                                  long threadId,
-                                 @NonNull Invalidator invalidator,
-                                 @NonNull DataUpdatedCallback dataUpdateCallback)
+                                 @NonNull Invalidator invalidator)
   {
     this.context            = context;
     this.threadId           = threadId;
-    this.dataUpdateCallback = dataUpdateCallback;
 
     ContentObserver contentObserver = new ContentObserver(null) {
       @Override
@@ -49,7 +48,10 @@ class ConversationDataSource extends PositionalDataSource<MessageRecord> {
       }
     };
 
-    invalidator.observe(this::invalidate);
+    invalidator.observe(() -> {
+      invalidate();
+      context.getContentResolver().unregisterContentObserver(contentObserver);
+    });
 
     context.getContentResolver().registerContentObserver(DatabaseContentProviders.Conversation.getUriForThread(threadId), true, contentObserver);
   }
@@ -71,12 +73,13 @@ class ConversationDataSource extends PositionalDataSource<MessageRecord> {
       }
     }
 
-    SizeFixResult result = ensureMultipleOfPageSize(records, params.requestedStartPosition, params.pageSize, totalCount);
+    if (!isInvalid()) {
+      SizeFixResult<MessageRecord> result = SizeFixResult.ensureMultipleOfPageSize(records, params.requestedStartPosition, params.pageSize, totalCount);
 
-    callback.onResult(result.messages, params.requestedStartPosition, result.total);
-    Util.runOnMain(dataUpdateCallback::onDataUpdated);
+      callback.onResult(result.getItems(), params.requestedStartPosition, result.getTotal());
+    }
 
-    Log.d(TAG, "[Initial Load] " + (System.currentTimeMillis() - start) + " ms" + (isInvalid() ? " -- invalidated" : ""));
+    Log.d(TAG, "[Initial Load] " + (System.currentTimeMillis() - start) + " ms | thread: " + threadId + ", start: " + params.requestedStartPosition + ", size: " + params.requestedLoadSize + (isInvalid() ? " -- invalidated" : ""));
   }
 
   @Override
@@ -94,57 +97,8 @@ class ConversationDataSource extends PositionalDataSource<MessageRecord> {
     }
 
     callback.onResult(records);
-    Util.runOnMain(dataUpdateCallback::onDataUpdated);
 
-    Log.d(TAG, "[Update] " + (System.currentTimeMillis() - start) + " ms" + (isInvalid() ? " -- invalidated" : ""));
-  }
-
-  private static @NonNull SizeFixResult ensureMultipleOfPageSize(@NonNull List<MessageRecord> records,
-                                                                 int startPosition,
-                                                                 int pageSize,
-                                                                 int total)
-  {
-    if (records.size() + startPosition == total || records.size() % pageSize == 0) {
-      return new SizeFixResult(records, total);
-    }
-
-    if (records.size() < pageSize) {
-      Log.w(TAG, "Hit a miscalculation where we don't have the full dataset, but it's smaller than a page size. records: " + records.size() + ", startPosition: " + startPosition + ", pageSize: " + pageSize + ", total: " + total);
-      return new SizeFixResult(records, records.size() + startPosition);
-    }
-
-    Log.w(TAG, "Hit a miscalculation where our data size isn't a multiple of the page size. records: " + records.size() + ", startPosition: " + startPosition + ", pageSize: " + pageSize + ", total: " + total);
-    int overflow = records.size() % pageSize;
-
-    return new SizeFixResult(records.subList(0, records.size() - overflow), total);
-  }
-
-  private static class SizeFixResult {
-    final List<MessageRecord> messages;
-    final int                 total;
-
-    private SizeFixResult(@NonNull List<MessageRecord> messages, int total) {
-      this.messages = messages;
-      this.total    = total;
-    }
-  }
-
-  interface DataUpdatedCallback {
-    void onDataUpdated();
-  }
-
-  static class Invalidator {
-    private Runnable callback;
-
-    synchronized void invalidate() {
-      if (callback != null) {
-        callback.run();
-      }
-    }
-
-    private synchronized void observe(@NonNull Runnable callback) {
-      this.callback = callback;
-    }
+    Log.d(TAG, "[Update] " + (System.currentTimeMillis() - start) + " ms | thread: " + threadId + ", start: " + params.startPosition + ", size: " + params.loadSize + (isInvalid() ? " -- invalidated" : ""));
   }
 
   static class Factory extends DataSource.Factory<Integer, MessageRecord> {
@@ -152,18 +106,16 @@ class ConversationDataSource extends PositionalDataSource<MessageRecord> {
     private final Context             context;
     private final long                threadId;
     private final Invalidator         invalidator;
-    private final DataUpdatedCallback callback;
 
-    Factory(Context context, long threadId, @NonNull Invalidator invalidator, @NonNull DataUpdatedCallback callback) {
+    Factory(Context context, long threadId, @NonNull Invalidator invalidator) {
       this.context     = context;
       this.threadId    = threadId;
       this.invalidator = invalidator;
-      this.callback    = callback;
     }
 
     @Override
     public @NonNull DataSource<Integer, MessageRecord> create() {
-      return new ConversationDataSource(context, threadId, invalidator, callback);
+      return new ConversationDataSource(context, threadId, invalidator);
     }
   }
 }

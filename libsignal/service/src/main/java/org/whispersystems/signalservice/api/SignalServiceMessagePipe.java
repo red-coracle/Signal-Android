@@ -16,14 +16,17 @@ import org.signal.zkgroup.profiles.ProfileKeyCredentialRequest;
 import org.signal.zkgroup.profiles.ProfileKeyCredentialRequestContext;
 import org.signal.zkgroup.profiles.ProfileKeyVersion;
 import org.whispersystems.libsignal.InvalidVersionException;
+import org.whispersystems.libsignal.logging.Log;
 import org.whispersystems.libsignal.util.Hex;
-import org.whispersystems.libsignal.util.Pair;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.crypto.UnidentifiedAccess;
 import org.whispersystems.signalservice.api.messages.SignalServiceEnvelope;
 import org.whispersystems.signalservice.api.profiles.ProfileAndCredential;
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfile;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
+import org.whispersystems.signalservice.api.push.exceptions.NonSuccessfulResponseCodeException;
+import org.whispersystems.signalservice.api.push.exceptions.NotFoundException;
+import org.whispersystems.signalservice.api.push.exceptions.UnregisteredUserException;
 import org.whispersystems.signalservice.api.util.CredentialsProvider;
 import org.whispersystems.signalservice.internal.push.AttachmentV2UploadAttributes;
 import org.whispersystems.signalservice.internal.push.AttachmentV3UploadAttributes;
@@ -31,7 +34,10 @@ import org.whispersystems.signalservice.internal.push.OutgoingPushMessageList;
 import org.whispersystems.signalservice.internal.push.SendMessageResponse;
 import org.whispersystems.signalservice.internal.util.JsonUtil;
 import org.whispersystems.signalservice.internal.util.Util;
+import org.whispersystems.signalservice.internal.util.concurrent.FutureTransformers;
+import org.whispersystems.signalservice.internal.util.concurrent.ListenableFuture;
 import org.whispersystems.signalservice.internal.websocket.WebSocketConnection;
+import org.whispersystems.signalservice.internal.websocket.WebsocketResponse;
 import org.whispersystems.util.Base64;
 
 import java.io.IOException;
@@ -40,6 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -54,6 +61,8 @@ import static org.whispersystems.signalservice.internal.websocket.WebSocketProto
 public class SignalServiceMessagePipe {
 
   private static final String TAG = SignalServiceMessagePipe.class.getName();
+
+  private static final String SERVER_DELIVERED_TIMESTAMP_HEADER = "X-Signal-Timestamp";
 
   private final WebSocketConnection           websocket;
   private final Optional<CredentialsProvider> credentialsProvider;
@@ -140,9 +149,21 @@ public class SignalServiceMessagePipe {
 
       try {
         if (isSignalServiceEnvelope(request)) {
+          Optional<String> timestampHeader = findHeader(request, SERVER_DELIVERED_TIMESTAMP_HEADER);
+          long             timestamp       = 0;
+
+          if (timestampHeader.isPresent()) {
+            try {
+              timestamp = Long.parseLong(timestampHeader.get());
+            } catch (NumberFormatException e) {
+              Log.w(TAG, "Failed to parse " + SERVER_DELIVERED_TIMESTAMP_HEADER);
+            }
+          }
+
           SignalServiceEnvelope envelope = new SignalServiceEnvelope(request.getBody().toByteArray(),
                                                                      credentialsProvider.get().getSignalingKey(),
-                                                                     signalKeyEncrypted);
+                                                                     signalKeyEncrypted,
+                                                                     timestamp);
 
           callback.onMessage(envelope);
           return Optional.of(envelope);
@@ -155,95 +176,97 @@ public class SignalServiceMessagePipe {
     }
   }
 
-  public SendMessageResponse send(OutgoingPushMessageList list, Optional<UnidentifiedAccess> unidentifiedAccess) throws IOException {
-    try {
-      List<String> headers = new LinkedList<String>() {{
-        add("content-type:application/json");
-      }};
+  public Future<SendMessageResponse> send(OutgoingPushMessageList list, Optional<UnidentifiedAccess> unidentifiedAccess) throws IOException {
+    List<String> headers = new LinkedList<String>() {{
+      add("content-type:application/json");
+    }};
 
-      if (unidentifiedAccess.isPresent()) {
-        headers.add("Unidentified-Access-Key:" + Base64.encodeBytes(unidentifiedAccess.get().getUnidentifiedAccessKey()));
-      }
-
-      WebSocketRequestMessage requestMessage = WebSocketRequestMessage.newBuilder()
-                                                                      .setId(new SecureRandom().nextLong())
-                                                                      .setVerb("PUT")
-                                                                      .setPath(String.format("/v1/messages/%s", list.getDestination()))
-                                                                      .addAllHeaders(headers)
-                                                                      .setBody(ByteString.copyFrom(JsonUtil.toJson(list).getBytes()))
-                                                                      .build();
-
-      Pair<Integer, String> response = websocket.sendRequest(requestMessage).get(10, TimeUnit.SECONDS);
-
-      if (response.first() < 200 || response.first() >= 300) {
-        throw new IOException("Non-successful response: " + response.first());
-      }
-
-      if (Util.isEmpty(response.second())) return new SendMessageResponse(false);
-      else                                 return JsonUtil.fromJson(response.second(), SendMessageResponse.class);
-    } catch (InterruptedException | ExecutionException | TimeoutException e) {
-      throw new IOException(e);
+    if (unidentifiedAccess.isPresent()) {
+      headers.add("Unidentified-Access-Key:" + Base64.encodeBytes(unidentifiedAccess.get().getUnidentifiedAccessKey()));
     }
+
+    WebSocketRequestMessage requestMessage = WebSocketRequestMessage.newBuilder()
+                                                                    .setId(new SecureRandom().nextLong())
+                                                                    .setVerb("PUT")
+                                                                    .setPath(String.format("/v1/messages/%s", list.getDestination()))
+                                                                    .addAllHeaders(headers)
+                                                                    .setBody(ByteString.copyFrom(JsonUtil.toJson(list).getBytes()))
+                                                                    .build();
+
+    ListenableFuture<WebsocketResponse> response = websocket.sendRequest(requestMessage);
+
+    return FutureTransformers.map(response, value -> {
+      if (value.getStatus() == 404) {
+        throw new UnregisteredUserException(list.getDestination(), new NotFoundException("not found"));
+      } else if (value.getStatus() < 200 || value.getStatus() >= 300) {
+        throw new IOException("Non-successful response: " + value.getStatus());
+      }
+
+      if (Util.isEmpty(value.getBody())) {
+        return new SendMessageResponse(false);
+      } else {
+        return JsonUtil.fromJson(value.getBody(), SendMessageResponse.class);
+      }
+    });
   }
 
-  public ProfileAndCredential getProfile(SignalServiceAddress address,
-                                         Optional<ProfileKey> profileKey,
-                                         Optional<UnidentifiedAccess> unidentifiedAccess,
-                                         SignalServiceProfile.RequestType requestType)
+  public ListenableFuture<ProfileAndCredential> getProfile(SignalServiceAddress address,
+                                                           Optional<ProfileKey> profileKey,
+                                                           Optional<UnidentifiedAccess> unidentifiedAccess,
+                                                           SignalServiceProfile.RequestType requestType)
       throws IOException
   {
-    try {
-      List<String> headers = new LinkedList<>();
+    List<String> headers = new LinkedList<>();
 
-      if (unidentifiedAccess.isPresent()) {
-        headers.add("Unidentified-Access-Key:" + Base64.encodeBytes(unidentifiedAccess.get().getUnidentifiedAccessKey()));
-      }
+    if (unidentifiedAccess.isPresent()) {
+      headers.add("Unidentified-Access-Key:" + Base64.encodeBytes(unidentifiedAccess.get().getUnidentifiedAccessKey()));
+    }
 
-      Optional<UUID>                     uuid           = address.getUuid();
-      SecureRandom                       random         = new SecureRandom();
-      ProfileKeyCredentialRequestContext requestContext = null;
+    Optional<UUID>                     uuid           = address.getUuid();
+    SecureRandom                       random         = new SecureRandom();
+    ProfileKeyCredentialRequestContext requestContext = null;
 
-      WebSocketRequestMessage.Builder builder = WebSocketRequestMessage.newBuilder()
-                                                                       .setId(random.nextLong())
-                                                                       .setVerb("GET")
-                                                                       .addAllHeaders(headers);
+    WebSocketRequestMessage.Builder builder = WebSocketRequestMessage.newBuilder()
+                                                                     .setId(random.nextLong())
+                                                                     .setVerb("GET")
+                                                                     .addAllHeaders(headers);
 
-      if (uuid.isPresent() && profileKey.isPresent()) {
-        UUID              target               = uuid.get();
-        ProfileKeyVersion profileKeyIdentifier = profileKey.get().getProfileKeyVersion(target);
-        String            version              = profileKeyIdentifier.serialize();
+    if (uuid.isPresent() && profileKey.isPresent()) {
+      UUID              target               = uuid.get();
+      ProfileKeyVersion profileKeyIdentifier = profileKey.get().getProfileKeyVersion(target);
+      String            version              = profileKeyIdentifier.serialize();
 
-        if (requestType == SignalServiceProfile.RequestType.PROFILE_AND_CREDENTIAL) {
-          requestContext = clientZkProfile.createProfileKeyCredentialRequestContext(random, target, profileKey.get());
+      if (requestType == SignalServiceProfile.RequestType.PROFILE_AND_CREDENTIAL) {
+        requestContext = clientZkProfile.createProfileKeyCredentialRequestContext(random, target, profileKey.get());
 
-          ProfileKeyCredentialRequest request           = requestContext.getRequest();
-          String                      credentialRequest = Hex.toStringCondensed(request.serialize());
+        ProfileKeyCredentialRequest request           = requestContext.getRequest();
+        String                      credentialRequest = Hex.toStringCondensed(request.serialize());
 
-          builder.setPath(String.format("/v1/profile/%s/%s/%s", target, version, credentialRequest));
-        } else {
-          builder.setPath(String.format("/v1/profile/%s/%s", target, version));
-        }
+        builder.setPath(String.format("/v1/profile/%s/%s/%s", target, version, credentialRequest));
       } else {
-        builder.setPath(String.format("/v1/profile/%s", address.getIdentifier()));
+        builder.setPath(String.format("/v1/profile/%s/%s", target, version));
+      }
+    } else {
+      builder.setPath(String.format("/v1/profile/%s", address.getIdentifier()));
+    }
+
+    final ProfileKeyCredentialRequestContext finalRequestContext = requestContext;
+    WebSocketRequestMessage requestMessage = builder.build();
+
+    return FutureTransformers.map(websocket.sendRequest(requestMessage), response -> {
+      if (response.getStatus() == 404) {
+        throw new NotFoundException("Not found");
+      } else if (response.getStatus() < 200 || response.getStatus() >= 300) {
+        throw new NonSuccessfulResponseCodeException("Non-successful response: " + response.getStatus());
       }
 
-      WebSocketRequestMessage requestMessage = builder.build();
-
-      Pair<Integer, String> response = websocket.sendRequest(requestMessage).get(10, TimeUnit.SECONDS);
-
-      if (response.first() < 200 || response.first() >= 300) {
-        throw new IOException("Non-successful response: " + response.first());
-      }
-
-      SignalServiceProfile signalServiceProfile = JsonUtil.fromJson(response.second(), SignalServiceProfile.class);
-      ProfileKeyCredential profileKeyCredential = requestContext != null && signalServiceProfile.getProfileKeyCredentialResponse() != null
-                                                  ? clientZkProfile.receiveProfileKeyCredential(requestContext, signalServiceProfile.getProfileKeyCredentialResponse())
-                                                  : null;
+      SignalServiceProfile signalServiceProfile = JsonUtil.fromJson(response.getBody(), SignalServiceProfile.class);
+      ProfileKeyCredential profileKeyCredential = finalRequestContext != null && signalServiceProfile.getProfileKeyCredentialResponse() != null
+                                                    ? clientZkProfile.receiveProfileKeyCredential(finalRequestContext, signalServiceProfile.getProfileKeyCredentialResponse())
+                                                    : null;
 
       return new ProfileAndCredential(signalServiceProfile, requestType, Optional.fromNullable(profileKeyCredential));
-    } catch (InterruptedException | ExecutionException | TimeoutException | VerificationFailedException e) {
-      throw new IOException(e);
-    }
+    });
   }
 
   public AttachmentV2UploadAttributes getAttachmentV2UploadAttributes() throws IOException {
@@ -254,13 +277,13 @@ public class SignalServiceMessagePipe {
                                                                       .setPath("/v2/attachments/form/upload")
                                                                       .build();
 
-      Pair<Integer, String> response = websocket.sendRequest(requestMessage).get(10, TimeUnit.SECONDS);
+      WebsocketResponse response = websocket.sendRequest(requestMessage).get(10, TimeUnit.SECONDS);
 
-      if (response.first() < 200 || response.first() >= 300) {
-        throw new IOException("Non-successful response: " + response.first());
+      if (response.getStatus() < 200 || response.getStatus() >= 300) {
+        throw new IOException("Non-successful response: " + response.getStatus());
       }
 
-      return JsonUtil.fromJson(response.second(), AttachmentV2UploadAttributes.class);
+      return JsonUtil.fromJson(response.getBody(), AttachmentV2UploadAttributes.class);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
       throw new IOException(e);
     }
@@ -274,13 +297,13 @@ public class SignalServiceMessagePipe {
                                                                       .setPath("/v3/attachments/form/upload")
                                                                       .build();
 
-      Pair<Integer, String> response = websocket.sendRequest(requestMessage).get(10, TimeUnit.SECONDS);
+      WebsocketResponse response = websocket.sendRequest(requestMessage).get(10, TimeUnit.SECONDS);
 
-      if (response.first() < 200 || response.first() >= 300) {
-        throw new IOException("Non-successful response: " + response.first());
+      if (response.getStatus() < 200 || response.getStatus() >= 300) {
+        throw new IOException("Non-successful response: " + response.getStatus());
       }
 
-      return JsonUtil.fromJson(response.second(), AttachmentV3UploadAttributes.class);
+      return JsonUtil.fromJson(response.getBody(), AttachmentV3UploadAttributes.class);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
       throw new IOException(e);
     }
@@ -335,6 +358,23 @@ public class SignalServiceMessagePipe {
                                      .setMessage("Unknown")
                                      .build();
     }
+  }
+
+  private static Optional<String> findHeader(WebSocketRequestMessage message, String targetHeader) {
+    if (message.getHeadersCount() == 0) {
+      return Optional.absent();
+    }
+
+    for (String header : message.getHeadersList()) {
+      if (header.startsWith(targetHeader)) {
+        String[] split = header.split(":");
+        if (split.length == 2 && split[0].trim().toLowerCase().equals(targetHeader.toLowerCase())) {
+          return Optional.of(split[1].trim());
+        }
+      }
+    }
+
+    return Optional.absent();
   }
 
   /**

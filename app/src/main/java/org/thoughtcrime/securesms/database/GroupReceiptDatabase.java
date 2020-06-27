@@ -11,6 +11,7 @@ import net.sqlcipher.database.SQLiteDatabase;
 
 import org.thoughtcrime.securesms.database.helpers.SQLCipherOpenHelper;
 import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.whispersystems.libsignal.util.Pair;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -46,14 +47,20 @@ public class GroupReceiptDatabase extends Database {
   public void insert(Collection<RecipientId> recipientIds, long mmsId, int status, long timestamp) {
     SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
-    for (RecipientId recipientId : recipientIds) {
-      ContentValues values = new ContentValues(4);
-      values.put(MMS_ID, mmsId);
-      values.put(RECIPIENT_ID, recipientId.serialize());
-      values.put(STATUS, status);
-      values.put(TIMESTAMP, timestamp);
+    db.beginTransaction();
+    try {
+      for (RecipientId recipientId : recipientIds) {
+        ContentValues values = new ContentValues(4);
+        values.put(MMS_ID, mmsId);
+        values.put(RECIPIENT_ID, recipientId.serialize());
+        values.put(STATUS, status);
+        values.put(TIMESTAMP, timestamp);
 
-      db.insert(TABLE_NAME, null, values);
+        db.insert(TABLE_NAME, null, values);
+      }
+      db.setTransactionSuccessful();
+    } finally {
+      db.endTransaction();
     }
   }
 
@@ -67,14 +74,24 @@ public class GroupReceiptDatabase extends Database {
               new String[] {String.valueOf(mmsId), recipientId.serialize(), String.valueOf(status)});
   }
 
-  public void setUnidentified(RecipientId recipientId, long mmsId, boolean unidentified) {
-    SQLiteDatabase db     = databaseHelper.getWritableDatabase();
-    ContentValues  values = new ContentValues(1);
-    values.put(UNIDENTIFIED, unidentified ? 1 : 0);
+  public void setUnidentified(Collection<Pair<RecipientId, Boolean>> results, long mmsId) {
+    SQLiteDatabase db  = databaseHelper.getWritableDatabase();
 
-    db.update(TABLE_NAME, values, MMS_ID + " = ? AND " + RECIPIENT_ID + " = ?",
-              new String[] {String.valueOf(mmsId), recipientId.serialize()});
+    db.beginTransaction();
+    try {
+      String query = MMS_ID + " = ? AND " + RECIPIENT_ID + " = ?";
 
+      for (Pair<RecipientId, Boolean> result : results) {
+        ContentValues values = new ContentValues(1);
+        values.put(UNIDENTIFIED, result.second() ? 1 : 0);
+
+        db.update(TABLE_NAME, values, query, new String[]{ String.valueOf(mmsId), result.first().serialize()});
+      }
+
+      db.setTransactionSuccessful();
+    } finally {
+      db.endTransaction();
+    }
   }
 
   public @NonNull List<GroupReceiptInfo> getGroupReceiptInfo(long mmsId) {

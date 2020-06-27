@@ -45,6 +45,7 @@ import org.thoughtcrime.securesms.util.Util;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * List adapter to display all contacts and their related information
@@ -64,11 +65,14 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
   private final static int STYLE_ATTRIBUTES[] = new int[]{R.attr.contact_selection_push_user,
                                                           R.attr.contact_selection_lay_user};
 
+  public static final int PAYLOAD_SELECTION_CHANGE = 1;
+
   private final boolean           multiSelect;
-  private final LayoutInflater    li;
+  private final LayoutInflater    layoutInflater;
   private final TypedArray        drawables;
   private final ItemClickListener clickListener;
   private final GlideRequests     glideRequests;
+  private final Set<RecipientId>  currentContacts;
 
   private final SelectedContactSet selectedContacts = new SelectedContactSet();
 
@@ -97,9 +101,10 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
       super(itemView);
     }
 
-    public abstract void bind(@NonNull GlideRequests glideRequests, @Nullable RecipientId recipientId, int type, String name, String number, String label, int color, boolean multiSelect);
+    public abstract void bind(@NonNull GlideRequests glideRequests, @Nullable RecipientId recipientId, int type, String name, String number, String label, int color, boolean checkboxVisible);
     public abstract void unbind(@NonNull GlideRequests glideRequests);
     public abstract void setChecked(boolean checked);
+    public abstract void setEnabled(boolean enabled);
   }
 
   public static class ContactViewHolder extends ViewHolder {
@@ -116,8 +121,8 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
       return (ContactSelectionListItem) itemView;
     }
 
-    public void bind(@NonNull GlideRequests glideRequests, @Nullable RecipientId recipientId, int type, String name, String number, String label, int color, boolean multiSelect) {
-      getView().set(glideRequests, recipientId, type, name, number, label, color, multiSelect);
+    public void bind(@NonNull GlideRequests glideRequests, @Nullable RecipientId recipientId, int type, String name, String number, String label, int color, boolean checkBoxVisible) {
+      getView().set(glideRequests, recipientId, type, name, number, label, color, checkBoxVisible);
     }
 
     @Override
@@ -128,6 +133,11 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
     @Override
     public void setChecked(boolean checked) {
       getView().setChecked(checked);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+      getView().setEnabled(enabled);
     }
   }
 
@@ -141,7 +151,7 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
     }
 
     @Override
-    public void bind(@NonNull GlideRequests glideRequests, @Nullable RecipientId recipientId, int type, String name, String number, String label, int color, boolean multiSelect) {
+    public void bind(@NonNull GlideRequests glideRequests, @Nullable RecipientId recipientId, int type, String name, String number, String label, int color, boolean checkboxVisible) {
       this.label.setText(name);
     }
 
@@ -150,6 +160,9 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
 
     @Override
     public void setChecked(boolean checked) {}
+
+    @Override
+    public void setEnabled(boolean enabled) {}
   }
 
   static class HeaderViewHolder extends RecyclerView.ViewHolder {
@@ -162,19 +175,22 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
                                      @NonNull  GlideRequests glideRequests,
                                      @Nullable Cursor cursor,
                                      @Nullable ItemClickListener clickListener,
-                                     boolean multiSelect)
+                                     boolean multiSelect,
+                                     @NonNull Set<RecipientId> currentContacts)
   {
     super(context, cursor);
-    this.li            = LayoutInflater.from(context);
-    this.glideRequests = glideRequests;
-    this.drawables     = context.obtainStyledAttributes(STYLE_ATTRIBUTES);
-    this.multiSelect   = multiSelect;
-    this.clickListener = clickListener;
+    this.layoutInflater = LayoutInflater.from(context);
+    this.glideRequests   = glideRequests;
+    this.drawables       = context.obtainStyledAttributes(STYLE_ATTRIBUTES);
+    this.multiSelect     = multiSelect;
+    this.clickListener   = clickListener;
+    this.currentContacts = currentContacts;
   }
 
   @Override
   public long getHeaderId(int i) {
     if (!isActiveCursor()) return -1;
+    else if (i == -1)      return -1;
 
     int contactType = getContactType(i);
 
@@ -185,9 +201,9 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
   @Override
   public ViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
     if (viewType == VIEW_TYPE_CONTACT) {
-      return new ContactViewHolder(li.inflate(R.layout.contact_selection_list_item, parent, false), clickListener);
+      return new ContactViewHolder(layoutInflater.inflate(R.layout.contact_selection_list_item, parent, false), clickListener);
     } else {
-      return new DividerViewHolder(li.inflate(R.layout.contact_selection_list_divider, parent, false));
+      return new DividerViewHolder(layoutInflater.inflate(R.layout.contact_selection_list_divider, parent, false));
     }
   }
 
@@ -206,10 +222,39 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
     int color = (contactType == ContactRepository.PUSH_TYPE) ? drawables.getColor(0, 0xa0000000) :
                 drawables.getColor(1, 0xff000000);
 
-    viewHolder.unbind(glideRequests);
-    viewHolder.bind(glideRequests, id, contactType, name, number, labelText, color, multiSelect);
+    boolean currentContact = currentContacts.contains(id);
 
-    if (numberType == ContactRepository.NEW_USERNAME_TYPE) {
+    viewHolder.unbind(glideRequests);
+    viewHolder.bind(glideRequests, id, contactType, name, number, labelText, color, multiSelect || currentContact);
+    viewHolder.setEnabled(true);
+
+    if (currentContact) {
+      viewHolder.setChecked(true);
+      viewHolder.setEnabled(false);
+    } else if (numberType == ContactRepository.NEW_USERNAME_TYPE) {
+      viewHolder.setChecked(selectedContacts.contains(SelectedContact.forUsername(id, number)));
+    } else {
+      viewHolder.setChecked(selectedContacts.contains(SelectedContact.forPhone(id, number)));
+    }
+  }
+
+  @Override
+  protected void onBindItemViewHolder(ViewHolder viewHolder, @NonNull Cursor cursor, @NonNull List<Object> payloads) {
+    if (!arePayloadsValid(payloads)) {
+      throw new AssertionError();
+    }
+
+    String      rawId      = cursor.getString(cursor.getColumnIndexOrThrow(ContactRepository.ID_COLUMN));
+    RecipientId id         = rawId != null ? RecipientId.from(rawId) : null;
+    int         numberType = cursor.getInt(cursor.getColumnIndexOrThrow(ContactRepository.NUMBER_TYPE_COLUMN));
+    String      number     = cursor.getString(cursor.getColumnIndexOrThrow(ContactRepository.NUMBER_COLUMN));
+
+    viewHolder.setEnabled(true);
+
+    if (currentContacts.contains(id)) {
+      viewHolder.setChecked(true);
+      viewHolder.setEnabled(false);
+    } else if (numberType == ContactRepository.NEW_USERNAME_TYPE) {
       viewHolder.setChecked(selectedContacts.contains(SelectedContact.forUsername(id, number)));
     } else {
       viewHolder.setChecked(selectedContacts.contains(SelectedContact.forPhone(id, number)));
@@ -225,7 +270,6 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
     }
   }
 
-
   @Override
   public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int position) {
     return new HeaderViewHolder(LayoutInflater.from(getContext()).inflate(R.layout.contact_selection_recyclerview_header, parent, false));
@@ -234,6 +278,11 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
   @Override
   public void onBindHeaderViewHolder(HeaderViewHolder viewHolder, int position) {
     ((TextView)viewHolder.itemView).setText(getSpannedHeaderString(position));
+  }
+
+  @Override
+  protected boolean arePayloadsValid(@NonNull List<Object> payloads) {
+    return payloads.size() == 1 && payloads.get(0).equals(PAYLOAD_SELECTION_CHANGE);
   }
 
   @Override

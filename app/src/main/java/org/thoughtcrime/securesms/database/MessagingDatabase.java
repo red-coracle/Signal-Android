@@ -27,6 +27,7 @@ import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +47,7 @@ public abstract class MessagingDatabase extends Database implements MmsSmsColumn
 
   public abstract void markExpireStarted(long messageId);
   public abstract void markExpireStarted(long messageId, long startTime);
+  public abstract void markExpireStarted(Collection<Long> messageId, long startTime);
 
   public abstract void markAsSent(long messageId, boolean secure);
   public abstract void markUnidentified(long messageId, boolean unidentified);
@@ -151,13 +153,15 @@ public abstract class MessagingDatabase extends Database implements MmsSmsColumn
   }
 
   public void setAllReactionsSeen() {
-    SQLiteDatabase db          = databaseHelper.getWritableDatabase();
-    ContentValues  values      = new ContentValues();
+    SQLiteDatabase db     = databaseHelper.getWritableDatabase();
+    ContentValues  values = new ContentValues();
+    String         query  = REACTIONS_UNREAD + " != ?";
+    String[]       args   = new String[] { "0" };
 
     values.put(REACTIONS_UNREAD, 0);
     values.put(REACTIONS_LAST_SEEN, System.currentTimeMillis());
 
-    db.update(getTableName(), values, null, null);
+    db.update(getTableName(), values, query, args);
   }
 
   public void addReaction(long messageId, @NonNull ReactionRecord reaction) {

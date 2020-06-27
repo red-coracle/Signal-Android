@@ -14,11 +14,19 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Consumer;
 
+import com.google.protobuf.ByteString;
+
+import org.thoughtcrime.securesms.attachments.Attachment;
+import org.thoughtcrime.securesms.attachments.DatabaseAttachment;
+import org.thoughtcrime.securesms.database.AttachmentDatabase;
+import org.thoughtcrime.securesms.database.DatabaseFactory;
+import org.thoughtcrime.securesms.database.model.databaseprotos.AudioWaveFormData;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.media.DecryptableUriMediaInput;
 import org.thoughtcrime.securesms.media.MediaInput;
 import org.thoughtcrime.securesms.mms.AudioSlide;
 import org.thoughtcrime.securesms.util.Util;
+import org.thoughtcrime.securesms.util.concurrent.SerialExecutor;
 import org.thoughtcrime.securesms.util.concurrent.SignalExecutors;
 
 import java.io.IOException;
@@ -32,7 +40,7 @@ public final class AudioWaveForm {
 
   private static final String TAG = Log.tag(AudioWaveForm.class);
 
-  private static final int BARS            = 46;
+  private static final int BAR_COUNT       = 46;
   private static final int SAMPLES_PER_BAR =  4;
 
   private final Context    context;
@@ -43,35 +51,79 @@ public final class AudioWaveForm {
     this.slide   = slide;
   }
 
-  private static final LruCache<Uri, AudioFileInfo> WAVE_FORM_CACHE        = new LruCache<>(200);
-  private static final Executor                     AUDIO_DECODER_EXECUTOR = SignalExecutors.BOUNDED;
+  private static final LruCache<String, AudioFileInfo> WAVE_FORM_CACHE        = new LruCache<>(200);
+  private static final Executor                        AUDIO_DECODER_EXECUTOR = new SerialExecutor(SignalExecutors.BOUNDED);
 
   @AnyThread
-  public void generateWaveForm(@NonNull Consumer<AudioFileInfo> onSuccess, @NonNull Consumer<IOException> onFailure) {
-    AUDIO_DECODER_EXECUTOR.execute(() -> {
-      try {
-        long startTime = System.currentTimeMillis();
-        Uri uri = slide.getUri();
-        if (uri == null) {
-          Util.runOnMain(() -> onFailure.accept(null));
-          return;
-        }
+  public void getWaveForm(@NonNull Consumer<AudioFileInfo> onSuccess, @NonNull Runnable onFailure) {
+    Uri        uri        = slide.getUri();
+    Attachment attachment = slide.asAttachment();
 
-        AudioFileInfo cached = WAVE_FORM_CACHE.get(uri);
-        if (cached != null) {
-          Util.runOnMain(() -> onSuccess.accept(cached));
+    if (uri == null) {
+      Log.w(TAG, "No uri");
+      Util.runOnMain(onFailure);
+      return;
+    }
+
+    if (!(attachment instanceof DatabaseAttachment)) {
+      Log.i(TAG, "Not yet in database");
+      Util.runOnMain(onFailure);
+      return;
+    }
+
+    String        cacheKey = uri.toString();
+    AudioFileInfo cached   = WAVE_FORM_CACHE.get(cacheKey);
+    if (cached != null) {
+      Log.i(TAG, "Loaded wave form from cache " + cacheKey);
+      Util.runOnMain(() -> onSuccess.accept(cached));
+      return;
+    }
+
+    AUDIO_DECODER_EXECUTOR.execute(() -> {
+      AudioFileInfo cachedInExecutor = WAVE_FORM_CACHE.get(cacheKey);
+      if (cachedInExecutor != null) {
+        Log.i(TAG, "Loaded wave form from cache inside executor" + cacheKey);
+        Util.runOnMain(() -> onSuccess.accept(cachedInExecutor));
+        return;
+      }
+
+      AudioHash audioHash = attachment.getAudioHash();
+      if (audioHash != null) {
+        AudioFileInfo audioFileInfo = AudioFileInfo.fromDatabaseProtobuf(audioHash.getAudioWaveForm());
+        if (audioFileInfo.waveForm.length == 0) {
+          Log.w(TAG, "Recovering from a wave form generation error  " + cacheKey);
+          Util.runOnMain(onFailure);
+          return;
+        } else if (audioFileInfo.waveForm.length != BAR_COUNT) {
+          Log.w(TAG, "Wave form from database does not match bar count, regenerating " + cacheKey);
+        } else {
+          WAVE_FORM_CACHE.put(cacheKey, audioFileInfo);
+          Log.i(TAG, "Loaded wave form from DB " + cacheKey);
+          Util.runOnMain(() -> onSuccess.accept(audioFileInfo));
           return;
         }
+      }
+
+      try {
+        AttachmentDatabase attachmentDatabase = DatabaseFactory.getAttachmentDatabase(context);
+        DatabaseAttachment dbAttachment       = (DatabaseAttachment) attachment;
+        long               startTime          = System.currentTimeMillis();
+
+        attachmentDatabase.writeAudioHash(dbAttachment.getAttachmentId(), AudioWaveFormData.getDefaultInstance());
+
+        Log.i(TAG, String.format("Starting wave form generation (%s)", cacheKey));
 
         AudioFileInfo fileInfo = generateWaveForm(uri);
-        WAVE_FORM_CACHE.put(uri, fileInfo);
 
-        Log.i(TAG, String.format(Locale.US, "Audio wave form generation time %d ms", System.currentTimeMillis() - startTime));
+        Log.i(TAG, String.format(Locale.US, "Audio wave form generation time %d ms (%s)", System.currentTimeMillis() - startTime, cacheKey));
 
+        attachmentDatabase.writeAudioHash(dbAttachment.getAttachmentId(), fileInfo.toDatabaseProtobuf());
+
+        WAVE_FORM_CACHE.put(cacheKey, fileInfo);
         Util.runOnMain(() -> onSuccess.accept(fileInfo));
-      } catch (IOException e) {
-        Log.e(TAG, "", e);
-        onFailure.accept(e);
+      } catch (Throwable e) {
+        Log.w(TAG, "Failed to create audio wave form for " + cacheKey, e);
+        Util.runOnMain(onFailure);
       }
     });
   }
@@ -83,17 +135,35 @@ public final class AudioWaveForm {
    */
   @WorkerThread
   @RequiresApi(api = 23)
-  private AudioFileInfo generateWaveForm(@NonNull Uri uri) throws IOException {
+  private @NonNull AudioFileInfo generateWaveForm(@NonNull Uri uri) throws IOException {
     try (MediaInput dataSource = DecryptableUriMediaInput.createForUri(context, uri)) {
-      long[] wave         = new long[BARS];
-      int[]  waveSamples  = new int[BARS];
-      int[]  inputSamples = new int[BARS * SAMPLES_PER_BAR];
+      long[] wave        = new long[BAR_COUNT];
+      int[]  waveSamples = new int[BAR_COUNT];
 
-      MediaExtractor extractor       = dataSource.createExtractor();
-      MediaFormat    format          = extractor.getTrackFormat(0);
-      long           totalDurationUs = format.getLong(MediaFormat.KEY_DURATION);
-      String         mime            = requireAudio(format.getString(MediaFormat.KEY_MIME));
-      MediaCodec     codec           = MediaCodec.createDecoderByType(mime);
+      MediaExtractor extractor = dataSource.createExtractor();
+
+      if (extractor.getTrackCount() == 0) {
+        throw new IOException("No audio track");
+      }
+
+      MediaFormat format = extractor.getTrackFormat(0);
+
+      if (!format.containsKey(MediaFormat.KEY_DURATION)) {
+        throw new IOException("Unknown duration");
+      }
+
+      long   totalDurationUs = format.getLong(MediaFormat.KEY_DURATION);
+      String mime            = format.getString(MediaFormat.KEY_MIME);
+
+      if (!mime.startsWith("audio/")) {
+        throw new IOException("Mime not audio");
+      }
+
+      MediaCodec codec = MediaCodec.createDecoderByType(mime);
+
+      if (totalDurationUs == 0) {
+        throw new IOException("Zero duration");
+      }
 
       codec.configure(format, null, null, 0);
       codec.start();
@@ -134,15 +204,12 @@ public final class AudioWaveForm {
 
             if (!sawInputEOS) {
               int barSampleIndex = (int) (SAMPLES_PER_BAR * (wave.length * extractor.getSampleTime()) / totalDurationUs);
-              inputSamples[barSampleIndex]++;
               sawInputEOS = !extractor.advance();
-              if (inputSamples[barSampleIndex] > 0) {
-                int nextBarSampleIndex = (int) (SAMPLES_PER_BAR * (wave.length * extractor.getSampleTime()) / totalDurationUs);
-                while (!sawInputEOS && nextBarSampleIndex == barSampleIndex) {
-                  sawInputEOS = !extractor.advance();
-                  if (!sawInputEOS) {
-                    nextBarSampleIndex = (int) (SAMPLES_PER_BAR * (wave.length * extractor.getSampleTime()) / totalDurationUs);
-                  }
+              int nextBarSampleIndex = (int) (SAMPLES_PER_BAR * (wave.length * extractor.getSampleTime()) / totalDurationUs);
+              while (!sawInputEOS && nextBarSampleIndex == barSampleIndex) {
+                sawInputEOS = !extractor.advance();
+                if (!sawInputEOS) {
+                  nextBarSampleIndex = (int) (SAMPLES_PER_BAR * (wave.length * extractor.getSampleTime()) / totalDurationUs);
                 }
               }
             }
@@ -158,29 +225,24 @@ public final class AudioWaveForm {
             }
 
             ByteBuffer buf = codecOutputBuffers[outputBufferIndex];
-            int barIndex = (int) ((wave.length * info.presentationTimeUs) / totalDurationUs) - 1;
+            int barIndex = (int) ((wave.length * info.presentationTimeUs) / totalDurationUs);
             long total = 0;
             for (int i = 0; i < info.size; i += 2 * 4) {
               short aShort = buf.getShort(i);
               total += Math.abs(aShort);
             }
-            if (barIndex > 0) {
+            if (barIndex >= 0 && barIndex < wave.length) {
               wave[barIndex] += total;
               waveSamples[barIndex] += info.size / 2;
             }
             codec.releaseOutputBuffer(outputBufferIndex, false);
             if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-              Log.d(TAG, "saw output EOS.");
               sawOutputEOS = true;
             }
           } else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
             codecOutputBuffers = codec.getOutputBuffers();
-            Log.d(TAG, "output buffers have changed.");
           } else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-            MediaFormat oformat = codec.getOutputFormat();
-            Log.d(TAG, "output format has changed to " + oformat);
-          } else {
-            Log.d(TAG, "dequeueOutputBuffer returned " + outputBufferIndex);
+            Log.d(TAG, "output format has changed to " + codec.getOutputFormat());
           }
         } while (outputBufferIndex >= 0);
       }
@@ -189,36 +251,46 @@ public final class AudioWaveForm {
       codec.release();
       extractor.release();
 
-      float[] floats = new float[AudioWaveForm.BARS];
-      float max = 0;
-      for (int i = 0; i < AudioWaveForm.BARS; i++) {
+      float[] floats = new float[BAR_COUNT];
+      byte[]  bytes  = new byte[BAR_COUNT];
+      float   max    = 0;
+
+      for (int i = 0; i < BAR_COUNT; i++) {
+        if (waveSamples[i] == 0) continue;
+
         floats[i] = wave[i] / (float) waveSamples[i];
         if (floats[i] > max) {
           max = floats[i];
         }
       }
-      for (int i = 0; i < AudioWaveForm.BARS; i++) {
-        floats[i] /= max;
+
+      for (int i = 0; i < BAR_COUNT; i++) {
+        float normalized = floats[i] / max;
+        bytes[i] = (byte) (255 * normalized);
       }
-      return new AudioFileInfo(totalDurationUs, floats);
-    }
-  }
 
-  private static @NonNull String requireAudio(@NonNull String mime) {
-    if (!mime.startsWith("audio/")) {
-      throw new AssertionError();
+      return new AudioFileInfo(totalDurationUs, bytes);
     }
-
-    return mime;
   }
 
   public static class AudioFileInfo {
     private final long    durationUs;
+    private final byte[]  waveFormBytes;
     private final float[] waveForm;
 
-    private AudioFileInfo(long durationUs, float[] waveForm) {
-      this.durationUs = durationUs;
-      this.waveForm   = waveForm;
+    private static @NonNull AudioFileInfo fromDatabaseProtobuf(@NonNull AudioWaveFormData audioWaveForm) {
+      return new AudioFileInfo(audioWaveForm.getDurationUs(), audioWaveForm.getWaveForm().toByteArray());
+    }
+
+    private AudioFileInfo(long durationUs, byte[] waveFormBytes) {
+      this.durationUs    = durationUs;
+      this.waveFormBytes = waveFormBytes;
+      this.waveForm      = new float[waveFormBytes.length];
+
+      for (int i = 0; i < waveFormBytes.length; i++) {
+        int unsigned = waveFormBytes[i] & 0xff;
+        this.waveForm[i] = unsigned / 255f;
+      }
     }
 
     public long getDuration(@NonNull TimeUnit timeUnit) {
@@ -227,6 +299,13 @@ public final class AudioWaveForm {
 
     public float[] getWaveForm() {
       return waveForm;
+    }
+
+    private @NonNull AudioWaveFormData toDatabaseProtobuf() {
+      return AudioWaveFormData.newBuilder()
+                              .setDurationUs(durationUs)
+                              .setWaveForm(ByteString.copyFrom(waveFormBytes))
+                              .build();
     }
   }
 }

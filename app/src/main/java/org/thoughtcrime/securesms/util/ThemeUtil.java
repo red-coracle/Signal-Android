@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 
@@ -34,7 +36,7 @@ public class ThemeUtil {
     return false;
   }
 
-  public static int getThemedColor(@NonNull Context context, @AttrRes int attr) {
+  public static @ColorInt int getThemedColor(@NonNull Context context, @AttrRes int attr) {
     TypedValue typedValue = new TypedValue();
     Resources.Theme theme = context.getTheme();
 
@@ -49,7 +51,7 @@ public class ThemeUtil {
     Resources.Theme theme      = context.getTheme();
 
     if (theme.resolveAttribute(attr, typedValue, true)) {
-      return ContextCompat.getDrawable(context, typedValue.resourceId);
+      return AppCompatResources.getDrawable(context, typedValue.resourceId);
     }
 
     return null;

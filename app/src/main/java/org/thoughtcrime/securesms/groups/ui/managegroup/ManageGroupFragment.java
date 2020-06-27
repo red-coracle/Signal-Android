@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,24 +16,26 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.thoughtcrime.securesms.AvatarPreviewActivity;
+import org.thoughtcrime.securesms.LoggingFragment;
 import org.thoughtcrime.securesms.MediaPreviewActivity;
 import org.thoughtcrime.securesms.MuteDialog;
 import org.thoughtcrime.securesms.PushContactSelectionActivity;
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.color.MaterialColor;
 import org.thoughtcrime.securesms.components.AvatarImageView;
 import org.thoughtcrime.securesms.components.ThreadPhotoRailView;
 import org.thoughtcrime.securesms.contacts.avatars.FallbackContactPhoto;
-import org.thoughtcrime.securesms.contacts.avatars.ResourceContactPhoto;
+import org.thoughtcrime.securesms.contacts.avatars.FallbackPhoto80dp;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.groups.ui.GroupMemberListView;
 import org.thoughtcrime.securesms.groups.ui.LeaveGroupDialog;
 import org.thoughtcrime.securesms.groups.ui.managegroup.dialogs.GroupRightsDialog;
-import org.thoughtcrime.securesms.groups.ui.notifications.CustomNotificationsDialogFragment;
 import org.thoughtcrime.securesms.groups.ui.pendingmemberinvites.PendingMemberInvitesActivity;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mediaoverview.MediaOverviewActivity;
@@ -45,13 +45,15 @@ import org.thoughtcrime.securesms.profiles.edit.EditProfileActivity;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.ui.bottomsheet.RecipientBottomSheetDialogFragment;
+import org.thoughtcrime.securesms.recipients.ui.notifications.CustomNotificationsDialogFragment;
 import org.thoughtcrime.securesms.util.DateUtils;
+import org.thoughtcrime.securesms.util.LifecycleCursorWrapper;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class ManageGroupFragment extends Fragment {
+public class ManageGroupFragment extends LoggingFragment {
   private static final String GROUP_ID = "GROUP_ID";
 
   private static final String TAG = Log.tag(ManageGroupFragment.class);
@@ -64,6 +66,7 @@ public class ManageGroupFragment extends Fragment {
   private View                               pendingMembersRow;
   private TextView                           pendingMembersCount;
   private Toolbar                            toolbar;
+  private TextView                           groupName;
   private TextView                           memberCountUnderAvatar;
   private TextView                           memberCountAboveList;
   private AvatarImageView                    avatar;
@@ -72,14 +75,17 @@ public class ManageGroupFragment extends Fragment {
   private View                               accessControlCard;
   private View                               pendingMembersCard;
   private ManageGroupViewModel.CursorFactory cursorFactory;
-  private View                               photoRailLabel;
+  private View                               sharedMediaRow;
   private View                               editGroupAccessRow;
   private TextView                           editGroupAccessValue;
   private View                               editGroupMembershipRow;
   private TextView                           editGroupMembershipValue;
+  private View                               disappearingMessagesCard;
   private View                               disappearingMessagesRow;
   private TextView                           disappearingMessages;
+  private View                               blockAndLeaveCard;
   private TextView                           blockGroup;
+  private TextView                           unblockGroup;
   private TextView                           leaveGroup;
   private TextView                           addMembers;
   private SwitchCompat                       muteNotificationsSwitch;
@@ -92,7 +98,7 @@ public class ManageGroupFragment extends Fragment {
   private final Recipient.FallbackPhotoProvider fallbackPhotoProvider = new Recipient.FallbackPhotoProvider() {
     @Override
     public @NonNull FallbackContactPhoto getPhotoForGroup() {
-      return new ResourceContactPhoto(R.drawable.ic_group_80);
+      return new FallbackPhoto80dp(R.drawable.ic_group_80, MaterialColor.ULTRAMARINE);
     }
   };
 
@@ -115,6 +121,7 @@ public class ManageGroupFragment extends Fragment {
 
     avatar                      = view.findViewById(R.id.group_avatar);
     toolbar                     = view.findViewById(R.id.toolbar);
+    groupName                   = view.findViewById(R.id.name);
     memberCountUnderAvatar      = view.findViewById(R.id.member_count);
     memberCountAboveList        = view.findViewById(R.id.member_count_2);
     groupMemberList             = view.findViewById(R.id.group_members);
@@ -124,14 +131,17 @@ public class ManageGroupFragment extends Fragment {
     groupMediaCard              = view.findViewById(R.id.group_media_card);
     accessControlCard           = view.findViewById(R.id.group_access_control_card);
     pendingMembersCard          = view.findViewById(R.id.group_pending_card);
-    photoRailLabel              = view.findViewById(R.id.rail_label);
+    sharedMediaRow              = view.findViewById(R.id.shared_media_row);
     editGroupAccessRow          = view.findViewById(R.id.edit_group_access_row);
     editGroupAccessValue        = view.findViewById(R.id.edit_group_access_value);
     editGroupMembershipRow      = view.findViewById(R.id.edit_group_membership_row);
     editGroupMembershipValue    = view.findViewById(R.id.edit_group_membership_value);
+    disappearingMessagesCard    = view.findViewById(R.id.group_disappearing_messages_card);
     disappearingMessagesRow     = view.findViewById(R.id.disappearing_messages_row);
     disappearingMessages        = view.findViewById(R.id.disappearing_messages);
+    blockAndLeaveCard           = view.findViewById(R.id.group_block_and_leave_card);
     blockGroup                  = view.findViewById(R.id.blockGroup);
+    unblockGroup                = view.findViewById(R.id.unblockGroup);
     leaveGroup                  = view.findViewById(R.id.leaveGroup);
     addMembers                  = view.findViewById(R.id.add_members);
     muteNotificationsUntilLabel = view.findViewById(R.id.group_mute_notifications_until);
@@ -149,8 +159,11 @@ public class ManageGroupFragment extends Fragment {
     super.onActivityCreated(savedInstanceState);
 
     Context                      context = requireContext();
-    GroupId.Push                 groupId = getPushGroupId();
+    GroupId                      groupId = getGroupId();
     ManageGroupViewModel.Factory factory = new ManageGroupViewModel.Factory(context, groupId);
+
+    disappearingMessagesCard.setVisibility(groupId.isPush() ? View.VISIBLE : View.GONE);
+    blockAndLeaveCard.setVisibility(groupId.isPush() ? View.VISIBLE : View.GONE);
 
     viewModel = ViewModelProviders.of(requireActivity(), factory).get(ManageGroupViewModel.class);
 
@@ -180,12 +193,17 @@ public class ManageGroupFragment extends Fragment {
 
     avatar.setFallbackPhotoProvider(fallbackPhotoProvider);
 
-    toolbar.setNavigationOnClickListener(v -> requireActivity().finish());
+    toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
     toolbar.setOnMenuItemClickListener(this::onMenuItemSelected);
     toolbar.inflateMenu(R.menu.manage_group_fragment);
 
-    viewModel.getCanEditGroupAttributes().observe(getViewLifecycleOwner(), canEdit -> toolbar.getMenu().findItem(R.id.action_edit).setVisible(canEdit));
-    viewModel.getTitle().observe(getViewLifecycleOwner(), toolbar::setTitle);
+    viewModel.getCanEditGroupAttributes().observe(getViewLifecycleOwner(), canEdit -> {
+      toolbar.getMenu().findItem(R.id.action_edit).setVisible(canEdit);
+      disappearingMessages.setEnabled(canEdit);
+      disappearingMessagesRow.setEnabled(canEdit);
+    });
+
+    viewModel.getTitle().observe(getViewLifecycleOwner(), groupName::setText);
     viewModel.getMemberCountSummary().observe(getViewLifecycleOwner(), memberCountUnderAvatar::setText);
     viewModel.getFullMemberCountSummary().observe(getViewLifecycleOwner(), memberCountAboveList::setText);
     viewModel.getGroupRecipient().observe(getViewLifecycleOwner(), groupRecipient -> {
@@ -195,11 +213,13 @@ public class ManageGroupFragment extends Fragment {
         activity.startActivity(AvatarPreviewActivity.intentFromRecipientId(activity, groupRecipient.getId()),
                                AvatarPreviewActivity.createTransitionBundle(activity, avatar));
       });
+      customNotificationsRow.setOnClickListener(v -> CustomNotificationsDialogFragment.create(groupRecipient.getId())
+                                                                                      .show(requireFragmentManager(), "CUSTOM_NOTIFICATIONS"));
     });
 
     viewModel.getGroupViewState().observe(getViewLifecycleOwner(), vs -> {
       if (vs == null) return;
-      photoRailLabel.setOnClickListener(v -> startActivity(MediaOverviewActivity.forThread(context, vs.getThreadId())));
+      sharedMediaRow.setOnClickListener(v -> startActivity(MediaOverviewActivity.forThread(context, vs.getThreadId())));
 
       setMediaCursorFactory(vs.getMediaCursorFactory());
 
@@ -222,6 +242,7 @@ public class ManageGroupFragment extends Fragment {
 
     disappearingMessagesRow.setOnClickListener(v -> viewModel.handleExpirationSelection());
     blockGroup.setOnClickListener(v -> viewModel.blockAndLeave(requireActivity()));
+    unblockGroup.setOnClickListener(v -> viewModel.unblock(requireActivity()));
 
     addMembers.setOnClickListener(v -> viewModel.onAddMembersClick(this, PICK_CONTACT));
 
@@ -249,7 +270,6 @@ public class ManageGroupFragment extends Fragment {
       editGroupAccessValue.setEnabled(admin);
     });
 
-    viewModel.getCanEditGroupAttributes().observe(getViewLifecycleOwner(), canEdit -> disappearingMessages.setEnabled(canEdit));
     viewModel.getCanAddMembers().observe(getViewLifecycleOwner(), canEdit -> addMembers.setVisibility(canEdit ? View.VISIBLE : View.GONE));
 
     groupMemberList.setRecipientClickListener(recipient -> RecipientBottomSheetDialogFragment.create(recipient.getId(), groupId).show(requireFragmentManager(), "BOTTOM"));
@@ -287,38 +307,36 @@ public class ManageGroupFragment extends Fragment {
       }
     });
 
+    customNotificationsRow.setVisibility(View.VISIBLE);
+
+    //noinspection CodeBlock2Expr
     if (NotificationChannels.supported()) {
-      customNotificationsRow.setVisibility(View.VISIBLE);
-
-      customNotificationsRow.setOnClickListener(v -> CustomNotificationsDialogFragment.create(groupId)
-                                                                                      .show(requireFragmentManager(), "CUSTOM_NOTIFICATIONS"));
-
-      //noinspection CodeBlock2Expr
       viewModel.hasCustomNotifications().observe(getViewLifecycleOwner(), hasCustomNotifications -> {
         customNotificationsButton.setText(hasCustomNotifications ? R.string.ManageGroupActivity_on
                                                                  : R.string.ManageGroupActivity_off);
       });
-    } else {
-      customNotificationsRow.setVisibility(View.GONE);
     }
-  }
 
-  @Override
-  public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    viewModel.getSnackbarEvents().observe(getViewLifecycleOwner(), this::handleSnackbarEvent);
 
+    viewModel.getCanLeaveGroup().observe(getViewLifecycleOwner(), canLeave -> leaveGroup.setVisibility(canLeave ? View.VISIBLE : View.GONE));
+    viewModel.getCanBlockGroup().observe(getViewLifecycleOwner(), canBlock -> {
+      blockGroup.setVisibility(canBlock ? View.VISIBLE : View.GONE);
+      unblockGroup.setVisibility(canBlock ? View.GONE : View.VISIBLE);
+    });
   }
 
   public boolean onMenuItemSelected(@NonNull MenuItem item) {
     if (item.getItemId() == R.id.action_edit) {
-      startActivity(EditProfileActivity.getIntentForGroupProfile(requireActivity(), getPushGroupId()));
+      startActivity(EditProfileActivity.getIntentForGroupProfile(requireActivity(), getGroupId().requirePush()));
       return true;
     }
 
     return false;
   }
 
-  private GroupId.Push getPushGroupId() {
-    return GroupId.parseOrThrow(Objects.requireNonNull(requireArguments().getString(GROUP_ID))).requirePush();
+  private GroupId getGroupId() {
+    return GroupId.parseOrThrow(Objects.requireNonNull(requireArguments().getString(GROUP_ID)));
   }
 
   private void setMediaCursorFactory(@Nullable ManageGroupViewModel.CursorFactory cursorFactory) {
@@ -333,12 +351,24 @@ public class ManageGroupFragment extends Fragment {
     if (context == null) return;
     if (this.cursorFactory != null) {
       Cursor cursor = this.cursorFactory.create();
+      getViewLifecycleOwner().getLifecycle().addObserver(new LifecycleCursorWrapper(cursor));
+
       threadPhotoRailView.setCursor(GlideApp.with(context), cursor);
       groupMediaCard.setVisibility(cursor.getCount() > 0 ? View.VISIBLE : View.GONE);
     } else {
       threadPhotoRailView.setCursor(GlideApp.with(context), null);
       groupMediaCard.setVisibility(View.GONE);
     }
+  }
+
+  private void handleSnackbarEvent(@NonNull ManageGroupViewModel.SnackbarEvent snackbarEvent) {
+    Snackbar.make(requireView(), buildSnackbarString(snackbarEvent), Snackbar.LENGTH_SHORT).show();
+  }
+
+  private @NonNull String buildSnackbarString(@NonNull ManageGroupViewModel.SnackbarEvent snackbarEvent) {
+    return getResources().getQuantityString(R.plurals.ManageGroupActivity_added,
+                                            snackbarEvent.getNumberOfMembersAdded(),
+                                            snackbarEvent.getNumberOfMembersAdded());
   }
 
   @Override

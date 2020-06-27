@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.jobs.ProfileUploadJob;
 import org.thoughtcrime.securesms.jobs.RefreshAttributesJob;
+import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob;
 import org.thoughtcrime.securesms.jobs.RemoteConfigRefreshJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.logging.Log;
@@ -49,19 +50,15 @@ public final class FeatureFlags {
   private static final long FETCH_INTERVAL = TimeUnit.HOURS.toMillis(2);
 
   private static final String UUIDS                      = "android.uuids";
-  private static final String MESSAGE_REQUESTS           = "android.messageRequests";
   private static final String USERNAMES                  = "android.usernames";
-  private static final String PINS_FOR_ALL_LEGACY        = "android.pinsForAll";
-  private static final String PINS_FOR_ALL               = "android.pinsForAll.2";
   private static final String PINS_FOR_ALL_MANDATORY     = "android.pinsForAllMandatory";
   private static final String PINS_MEGAPHONE_KILL_SWITCH = "android.pinsMegaphoneKillSwitch";
-  private static final String PROFILE_NAMES_MEGAPHONE    = "android.profileNamesMegaphone";
   private static final String ATTACHMENTS_V3             = "android.attachmentsV3";
   private static final String REMOTE_DELETE              = "android.remoteDelete";
   private static final String PROFILE_FOR_CALLING        = "android.profileForCalling";
   private static final String CALLING_PIP                = "android.callingPip";
-  private static final String NEW_GROUP_UI               = "android.newGroupUI";
-  private static final String VERSIONED_PROFILES         = "android.versionedProfiles";
+  private static final String VERSIONED_PROFILES_1       = "android.versionedProfiles";
+  private static final String VERSIONED_PROFILES_2       = "android.versionedProfiles.2";
   private static final String GROUPS_V2                  = "android.groupsv2";
   private static final String GROUPS_V2_CREATE           = "android.groupsv2.create";
   private static final String GROUPS_V2_CAPACITY         = "android.groupsv2.capacity";
@@ -73,22 +70,17 @@ public final class FeatureFlags {
    */
 
   private static final Set<String> REMOTE_CAPABLE = Sets.newHashSet(
-      PINS_FOR_ALL_LEGACY,
-      PINS_FOR_ALL,
       PINS_FOR_ALL_MANDATORY,
       PINS_MEGAPHONE_KILL_SWITCH,
-      PROFILE_NAMES_MEGAPHONE,
-      MESSAGE_REQUESTS,
       ATTACHMENTS_V3,
       REMOTE_DELETE,
       PROFILE_FOR_CALLING,
       CALLING_PIP,
-      NEW_GROUP_UI,
-      VERSIONED_PROFILES,
+      VERSIONED_PROFILES_1,
+      VERSIONED_PROFILES_2,
       GROUPS_V2,
       GROUPS_V2_CREATE,
       GROUPS_V2_CAPACITY,
-      NEW_GROUP_UI,
       GROUPS_V2_INTERNAL_TEST
   );
 
@@ -120,9 +112,8 @@ public final class FeatureFlags {
    * Flags in this set will stay true forever once they receive a true value from a remote config.
    */
   private static final Set<String> STICKY = Sets.newHashSet(
-      PINS_FOR_ALL_LEGACY,
-      PINS_FOR_ALL,
-      VERSIONED_PROFILES,
+      VERSIONED_PROFILES_1,
+      VERSIONED_PROFILES_2,
       GROUPS_V2
   );
 
@@ -138,9 +129,18 @@ public final class FeatureFlags {
    * desired test state.
    */
   private static final Map<String, OnFlagChange> FLAG_CHANGE_LISTENERS = new HashMap<String, OnFlagChange>() {{
-    put(MESSAGE_REQUESTS,   (change) -> SignalStore.setMessageRequestEnableTime(change == Change.ENABLED ? System.currentTimeMillis() : 0));
-    put(VERSIONED_PROFILES, (change) -> ApplicationDependencies.getJobManager().add(new ProfileUploadJob()));
-    put(GROUPS_V2,          (change) -> ApplicationDependencies.getJobManager().add(new RefreshAttributesJob()));
+    put(VERSIONED_PROFILES_2, (change) -> {
+      if (change == Change.ENABLED) {
+        ApplicationDependencies.getJobManager().add(new ProfileUploadJob());
+      }
+    });
+    put(GROUPS_V2, (change) -> {
+      if (change == Change.ENABLED) {
+        ApplicationDependencies.getJobManager().startChain(new RefreshAttributesJob())
+                               .then(new RefreshOwnProfileJob())
+                               .enqueue();
+      }
+    });
   }};
 
   private static final Map<String, Object> REMOTE_VALUES = new TreeMap<>();
@@ -193,36 +193,11 @@ public final class FeatureFlags {
     return getBoolean(UUIDS, false);
   }
 
-  /** Favoring profile names when displaying contacts. */
-  public static synchronized boolean profileDisplay() {
-    return messageRequests();
-  }
-
-  /** MessageRequest stuff */
-  public static synchronized boolean messageRequests() {
-    return getBoolean(MESSAGE_REQUESTS, false);
-  }
-
   /** Creating usernames, sending messages by username. Requires {@link #uuids()}. */
   public static synchronized boolean usernames() {
     boolean value = getBoolean(USERNAMES, false);
     if (value && !uuids()) throw new MissingFlagRequirementError();
     return value;
-  }
-
-  /**
-   * - Starts showing prompts for users to create PINs.
-   * - Shows new reminder UI.
-   * - Shows new settings UI.
-   * - Syncs to storage service.
-   */
-  public static boolean pinsForAll() {
-    return SignalStore.registrationValues().pinWasRequiredAtRegistration() ||
-           SignalStore.kbsValues().isV2RegistrationLockEnabled()           ||
-           SignalStore.kbsValues().hasPin()                                ||
-           pinsForAllMandatory()                                           ||
-           getBoolean(PINS_FOR_ALL_LEGACY, false)                          ||
-           getBoolean(PINS_FOR_ALL, false);
   }
 
   /** Makes it so the user will eventually see a fullscreen splash requiring them to create a PIN. */
@@ -233,12 +208,6 @@ public final class FeatureFlags {
   /** Safety flag to disable Pins for All Megaphone */
   public static boolean pinsForAllMegaphoneKillSwitch() {
     return getBoolean(PINS_MEGAPHONE_KILL_SWITCH, false);
-  }
-
-  /** Safety switch for disabling profile names megaphone */
-  public static boolean profileNamesMegaphone() {
-    return getBoolean(PROFILE_NAMES_MEGAPHONE, false) &&
-           TextSecurePreferences.getFirstInstallVersion(ApplicationDependencies.getApplication()) < 600;
   }
 
   /** Whether or not we use the attachments v3 form. */
@@ -253,7 +222,7 @@ public final class FeatureFlags {
 
   /** Whether or not profile sharing is required for calling */
   public static boolean profileForCalling() {
-    return messageRequests() && getBoolean(PROFILE_FOR_CALLING, false);
+    return getBoolean(PROFILE_FOR_CALLING, false);
   }
 
   /** Whether or not to display Calling PIP */
@@ -261,14 +230,10 @@ public final class FeatureFlags {
     return getBoolean(CALLING_PIP, false);
   }
 
-  /** New group UI elements. */
-  public static boolean newGroupUI() {
-    return getBoolean(NEW_GROUP_UI, false);
-  }
-
   /** Read and write versioned profile information. */
   public static boolean versionedProfiles() {
-    return getBoolean(VERSIONED_PROFILES, false);
+    return getBoolean(VERSIONED_PROFILES_1, false) ||
+           getBoolean(VERSIONED_PROFILES_2, false);
   }
 
   /** Groups v2 send and receive. */

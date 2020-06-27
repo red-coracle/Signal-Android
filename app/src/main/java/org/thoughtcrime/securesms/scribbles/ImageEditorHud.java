@@ -6,15 +6,19 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.components.TooltipPopup;
 import org.thoughtcrime.securesms.scribbles.widget.ColorPaletteAdapter;
 import org.thoughtcrime.securesms.scribbles.widget.VerticalSlideColorPicker;
+import org.thoughtcrime.securesms.util.Debouncer;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +38,7 @@ public final class ImageEditorHud extends LinearLayout {
   private ImageView                cropAspectLock;
   private View                     drawButton;
   private View                     highlightButton;
+  private View                     blurButton;
   private View                     textButton;
   private View                     stickerButton;
   private View                     undoButton;
@@ -41,8 +46,12 @@ public final class ImageEditorHud extends LinearLayout {
   private View                     deleteButton;
   private View                     confirmButton;
   private View                     doneButton;
+  private View                     blurToggleHud;
+  private Switch                   blurToggle;
+  private View                     blurToast;
   private VerticalSlideColorPicker colorPicker;
   private RecyclerView             colorPalette;
+
 
   @NonNull
   private EventListener              eventListener = NULL_EVENT_LISTENER;
@@ -51,6 +60,7 @@ public final class ImageEditorHud extends LinearLayout {
 
   private final Map<Mode, Set<View>> visibilityModeMap = new HashMap<>();
   private final Set<View>            allViews          = new HashSet<>();
+  private final Debouncer            toastDebouncer    = new Debouncer(3000);
 
   private Mode    currentMode;
   private boolean undoAvailable;
@@ -81,6 +91,7 @@ public final class ImageEditorHud extends LinearLayout {
     colorPalette     = findViewById(R.id.scribble_color_palette);
     drawButton       = findViewById(R.id.scribble_draw_button);
     highlightButton  = findViewById(R.id.scribble_highlight_button);
+    blurButton       = findViewById(R.id.scribble_blur_button);
     textButton       = findViewById(R.id.scribble_text_button);
     stickerButton    = findViewById(R.id.scribble_sticker_button);
     undoButton       = findViewById(R.id.scribble_undo_button);
@@ -89,6 +100,9 @@ public final class ImageEditorHud extends LinearLayout {
     confirmButton    = findViewById(R.id.scribble_confirm_button);
     colorPicker      = findViewById(R.id.scribble_color_picker);
     doneButton       = findViewById(R.id.scribble_done_button);
+    blurToggleHud    = findViewById(R.id.scribble_blur_toggle_hud);
+    blurToggle       = findViewById(R.id.scribble_blur_toggle);
+    blurToast        = findViewById(R.id.scribble_blur_toast);
 
     cropAspectLock.setOnClickListener(v -> {
       eventListener.onCropAspectLock(!eventListener.isCropAspectLocked());
@@ -105,11 +119,13 @@ public final class ImageEditorHud extends LinearLayout {
   }
 
   private void initializeVisibilityMap() {
-    setVisibleViewsWhenInMode(Mode.NONE, drawButton, highlightButton, textButton, stickerButton, cropButton, undoButton, saveButton);
+    setVisibleViewsWhenInMode(Mode.NONE, drawButton, blurButton, textButton, stickerButton, cropButton, undoButton, saveButton);
 
-    setVisibleViewsWhenInMode(Mode.DRAW, confirmButton, undoButton, colorPicker, colorPalette);
+    setVisibleViewsWhenInMode(Mode.DRAW, confirmButton, undoButton, colorPicker, colorPalette, highlightButton);
 
-    setVisibleViewsWhenInMode(Mode.HIGHLIGHT, confirmButton, undoButton, colorPicker, colorPalette);
+    setVisibleViewsWhenInMode(Mode.HIGHLIGHT, confirmButton, undoButton, colorPicker, colorPalette, drawButton);
+
+    setVisibleViewsWhenInMode(Mode.BLUR, confirmButton, undoButton, blurToggleHud);
 
     setVisibleViewsWhenInMode(Mode.TEXT, confirmButton, deleteButton, colorPicker, colorPalette);
 
@@ -152,11 +168,13 @@ public final class ImageEditorHud extends LinearLayout {
     colorPalette.setAdapter(colorPaletteAdapter);
 
     drawButton.setOnClickListener(v -> setMode(Mode.DRAW));
+    blurButton.setOnClickListener(v -> setMode(Mode.BLUR));
     highlightButton.setOnClickListener(v -> setMode(Mode.HIGHLIGHT));
     textButton.setOnClickListener(v -> setMode(Mode.TEXT));
     stickerButton.setOnClickListener(v -> setMode(Mode.INSERT_STICKER));
     saveButton.setOnClickListener(v -> eventListener.onSave());
     doneButton.setOnClickListener(v -> eventListener.onDone());
+    blurToggle.setOnCheckedChangeListener((button, enabled) -> eventListener.onBlurFacesToggled(enabled));
   }
 
   public void setUpForAvatarEditing() {
@@ -186,6 +204,32 @@ public final class ImageEditorHud extends LinearLayout {
     colorPicker.setActiveColor(color);
   }
 
+  public void setBlurFacesToggleEnabled(boolean enabled) {
+    blurToggle.setOnCheckedChangeListener(null);
+    blurToggle.setChecked(enabled);
+    blurToggle.setOnCheckedChangeListener((button, value) -> eventListener.onBlurFacesToggled(value));
+  }
+
+  public void showBlurHudTooltip() {
+    TooltipPopup.forTarget(blurButton)
+                .setText(R.string.ImageEditorHud_new_blur_faces_or_draw_anywhere_to_blur)
+                .setBackgroundTint(ContextCompat.getColor(getContext(), R.color.core_ultramarine))
+                .setTextColor(ContextCompat.getColor(getContext(), R.color.core_white))
+                .show(TooltipPopup.POSITION_BELOW);
+  }
+
+  public void showBlurToast() {
+    blurToast.clearAnimation();
+    blurToast.setVisibility(View.VISIBLE);
+    toastDebouncer.publish(() -> blurToast.setVisibility(GONE));
+  }
+
+  public void hideBlurToast() {
+    blurToast.clearAnimation();
+    blurToast.setVisibility(View.GONE);
+    toastDebouncer.clear();
+  }
+
   public void setEventListener(@Nullable EventListener eventListener) {
     this.eventListener = eventListener != null ? eventListener : NULL_EVENT_LISTENER;
   }
@@ -203,8 +247,10 @@ public final class ImageEditorHud extends LinearLayout {
     updateButtonVisibility(mode);
 
     switch (mode) {
+      case NONE:      presentModeNone();      break;
       case CROP:      presentModeCrop();      break;
       case DRAW:      presentModeDraw();      break;
+      case BLUR:      presentModeBlur();      break;
       case HIGHLIGHT: presentModeHighlight(); break;
       case TEXT:      presentModeText();      break;
     }
@@ -228,6 +274,10 @@ public final class ImageEditorHud extends LinearLayout {
            (button != undoButton || undoAvailable);
   }
 
+  private void presentModeNone() {
+    blurToast.setVisibility(GONE);
+  }
+
   private void presentModeCrop() {
     updateCropAspectLockImage(eventListener.isCropAspectLocked());
   }
@@ -235,6 +285,11 @@ public final class ImageEditorHud extends LinearLayout {
   private void presentModeDraw() {
     colorPicker.setOnColorChangeListener(standardOnColorChangeListener);
     colorPicker.setActiveColor(Color.RED);
+  }
+
+  private void presentModeBlur() {
+    colorPicker.setOnColorChangeListener(standardOnColorChangeListener);
+    colorPicker.setActiveColor(Color.BLACK);
   }
 
   private void presentModeHighlight() {
@@ -249,10 +304,10 @@ public final class ImageEditorHud extends LinearLayout {
 
   private final VerticalSlideColorPicker.OnColorChangeListener standardOnColorChangeListener = selectedColor -> eventListener.onColorChange(selectedColor);
 
-  private final VerticalSlideColorPicker.OnColorChangeListener highlightOnColorChangeListener = selectedColor -> eventListener.onColorChange(replaceAlphaWith128(selectedColor));
+  private final VerticalSlideColorPicker.OnColorChangeListener highlightOnColorChangeListener = selectedColor -> eventListener.onColorChange(withHighlighterAlpha(selectedColor));
 
-  private static int replaceAlphaWith128(int color) {
-    return color & ~0xff000000 | 0x80000000;
+  private static int withHighlighterAlpha(int color) {
+    return color & ~0xff000000 | 0x60000000;
   }
 
   public void setUndoAvailability(boolean undoAvailable) {
@@ -267,6 +322,7 @@ public final class ImageEditorHud extends LinearLayout {
     TEXT,
     DRAW,
     HIGHLIGHT,
+    BLUR,
     MOVE_DELETE,
     INSERT_STICKER,
   }
@@ -274,6 +330,7 @@ public final class ImageEditorHud extends LinearLayout {
   public interface EventListener {
     void onModeStarted(@NonNull Mode mode);
     void onColorChange(int color);
+    void onBlurFacesToggled(boolean enabled);
     void onUndo();
     void onDelete();
     void onSave();
@@ -293,6 +350,10 @@ public final class ImageEditorHud extends LinearLayout {
 
     @Override
     public void onColorChange(int color) {
+    }
+
+    @Override
+    public void onBlurFacesToggled(boolean enabled) {
     }
 
     @Override

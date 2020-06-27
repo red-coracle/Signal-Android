@@ -53,7 +53,7 @@ import org.thoughtcrime.securesms.util.ThemeUtil;
  *
  */
 
-public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarActivity
+public class ApplicationPreferencesActivity extends PassphraseRequiredActivity
     implements SharedPreferences.OnSharedPreferenceChangeListener
 {
   @SuppressWarnings("unused")
@@ -272,12 +272,7 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
     private class ProfileClickListener implements Preference.OnPreferenceClickListener {
       @Override
       public boolean onPreferenceClick(Preference preference) {
-        Intent intent = new Intent(preference.getContext(), EditProfileActivity.class);
-        intent.putExtra(EditProfileActivity.EXCLUDE_SYSTEM, true);
-        intent.putExtra(EditProfileActivity.DISPLAY_USERNAME, true);
-        intent.putExtra(EditProfileActivity.NEXT_BUTTON_TEXT, R.string.save);
-
-        requireActivity().startActivity(intent);
+        requireActivity().startActivity(EditProfileActivity.getIntentForUserProfileEdit(preference.getContext()));
         return true;
       }
     }

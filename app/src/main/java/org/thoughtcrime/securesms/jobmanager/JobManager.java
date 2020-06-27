@@ -3,7 +3,10 @@ package org.thoughtcrime.securesms.jobmanager;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Build;
+
+import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.thoughtcrime.securesms.jobmanager.impl.DefaultExecutorFactory;
@@ -13,6 +16,8 @@ import org.thoughtcrime.securesms.jobmanager.persistence.JobStorage;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.util.Debouncer;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.Util;
+import org.thoughtcrime.securesms.util.concurrent.NonMainThreadExecutor;
 import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.util.ArrayList;
@@ -25,9 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,20 +41,23 @@ public class JobManager implements ConstraintObserver.Notifier {
 
   private static final String TAG = JobManager.class.getSimpleName();
 
-  public static final int CURRENT_VERSION = 6;
+  public static final int CURRENT_VERSION = 7;
 
-  private final Application     application;
-  private final Configuration   configuration;
-  private final ExecutorService executor;
-  private final JobController   jobController;
-  private final JobTracker      jobTracker;
+  private final Application   application;
+  private final Configuration configuration;
+  private final Executor      executor;
+  private final JobController jobController;
+  private final JobTracker    jobTracker;
 
+  @GuardedBy("emptyQueueListeners")
   private final Set<EmptyQueueListener> emptyQueueListeners = new CopyOnWriteArraySet<>();
+
+  private volatile boolean initialized;
 
   public JobManager(@NonNull Application application, @NonNull Configuration configuration) {
     this.application   = application;
     this.configuration = configuration;
-    this.executor      = configuration.getExecutorFactory().newSingleThreadExecutor("signal-JobManager");
+    this.executor      = new NonMainThreadExecutor(configuration.getExecutorFactory().newSingleThreadExecutor("signal-JobManager"));
     this.jobTracker    = configuration.getJobTracker();
     this.jobController = new JobController(application,
                                            configuration.getJobStorage(),
@@ -65,25 +71,30 @@ public class JobManager implements ConstraintObserver.Notifier {
                                            this::onEmptyQueue);
 
     executor.execute(() -> {
-      if (WorkManagerMigrator.needsMigration(application)) {
-        Log.i(TAG, "Detected an old WorkManager database. Migrating.");
-        WorkManagerMigrator.migrate(application, configuration.getJobStorage(), configuration.getDataSerializer());
-      }
+      synchronized (this) {
+        if (WorkManagerMigrator.needsMigration(application)) {
+          Log.i(TAG, "Detected an old WorkManager database. Migrating.");
+          WorkManagerMigrator.migrate(application, configuration.getJobStorage(), configuration.getDataSerializer());
+        }
 
-      JobStorage jobStorage = configuration.getJobStorage();
-      jobStorage.init();
+        JobStorage jobStorage = configuration.getJobStorage();
+        jobStorage.init();
 
-      int latestVersion = configuration.getJobMigrator().migrate(jobStorage, configuration.getDataSerializer());
-      TextSecurePreferences.setJobManagerVersion(application, latestVersion);
+        int latestVersion = configuration.getJobMigrator().migrate(jobStorage, configuration.getDataSerializer());
+        TextSecurePreferences.setJobManagerVersion(application, latestVersion);
 
-      jobController.init();
+        jobController.init();
 
-      for (ConstraintObserver constraintObserver : configuration.getConstraintObservers()) {
-        constraintObserver.register(this);
-      }
+        for (ConstraintObserver constraintObserver : configuration.getConstraintObservers()) {
+          constraintObserver.register(this);
+        }
 
-      if (Build.VERSION.SDK_INT < 26) {
-        application.startService(new Intent(application, KeepAliveService.class));
+        if (Build.VERSION.SDK_INT < 26) {
+          application.startService(new Intent(application, KeepAliveService.class));
+        }
+
+        initialized = true;
+        notifyAll();
       }
     });
   }
@@ -92,11 +103,18 @@ public class JobManager implements ConstraintObserver.Notifier {
    * Begins the execution of jobs.
    */
   public void beginJobLoop() {
-    executor.execute(() -> {
+    runOnExecutor(()-> {
+      int id = 0;
+
       for (int i = 0; i < configuration.getJobThreadCount(); i++) {
-        new JobRunner(application, i + 1, jobController).start();
+        new JobRunner(application, ++id, jobController, JobPredicate.NONE).start();
       }
-      wakeUp();
+
+      for (JobPredicate predicate : configuration.getReservedJobRunners()) {
+        new JobRunner(application, ++id, jobController, predicate).start();
+      }
+
+      jobController.wakeUp();
     });
   }
 
@@ -137,9 +155,35 @@ public class JobManager implements ConstraintObserver.Notifier {
   public void add(@NonNull Job job, @NonNull Collection<String> dependsOn) {
     jobTracker.onStateChange(job, JobTracker.JobState.PENDING);
 
-    executor.execute(() -> {
-      jobController.submitJobWithExistingDependencies(job, dependsOn);
-      wakeUp();
+    runOnExecutor(() -> {
+      jobController.submitJobWithExistingDependencies(job, dependsOn, null);
+      jobController.wakeUp();
+    });
+  }
+
+  /**
+   * Enqueues a single job that depends on a collection of job ID's, as well as any unfinished
+   * items in the specified queue.
+   */
+  public void add(@NonNull Job job, @Nullable String dependsOnQueue) {
+    jobTracker.onStateChange(job, JobTracker.JobState.PENDING);
+
+    runOnExecutor(() -> {
+      jobController.submitJobWithExistingDependencies(job, Collections.emptyList(), dependsOnQueue);
+      jobController.wakeUp();
+    });
+  }
+
+  /**
+   * Enqueues a single job that depends on a collection of job ID's, as well as any unfinished
+   * items in the specified queue.
+   */
+  public void add(@NonNull Job job, @NonNull Collection<String> dependsOn, @Nullable String dependsOnQueue) {
+    jobTracker.onStateChange(job, JobTracker.JobState.PENDING);
+
+    runOnExecutor(() -> {
+      jobController.submitJobWithExistingDependencies(job, dependsOn, dependsOnQueue);
+      jobController.wakeUp();
     });
   }
 
@@ -168,7 +212,14 @@ public class JobManager implements ConstraintObserver.Notifier {
    * moment. Just like a normal failure, all later jobs in the same chain will also be failed.
    */
   public void cancel(@NonNull String id) {
-    executor.execute(() -> jobController.cancelJob(id));
+    runOnExecutor(() -> jobController.cancelJob(id));
+  }
+
+  /**
+   * Cancels all jobs in the specified queue. See {@link #cancel(String)} for details.
+   */
+  public void cancelAllInQueue(@NonNull String queue) {
+    runOnExecutor(() -> jobController.cancelAllInQueue(queue));
   }
 
   /**
@@ -213,10 +264,22 @@ public class JobManager implements ConstraintObserver.Notifier {
    */
   @WorkerThread
   public @NonNull String getDebugInfo() {
-    Future<String> result = executor.submit(jobController::getDebugInfo);
+    AtomicReference<String> result = new AtomicReference<>();
+    CountDownLatch          latch  = new CountDownLatch(1);
+
+    runOnExecutor(() -> {
+      result.set(jobController.getDebugInfo());
+      latch.countDown();
+    });
+
     try {
-      return result.get();
-    } catch (ExecutionException | InterruptedException e) {
+      boolean finished = latch.await(10, TimeUnit.SECONDS);
+      if (finished) {
+        return result.get();
+      } else {
+        return "Timed out waiting for Job info.";
+      }
+    } catch (InterruptedException e) {
       Log.w(TAG, "Failed to retrieve Job info.", e);
       return "Failed to retrieve Job info.";
     }
@@ -226,8 +289,10 @@ public class JobManager implements ConstraintObserver.Notifier {
    * Adds a listener that will be notified when the job queue has been drained.
    */
   void addOnEmptyQueueListener(@NonNull EmptyQueueListener listener) {
-    executor.execute(() -> {
-      emptyQueueListeners.add(listener);
+    runOnExecutor(() -> {
+      synchronized (emptyQueueListeners) {
+        emptyQueueListeners.add(listener);
+      }
     });
   }
 
@@ -235,8 +300,10 @@ public class JobManager implements ConstraintObserver.Notifier {
    * Removes a listener that was added via {@link #addOnEmptyQueueListener(EmptyQueueListener)}.
    */
   void removeOnEmptyQueueListener(@NonNull EmptyQueueListener listener) {
-    executor.execute(() -> {
-      emptyQueueListeners.remove(listener);
+    runOnExecutor(() -> {
+      synchronized (emptyQueueListeners) {
+        emptyQueueListeners.remove(listener);
+      }
     });
   }
 
@@ -247,10 +314,30 @@ public class JobManager implements ConstraintObserver.Notifier {
   }
 
   /**
+   * Blocks until all pending operations are finished.
+   */
+  @WorkerThread
+  public void flush() {
+    CountDownLatch latch = new CountDownLatch(1);
+
+    runOnExecutor(() -> {
+      jobController.flush();
+      latch.countDown();
+    });
+
+    try {
+      latch.await();
+      Log.i(TAG, "Successfully flushed.");
+    } catch (InterruptedException e) {
+      Log.w(TAG, "Failed to finish flushing.", e);
+    }
+  }
+
+  /**
    * Pokes the system to take another pass at the job queue.
    */
   void wakeUp() {
-    executor.execute(jobController::wakeUp);
+    runOnExecutor(jobController::wakeUp);
   }
 
   private void enqueueChain(@NonNull Chain chain) {
@@ -260,19 +347,45 @@ public class JobManager implements ConstraintObserver.Notifier {
       }
     }
 
-    executor.execute(() -> {
+    runOnExecutor(() -> {
       jobController.submitNewJobChain(chain.getJobListChain());
-      wakeUp();
+      jobController.wakeUp();
     });
   }
 
   private void onEmptyQueue() {
-    executor.execute(() -> {
-      for (EmptyQueueListener listener : emptyQueueListeners) {
-        listener.onQueueEmpty();
+    runOnExecutor(() -> {
+      synchronized (emptyQueueListeners) {
+        for (EmptyQueueListener listener : emptyQueueListeners) {
+          listener.onQueueEmpty();
+        }
       }
     });
   }
+
+  /**
+   * Anything that you want to ensure happens off of the main thread and after initialization, run
+   * it through here.
+   */
+  private void runOnExecutor(@NonNull Runnable runnable) {
+    executor.execute(() -> {
+      waitUntilInitialized();
+      runnable.run();
+    });
+  }
+
+  private void waitUntilInitialized() {
+    if (!initialized) {
+      Log.i(TAG, "Waiting for initialization...");
+      synchronized (this) {
+        while (!initialized) {
+          Util.wait(this, 0);
+        }
+      }
+      Log.i(TAG, "Initialization complete.");
+    }
+  }
+
 
   public interface EmptyQueueListener {
     void onQueueEmpty();
@@ -339,6 +452,7 @@ public class JobManager implements ConstraintObserver.Notifier {
     private final JobStorage               jobStorage;
     private final JobMigrator              jobMigrator;
     private final JobTracker               jobTracker;
+    private final List<JobPredicate>       reservedJobRunners;
 
     private Configuration(int jobThreadCount,
                           @NonNull ExecutorFactory executorFactory,
@@ -348,17 +462,19 @@ public class JobManager implements ConstraintObserver.Notifier {
                           @NonNull Data.Serializer dataSerializer,
                           @NonNull JobStorage jobStorage,
                           @NonNull JobMigrator jobMigrator,
-                          @NonNull JobTracker jobTracker)
+                          @NonNull JobTracker jobTracker,
+                          @NonNull List<JobPredicate> reservedJobRunners)
     {
       this.executorFactory        = executorFactory;
       this.jobThreadCount         = jobThreadCount;
       this.jobInstantiator        = jobInstantiator;
       this.constraintInstantiator = constraintInstantiator;
-      this.constraintObservers    = constraintObservers;
+      this.constraintObservers    = new ArrayList<>(constraintObservers);
       this.dataSerializer         = dataSerializer;
       this.jobStorage             = jobStorage;
       this.jobMigrator            = jobMigrator;
       this.jobTracker             = jobTracker;
+      this.reservedJobRunners     = new ArrayList<>(reservedJobRunners);
     }
 
     int getJobThreadCount() {
@@ -398,6 +514,10 @@ public class JobManager implements ConstraintObserver.Notifier {
       return jobTracker;
     }
 
+    @NonNull List<JobPredicate> getReservedJobRunners() {
+      return reservedJobRunners;
+    }
+
     public static class Builder {
 
       private ExecutorFactory                 executorFactory     = new DefaultExecutorFactory();
@@ -409,9 +529,15 @@ public class JobManager implements ConstraintObserver.Notifier {
       private JobStorage                      jobStorage          = null;
       private JobMigrator                     jobMigrator         = null;
       private JobTracker                      jobTracker          = new JobTracker();
+      private List<JobPredicate>              reservedJobRunners  = new ArrayList<>();
 
       public @NonNull Builder setJobThreadCount(int jobThreadCount) {
         this.jobThreadCount = jobThreadCount;
+        return this;
+      }
+
+      public @NonNull Builder addReservedJobRunner(@NonNull JobPredicate predicate) {
+        this.reservedJobRunners.add(predicate);
         return this;
       }
 
@@ -459,7 +585,8 @@ public class JobManager implements ConstraintObserver.Notifier {
                                  dataSerializer,
                                  jobStorage,
                                  jobMigrator,
-                                 jobTracker);
+                                 jobTracker,
+                                 reservedJobRunners);
       }
     }
   }
