@@ -42,6 +42,7 @@
   <string name="ApplicationPreferencesActivity_privacy_summary">Khóa màn hình %1$s, Khóa đăng kí %2$s</string>
   <string name="ApplicationPreferencesActivity_privacy_summary_screen_lock">Khóa màn hình %1$s</string>
   <string name="ApplicationPreferencesActivity_appearance_summary">Chủ đề %1$s, Ngôn ngữ %2$s</string>
+  <string name="ApplicationPreferencesActivity_pin_created">Mã PIN đã được tạo.</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="other">%d phút</item>
@@ -154,7 +155,7 @@
   <string name="ContactShareEditActivity_type_missing">Khác</string>
   <string name="ContactShareEditActivity_invalid_contact">Liên lạc đã chọn không hợp lệ</string>
   <!--ConversationItem-->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationItem_error_not_delivered">Không thể gửi, nhấn để xem chi tiết</string> -->
+  <string name="ConversationItem_error_network_not_delivered">Không gửi được</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">Đã nhận được yêu cầu trao đổi mã khoá, nhấn để tiếp tục.</string>
   <string name="ConversationItem_group_action_left">%1$s đã rời nhóm.</string>
   <string name="ConversationItem_click_to_approve_unencrypted">Không gửi được, nhấn để thử giao thức không bảo mật</string>
@@ -287,8 +288,6 @@
   <plurals name="ConversationListFragment_moved_conversations_to_inbox">
     <item quantity="other">Đã chuyển %d cuộc trò chuyện vào hộp thư đến</item>
   </plurals>
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_created">Tên hồ sơ của bạn đã được tạo.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_saved">Tên hồ sơ của bạn đã được lưu.</string> -->
   <!--ConversationListItem-->
   <string name="ConversationListItem_key_exchange_message">Tin nhắn trao đổi mã khóa</string>
   <!--ConversationListItemAction-->
@@ -634,12 +633,14 @@
   <string name="MessageRecord_you_revoked_admin_privileges_from_s">Bạn đã thu hồi quyền quản trị của %1$s.</string>
   <string name="MessageRecord_s_revoked_your_admin_privileges">%1$s đã thu hồi quyền quản trị của bạn.</string>
   <string name="MessageRecord_s_revoked_admin_privileges_from_s">%1$s đã thu hồi quyền quản trị của %2$s.</string>
+  <string name="MessageRecord_you_are_now_an_admin">Bạn đang là quản trị viên.</string>
   <!--GV2 invitations-->
   <string name="MessageRecord_you_invited_s_to_the_group">Bạn đã mời %1$s vào nhóm.</string>
   <string name="MessageRecord_s_invited_you_to_the_group">%1$s đã mời bạn vào nhóm.</string>
   <plurals name="MessageRecord_s_invited_members">
     <item quantity="other">%1$s đã mời %2$d người vào nhóm.</item>
   </plurals>
+  <string name="MessageRecord_you_were_invited_to_the_group">Bạn đã được mời vào nhóm.</string>
   <!--GV2 invitation revokes-->
   <plurals name="MessageRecord_you_revoked_invites">
     <item quantity="other">Bạn đã thu hồi %1$d lời mời vào nhóm.</item>
@@ -649,6 +650,7 @@
   </plurals>
   <string name="MessageRecord_someone_declined_an_invitation_to_the_group">Ai đó đã từ chối lời mời vào nhóm.</string>
   <string name="MessageRecord_you_declined_the_invitation_to_the_group">Bạn đã từ chối lời mời vào nhóm.</string>
+  <string name="MessageRecord_your_invitation_to_the_group_was_revoked">Thư mời tham gia nhóm của bạn đã bị thu hồi.</string>
   <!--GV2 invitation acceptance-->
   <string name="MessageRecord_you_accepted_invite">Bạn đã chấp nhận lời mời vào nhóm.</string>
   <string name="MessageRecord_s_accepted_invite">%1$s đã chấp nhận lời mời vào nhóm.</string>
@@ -748,6 +750,7 @@
   <string name="PinRestoreLockedFragment_create_your_pin">Tạo mã PIN của bạn</string>
   <string name="PinRestoreLockedFragment_youve_run_out_of_pin_guesses">Bạn đã hết số lần thử mã PIN, nhưng bạn vẫn có thể truy cập tài khoản Signal bằng cách tạo PIN mới. Để đảm bảo bảo mật và tính riêng tư, tài khoản mới của bạn sẽ được khôi phục nhưng thông tin hồ sơ và cài đặt thì không.</string>
   <string name="PinRestoreLockedFragment_create_new_pin">Tạo PIN mới</string>
+  <!--PinOptOutDialog-->
   <!--RatingManager-->
   <string name="RatingManager_rate_this_app">Đánh giá ứng dụng này</string>
   <string name="RatingManager_if_you_enjoy_using_this_app_please_take_a_moment">Nếu bạn thích ứng dụng này, hãy dành chút thời gian đánh giá nó.</string>
@@ -1184,6 +1187,8 @@ Nhận thông tin trao đổi mã khóa về phiên bản giao thức không h�
   <string name="QuoteView_original_missing">Không tìm thấy tin nhắn ban đầu</string>
   <!--conversation_fragment-->
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">Kéo xuống dưới cùng</string>
+  <!--safety_number_change_dialog-->
+  <string name="safety_number_change_dialog__view">Xem</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Đang tải các quốc gia…</string>
   <string name="country_selection_fragment__search">Tìm kiếm</string>
@@ -1518,6 +1523,7 @@ Nhận thông tin trao đổi mã khóa về phiên bản giao thức không h�
   <string name="preferences_communication__sealed_sender_allow_from_anyone">Cho phép từ bất cứ ai</string>
   <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Bật \'Lá thư không chủ\' cho tin nhắn từ người gửi không có trong danh bạ và người bạn chưa chia sẻ hồ sơ.</string>
   <string name="preferences_communication__sealed_sender_learn_more">Tìm hiểu thêm</string>
+  <!--Internal only preferences-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -1670,7 +1676,6 @@ Nhận thông tin trao đổi mã khóa về phiên bản giao thức không h�
   <string name="CreateKbsPinFragment__create_a_new_pin">Tạo mã PIN mới</string>
   <string name="CreateKbsPinFragment__you_can_choose_a_new_pin_as_long_as_this_device_is_registered">Bạn có thể thay đổi mã PIN của bạn với điều kiện thiết bị được đăng ký.</string>
   <string name="CreateKbsPinFragment__create_your_pin">Tạo mã PIN của bạn</string>
-  <string name="CreateKbsPinFragment__pins_keep_information_stored_with_signal_encrypted">Mã PIN mã hoá các thông tin được lưu trữ với Signal để chỉ mình bạn có thể truy cập được. Thông tin người dùng, cài đặt, và các liên hệ sẽ được khôi phục khi bạn cài đặt lại Signal.</string>
   <string name="CreateKbsPinFragment__choose_a_stronger_pin">Chọn mã PIN mạnh hơn</string>
   <!--ConfirmKbsPinFragment-->
   <string name="ConfirmKbsPinFragment__pins_dont_match">Mã PIN không khớp. Vui lòng thử lại.</string>
@@ -1682,13 +1687,13 @@ Nhận thông tin trao đổi mã khóa về phiên bản giao thức không h�
   <string name="ConfirmKbsPinFragment__creating_pin">Đang tạo mã PIN…</string>
   <!--KbsSplashFragment-->
   <string name="KbsSplashFragment__introducing_pins">Giới thiệu mã PIN</string>
-  <string name="KbsSplashFragment__pins_keep_information_stored_with_signal_encrypted">Mã PIN mã hoá các thông tin được lưu trữ với Signal để chỉ mình bạn có thể truy cập được. Thông tin người dùng, cài đặt, và các liên hệ sẽ được khôi phục khi bạn cài đặt lại Signal.</string>
   <string name="KbsSplashFragment__learn_more">Tìm hiểu thêm</string>
   <string name="KbsSplashFragment__registration_lock_equals_pin">Khóa Đăng ký = PIN</string>
   <string name="KbsSplashFragment__your_registration_lock_is_now_called_a_pin">Khóa đăng kí giờ trở thành mã PIN hữu dụng hơn. Cập nhật mã PIN ngay.</string>
   <string name="KbsSplashFragment__read_more_about_pins">Đọc thêm về mã PIN.</string>
   <string name="KbsSplashFragment__update_pin">Cập nhật mã PIN</string>
   <string name="KbsSplashFragment__create_your_pin">Tạo mã PIN của bạn</string>
+  <string name="KbsSplashFragment__learn_more_about_pins">Tìm hiểu thêm về mã PIN</string>
   <!--KBS Reminder Dialog-->
   <string name="KbsReminderDialog__enter_your_signal_pin">Nhập mã PIN Signal của bạn</string>
   <string name="KbsReminderDialog__to_help_you_memorize_your_pin">Để giúp bạn nhớ mã PIN của mình, chúng tôi sẽ yêu cầu bạn nhập lại mã định kỳ. Chúng tôi sẽ dần hỏi ít hơn.</string>
@@ -1737,13 +1742,6 @@ Nhận thông tin trao đổi mã khóa về phiên bản giao thức không h�
   <string name="KbsMegaphone__update_pin">Cập nhật mã PIN</string>
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Chúng tôi sẽ nhắc bạn sau. Việc tạo mã PIN sẽ trở nên bắt buộc sau %1$d ngày.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Chúng tôi sẽ nhắc bạn sau. Xác minh mã PIN của bạn sẽ trở nên bắt buộc sau %1$d ngày.</string>
-  <!--Profile Names Megaphone-->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__add_a_profile_name">Điền tên vào hồ sơ</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__this_will_be_displayed_when_you_start">Tên này sẽ được hiển thị khi bạn bắt đầu cuộc trò chuyện hoặc chia sẻ hồ sơ.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__add_profile_name">Điền tên hồ sơ</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__confirm_your_profile_name">Xác nhận tên hồ sơ của bạn</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__your_profile_can_now_include">Bây giờ bạn có thể thêm họ của bạn vào tên hồ sơ.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__confirm_name">Xác nhận tên</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Biểu tượng chuyển tải</string>
   <string name="ConversationListFragment_loading">Đang tải…</string>

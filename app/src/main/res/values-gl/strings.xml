@@ -44,6 +44,7 @@
   <string name="ApplicationPreferencesActivity_privacy_summary">Bloqueo da pantalla %1$s, bloqueo do rexistro %2$s</string>
   <string name="ApplicationPreferencesActivity_privacy_summary_screen_lock">Bloqueo de pantalla %1$s</string>
   <string name="ApplicationPreferencesActivity_appearance_summary">Tema %1$s, Idioma %2$s</string>
+  <string name="ApplicationPreferencesActivity_pin_created">PIN establecido.</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">%d minuto</item>
@@ -153,7 +154,6 @@
   <string name="ContactShareEditActivity_type_missing">Outra</string>
   <string name="ContactShareEditActivity_invalid_contact">O contacto seleccionado non foi válido</string>
   <!--ConversationItem-->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationItem_error_not_delivered">Erro ao enviar; toca para máis detalles</string> -->
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">Recibida a mensaxe de intercambio de chaves; toca para continuar.</string>
   <string name="ConversationItem_group_action_left">%1$s abandonou o grupo.</string>
   <string name="ConversationItem_click_to_approve_unencrypted">Erro ao enviar, toca para volver a un modo non seguro</string>
@@ -296,8 +296,6 @@
     <item quantity="one">Conversa movida á caixa de entrada</item>
     <item quantity="other">%d conversas movidas á caixa de entrada</item>
   </plurals>
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_created">Creouse o teu nome de perfil.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_saved">Gardouse o teu nome de perfil.</string> -->
   <!--ConversationListItem-->
   <string name="ConversationListItem_key_exchange_message">Mensaxe de intercambio de chaves</string>
   <!--ConversationListItemAction-->
@@ -634,6 +632,8 @@
   <string name="PinRestoreLockedFragment_create_your_pin">Crea o teu PIN</string>
   <string name="PinRestoreLockedFragment_youve_run_out_of_pin_guesses">Esgotaches os intentos, pero aínda podes acceder á conta Signal creando un novo PIN. Por privacidade e seguridade a conta será restablecida sen a información de perfil gardada ou axustes.</string>
   <string name="PinRestoreLockedFragment_create_new_pin">Crear novo PIN</string>
+  <!--PinOptOutDialog-->
+  <string name="PinOptOutDialog_warning">Aviso</string>
   <!--RatingManager-->
   <string name="RatingManager_rate_this_app">Valorar esta app</string>
   <string name="RatingManager_if_you_enjoy_using_this_app_please_take_a_moment">Se realmente che gusta esta aplicación, dedícalle, por favor, un intre a valorala.</string>
@@ -1036,6 +1036,7 @@
   <string name="QuoteView_original_missing">Non se atopou a mensaxe orixinal</string>
   <!--conversation_fragment-->
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">Desprazarse ata o final</string>
+  <!--safety_number_change_dialog-->
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Cargando países…</string>
   <string name="country_selection_fragment__search">Procurar</string>
@@ -1209,6 +1210,7 @@
   <string name="HelpFragment__contact_us">Contacto</string>
   <string name="HelpFragment__tell_us_whats_going_on">Envíanos o teu problema ou consulta</string>
   <string name="HelpFragment__include_debug_log">Incluír rexistro de depuración.</string>
+  <string name="HelpFragment__whats_this">Que é isto?</string>
   <string name="HelpFragment__how_do_you_feel">Como te sintes? (Optativo)</string>
   <string name="HelpFragment__no_email_app_found">Non se atopou app para email.</string>
   <!--ReactWithAnyEmojiBottomSheetDialogFragment-->
@@ -1370,6 +1372,7 @@
   <string name="preferences_communication__sealed_sender_allow_from_anyone">Permitir de calquera</string>
   <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Activa o remitente selado para as mensaxes entrantes de persoas que non estean nos teus contactos ou con aquelas coas que non compartiras o teu perfil.</string>
   <string name="preferences_communication__sealed_sender_learn_more">Saber máis</string>
+  <!--Internal only preferences-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -1510,7 +1513,6 @@
   <string name="CreateKbsPinFragment__create_a_new_pin">Crear un novo PIN</string>
   <string name="CreateKbsPinFragment__you_can_choose_a_new_pin_as_long_as_this_device_is_registered">Podes cambiar o PIN en tanto este dispositivo estea rexistrado.</string>
   <string name="CreateKbsPinFragment__create_your_pin">Crea o teu PIN</string>
-  <string name="CreateKbsPinFragment__pins_keep_information_stored_with_signal_encrypted">O PIN cifra a información gardada con Signal para que só ti poidas acceder a ela. O perfil, axustes e contactos restablécense ao reinstalar Signal.</string>
   <string name="CreateKbsPinFragment__choose_a_stronger_pin">Escolle un PIN máis forte</string>
   <!--ConfirmKbsPinFragment-->
   <string name="ConfirmKbsPinFragment__pins_dont_match">Os PIN non concordan, inténtao outra vez.</string>
@@ -1522,7 +1524,6 @@
   <string name="ConfirmKbsPinFragment__creating_pin">Creando PIN…</string>
   <!--KbsSplashFragment-->
   <string name="KbsSplashFragment__introducing_pins">Escribindo PINs</string>
-  <string name="KbsSplashFragment__pins_keep_information_stored_with_signal_encrypted">O PIN cifra a información gardada con Signal para que só ti poidas acceder a ela. O perfil, axustes e contactos restablécense ao reinstalar Signal.</string>
   <string name="KbsSplashFragment__learn_more">Saber máis</string>
   <string name="KbsSplashFragment__registration_lock_equals_pin">Bloqueo do rexistro = PIN</string>
   <string name="KbsSplashFragment__your_registration_lock_is_now_called_a_pin">O Bloqueo de Rexistro agora chámase PIN, e serve para máis. Actualiza agora.</string>
@@ -1580,8 +1581,6 @@
   <string name="KbsMegaphone__update_pin">Actualizar PIN</string>
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Lembrarémoscho máis tarde. Será obrigatorio crear un PIN tras %1$d días.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Lembrarémoscho máis tarde. Confirmar o PIN será obrigatorio en %1$d días.</string>
-  <!--Profile Names Megaphone-->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__your_profile_can_now_include">Agora, como opción, tamén podes engadir o apelido.</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Icona do tráfico</string>
   <string name="ConversationListFragment_loading">Cargando…</string>

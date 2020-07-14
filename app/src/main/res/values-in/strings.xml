@@ -42,6 +42,7 @@
   <string name="ApplicationPreferencesActivity_privacy_summary">Kunci layar %1$s, Kunci pendaftaran%2$s</string>
   <string name="ApplicationPreferencesActivity_privacy_summary_screen_lock">Kunci layar %1$s</string>
   <string name="ApplicationPreferencesActivity_appearance_summary">Tema %1$s, Bahasa %2$s</string>
+  <string name="ApplicationPreferencesActivity_pin_created">PIN dibuat.</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="other">%dmenit</item>
@@ -153,7 +154,7 @@
   <string name="ContactShareEditActivity_type_missing">Kontak lain</string>
   <string name="ContactShareEditActivity_invalid_contact">Kontak yang dipilih salah</string>
   <!--ConversationItem-->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationItem_error_not_delivered">Gagal mengirim, ketuk untuk lebih detail</string> -->
+  <string name="ConversationItem_error_network_not_delivered">Pengiriman gagal</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">Menerima pesan pertukaran kunci, ketuk untuk memproses.</string>
   <string name="ConversationItem_group_action_left">%1$s telah meninggalkan grup.</string>
   <string name="ConversationItem_click_to_approve_unencrypted">Gagal mengirim, ketuk untuk mengirim kembali tanpa enkripsi</string>
@@ -285,8 +286,6 @@
   <plurals name="ConversationListFragment_moved_conversations_to_inbox">
     <item quantity="other">Memindahkan %d percakapan ke kotak masuk</item>
   </plurals>
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_created">Nama profil Anda telah dibuat.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_saved">Nama profil Anda telah tersimpan.</string> -->
   <!--ConversationListItem-->
   <string name="ConversationListItem_key_exchange_message">Pesan pertukaran kunci</string>
   <!--ConversationListItemAction-->
@@ -599,12 +598,14 @@
   <string name="MessageRecord_you_revoked_admin_privileges_from_s">Anda membatalkan akses admin dari %1$s.</string>
   <string name="MessageRecord_s_revoked_your_admin_privileges">%1$s membatalkan akses admin Anda.\"</string>
   <string name="MessageRecord_s_revoked_admin_privileges_from_s">%1$s membatalkan akses admin %2$s.</string>
+  <string name="MessageRecord_you_are_now_an_admin">Anda sekarang menjadi admin.</string>
   <!--GV2 invitations-->
   <string name="MessageRecord_you_invited_s_to_the_group">Anda mengundang %1$s ke grup.</string>
   <string name="MessageRecord_s_invited_you_to_the_group">%1$s mengundang Anda ke grup.</string>
   <plurals name="MessageRecord_s_invited_members">
     <item quantity="other">%1$s mengundang %2$d orang ke grup.</item>
   </plurals>
+  <string name="MessageRecord_you_were_invited_to_the_group">Anda diundang ke dalam grup.</string>
   <!--GV2 invitation revokes-->
   <plurals name="MessageRecord_you_revoked_invites">
     <item quantity="other">Anda membatalkan %1$d undangan ke grup.</item>
@@ -614,6 +615,7 @@
   </plurals>
   <string name="MessageRecord_someone_declined_an_invitation_to_the_group">Seseorang menolak undangan masuk ke grup.</string>
   <string name="MessageRecord_you_declined_the_invitation_to_the_group">Anda menolak undangan masuk ke grup.</string>
+  <string name="MessageRecord_your_invitation_to_the_group_was_revoked">Undangan Anda untuk masuk ke grup telah dibatalkan.</string>
   <!--GV2 invitation acceptance-->
   <string name="MessageRecord_you_accepted_invite">Anda menerima undangan masuk ke grup.</string>
   <string name="MessageRecord_s_accepted_invite">%1$s menerima undangan masuk ke grup.</string>
@@ -700,6 +702,8 @@
   <!--PinRestoreLockedFragment-->
   <string name="PinRestoreLockedFragment_create_your_pin">Buat PIN Anda</string>
   <string name="PinRestoreLockedFragment_create_new_pin">Buat PIN baru</string>
+  <!--PinOptOutDialog-->
+  <string name="PinOptOutDialog_warning">Peringatan</string>
   <!--RatingManager-->
   <string name="RatingManager_rate_this_app">Nilai aplikasi ini</string>
   <string name="RatingManager_if_you_enjoy_using_this_app_please_take_a_moment">Jika Anda suka menggunakan aplikasi ini, luangkan waktu sejenak untuk membantu kami dengan memberikan nilai pada aplikasi.</string>
@@ -1153,6 +1157,8 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <string name="QuoteView_original_missing">Pesan asli tidak ditemukan</string>
   <!--conversation_fragment-->
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">Gulir ke bawah</string>
+  <!--safety_number_change_dialog-->
+  <string name="safety_number_change_dialog__view">Lihat</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Memuat daftar negara…</string>
   <string name="country_selection_fragment__search">Cari</string>
@@ -1496,6 +1502,7 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <string name="preferences_communication__sealed_sender_allow_from_anyone">Izinkan dari semua orang</string>
   <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Aktifkan pengirim tertutup untuk pesan masuk dari non-kontak dan orang yang tidak Anda beri profil.</string>
   <string name="preferences_communication__sealed_sender_learn_more">Pelajari lebih lanjut</string>
+  <!--Internal only preferences-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -1646,7 +1653,6 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <string name="CreateKbsPinFragment__create_a_new_pin">Buat PIN baru</string>
   <string name="CreateKbsPinFragment__you_can_choose_a_new_pin_as_long_as_this_device_is_registered">Anda dapat mengganti PIN Anda selama perangkat ini terdaftar.</string>
   <string name="CreateKbsPinFragment__create_your_pin">Buat PIN Anda</string>
-  <string name="CreateKbsPinFragment__pins_keep_information_stored_with_signal_encrypted">PIN menjaga informasi yang disimpan di Signal terenkripsi sehingga hanya Anda yang dapat mengaksesnya. Profil, pengaturan, dan kontak akan dipulihkan saat Anda memasang ulang Signal.</string>
   <string name="CreateKbsPinFragment__choose_a_stronger_pin">Buat PIN yang lebih kuah</string>
   <!--ConfirmKbsPinFragment-->
   <string name="ConfirmKbsPinFragment__pins_dont_match">PIN tidak cocok. Coba lagi.</string>
@@ -1658,13 +1664,13 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <string name="ConfirmKbsPinFragment__creating_pin">Membuat PIN…</string>
   <!--KbsSplashFragment-->
   <string name="KbsSplashFragment__introducing_pins">Memperkenalkan PIN</string>
-  <string name="KbsSplashFragment__pins_keep_information_stored_with_signal_encrypted">PIN menjaga informasi yang disimpan di Signal terenkripsi sehingga hanya Anda yang dapat mengaksesnya. Profil, pengaturan, dan kontak akan dipulihkan saat Anda memasang ulang Signal.</string>
   <string name="KbsSplashFragment__learn_more">Pelajari Lebih Lanjut</string>
   <string name="KbsSplashFragment__registration_lock_equals_pin">Kunci Pendaftaran = PIN</string>
   <string name="KbsSplashFragment__your_registration_lock_is_now_called_a_pin">Kunci Pendaftaran Anda sekarang bernama PIN, dan ia melakukan hal lebih. Perbarui sekarang.</string>
   <string name="KbsSplashFragment__read_more_about_pins">Baca lebih lanjut mengenai PIN.</string>
   <string name="KbsSplashFragment__update_pin">Perbarui PIN</string>
   <string name="KbsSplashFragment__create_your_pin">Buat PIN Anda</string>
+  <string name="KbsSplashFragment__learn_more_about_pins">Pelajari lebih lanjut tentang PIN</string>
   <!--KBS Reminder Dialog-->
   <string name="KbsReminderDialog__enter_your_signal_pin">Masukkan PIN Signal Anda</string>
   <string name="KbsReminderDialog__to_help_you_memorize_your_pin">Untuk membantu Anda mengingat PIN, kami akan meminta Anda untuk memasukkannya secara berkala. Kami akan memintanya lebih jarang dari waktu ke waktu.</string>
@@ -1712,13 +1718,6 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <string name="KbsMegaphone__update_pin">Perbarui PIN</string>
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Kami akan mengingatkan Anda nanti. Membuat PIN akan menjadi kewajiban dalam %1$d hari.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Kami akan mengingatkan Anda nanti. Mengonfirmasi PIN akan menjadi kewajiban dalam %1$d hari.</string>
-  <!--Profile Names Megaphone-->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__add_a_profile_name">Tambahkan nama profil</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__this_will_be_displayed_when_you_start">Nama profil Anda akan tampak dalam pecakapan dan saat Anda berbagi kontak.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__add_profile_name">Tambahkan Nama Profil</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__confirm_your_profile_name">Setujui Nama Profil Anda</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__your_profile_can_now_include">Profil Anda dapat mencantumkan nama keluarga (opsional).</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__confirm_name">Setujui Nama</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Pindahkan ikon</string>
   <string name="ConversationListFragment_loading">Memuat…</string>

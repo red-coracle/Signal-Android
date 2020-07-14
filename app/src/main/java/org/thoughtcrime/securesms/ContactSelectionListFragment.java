@@ -271,7 +271,7 @@ public final class ContactSelectionListFragment extends LoggingFragment
     RecyclerViewConcatenateAdapterStickyHeader concatenateAdapter = new RecyclerViewConcatenateAdapterStickyHeader();
 
     if (listCallback != null) {
-      if (FeatureFlags.groupsV2create() && FeatureFlags.groupsV2internalTest()) {
+      if (FeatureFlags.groupsV2create() && FeatureFlags.internalUser()) {
         headerAdapter = new FixedViewsAdapter(createNewGroupItem(listCallback), createNewGroupsV1GroupItem(listCallback));
       } else {
         headerAdapter = new FixedViewsAdapter(createNewGroupItem(listCallback));
@@ -461,6 +461,11 @@ public final class ContactSelectionListFragment extends LoggingFragment
     public void onItemClick(ContactSelectionListItem contact) {
       SelectedContact selectedContact = contact.isUsernameType() ? SelectedContact.forUsername(contact.getRecipientId().orNull(), contact.getNumber())
                                                                  : SelectedContact.forPhone(contact.getRecipientId().orNull(), contact.getNumber());
+
+      if (isMulti() && Recipient.self().getId().equals(selectedContact.getOrCreateRecipientId(requireContext()))) {
+        Toast.makeText(requireContext(), R.string.ContactSelectionListFragment_you_do_not_need_to_add_yourself_to_the_group, Toast.LENGTH_SHORT).show();
+        return;
+      }
 
       if (!isMulti() || !cursorRecyclerViewAdapter.isSelectedContact(selectedContact)) {
         if (selectionLimitReached()) {

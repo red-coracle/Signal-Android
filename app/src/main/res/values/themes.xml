@@ -319,6 +319,7 @@
         <item name="conversation_item_sticky_date_text_color">@color/core_grey_60</item>
         <item name="conversation_item_image_outline_color">@color/transparent_black_20</item>
         <item name="conversation_item_reveal_viewed_background_color">?conversation_background</item>
+        <item name="conversation_item_delete_for_everyone_text_color">@color/core_grey_90</item>
         <item name="conversation_scroll_to_bottom_background">@drawable/scroll_to_bottom_background_light</item>
         <item name="conversation_scroll_to_bottom_foreground_color">@color/grey_600</item>
 
@@ -409,6 +410,8 @@
 
         <item name="tooltip_default_color">@color/core_white</item>
 
+        <item name="dangerous_button_color">@color/core_red_highlight</item>
+
         <item name="pref_icon_tint">?attr/icon_tint</item>
 
         <item name="pref_divider">@drawable/preference_divider_light</item>
@@ -429,9 +432,6 @@
         <item name="shared_contact_details_header_background">@color/grey_100</item>
         <item name="shared_contact_details_titlebar">@color/grey_400</item>
         <item name="shared_contact_item_button_color">@color/core_grey_02</item>
-
-        <item name="pending_member_background">@color/core_grey_02</item>
-        <item name="pending_member_empty_text_color">@color/core_grey_60</item>
 
         <item name="contact_selection_new_group_icon">@drawable/ic_new_group_circle_light</item>
         <item name="contact_selection_invite_icon">@drawable/ic_invite_circle_light</item>
@@ -548,6 +548,7 @@
         <item name="conversation_item_sticky_date_text_color">@color/core_grey_25</item>
         <item name="conversation_item_image_outline_color">@color/transparent_white_20</item>
         <item name="conversation_item_reveal_viewed_background_color">?conversation_background</item>
+        <item name="conversation_item_delete_for_everyone_text_color">@color/core_grey_15</item>
 
         <item name="safety_number_change_dialog_button_background">@color/core_grey_75</item>
         <item name="safety_number_change_dialog_button_text_color">@color/core_grey_05</item>
@@ -711,6 +712,8 @@
 
         <item name="tooltip_default_color">@color/core_grey_75</item>
 
+        <item name="dangerous_button_color">@color/core_red</item>
+
         <item name="pref_icon_tint">?attr/icon_tint</item>
 
         <item name="pref_divider">@drawable/preference_divider_dark</item>
@@ -728,9 +731,6 @@
         <item name="shared_contact_details_header_background">@color/grey_800</item>
         <item name="shared_contact_details_titlebar">@color/grey_900</item>
         <item name="shared_contact_item_button_color">@color/core_grey_85</item>
-
-        <item name="pending_member_background">@color/core_grey_80</item>
-        <item name="pending_member_empty_text_color">@color/core_grey_25</item>
 
         <item name="contact_selection_new_group_icon">@drawable/ic_new_group_circle_dark</item>
         <item name="contact_selection_invite_icon">@drawable/ic_invite_circle_dark</item>

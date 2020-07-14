@@ -44,6 +44,7 @@
   <string name="ApplicationPreferencesActivity_privacy_summary">Kifunga skrini%1$s, Kifunga usajili %2$s</string>
   <string name="ApplicationPreferencesActivity_privacy_summary_screen_lock">Kifunga Skrini %1$s</string>
   <string name="ApplicationPreferencesActivity_appearance_summary">Mandhari %1$s, Lugha %2$s</string>
+  <string name="ApplicationPreferencesActivity_pin_created">Nenosiri limeundwa</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">dakika %d </item>
@@ -145,7 +146,7 @@
   <string name="ContactShareEditActivity_type_missing">ingine</string>
   <string name="ContactShareEditActivity_invalid_contact">Mawasilianao yaliyochaguliwa sio sahihi</string>
   <!--ConversationItem-->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationItem_error_not_delivered">Imefeli kutuma, gusa kwa taarifa</string> -->
+  <string name="ConversationItem_error_network_not_delivered">Kutuma kumeshindwa</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">Umepokea ujumbe mkuu uliobadilishwa, gusa  kuendelea na mchakato</string>
   <string name="ConversationItem_group_action_left">%1$s ameondoka kwenye kundi</string>
   <string name="ConversationItem_click_to_approve_unencrypted">Imefeli kutuma, gusa kwa isiyo salama ili kurejea nyuma</string>
@@ -282,7 +283,6 @@
     <item quantity="one">Gumzo limehamishwa hadi kwenye kisanduku pokezi</item>
     <item quantity="other">Gumzo %dzimehamishwa hadi kwenye kisanduku pokezi</item>
   </plurals>
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_saved">Jina la wasifu wako limehifadhiwa.</string> -->
   <!--ConversationListItem-->
   <string name="ConversationListItem_key_exchange_message">Ujumbe muhimu wa kubadilishana</string>
   <!--ConversationListItemAction-->
@@ -539,8 +539,11 @@
   <string name="MessageRecord_s_joined_the_group">%1$s amejiunga na kikundi.</string>
   <!--GV2 member removals-->
   <!--GV2 role change-->
+  <string name="MessageRecord_you_are_now_an_admin">Wewe sasa ni msimamizi.</string>
   <!--GV2 invitations-->
+  <string name="MessageRecord_you_were_invited_to_the_group">Umealikwa kwenye kundi.</string>
   <!--GV2 invitation revokes-->
+  <string name="MessageRecord_your_invitation_to_the_group_was_revoked">Mwaliko wako kwa kundi ulibatilishwa.</string>
   <!--GV2 invitation acceptance-->
   <!--GV2 title change-->
   <!--GV2 avatar change-->
@@ -617,6 +620,7 @@ Signal inahitaji ruhusa ya Kamera ili kuskani msimbo wa QR, lakini imekataliwa k
   <string name="PinRestoreEntryFragment_enter_numeric_pin">Ingiza Nenosiri lenye nambari </string>
   <!--PinRestoreLockedFragment-->
   <string name="PinRestoreLockedFragment_create_your_pin">Unda Nenosiri lako</string>
+  <!--PinOptOutDialog-->
   <!--RatingManager-->
   <string name="RatingManager_rate_this_app">Tathmini programu hii</string>
   <string name="RatingManager_if_you_enjoy_using_this_app_please_take_a_moment">Iwapo unapendezwa na programu hii, tafadhali chukua muda utusaidie kuitathmini.</string>
@@ -1035,6 +1039,8 @@ nambari yako ya simu</string>
   <string name="QuoteView_original_missing">Ujumbe asili haupatikani</string>
   <!--conversation_fragment-->
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">Biringiza hadi chini</string>
+  <!--safety_number_change_dialog-->
+  <string name="safety_number_change_dialog__view">Tazama</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Inapakia nchi</string>
   <string name="country_selection_fragment__search">Tafuta</string>
@@ -1356,6 +1362,7 @@ nambari yako ya simu</string>
   <string name="preferences_communication__sealed_sender_allow_from_anyone">Ruhusu kutoka kwa kila mtu</string>
   <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Wezesha mtumaji mwenye muhuri kwa jumbe zinazoingia kutoka kwa wasio wasiliani na watu ambao hukushiriki wasifu wako</string>
   <string name="preferences_communication__sealed_sender_learn_more">Jifunze zaidi</string>
+  <!--Internal only preferences-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -1508,7 +1515,6 @@ nambari yako ya simu</string>
   <string name="CreateKbsPinFragment__create_a_new_pin">Unda Nenosiri jipya</string>
   <string name="CreateKbsPinFragment__you_can_choose_a_new_pin_as_long_as_this_device_is_registered">Unaweza kubadili PINI mradi tu kifaa hiki kimesajiliwa</string>
   <string name="CreateKbsPinFragment__create_your_pin">Unda Nenosiri lako</string>
-  <string name="CreateKbsPinFragment__pins_keep_information_stored_with_signal_encrypted">PINI hufanya taarifa iliyohifadhiwa na Signal iliyosimbwa kuweza kufikiwa na wewe tu. Wasifu wako, mipangilio, na wawasiliani vitarejeshwa utakaposakinisha upya Signal.</string>
   <string name="CreateKbsPinFragment__choose_a_stronger_pin">Chagua PINI yenye nguvu zaidi.</string>
   <!--ConfirmKbsPinFragment-->
   <string name="ConfirmKbsPinFragment__pins_dont_match">Nenosiri hazifanani. Jaribu tena.</string>
@@ -1519,13 +1525,13 @@ nambari yako ya simu</string>
   <string name="ConfirmKbsPinFragment__creating_pin">Inaunda Nenosiri…</string>
   <!--KbsSplashFragment-->
   <string name="KbsSplashFragment__introducing_pins">Uanzishaji Nenosiri</string>
-  <string name="KbsSplashFragment__pins_keep_information_stored_with_signal_encrypted">PINI hufanya taarifa iliyohifadhiwa na Signal iliyosimbwa kuweza kufikiwa na wewe tu. Wasifu wako, mipangilio, na wawasiliani vitarejeshwa utakaposakinisha upya Signal.</string>
   <string name="KbsSplashFragment__learn_more">Jifunze Zaidi</string>
   <string name="KbsSplashFragment__registration_lock_equals_pin">Kufuli ya Usajili = Nenosiri</string>
   <string name="KbsSplashFragment__your_registration_lock_is_now_called_a_pin">Kifunga usajili wako sasa kinaitwa Nenosiri, na kinafanya mengi zaidi. Kisasishe sasa.</string>
   <string name="KbsSplashFragment__read_more_about_pins">Soma zaidi kuhusu Nenosiri</string>
   <string name="KbsSplashFragment__update_pin">Sasisha Nenosiri</string>
   <string name="KbsSplashFragment__create_your_pin">Unda Nenosiri lako</string>
+  <string name="KbsSplashFragment__learn_more_about_pins">Jifunze zaidi kuhusu PINI</string>
   <!--KBS Reminder Dialog-->
   <string name="KbsReminderDialog__enter_your_signal_pin">Ingiza Nenosiri lako ya Signal</string>
   <string name="KbsReminderDialog__to_help_you_memorize_your_pin">Ili kukusaidia kukariri Nenosiri lako, tutakuuliza uliingize mara kwa mara. Tunapunguza kukuuliza baada ya muda.</string>
@@ -1578,10 +1584,6 @@ nambari yako ya simu</string>
   <string name="KbsMegaphone__update_pin">Sasisha Nenosiri</string>
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Tutakukumbusha baadaye. Kuunda Nenosiri kutakuwa lazima baada ya siku %1$d.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Tutakukumbusha baadaye. Kuthibitisha Nenosiri lako kutakuwa ni lazima baada ya siku %1$d.</string>
-  <!--Profile Names Megaphone-->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__this_will_be_displayed_when_you_start">Hii itaonyeshwa utakapoanzisha mazungumzo mpya au kushiriki.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__add_profile_name">Ongeza Jina la Wasifu</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__your_profile_can_now_include">Wasifu wako sasa unaweza kujumuisha jina la hiari la mwisho</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Ikoni ya usafiri</string>
   <string name="ConversationListFragment_loading">Inafunguka</string>

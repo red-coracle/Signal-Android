@@ -44,6 +44,7 @@
   <string name="ApplicationPreferencesActivity_privacy_summary">திரை பூட்டி%1$sபதிவு பூட்டு%2$s, </string>
   <string name="ApplicationPreferencesActivity_privacy_summary_screen_lock">திரை பூட்டு%1$s</string>
   <string name="ApplicationPreferencesActivity_appearance_summary">பின்புலத்தோற்றம் %1$s, மொழி %2$s</string>
+  <string name="ApplicationPreferencesActivity_pin_created">பின் உருவாக்கப்பட்டது.</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">%d நிமிடம்</item>
@@ -150,7 +151,7 @@
   <string name="ContactShareEditActivity_type_missing">மற்றவை</string>
   <string name="ContactShareEditActivity_invalid_contact">தேர்ந்தெடுத்த தொடர்பு தவறானது</string>
   <!--ConversationItem-->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationItem_error_not_delivered">அனுப்புதல் தோல்வி, விவரங்களுக்கு தட்டவும்</string> -->
+  <string name="ConversationItem_error_network_not_delivered">அனுப்புவது தோல்வியுற்றது</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">முக்கிய பரிமாற்ற செய்தி பெறப்பட்டது, செயலாக்க தட்டவும்.</string>
   <string name="ConversationItem_group_action_left">%1$s இந்தக் குழுவை விட்டு விலகினார்.</string>
   <string name="ConversationItem_click_to_approve_unencrypted">அனுப்புதல் தோல்வியுற்றது, பாதுகாப்பற்ற மாற்று செய்ய  தட்டவும்</string>
@@ -287,8 +288,6 @@
     <item quantity="one">உரையாடல் அகப்பெட்டிக்கு நகர்த்தப்பட்டது.</item>
     <item quantity="other">%d உரையாடலைகள் அகப்பெட்டிக்கு நகர்த்தப்பட்டது.</item>
   </plurals>
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_created">உங்கள் சுயவிவரப் பெயர் உருவாக்கப்பட்டது.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_saved">உங்கள் சுயவிவரப் பெயர் சேமிக்கப்பட்டது.</string> -->
   <!--ConversationListItem-->
   <string name="ConversationListItem_key_exchange_message">முக்கிய பரிமாற்ற செய்தி</string>
   <!--ConversationListItemAction-->
@@ -547,9 +546,13 @@
   <string name="MessageRecord_you_joined_the_group">நீங்கள் குழுவில் சேர்ந்தார்.</string>
   <string name="MessageRecord_s_joined_the_group">%1$s குழுவில் சேர்ந்தார்.</string>
   <!--GV2 member removals-->
+  <string name="MessageRecord_you_left_the_group">நீங்கள் குழுவிலிருந்து வெளியேறிவிட்டீர்கள்.</string>
   <!--GV2 role change-->
+  <string name="MessageRecord_you_are_now_an_admin">நீங்கள் இப்போது ஒரு நிர்வாகி.</string>
   <!--GV2 invitations-->
+  <string name="MessageRecord_you_were_invited_to_the_group">நீங்கள் குழுவிற்கு அழைக்கப்பட்டனர்.</string>
   <!--GV2 invitation revokes-->
+  <string name="MessageRecord_your_invitation_to_the_group_was_revoked">உங்கள் குழுவிற்கு அழைப்பு இருந்தது ரத்து செய்யப்பட்டது.</string>
   <!--GV2 invitation acceptance-->
   <!--GV2 title change-->
   <!--GV2 avatar change-->
@@ -625,6 +628,7 @@
   <string name="PinRestoreEntryFragment_enter_numeric_pin">எண் பின்னை உள்ளிடவும்</string>
   <!--PinRestoreLockedFragment-->
   <string name="PinRestoreLockedFragment_create_your_pin">உங்கள் பின்னை உருவாக்கவும்</string>
+  <!--PinOptOutDialog-->
   <!--RatingManager-->
   <string name="RatingManager_rate_this_app">இச் செயலியை மதிப்புரை செய்க</string>
   <string name="RatingManager_if_you_enjoy_using_this_app_please_take_a_moment">இச் செயலியின்  பயன்பாட்டை விரும்பினால் தயை கூர்ந்து  எங்கள் செயலியை   மதிப்புரை செய்க    </string>
@@ -1052,6 +1056,8 @@
   <string name="QuoteView_original_missing">அசல் செய்தி கிடைக்கவில்லை</string>
   <!--conversation_fragment-->
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">கீழே உருட்டவும்</string>
+  <!--safety_number_change_dialog-->
+  <string name="safety_number_change_dialog__view">காண்க</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">நாடுகள் ஏற்றப்படுகிறது…</string>
   <string name="country_selection_fragment__search">தேடல்</string>
@@ -1377,6 +1383,7 @@
   <string name="preferences_communication__sealed_sender_allow_from_anyone">யாரிடமிருந்தும் அனுமதிக்கவும்</string>
   <string name="preferences_communication__sealed_sender_allow_from_anyone_description">தொடர்புகள் அல்லாதவர்களிடமிருந்தும், உங்கள் சுயவிவரத்தைப் பகிராத நபர்களிடமிருந்தும் உள்வரும் செய்திகளுக்கு சீல் அனுப்பியவரை இயக்கவும்.</string>
   <string name="preferences_communication__sealed_sender_learn_more">மேலும் அறிக</string>
+  <!--Internal only preferences-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -1522,7 +1529,6 @@
   <string name="CreateKbsPinFragment__create_a_new_pin">புதிய பின்னை உருவாக்கவும்</string>
   <string name="CreateKbsPinFragment__you_can_choose_a_new_pin_as_long_as_this_device_is_registered">நீங்கள் முடியும் மாற்றம் உங்கள் பின் இந்த வரை சாதனம் பதிவு செய்யப்பட்டுள்ளது.</string>
   <string name="CreateKbsPinFragment__create_your_pin">உங்கள் பின்னை உருவாக்கவும்</string>
-  <string name="CreateKbsPinFragment__pins_keep_information_stored_with_signal_encrypted">பின்ஸ் வைத்திருக்கின்றன தகவல் உடன் சேமிக்கப்படுகிறது Signal மறைகுறியாக்கப்பட்டது எனவே மட்டுமே நீங்கள் முடியும் அணுகல் அது. உங்கள் சுயவிவரம், அமைப்புகள், மற்றும் தொடர்புகள் இருக்கும் மீட்டமை எப்பொழுது நீங்கள் மீண்டும் நிறுவவும் Signal.</string>
   <string name="CreateKbsPinFragment__choose_a_stronger_pin">வலுவானதைத் தேர்வுசெய்க பின்</string>
   <!--ConfirmKbsPinFragment-->
   <string name="ConfirmKbsPinFragment__pins_dont_match">பின்ஸ் பொருந்தவில்லை. மீண்டும் முயற்சி செய்.</string>
@@ -1533,12 +1539,12 @@
   <string name="ConfirmKbsPinFragment__creating_pin">பின் உருவாக்குகிறது…</string>
   <!--KbsSplashFragment-->
   <string name="KbsSplashFragment__introducing_pins">பின்களை  அறிமுகப்படுத்துகிறது</string>
-  <string name="KbsSplashFragment__pins_keep_information_stored_with_signal_encrypted">பின்ஸ் வைத்திருக்கின்றன தகவல் உடன் சேமிக்கப்படுகிறது Signal மறைகுறியாக்கப்பட்டது எனவே மட்டுமே நீங்கள் முடியும் அணுகல் அது. உங்கள் சுயவிவரம், அமைப்புகள், மற்றும் தொடர்புகள் இருக்கும் மீட்டமை எப்பொழுது நீங்கள் மீண்டும் நிறுவவும் Signal.</string>
   <string name="KbsSplashFragment__learn_more">மேலும் அறிக</string>
   <string name="KbsSplashFragment__registration_lock_equals_pin">பதிவு பூட்டு = பின்</string>
   <string name="KbsSplashFragment__read_more_about_pins">பின்ஸைப் பற்றி மேலும் வாசிக்க.</string>
   <string name="KbsSplashFragment__update_pin">பின்னைப் புதுப்பிக்கவும்</string>
   <string name="KbsSplashFragment__create_your_pin">உங்கள் பின்னை உருவாக்கவும்</string>
+  <string name="KbsSplashFragment__learn_more_about_pins">பின்கள் பற்றி மேலும் அறிக</string>
   <!--KBS Reminder Dialog-->
   <string name="KbsReminderDialog__enter_your_signal_pin">உங்கள் Signal பின்னை உள்ளிடவும்</string>
   <string name="KbsReminderDialog__to_help_you_memorize_your_pin">உங்கள் பின்னை மனப்பாடம் செய்ய உங்களுக்கு உதவ, அதை அவ்வப்போது உள்ளிடுமாறு கேட்டுக்கொள்கிறோம். காலப்போக்கில் நாங்கள் உங்களிடம் குறைவாகக் கேட்கிறோம்.</string>
@@ -1568,10 +1574,6 @@
   <string name="KbsMegaphone__create_pin">பின் உருவாக்கவும்</string>
   <string name="KbsMegaphone__introducing_pins">பின்களை  அறிமுகப்படுத்துகிறது</string>
   <string name="KbsMegaphone__update_pin">பின்னைப் புதுப்பிக்கவும்</string>
-  <!--Profile Names Megaphone-->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__this_will_be_displayed_when_you_start">இது எப்போது காட்டப்படும் நீங்கள் புதிய உரையாடலைத் தொடங்கவும் அல்லது பகிரவும்.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__add_profile_name">சுயவிவரப் பெயரைச் சேர்க்கவும்</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__your_profile_can_now_include">உங்கள் சுயவிவரம் இப்போது ஒரு விருப்பத்தை சேர்க்கலாம் கடந்த பெயர்.</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">போக்குவரத்து குறும்படம்</string>
   <string name="ConversationListFragment_loading">ஏற்றுதல் …</string>

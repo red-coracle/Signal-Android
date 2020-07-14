@@ -48,6 +48,7 @@
   <string name="ApplicationPreferencesActivity_privacy_summary">Zámok obrazovky %1$s, Registračný zámok %2$s</string>
   <string name="ApplicationPreferencesActivity_privacy_summary_screen_lock">Zámok obrazovky %1$s</string>
   <string name="ApplicationPreferencesActivity_appearance_summary">%1$s motív,  jazyk: %2$s</string>
+  <string name="ApplicationPreferencesActivity_pin_created">PIN kód sa vytvoril.</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">%d minúta</item>
@@ -125,6 +126,7 @@
   <!--ClearProfileActivity-->
   <string name="ClearProfileActivity_remove">Odstrániť</string>
   <string name="ClearProfileActivity_remove_profile_photo">Odstrániť profilovú fotku?</string>
+  <string name="ClearProfileActivity_remove_group_photo">Odstrániť fotku skupiny?</string>
   <!--CommunicationActions-->
   <string name="CommunicationActions_no_browser_found">Nenašiel sa žiadny webový prehliadač.</string>
   <string name="CommunicationActions_no_email_app_found">Nenašla sa žiadna e-mailová aplikácia.</string>
@@ -161,7 +163,8 @@
   <string name="ContactShareEditActivity_type_missing">Iné</string>
   <string name="ContactShareEditActivity_invalid_contact">Vybraný kontakt je neplatný</string>
   <!--ConversationItem-->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationItem_error_not_delivered">Odosielanie zlyhalo, ťuknutím zobrazíte podrobnosti</string> -->
+  <string name="ConversationItem_error_partially_not_delivered">Čiastočne odoslaná, ťuknite pre podrobnosti</string>
+  <string name="ConversationItem_error_network_not_delivered">Odoslanie zlyhalo</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">Správa výmeny kľúčov prijatá, ťuknutím pokračujte.</string>
   <string name="ConversationItem_group_action_left">%1$s opustil/a skupinu.</string>
   <string name="ConversationItem_click_to_approve_unencrypted">Odosielanie zlyhalo, ťuknutím pošlete nezabezpečenú správu</string>
@@ -176,6 +179,7 @@
   <string name="ConversationItem_download_more">  Stiahnuť viac</string>
   <string name="ConversationItem_pending">  Čaká sa</string>
   <string name="ConversationItem_this_message_was_deleted">Táto správa bola zmazaná.</string>
+  <string name="ConversationItem_you_deleted_this_message">Vymazali ste túto správu.</string>
   <!--ConversationActivity-->
   <string name="ConversationActivity_reset_secure_session_question">Resetovať zabezpečenú reláciu?</string>
   <string name="ConversationActivity_this_may_help_if_youre_having_encryption_problems">Toto vám môže pomôcť pri problémoch so šifrovaním v tejto konverzácii. Vaše správy budú zachované.</string>
@@ -286,6 +290,7 @@
   <string name="ConversationFragment_deleting_messages">Mažú sa správy…</string>
   <string name="ConversationFragment_delete_for_me">Zmazať pre mňa</string>
   <string name="ConversationFragment_delete_for_everyone">Zmazať pre všetkých</string>
+  <string name="ConversationFragment_this_message_will_be_permanently_deleted_for_everyone">Táto správa sa natrvalo vymaže pre všetkých v tejto konverzácii. Členovia budú vidieť, že ste vymazali správu.</string>
   <string name="ConversationFragment_quoted_message_not_found">Pôvodná správa sa nenašla</string>
   <string name="ConversationFragment_quoted_message_no_longer_available">Pôvodná správa už nie je k dispozícii</string>
   <string name="ConversationFragment_failed_to_open_message">Nepodarilo sa otvoriť správu</string>
@@ -324,8 +329,6 @@
     <item quantity="many">%d konverzácií presunutých do doručených</item>
     <item quantity="other">%d konverzácií presunutých do doručených</item>
   </plurals>
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_created">Vaše profilové meno sa vytvorilo.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_saved">Názov vášho profilu bol uložený.</string> -->
   <!--ConversationListItem-->
   <string name="ConversationListItem_key_exchange_message">Správa výmeny kľúčov</string>
   <!--ConversationListItemAction-->
@@ -654,6 +657,7 @@
   <string name="MessageRecord_you_revoked_admin_privileges_from_s">Odobrali ste správcovské práva %1$s.</string>
   <string name="MessageRecord_s_revoked_your_admin_privileges">%1$s vám odobral/a správcovské práva.\"</string>
   <string name="MessageRecord_s_revoked_admin_privileges_from_s">%1$s odobral/a správcovské práva %2$s.</string>
+  <string name="MessageRecord_you_are_now_an_admin">Odteraz ste adminom.</string>
   <!--GV2 invitations-->
   <string name="MessageRecord_you_invited_s_to_the_group">Pozvali ste %1$s do skupiny.</string>
   <string name="MessageRecord_s_invited_you_to_the_group">%1$s vás pozval/a do skupiny.</string>
@@ -663,6 +667,7 @@
     <item quantity="many">%1$s pozval/a %2$d ľudí do skupiny.</item>
     <item quantity="other">%1$s pozval/a %2$d ľudí do skupiny.</item>
   </plurals>
+  <string name="MessageRecord_you_were_invited_to_the_group">Pozvali vás do skupiny.</string>
   <!--GV2 invitation revokes-->
   <plurals name="MessageRecord_you_revoked_invites">
     <item quantity="one">Odvolali ste pozvánku do skupiny.</item>
@@ -678,6 +683,7 @@
   </plurals>
   <string name="MessageRecord_someone_declined_an_invitation_to_the_group">Niekto odmietol pozvánku do skupiny.</string>
   <string name="MessageRecord_you_declined_the_invitation_to_the_group">Odmietli ste pozvánku do skupiny.</string>
+  <string name="MessageRecord_your_invitation_to_the_group_was_revoked">Vaše pozvanie do skupiny bolo stiahnuté.</string>
   <!--GV2 invitation acceptance-->
   <string name="MessageRecord_you_accepted_invite">Prijali ste pozvánku do skupiny.</string>
   <string name="MessageRecord_s_accepted_invite">%1$s prijal/a pozvánku do skupiny.</string>
@@ -791,6 +797,9 @@
   <string name="PinRestoreLockedFragment_create_your_pin">Vytvorte si PIN</string>
   <string name="PinRestoreLockedFragment_youve_run_out_of_pin_guesses">Vyčerpali ste všetky pokusy na zadanie PIN, ale stále sa môžete k svojmu Signal účtu dosať vytvorením nového PIN. Kvôli ochrane vašeho súkromia a vašej bezpečnosti bude váš účet obnovený bez uložených profilových informácií alebo nastavení.</string>
   <string name="PinRestoreLockedFragment_create_new_pin">Vytvoriť nový PIN</string>
+  <!--PinOptOutDialog-->
+  <string name="PinOptOutDialog_warning">Varovanie</string>
+  <string name="PinOptOutDialog_disable_pin">Vypnúť PIN</string>
   <!--RatingManager-->
   <string name="RatingManager_rate_this_app">Ohodnotiť túto aplikáciu</string>
   <string name="RatingManager_if_you_enjoy_using_this_app_please_take_a_moment">Ak sa vám táto aplikácia páči, nájdite si chvíľu a pomôžte nám tým, že ju ohodnotíte.</string>
@@ -969,6 +978,7 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="ThreadRecord_view_once_video">Video na jedno zobrazenie</string>
   <string name="ThreadRecord_view_once_media">Médiá na jedno zobrazenie</string>
   <string name="ThreadRecord_this_message_was_deleted">Táto správa bola zmazaná.</string>
+  <string name="ThreadRecord_you_deleted_this_message">Vymazali ste túto správu.</string>
   <string name="ThreadRecord_s_is_on_signal">%s je na Signale!</string>
   <string name="ThreadRecord_disappearing_messages_disabled">Miznúce správy vypnuté</string>
   <string name="ThreadRecord_disappearing_message_time_updated_to_s">Čas miznúcich správ bol nastavený na %s</string>
@@ -1239,6 +1249,10 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="QuoteView_original_missing">Pôvodná správa sa nenašla</string>
   <!--conversation_fragment-->
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">Na koniec</string>
+  <!--safety_number_change_dialog-->
+  <string name="safety_number_change_dialog__safety_number_changes">Zmeny bezpečnostného čísla</string>
+  <string name="safety_number_change_dialog__the_following_people_may_have_reinstalled_or_changed_devices">Nasledujúce osoby si možno preinštalovali alebo zmenili zariadenia. Overte si s nimi vaše bezpečnostné číslo pre zaistenie súkromia.</string>
+  <string name="safety_number_change_dialog__view">Zobraziť</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Načítavanie krajín…</string>
   <string name="country_selection_fragment__search">Hľadať</string>
@@ -1551,6 +1565,9 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="preferences__dark_theme">Tmavý</string>
   <string name="preferences__appearance">Vzhľad</string>
   <string name="preferences__theme">Motív</string>
+  <string name="preferences__disable_pin">Vypnúť PIN</string>
+  <string name="preferences__enable_pin">Zapnúť PIN</string>
+  <string name="preferences__pins_keep_information_stored_with_signal_encrypted_so_only_you_can_access_it">PIN kódy udržiavajú informácie uložené v Signale zašifrované, aby ste k nim mali prístup iba vy. Váš profil, vaše nastavenia a kontakty sa po opätovnej inštalácii obnovia. Na otvorenie aplikácie PIN potrebovať nebudete.</string>
   <string name="preferences__system_default">Predvolené nastavenie</string>
   <string name="preferences__default">Štandardné nastavenie</string>
   <string name="preferences__language">Jazyk</string>
@@ -1601,6 +1618,7 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="preferences_communication__sealed_sender_allow_from_anyone">Povoliť od každého</string>
   <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Zapnúť zapečateného odosielateľa pre prichádzajúce správy od ľudí, ktorých nemáte v kontaktoch a s ktorými ste nezdieľali svoj profil.</string>
   <string name="preferences_communication__sealed_sender_learn_more">Dozvedieť sa viac</string>
+  <!--Internal only preferences-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -1761,7 +1779,6 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="CreateKbsPinFragment__create_a_new_pin">Vytvoriť nový PIN</string>
   <string name="CreateKbsPinFragment__you_can_choose_a_new_pin_as_long_as_this_device_is_registered">PIN si môžete zmeniť, pokiaľ je toto zariadenie registrované.</string>
   <string name="CreateKbsPinFragment__create_your_pin">Vytvorte si PIN</string>
-  <string name="CreateKbsPinFragment__pins_keep_information_stored_with_signal_encrypted">PIN kódy udržiavajú informácie uložené v Signale zašifrované, aby ste k nim mali prístup iba vy. Váš profil, vaše nastavenia a kontakty sa po opätovnej inštalácii Signalu obnovia.</string>
   <string name="CreateKbsPinFragment__choose_a_stronger_pin">Zvoľte si silnejší PIN</string>
   <!--ConfirmKbsPinFragment-->
   <string name="ConfirmKbsPinFragment__pins_dont_match">PIN kódy sa nezhodujú. Skúste to znova.</string>
@@ -1773,13 +1790,14 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="ConfirmKbsPinFragment__creating_pin">Vytvára sa PIN kód…</string>
   <!--KbsSplashFragment-->
   <string name="KbsSplashFragment__introducing_pins">Predstavujeme PINy</string>
-  <string name="KbsSplashFragment__pins_keep_information_stored_with_signal_encrypted">PIN kódy udržiavajú informácie uložené v Signale zašifrované, aby ste k nim mali prístup iba vy. Váš profil, vaše nastavenia a kontakty sa po opätovnej inštalácii Signalu obnovia.</string>
   <string name="KbsSplashFragment__learn_more">Dozvedieť sa viac</string>
   <string name="KbsSplashFragment__registration_lock_equals_pin">Registračný zámok = PIN</string>
   <string name="KbsSplashFragment__your_registration_lock_is_now_called_a_pin">Váš Registračný zámok sa teraz volá PIN kód a dokáže viac. Aktualizujte ho teraz.</string>
   <string name="KbsSplashFragment__read_more_about_pins">Prečítajte si viac o PIN kódoch.</string>
   <string name="KbsSplashFragment__update_pin">Aktualizovať PIN kód</string>
   <string name="KbsSplashFragment__create_your_pin">Vytvorte si PIN</string>
+  <string name="KbsSplashFragment__learn_more_about_pins">Dozvedieť sa viac o PINoch</string>
+  <string name="KbsSplashFragment__disable_pin">Vypnúť PIN</string>
   <!--KBS Reminder Dialog-->
   <string name="KbsReminderDialog__enter_your_signal_pin">Zadajte váš PIN pre Signal</string>
   <string name="KbsReminderDialog__to_help_you_memorize_your_pin">Aby sme vám pomohli zapamätať si váš PIN kód, budeme vás opakovanie žiadať o jeho zadanie. Postupom času vás o to budeme žiadať menej často.</string>
@@ -1843,13 +1861,6 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="KbsMegaphone__update_pin">Aktualizovať PIN kód</string>
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Pripomenieme vám to neskôr. Povinnosť vytvoriť si PIN kód budete mať o %1$d dní.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Pripomenieme vám to neskôr. Povinnosť potvrdiť svoj PIN kód budete mať o %1$d dní.</string>
-  <!--Profile Names Megaphone-->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__add_a_profile_name">Pridať profilové meno</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__this_will_be_displayed_when_you_start">Toto sa zobrazí, keď začnete novú konverzáciu alebo keď ju budete zdieľať.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__add_profile_name">Pridať názov profilu</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__confirm_your_profile_name">Potvrďte svoje Profilové meno</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__your_profile_can_now_include">Váš profil môže teraz voliteľne obsahovať priezvisko.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__confirm_name">Potvrdiť názov</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Ikona prenosu</string>
   <string name="ConversationListFragment_loading">Načítava sa…</string>

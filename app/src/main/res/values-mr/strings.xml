@@ -44,6 +44,7 @@
   <string name="ApplicationPreferencesActivity_privacy_summary">स्क्रीन लॉक %1$s, नोंदणी लॉक %2$s</string>
   <string name="ApplicationPreferencesActivity_privacy_summary_screen_lock">स्क्रीन लॉक %1$s</string>
   <string name="ApplicationPreferencesActivity_appearance_summary">थीम %1$s, भाषा %2$s</string>
+  <string name="ApplicationPreferencesActivity_pin_created">PIN तयार केले</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">%d मिनिट</item>
@@ -157,7 +158,7 @@
   <string name="ContactShareEditActivity_type_missing">इतर</string>
   <string name="ContactShareEditActivity_invalid_contact">निवडलेला संपर्क अवैध होता</string>
   <!--ConversationItem-->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationItem_error_not_delivered">पाठविणे अयशस्वी, तपशीलासाठी टॅप करा</string> -->
+  <string name="ConversationItem_error_network_not_delivered">पाठविणे अयशस्वी</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">की विनिमय संदेश प्राप्त झाला आहे, प्रक्रिया करण्यासाठी टॅप करा.</string>
   <string name="ConversationItem_group_action_left">%1$s याने गट सोडले आहे.</string>
   <string name="ConversationItem_click_to_approve_unencrypted">पाठविणे अयशस्वी, असुरक्षित फॉलबॅक करिता टॅप करा</string>
@@ -299,8 +300,6 @@
     <item quantity="one">संभाषण इनबॉक्स मध्ये हलवले</item>
     <item quantity="other">%d संभाषण इनबॉक्स मध्ये हलवली</item>
   </plurals>
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_created">आपले प्रोफाईल नाव तयार केले गेले आहे.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationListFragment__your_profile_name_has_been_saved">आपले प्रोफाईल नाव जतन केले गेले आहे.</string> -->
   <!--ConversationListItem-->
   <string name="ConversationListItem_key_exchange_message">की विनिमय संदेश</string>
   <!--ConversationListItemAction-->
@@ -586,8 +585,11 @@
   <string name="MessageRecord_s_joined_the_group">%1$s गटात सामील झाले</string>
   <!--GV2 member removals-->
   <!--GV2 role change-->
+  <string name="MessageRecord_you_are_now_an_admin">आपण आता प्रशासक आहात.</string>
   <!--GV2 invitations-->
+  <string name="MessageRecord_you_were_invited_to_the_group">आपल्याला गटात निमंत्रित केले गेले होते.</string>
   <!--GV2 invitation revokes-->
+  <string name="MessageRecord_your_invitation_to_the_group_was_revoked">आपले गटाचे निमंत्रण रद्द केले गेले.</string>
   <!--GV2 invitation acceptance-->
   <!--GV2 title change-->
   <!--GV2 avatar change-->
@@ -663,6 +665,7 @@
   <string name="PinRestoreEntryFragment_enter_numeric_pin">न्यूमेरिक PIN प्रविष्ट करा</string>
   <!--PinRestoreLockedFragment-->
   <string name="PinRestoreLockedFragment_create_your_pin">आपला PIN तयार करा</string>
+  <!--PinOptOutDialog-->
   <!--RatingManager-->
   <string name="RatingManager_rate_this_app">ह्या अॅपला रेट करा</string>
   <string name="RatingManager_if_you_enjoy_using_this_app_please_take_a_moment">जर आपल्याला हा अॅप वापरणे आवडत असेल, तर कृपया एक क्षण काढून आम्हाला रेट करून आमची मदत करा.</string>
@@ -1084,6 +1087,8 @@
   <string name="QuoteView_original_missing">मूळ संदेश आढळला नाही</string>
   <!--conversation_fragment-->
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">खालपर्यंत स्क्रोल करा</string>
+  <!--safety_number_change_dialog-->
+  <string name="safety_number_change_dialog__view">बघा</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">देश लोड करत आहे…</string>
   <string name="country_selection_fragment__search">शोध</string>
@@ -1407,6 +1412,7 @@
   <string name="preferences_communication__sealed_sender_allow_from_anyone">कुणाकडूनही अनुमती द्या</string>
   <string name="preferences_communication__sealed_sender_allow_from_anyone_description">विना-संपर्क आणि आपण ज्यांच्या सोबत आपली प्रोफाईल सामायिक केलेली नाही त्यांच्याकडून येणाऱ्या संदेशांकरिता सीलबंद प्रेषक सक्षम करा.</string>
   <string name="preferences_communication__sealed_sender_learn_more">अधिक जाणा</string>
+  <!--Internal only preferences-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -1552,7 +1558,6 @@
   <string name="CreateKbsPinFragment__create_a_new_pin">एक नवीन PIN तयार करा</string>
   <string name="CreateKbsPinFragment__you_can_choose_a_new_pin_as_long_as_this_device_is_registered">जोपर्यंत हा डिव्हाईस नोंदणीकृत आहे आपण आपला PIN बदलू शकता.</string>
   <string name="CreateKbsPinFragment__create_your_pin">आपला PIN तयार करा</string>
-  <string name="CreateKbsPinFragment__pins_keep_information_stored_with_signal_encrypted">Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण Signal पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल.</string>
   <string name="CreateKbsPinFragment__choose_a_stronger_pin">एक शक्तिशाली PIN निवडा</string>
   <!--ConfirmKbsPinFragment-->
   <string name="ConfirmKbsPinFragment__pins_dont_match">PIN जुळत नाहीत. पुन्हा प्रयत्न करा.</string>
@@ -1563,12 +1568,12 @@
   <string name="ConfirmKbsPinFragment__creating_pin">PIN तयार करत आहे…</string>
   <!--KbsSplashFragment-->
   <string name="KbsSplashFragment__introducing_pins">PIN ची ओळख करून देत आहे</string>
-  <string name="KbsSplashFragment__pins_keep_information_stored_with_signal_encrypted">Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण Signal पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल.</string>
   <string name="KbsSplashFragment__learn_more">अधिक जाणा</string>
   <string name="KbsSplashFragment__registration_lock_equals_pin">नोंदणी लॉक = PIN</string>
   <string name="KbsSplashFragment__read_more_about_pins">PIN बद्दल अधिक येथे वाचा.</string>
   <string name="KbsSplashFragment__update_pin">PIN अद्यतनित करा</string>
   <string name="KbsSplashFragment__create_your_pin">आपला PIN तयार करा</string>
+  <string name="KbsSplashFragment__learn_more_about_pins">PIN बद्दल अधिक जाणा</string>
   <!--KBS Reminder Dialog-->
   <string name="KbsReminderDialog__enter_your_signal_pin">आपला Signal PIN प्रविष्ट करा</string>
   <string name="KbsReminderDialog__to_help_you_memorize_your_pin">आपल्याला PIN लक्षात ठेवण्यासाठी, आम्ही आपल्याला तो वेळोवेळी तो प्रविष्ट करण्यास विचारू. काही काळानंतर आम्ही आपल्याला कमी विचारू.</string>
@@ -1597,10 +1602,6 @@
   <string name="KbsMegaphone__create_pin">PIN तयार करा</string>
   <string name="KbsMegaphone__introducing_pins">PIN ची ओळख करून देत आहे</string>
   <string name="KbsMegaphone__update_pin">PIN अद्यतनित करा</string>
-  <!--Profile Names Megaphone-->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__this_will_be_displayed_when_you_start">हे दाखविले जाईल जेव्हा आपण नवीन संभाषण चालू करता किंवा त्यास सामायिक करता.</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__add_profile_name">प्रोफाईल नाव जोडा</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="ProfileNamesMegaphone__your_profile_can_now_include">आपल्या प्रोफाईल मध्ये आता पर्यायी अडनाव समाविष्ट करता येऊ शकते.</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">वाहतूक चिन्ह</string>
   <string name="ConversationListFragment_loading">लोड होत आहे…</string>
