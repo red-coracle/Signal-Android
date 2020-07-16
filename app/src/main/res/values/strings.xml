@@ -368,7 +368,7 @@
     <string name="CreateProfileActivity_problem_setting_profile">Problem setting profile</string>
     <string name="CreateProfileActivity_profile_photo">Profile photo</string>
     <string name="CreateProfileActivity_set_up_your_profile">Set up your profile</string>
-    <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.</string>
+    <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.</string>
     <string name="CreateProfileActivity_set_avatar_description">Set avatar</string>
 
     <!-- CustomDefaultPreference -->
@@ -544,6 +544,8 @@
     
     
     <!-- ManageRecipientActivity -->
+    <string name="ManageRecipientActivity_add_to_system_contacts">Add to system contacts</string>
+    <string name="ManageRecipientActivity_this_person_is_in_your_contacts">This person is in your contacts</string>
     <string name="ManageRecipientActivity_disappearing_messages">Disappearing messages</string>
     <string name="ManageRecipientActivity_chat_color">Chat color</string>
     <string name="ManageRecipientActivity_block">Block</string>
@@ -759,6 +761,11 @@
     <string name="MessageRecord_you_set_disappearing_message_time_to_s">You set the disappearing message timer to %1$s.</string>
     <string name="MessageRecord_s_set_disappearing_message_time_to_s">%1$s set the disappearing message timer to %2$s.</string>
     <string name="MessageRecord_disappearing_message_time_set_to_s">The disappearing message timer has been set to %1$s.</string>
+
+    <!-- Profile change updates -->
+    <string name="MessageRecord_changed_their_profile_name_to">%1$s changed their profile name to %2$s.</string>
+    <string name="MessageRecord_changed_their_profile_name_from_to">%1$s changed their profile name from %2$s to %3$s.</string>
+    <string name="MessageRecord_changed_their_profile">%1$s changed their profile.</string>
 
     <!-- GV2 specific -->
     <string name="MessageRecord_you_created_the_group">You created the group.</string>
@@ -1429,8 +1436,6 @@
     <string name="contact_selection_activity__enter_name_or_number">Enter name or number</string>
     <string name="contact_selection_activity__invite_to_signal">Invite to Signal</string>
     <string name="contact_selection_activity__new_group">New group</string>
-    <!-- temporary for internal testing -->
-    <string name="contact_selection_activity__new_gv1_group" translatable="false">New old style group (GV1)</string>
 
     <!-- contact_filter_toolbar -->
     <string name="contact_filter_toolbar__clear_entered_text_description">Clear entered text</string>
@@ -1959,6 +1964,8 @@
     <!-- Internal only preferences -->
     <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string>
     <string name="preferences__internal_preferences_groups_v2" translatable="false">Groups V2</string>
+    <string name="preferences__internal_do_not_create_gv2" translatable="false">Do not create GV2 groups</string>
+    <string name="preferences__internal_do_not_create_gv2_description" translatable="false">Do not attempt to create GV2 groups, i.e. will force creation of GV1 or MMS groups.</string>
     <string name="preferences__internal_force_gv2_invites" translatable="false">Force Invites</string>
     <string name="preferences__internal_force_gv2_invites_description" translatable="false">Members will not be added directly to a GV2 even if they could be.</string>
     <string name="preferences__internal_ignore_gv2_server_changes" translatable="false">Ignore server changes</string>
@@ -1970,6 +1977,8 @@
     <string name="preferences__internal_refresh_attributes_description" translatable="false">Forces a write of capabilities on to the server followed by a read.</string>
     <string name="preferences__internal_rotate_profile_key" translatable="false">Rotate profile key</string>
     <string name="preferences__internal_rotate_profile_key_description" translatable="false">Creates a new versioned profile, and triggers an update of any GV2 group you belong to.</string>
+    <string name="preferences__internal_refresh_remote_values" translatable="false">Refresh remote values</string>
+    <string name="preferences__internal_refresh_remote_values_description" translatable="false">Forces a refresh of remote values locally instead of waiting for the elapsed time</string>
     <string name="preferences__internal_storage_service" translatable="false">Storage service</string>
     <string name="preferences__internal_force_storage_service_sync" translatable="false">Overwrite remote data</string>
     <string name="preferences__internal_force_storage_service_sync_description" translatable="false">Forces remote storage to match the local device state.</string>
