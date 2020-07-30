@@ -24,24 +24,16 @@ import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.FeatureFlags;
-import org.thoughtcrime.securesms.util.ProfileUtil;
 import org.thoughtcrime.securesms.util.Stopwatch;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
 import org.whispersystems.libsignal.util.guava.Optional;
-import org.whispersystems.signalservice.api.profiles.ProfileAndCredential;
-import org.whispersystems.signalservice.api.profiles.SignalServiceProfile;
-import org.whispersystems.signalservice.internal.util.concurrent.ListenableFuture;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class CreateGroupActivity extends ContactSelectionActivity {
 
@@ -101,14 +93,14 @@ public class CreateGroupActivity extends ContactSelectionActivity {
   }
 
   @Override
-  public void onContactSelected(Optional<RecipientId> recipientId, String number) {
+  public boolean onContactSelected(Optional<RecipientId> recipientId, String number) {
     if (contactsFragment.hasQueryFilter()) {
       getToolbar().clear();
     }
 
-    if (contactsFragment.getSelectedContactsCount() >= MINIMUM_GROUP_SIZE) {
-      enableNext();
-    }
+    enableNext();
+
+    return true;
   }
 
   @Override
@@ -133,24 +125,15 @@ public class CreateGroupActivity extends ContactSelectionActivity {
   }
 
   private void handleNextPressed() {
-    Stopwatch                    stopwatch      = new Stopwatch("Recipient Refresh");
-    AtomicReference<AlertDialog> progressDialog = new AtomicReference<>();
-
-    Runnable showDialogRunnable = () -> {
-      Log.i(TAG, "Taking some time. Showing a progress dialog.");
-      progressDialog.set(SimpleProgressDialog.show(this));
-    };
-
-    next.postDelayed(showDialogRunnable, 300);
+    Stopwatch                              stopwatch         = new Stopwatch("Recipient Refresh");
+    SimpleProgressDialog.DismissibleDialog dismissibleDialog = SimpleProgressDialog.showDelayed(this);
 
     SimpleTask.run(getLifecycle(), () -> {
-      RecipientId[] ids = Stream.of(contactsFragment.getSelectedContacts())
-                                .map(selectedContact -> selectedContact.getOrCreateRecipientId(this))
-                                .toArray(RecipientId[]::new);
+      List<RecipientId> ids = Stream.of(contactsFragment.getSelectedContacts())
+                                    .map(selectedContact -> selectedContact.getOrCreateRecipientId(this))
+                                    .toList();
 
-      List<Recipient> resolved = Stream.of(ids)
-                                       .map(Recipient::resolved)
-                                       .toList();
+      List<Recipient> resolved = Recipient.resolvedList(ids);
 
       stopwatch.split("resolve");
 
@@ -170,9 +153,9 @@ public class CreateGroupActivity extends ContactSelectionActivity {
 
       stopwatch.split("registered");
 
-      if (FeatureFlags.groupsV2()) {
+      if (FeatureFlags.groupsV2create()) {
         try {
-          new GroupsV2CapabilityChecker().refreshCapabilitiesIfNecessary(resolved);
+          GroupsV2CapabilityChecker.refreshCapabilitiesIfNecessary(resolved);
         } catch (IOException e) {
           Log.w(TAG, "Failed to refresh all recipient capabilities.", e);
         }
@@ -180,16 +163,31 @@ public class CreateGroupActivity extends ContactSelectionActivity {
 
       stopwatch.split("capabilities");
 
-      return ids;
-    }, ids -> {
-      if (progressDialog.get() != null) {
-        progressDialog.get().dismiss();
+      resolved = Recipient.resolvedList(ids);
+
+      if (Stream.of(resolved).anyMatch(r -> r.getGroupsV2Capability() != Recipient.Capability.SUPPORTED) &&
+          Stream.of(resolved).anyMatch(r -> !r.hasE164()))
+      {
+        Log.w(TAG, "Invalid GV1 group...");
+        ids = Collections.emptyList();
       }
 
-      next.removeCallbacks(showDialogRunnable);
+      stopwatch.split("gv1-check");
+
+      return ids;
+    }, ids -> {
+      dismissibleDialog.dismiss();
+
       stopwatch.stop(TAG);
 
-      startActivityForResult(AddGroupDetailsActivity.newIntent(this, ids), REQUEST_CODE_ADD_DETAILS);
+      if (ids.isEmpty()) {
+        new AlertDialog.Builder(this)
+                       .setMessage(R.string.CreateGroupActivity_some_contacts_cannot_be_in_legacy_groups)
+                       .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                       .show();
+      } else {
+        startActivityForResult(AddGroupDetailsActivity.newIntent(this, ids), REQUEST_CODE_ADD_DETAILS);
+      }
     });
   }
 }

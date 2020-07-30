@@ -25,17 +25,17 @@ public final class GroupsV2CapabilityChecker {
 
   private static final String TAG = Log.tag(GroupsV2CapabilityChecker.class);
 
-  public GroupsV2CapabilityChecker() {}
+  private GroupsV2CapabilityChecker() {}
 
   /**
    * @param resolved A collection of resolved recipients.
    */
   @WorkerThread
-  public void refreshCapabilitiesIfNecessary(@NonNull Collection<Recipient> resolved) throws IOException {
-    List<RecipientId> needsRefresh = Stream.of(resolved)
-                                           .filter(r -> r.getGroupsV2Capability() != Recipient.Capability.SUPPORTED)
-                                           .map(Recipient::getId)
-                                           .toList();
+  public static void refreshCapabilitiesIfNecessary(@NonNull Collection<Recipient> resolved) throws IOException {
+    Set<RecipientId> needsRefresh = Stream.of(resolved)
+                                          .filter(r -> r.getGroupsV2Capability() != Recipient.Capability.SUPPORTED)
+                                          .map(Recipient::getId)
+                                          .collect(Collectors.toSet());
 
     if (needsRefresh.size() > 0) {
       Log.d(TAG, "[refreshCapabilitiesIfNecessary] Need to refresh " + needsRefresh.size() + " recipients.");
@@ -52,7 +52,7 @@ public final class GroupsV2CapabilityChecker {
   }
 
   @WorkerThread
-  boolean allAndSelfSupportGroupsV2AndUuid(@NonNull Collection<RecipientId> recipientIds)
+  static boolean allAndSelfSupportGroupsV2AndUuid(@NonNull Collection<RecipientId> recipientIds)
       throws IOException
   {
     HashSet<RecipientId> recipientIdsSet = new HashSet<>(recipientIds);
@@ -63,19 +63,18 @@ public final class GroupsV2CapabilityChecker {
   }
 
   @WorkerThread
-  boolean allSupportGroupsV2AndUuid(@NonNull Collection<RecipientId> recipientIds)
+  static boolean allSupportGroupsV2AndUuid(@NonNull Collection<RecipientId> recipientIds)
       throws IOException
   {
     Set<RecipientId> recipientIdsSet = new HashSet<>(recipientIds);
-    Set<Recipient>   resolved        = Stream.of(recipientIdsSet).map(Recipient::resolved).collect(Collectors.toSet());
-
-    refreshCapabilitiesIfNecessary(resolved);
+    refreshCapabilitiesIfNecessary(Recipient.resolvedList(recipientIdsSet));
 
     boolean noSelfGV2Support = false;
     int     noGv2Count       = 0;
     int     noUuidCount      = 0;
 
-    for (Recipient member : resolved) {
+    for (RecipientId id : recipientIds) {
+      Recipient            member        = Recipient.resolved(id);
       Recipient.Capability gv2Capability = member.getGroupsV2Capability();
 
       if (gv2Capability != Recipient.Capability.SUPPORTED) {

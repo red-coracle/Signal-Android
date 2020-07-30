@@ -189,6 +189,8 @@
         <item name="colorControlHighlight">@color/core_ultramarine</item>
         <item name="android:windowBackground">@color/white</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="secondary_background">@color/core_grey_02</item>
+        <item name="secondary_background_bubble">@drawable/round_background_light</item>
         <item name="alertDialogTheme">@style/AppCompatAlertDialogStyleLight</item>
         <item name="android:alertDialogTheme">@style/AppCompatDialogStyleLight</item>
         <item name="homeAsUpIndicator">@drawable/ic_arrow_left_24</item>
@@ -257,6 +259,7 @@
         <item name="conversation_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="conversation_title_color">@color/white</item>
         <item name="conversation_subtitle_color">@color/transparent_white_90</item>
+        <item name="conversation_mention_background_color">@color/core_grey_20</item>
 
         <item name="safety_number_change_dialog_button_background">@color/core_grey_05</item>
         <item name="safety_number_change_dialog_button_text_color">@color/core_ultramarine</item>
@@ -293,8 +296,11 @@
         <item name="emoji_category_emoticons">@drawable/ic_emoji_emoticon_light_20</item>
         <item name="emoji_variation_selector_background">@drawable/emoji_variation_selector_background_light</item>
 
-        <item name="reactions_overlay_old_background">@drawable/reactions_old_background_dark</item>
-        <item name="reactions_overlay_scrubber_background">@drawable/conversation_reaction_overlay_background_dark</item>
+        <item name="reactions_overlay_toolbar_icon_tint">?icon_tint</item>
+        <item name="reactions_overlay_toolbar_background_color">@color/core_white</item>
+        <item name="reactions_overlay_custom_emoji_icon">@drawable/ic_any_emoji_32_light</item>
+        <item name="reactions_overlay_old_background">@drawable/reactions_old_background_light</item>
+        <item name="reactions_overlay_scrubber_background">@drawable/conversation_reaction_overlay_background_light</item>
         <item name="reactions_bottom_dialog_fragment_emoji_selected">@drawable/reactions_bottom_sheet_dialog_fragment_emoji_item_selected_light</item>
         <item name="reactions_pill_background">@drawable/reaction_pill_background_light</item>
         <item name="reactions_pill_selected_background">@drawable/reaction_pill_background_selected_light</item>
@@ -493,6 +499,8 @@
         <item name="android:colorControlHighlight" tools:ignore="NewApi">@color/core_ultramarine_light</item>
         <item name="android:windowBackground">@color/core_grey_95</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="secondary_background">@color/core_grey_90</item>
+        <item name="secondary_background_bubble">@drawable/round_background_dark</item>
         <item name="alertDialogTheme">@style/AppCompatAlertDialogStyleDark</item>
         <item name="android:alertDialogTheme">@style/AppCompatDialogStyleDark</item>
         <item name="homeAsUpIndicator">@drawable/ic_arrow_left_24</item>
@@ -606,9 +614,13 @@
         <item name="conversation_popup_theme">@style/ThemeOverlay.AppCompat.Dark</item>
         <item name="conversation_title_color">@color/transparent_white_90</item>
         <item name="conversation_subtitle_color">@color/transparent_white_80</item>
+        <item name="conversation_mention_background_color">@color/core_grey_75</item>
         <item name="conversation_scroll_to_bottom_background">@drawable/scroll_to_bottom_background_dark</item>
         <item name="conversation_scroll_to_bottom_foreground_color">@color/core_white</item>
 
+        <item name="reactions_overlay_toolbar_icon_tint">@color/core_white</item>
+        <item name="reactions_overlay_toolbar_background_color">@color/action_mode_status_bar</item>
+        <item name="reactions_overlay_custom_emoji_icon">@drawable/ic_any_emoji_32_dark</item>
         <item name="reactions_overlay_old_background">@drawable/reactions_old_background_dark</item>
         <item name="reactions_overlay_scrubber_background">@drawable/conversation_reaction_overlay_background_dark</item>
         <item name="reactions_bottom_dialog_fragment_emoji_selected">@drawable/reactions_bottom_sheet_dialog_fragment_emoji_item_selected_dark</item>
@@ -880,13 +892,15 @@
         <item name="backgroundTint">@color/white</item>
     </style>
 
-    <style name="Theme.Signal.RecipientBottomSheet.Light">
+    <style name="Theme.Signal.RoundedBottomSheet.Light">
         <item name="bottomSheetStyle">@style/Widget.Signal.BottomSheet.Rounded.Light</item>
         <item name="icon_tint">@color/core_grey_75</item>
 
         <item name="android:textColorPrimary">@color/core_grey_90</item>
         <item name="title_text_color_primary">@color/core_grey_90</item>
         <item name="title_text_color_secondary">@color/core_grey_60</item>
+
+        <item name="colorAccent">@color/core_ultramarine</item>
 
         <item name="android:navigationBarColor" tools:ignore="NewApi">@color/white</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
@@ -900,7 +914,7 @@
         <item name="recipient_remove_icon">@drawable/ic_leave_tinted_24</item>
     </style>
 
-    <style name="Theme.Signal.RecipientBottomSheet" parent="Theme.MaterialComponents.BottomSheetDialog">
+    <style name="Theme.Signal.RoundedBottomSheet" parent="Theme.MaterialComponents.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="bottomSheetStyle">@style/Widget.Signal.BottomSheet.Rounded</item>
         <item name="icon_tint">@color/core_grey_15</item>
@@ -908,6 +922,8 @@
         <item name="android:textColorPrimary">@color/core_grey_05</item>
         <item name="title_text_color_primary">@color/core_grey_05</item>
         <item name="title_text_color_secondary">@color/core_grey_25</item>
+
+        <item name="colorAccent">@color/core_ultramarine_light</item>
 
         <item name="android:navigationBarColor" tools:ignore="NewApi">@color/core_grey_75</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>

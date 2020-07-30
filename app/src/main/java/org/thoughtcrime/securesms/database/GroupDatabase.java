@@ -53,7 +53,7 @@ public final class GroupDatabase extends Database {
           static final String GROUP_ID            = "group_id";
           static final String RECIPIENT_ID        = "recipient_id";
   private static final String TITLE               = "title";
-  private static final String MEMBERS             = "members";
+          static final String MEMBERS             = "members";
   private static final String AVATAR_ID           = "avatar_id";
   private static final String AVATAR_KEY          = "avatar_key";
   private static final String AVATAR_CONTENT_TYPE = "avatar_content_type";
@@ -286,8 +286,9 @@ public final class GroupDatabase extends Database {
       List<Recipient>   recipients     = new ArrayList<>(currentMembers.size());
 
       for (RecipientId member : currentMembers) {
-        if (memberSet.includeSelf || !Recipient.resolved(member).isLocalNumber()) {
-          recipients.add(Recipient.resolved(member));
+        Recipient resolved = Recipient.resolved(member);
+        if (memberSet.includeSelf || !resolved.isLocalNumber()) {
+          recipients.add(resolved);
         }
       }
 
@@ -817,9 +818,7 @@ public final class GroupDatabase extends Database {
     }
 
     public List<Recipient> getMemberRecipients(@NonNull MemberSet memberSet) {
-      return Stream.of(getMemberRecipientIds(memberSet))
-                   .map(Recipient::resolved)
-                   .toList();
+      return Recipient.resolvedList(getMemberRecipientIds(memberSet));
     }
 
     public List<RecipientId> getMemberRecipientIds(@NonNull MemberSet memberSet) {

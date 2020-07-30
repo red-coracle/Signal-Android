@@ -101,14 +101,14 @@ public final class GroupV1MessageProcessor {
 
     if (group.getMembers().isPresent()) {
       for (SignalServiceAddress member : group.getMembers().get()) {
-        members.add(Recipient.externalPush(context, member).getId());
+        members.add(Recipient.externalGV1Member(context, member).getId());
       }
     }
 
     database.create(id, group.getName().orNull(), members,
                     avatar != null && avatar.isPointer() ? avatar.asPointer() : null, null);
 
-    Recipient sender = Recipient.externalPush(context, content.getSender());
+    Recipient sender = Recipient.externalHighTrustPush(context, content.getSender());
 
     if (sender.isSystemContact() || sender.isProfileSharing()) {
       Log.i(TAG, "Auto-enabling profile sharing because 'adder' is trusted. contact: " + sender.isSystemContact() + ", profileSharing: " + sender.isProfileSharing());
@@ -131,8 +131,10 @@ public final class GroupV1MessageProcessor {
     Set<RecipientId> recordMembers  = new HashSet<>(groupRecord.getMembers());
     Set<RecipientId> messageMembers = new HashSet<>();
 
-    for (SignalServiceAddress messageMember : group.getMembers().get()) {
-      messageMembers.add(Recipient.externalPush(context, messageMember).getId());
+    if (group.getMembers().isPresent()) {
+      for (SignalServiceAddress messageMember : group.getMembers().get()) {
+        messageMembers.add(Recipient.externalGV1Member(context, messageMember).getId());
+      }
     }
 
     Set<RecipientId> addedMembers = new HashSet<>(messageMembers);
@@ -150,18 +152,19 @@ public final class GroupV1MessageProcessor {
       database.updateMembers(id, new LinkedList<>(unionMembers));
 
       builder.clearMembers();
+      builder.clearMembersE164();
 
       for (RecipientId addedMember : addedMembers) {
         Recipient recipient = Recipient.resolved(addedMember);
 
         if (recipient.getE164().isPresent()) {
-          builder.addMembersE164(recipient.getE164().get());
+          builder.addMembersE164(recipient.requireE164());
+          builder.addMembers(createMember(recipient.requireE164()));
         }
-
-        builder.addMembers(createMember(RecipientUtil.toSignalServiceAddress(context, recipient)));
       }
     } else {
       builder.clearMembers();
+      builder.clearMembersE164();
     }
 
     if (missingMembers.size() > 0) {
@@ -186,7 +189,7 @@ public final class GroupV1MessageProcessor {
                                              @NonNull SignalServiceContent content,
                                              @NonNull GroupRecord record)
   {
-    Recipient sender = Recipient.externalPush(context, content.getSender());
+    Recipient sender = Recipient.externalHighTrustPush(context, content.getSender());
 
     if (record.getMembers().contains(sender.getId())) {
       ApplicationDependencies.getJobManager().add(new PushGroupUpdateJob(sender.getId(), record.getId()));
@@ -208,8 +211,10 @@ public final class GroupV1MessageProcessor {
     GroupContext.Builder builder = createGroupContext(group);
     builder.setType(GroupContext.Type.QUIT);
 
-    if (members.contains(Recipient.externalPush(context, content.getSender()).getId())) {
-      database.remove(id, Recipient.externalPush(context, content.getSender()).getId());
+    RecipientId senderId = RecipientId.fromHighTrust(content.getSender());
+
+    if (members.contains(senderId)) {
+      database.remove(id, senderId);
       if (outgoing) database.setActive(id, false);
 
       return storeMessage(context, content, group, builder.build(), outgoing);
@@ -245,7 +250,7 @@ public final class GroupV1MessageProcessor {
       } else {
         SmsDatabase          smsDatabase  = DatabaseFactory.getSmsDatabase(context);
         String               body         = Base64.encodeBytes(storage.toByteArray());
-        IncomingTextMessage  incoming     = new IncomingTextMessage(Recipient.externalPush(context, content.getSender()).getId(), content.getSenderDevice(), content.getTimestamp(), content.getServerReceivedTimestamp(), body, Optional.of(GroupId.v1orThrow(group.getGroupId())), 0, content.isNeedsReceipt());
+        IncomingTextMessage  incoming     = new IncomingTextMessage(Recipient.externalHighTrustPush(context, content.getSender()).getId(), content.getSenderDevice(), content.getTimestamp(), content.getServerReceivedTimestamp(), body, Optional.of(GroupId.v1orThrow(group.getGroupId())), 0, content.isNeedsReceipt());
         IncomingGroupUpdateMessage groupMessage = new IncomingGroupUpdateMessage(incoming, storage, body);
 
         Optional<InsertResult> insertResult = smsDatabase.insertMessageInbox(groupMessage);
@@ -285,6 +290,8 @@ public final class GroupV1MessageProcessor {
                                       .map(a -> a.getNumber().get())
                                       .toList());
       builder.addAllMembers(Stream.of(group.getMembers().get())
+                                  .filter(address -> address.getNumber().isPresent())
+                                  .map(address -> address.getNumber().get())
                                   .map(GroupV1MessageProcessor::createMember)
                                   .toList());
     }
@@ -292,17 +299,9 @@ public final class GroupV1MessageProcessor {
     return builder;
   }
 
-  public static GroupContext.Member createMember(SignalServiceAddress address) {
+  public static GroupContext.Member createMember(@NonNull String e164) {
     GroupContext.Member.Builder member = GroupContext.Member.newBuilder();
-
-    if (address.getUuid().isPresent()) {
-      member.setUuid(address.getUuid().get().toString());
-    }
-
-    if (address.getNumber().isPresent()) {
-      member.setE164(address.getNumber().get());
-    }
-
+    member.setE164(e164);
     return member.build();
   }
 }

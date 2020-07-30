@@ -80,8 +80,8 @@ protobuf {
     }
 }
 
-def canonicalVersionCode = 676
-def canonicalVersionName = "4.66.8"
+def canonicalVersionCode = 681
+def canonicalVersionName = "4.68.0"
 
 def postFixSize = 2
 def abiPostFix = ['universal'   : 0,
@@ -332,7 +332,7 @@ dependencies {
 
     implementation 'org.signal:argon2:13.1@aar'
 
-    implementation 'org.signal:ringrtc-android:2.3.1'
+    implementation 'org.signal:ringrtc-android:2.4.1'
 
     implementation "me.leolin:ShortcutBadger:1.1.16"
     implementation 'se.emilsjolander:stickylistheaders:2.7.0'
@@ -387,10 +387,10 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.11.1'
     testImplementation 'org.mockito:mockito-core:1.9.5'
-    testImplementation 'org.powermock:powermock-api-mockito:1.6.1'
-    testImplementation 'org.powermock:powermock-module-junit4:1.6.1'
-    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.1'
-    testImplementation 'org.powermock:powermock-classloading-xstream:1.6.1'
+    testImplementation 'org.powermock:powermock-api-mockito:1.6.5'
+    testImplementation 'org.powermock:powermock-module-junit4:1.6.5'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.5'
+    testImplementation 'org.powermock:powermock-classloading-xstream:1.6.5'
 
     testImplementation 'androidx.test:core:1.2.0'
     testImplementation ('org.robolectric:robolectric:4.2') {
