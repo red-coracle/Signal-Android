@@ -16,6 +16,8 @@ import org.thoughtcrime.securesms.database.documents.Document;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatch;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatchList;
 import org.thoughtcrime.securesms.database.helpers.SQLCipherOpenHelper;
+import org.thoughtcrime.securesms.database.model.MessageRecord;
+import org.thoughtcrime.securesms.database.model.SmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.databaseprotos.ReactionList;
 import org.thoughtcrime.securesms.database.model.ReactionRecord;
 import org.thoughtcrime.securesms.insights.InsightsConstants;
@@ -44,6 +46,7 @@ public abstract class MessagingDatabase extends Database implements MmsSmsColumn
   protected abstract String getTableName();
   protected abstract String getTypeField();
   protected abstract String getDateSentColumnName();
+  protected abstract String getDateReceivedColumnName();
 
   public abstract void markExpireStarted(long messageId);
   public abstract void markExpireStarted(long messageId, long startTime);
@@ -54,6 +57,8 @@ public abstract class MessagingDatabase extends Database implements MmsSmsColumn
 
   public abstract void markAsSending(long messageId);
   public abstract void markAsRemoteDelete(long messageId);
+
+  public abstract MessageRecord getMessageRecord(long messageId) throws NoSuchMessageException;
 
   final int getInsecureMessagesSentForThread(long threadId) {
     SQLiteDatabase db         = databaseHelper.getReadableDatabase();
@@ -140,11 +145,15 @@ public abstract class MessagingDatabase extends Database implements MmsSmsColumn
     return String.format(Locale.ENGLISH, "(%s OR %s) AND %s", isSent, isReceived, isSecure);
   }
 
-  public void setReactionsSeen(long threadId) {
+  public void setReactionsSeen(long threadId, long sinceTimestamp) {
     SQLiteDatabase db          = databaseHelper.getWritableDatabase();
     ContentValues  values      = new ContentValues();
     String         whereClause = THREAD_ID + " = ? AND " + REACTIONS_UNREAD + " = ?";
     String[]       whereArgs   = new String[]{String.valueOf(threadId), "1"};
+
+    if (sinceTimestamp > -1) {
+      whereClause +=  " AND " + getDateReceivedColumnName() + " <= " + sinceTimestamp;
+    }
 
     values.put(REACTIONS_UNREAD, 0);
     values.put(REACTIONS_LAST_SEEN, System.currentTimeMillis());

@@ -18,6 +18,8 @@ package org.thoughtcrime.securesms.conversation;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,7 +27,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.ClipboardManager;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -72,6 +74,7 @@ import org.thoughtcrime.securesms.contactshare.ContactUtil;
 import org.thoughtcrime.securesms.contactshare.SharedContactDetailsActivity;
 import org.thoughtcrime.securesms.conversation.ConversationAdapter.ItemClickListener;
 import org.thoughtcrime.securesms.conversation.ConversationAdapter.StickyHeaderViewHolder;
+import org.thoughtcrime.securesms.conversation.ConversationMessage.ConversationMessageFactory;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
@@ -128,10 +131,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 @SuppressLint("StaticFieldLeak")
@@ -153,6 +155,7 @@ public class ConversationFragment extends LoggingFragment {
   private Locale                      locale;
   private RecyclerView                list;
   private RecyclerView.ItemDecoration lastSeenDecoration;
+  private RecyclerView.ItemDecoration stickyHeaderDecoration;
   private ViewSwitcher                topLoadMoreView;
   private ViewSwitcher                bottomLoadMoreView;
   private ConversationTypingView      typingView;
@@ -165,6 +168,7 @@ public class ConversationFragment extends LoggingFragment {
   private MessageRequestViewModel     messageRequestViewModel;
   private ConversationViewModel       conversationViewModel;
   private SnapToTopDataObserver       snapToTopDataObserver;
+  private MarkReadHelper              markReadHelper;
 
   public static void prepare(@NonNull Context context) {
     FrameLayout parent = new FrameLayout(context);
@@ -403,7 +407,7 @@ public class ConversationFragment extends LoggingFragment {
           description = context.getString(R.string.MessageRequestProfileView_member_of_many_groups,
                                           HtmlUtil.bold(groups.get(0)),
                                           HtmlUtil.bold(groups.get(1)),
-                                          context.getResources().getQuantityString(R.plurals.MessageRequestProfileView_member_of_others, others, others));
+                                          context.getResources().getQuantityString(R.plurals.MessageRequestProfileView_member_of_d_additional_groups, others, others));
       }
 
       conversationBanner.setDescription(HtmlCompat.fromHtml(description, 0));
@@ -419,6 +423,7 @@ public class ConversationFragment extends LoggingFragment {
     this.recipient         = Recipient.live(getActivity().getIntent().getParcelableExtra(ConversationActivity.RECIPIENT_EXTRA));
     this.threadId          = this.getActivity().getIntent().getLongExtra(ConversationActivity.THREAD_ID_EXTRA, -1);
     this.unknownSenderView = new UnknownSenderView(getActivity(), recipient.get(), threadId, () -> clearHeaderIfNotTyping(getListAdapter()));
+    this.markReadHelper    = new MarkReadHelper(threadId, requireContext());
 
     conversationViewModel.onConversationDataAvailable(threadId, startingPosition);
 
@@ -435,7 +440,7 @@ public class ConversationFragment extends LoggingFragment {
       Log.d(TAG, "Initializing adapter for " + recipient.getId());
       ConversationAdapter adapter = new ConversationAdapter(GlideApp.with(this), locale, selectionClickListener, this.recipient.get());
       list.setAdapter(adapter);
-      list.addItemDecoration(new StickyHeaderDecoration(adapter, false, false));
+      setStickyHeaderDecoration(adapter);
       ConversationAdapter.initializePool(list.getRecycledViewPool());
 
       adapter.registerAdapterDataObserver(snapToTopDataObserver);
@@ -573,6 +578,15 @@ public class ConversationFragment extends LoggingFragment {
     }
   }
 
+  public void setStickyHeaderDecoration(@NonNull ConversationAdapter adapter) {
+    if (stickyHeaderDecoration != null) {
+      list.removeItemDecoration(stickyHeaderDecoration);
+    }
+
+    stickyHeaderDecoration = new StickyHeaderDecoration(adapter, false, false);
+    list.addItemDecoration(stickyHeaderDecoration);
+  }
+
   public void setLastSeen(long lastSeen) {
     if (lastSeenDecoration != null) {
       list.removeItemDecoration(lastSeenDecoration);
@@ -583,33 +597,25 @@ public class ConversationFragment extends LoggingFragment {
   }
 
   private void handleCopyMessage(final Set<ConversationMessage> conversationMessages) {
-    List<MessageRecord> messageList = Stream.of(conversationMessages).map(ConversationMessage::getMessageRecord).toList();
-    Collections.sort(messageList, new Comparator<MessageRecord>() {
-      @Override
-      public int compare(MessageRecord lhs, MessageRecord rhs) {
-        if      (lhs.getDateReceived() < rhs.getDateReceived())  return -1;
-        else if (lhs.getDateReceived() == rhs.getDateReceived()) return 0;
-        else                                                     return 1;
-      }
-    });
+    List<ConversationMessage> messageList = new ArrayList<>(conversationMessages);
+    Collections.sort(messageList, (lhs, rhs) -> Long.compare(lhs.getMessageRecord().getDateReceived(), rhs.getMessageRecord().getDateReceived()));
 
-    StringBuilder    bodyBuilder = new StringBuilder();
-    ClipboardManager clipboard   = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+    SpannableStringBuilder bodyBuilder = new SpannableStringBuilder();
+    ClipboardManager       clipboard   = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 
-    for (MessageRecord messageRecord : messageList) {
-      String body = messageRecord.getDisplayBody(requireContext()).toString();
+    for (ConversationMessage message : messageList) {
+      CharSequence body = message.getDisplayBody(requireContext());
       if (!TextUtils.isEmpty(body)) {
-        bodyBuilder.append(body).append('\n');
+        if (bodyBuilder.length() > 0) {
+          bodyBuilder.append('\n');
+        }
+        bodyBuilder.append(body);
       }
     }
-    if (bodyBuilder.length() > 0 && bodyBuilder.charAt(bodyBuilder.length() - 1) == '\n') {
-      bodyBuilder.deleteCharAt(bodyBuilder.length() - 1);
+
+    if (!TextUtils.isEmpty(bodyBuilder)) {
+      clipboard.setPrimaryClip(ClipData.newPlainText(null, bodyBuilder));
     }
-
-    String result = bodyBuilder.toString();
-
-    if (!TextUtils.isEmpty(result))
-        clipboard.setText(result);
   }
 
   private void handleDeleteMessages(final Set<ConversationMessage> conversationMessages) {
@@ -648,6 +654,7 @@ public class ConversationFragment extends LoggingFragment {
 
             if (threadDeleted) {
               threadId = -1;
+              conversationViewModel.clearThreadId();
               listener.setThreadId(threadId);
             }
           }
@@ -687,6 +694,7 @@ public class ConversationFragment extends LoggingFragment {
 
             if (threadDeleted) {
               threadId = -1;
+              conversationViewModel.clearThreadId();
               listener.setThreadId(threadId);
             }
           }
@@ -732,8 +740,7 @@ public class ConversationFragment extends LoggingFragment {
   }
 
   private void handleForwardMessage(ConversationMessage conversationMessage) {
-    MessageRecord message = conversationMessage.getMessageRecord();
-    if (message.isViewOnce()) {
+    if (conversationMessage.getMessageRecord().isViewOnce()) {
       throw new AssertionError("Cannot forward a view-once message.");
     }
 
@@ -741,10 +748,10 @@ public class ConversationFragment extends LoggingFragment {
 
     SimpleTask.run(getLifecycle(), () -> {
       Intent composeIntent = new Intent(getActivity(), ShareActivity.class);
-      composeIntent.putExtra(Intent.EXTRA_TEXT, message.getDisplayBody(requireContext()).toString());
+      composeIntent.putExtra(Intent.EXTRA_TEXT, conversationMessage.getDisplayBody(requireContext()));
 
-      if (message.isMms()) {
-        MmsMessageRecord mediaMessage = (MmsMessageRecord) message;
+      if (conversationMessage.getMessageRecord().isMms()) {
+        MmsMessageRecord mediaMessage = (MmsMessageRecord) conversationMessage.getMessageRecord();
         boolean          isAlbum      = mediaMessage.containsMediaSlide()                      &&
                                         mediaMessage.getSlideDeck().getSlides().size() > 1     &&
                                         mediaMessage.getSlideDeck().getAudioSlide() == null    &&
@@ -774,7 +781,7 @@ public class ConversationFragment extends LoggingFragment {
                                       Optional.fromNullable(attachment.getCaption()),
                                       Optional.absent()));
             }
-          };
+          }
 
           if (!mediaList.isEmpty()) {
             composeIntent.putExtra(ConversationActivity.MEDIA_EXTRA, mediaList);
@@ -821,7 +828,7 @@ public class ConversationFragment extends LoggingFragment {
       ((AppCompatActivity) getActivity()).getSupportActionBar().collapseActionView();
     }
 
-    listener.handleReplyMessage(message.getMessageRecord());
+    listener.handleReplyMessage(message);
   }
 
   private void handleSaveAttachment(final MediaMmsMessageRecord message) {
@@ -861,7 +868,7 @@ public class ConversationFragment extends LoggingFragment {
     if (getListAdapter() != null) {
       clearHeaderIfNotTyping(getListAdapter());
       setLastSeen(0);
-      getListAdapter().addFastRecord(new ConversationMessage(messageRecord));
+      getListAdapter().addFastRecord(ConversationMessageFactory.createWithResolvedData(messageRecord, messageRecord.getDisplayBody(requireContext()), message.getMentions()));
       list.post(() -> list.scrollToPosition(0));
     }
 
@@ -874,7 +881,7 @@ public class ConversationFragment extends LoggingFragment {
     if (getListAdapter() != null) {
       clearHeaderIfNotTyping(getListAdapter());
       setLastSeen(0);
-      getListAdapter().addFastRecord(new ConversationMessage(messageRecord));
+      getListAdapter().addFastRecord(ConversationMessageFactory.createWithResolvedData(messageRecord));
       list.post(() -> list.scrollToPosition(0));
     }
 
@@ -1003,7 +1010,7 @@ public class ConversationFragment extends LoggingFragment {
 
   public interface ConversationFragmentListener {
     void setThreadId(long threadId);
-    void handleReplyMessage(MessageRecord messageRecord);
+    void handleReplyMessage(ConversationMessage conversationMessage);
     void onMessageActionToolbarOpened();
     void onForwardClicked();
     void onMessageRequest(@NonNull MessageRequestViewModel viewModel);
@@ -1060,6 +1067,8 @@ public class ConversationFragment extends LoggingFragment {
       wasAtBottom           = currentlyAtBottom;
       wasAtZoomScrollHeight = currentlyAtZoomScrollHeight;
       lastPositionId        = positionId;
+
+      postMarkAsReadRequest();
     }
 
     @Override
@@ -1068,6 +1077,23 @@ public class ConversationFragment extends LoggingFragment {
         conversationDateHeader.show();
       } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
         conversationDateHeader.hide();
+      }
+    }
+
+    private void postMarkAsReadRequest() {
+      if (getListAdapter().hasNoConversationMessages()) {
+        return;
+      }
+
+      int position = getListLayoutManager().findFirstVisibleItemPosition();
+      if (position >= (isTypingIndicatorShowing() ? 1 : 0)) {
+        ConversationMessage item = getListAdapter().getItem(position);
+        if (item != null) {
+          long timestamp = item.getMessageRecord()
+                               .getDateReceived();
+
+          markReadHelper.onViewsRevealed(timestamp);
+        }
       }
     }
 
@@ -1273,7 +1299,7 @@ public class ConversationFragment extends LoggingFragment {
     }
 
     @Override
-    public void onGroupMemberAvatarClicked(@NonNull RecipientId recipientId, @NonNull GroupId groupId) {
+    public void onGroupMemberClicked(@NonNull RecipientId recipientId, @NonNull GroupId groupId) {
       if (getContext() == null) return;
 
       RecipientBottomSheetDialogFragment.create(recipientId, groupId).show(requireFragmentManager(), "BOTTOM");

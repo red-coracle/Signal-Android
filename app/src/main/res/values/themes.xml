@@ -198,6 +198,9 @@
         <!--<item name="android:windowContentOverlay">@drawable/compat_actionbar_shadow_background</item>-->
 
         <item name="kbs_splash_image">@drawable/ic_kbs_splash_light_svg</item>
+        <item name="kbs_confirm_lottie_loading">@raw/lottie_kbs_loading_light</item>
+        <item name="kbs_confirm_lottie_success">@raw/lottie_kbs_success_light</item>
+        <item name="kbs_confirm_lottie_failure">@raw/lottie_kbs_fail_light</item>
 
         <item name="attachment_type_selector_background">@color/white</item>
         <item name="attachment_document_icon_small">@drawable/ic_document_small_light</item>
@@ -260,6 +263,7 @@
         <item name="conversation_title_color">@color/white</item>
         <item name="conversation_subtitle_color">@color/transparent_white_90</item>
         <item name="conversation_mention_background_color">@color/core_grey_20</item>
+        <item name="conversation_mention_divider_color">@color/core_grey_05</item>
 
         <item name="safety_number_change_dialog_button_background">@color/core_grey_05</item>
         <item name="safety_number_change_dialog_button_text_color">@color/core_ultramarine</item>
@@ -297,6 +301,7 @@
         <item name="emoji_variation_selector_background">@drawable/emoji_variation_selector_background_light</item>
 
         <item name="reactions_overlay_toolbar_icon_tint">?icon_tint</item>
+        <item name="reactions_overlay_toolbar_overflow_style">@style/Signal.Toolbar.Overflow.Light</item>
         <item name="reactions_overlay_toolbar_background_color">@color/core_white</item>
         <item name="reactions_overlay_custom_emoji_icon">@drawable/ic_any_emoji_32_light</item>
         <item name="reactions_overlay_old_background">@drawable/reactions_old_background_light</item>
@@ -371,7 +376,7 @@
         <item name="menu_accept_icon">@drawable/ic_check_24</item>
         <item name="menu_refresh_directory">@drawable/ic_refresh_white_24dp</item>
         <item name="menu_copy_icon">@drawable/ic_copy_outline_24</item>
-        <item name="menu_info_icon">@drawable/ic_info_outline_white_24dp</item>
+        <item name="menu_info_icon">@drawable/ic_info_outline_white_24</item>
         <item name="menu_forward_icon">@drawable/ic_forward_outline_24</item>
         <item name="menu_save_icon">@drawable/ic_save_24</item>
         <item name="menu_reply_icon">@drawable/ic_reply_outline_24</item>
@@ -509,6 +514,9 @@
         <item name="tinted_circle_background">@drawable/tinted_circle_dark</item>
 
         <item name="kbs_splash_image">@drawable/ic_kbs_splash_dark_svg</item>
+        <item name="kbs_confirm_lottie_loading">@raw/lottie_kbs_loading_dark</item>
+        <item name="kbs_confirm_lottie_success">@raw/lottie_kbs_success_dark</item>
+        <item name="kbs_confirm_lottie_failure">@raw/lottie_kbs_fail_dark</item>
 
         <item name="attachment_type_selector_background">@color/core_grey_95</item>
         <item name="attachment_document_icon_small">@drawable/ic_document_small_dark</item>
@@ -615,10 +623,12 @@
         <item name="conversation_title_color">@color/transparent_white_90</item>
         <item name="conversation_subtitle_color">@color/transparent_white_80</item>
         <item name="conversation_mention_background_color">@color/core_grey_75</item>
+        <item name="conversation_mention_divider_color">@color/core_grey_25</item>
         <item name="conversation_scroll_to_bottom_background">@drawable/scroll_to_bottom_background_dark</item>
         <item name="conversation_scroll_to_bottom_foreground_color">@color/core_white</item>
 
         <item name="reactions_overlay_toolbar_icon_tint">@color/core_white</item>
+        <item name="reactions_overlay_toolbar_overflow_style">@style/Signal.Toolbar.Overflow</item>
         <item name="reactions_overlay_toolbar_background_color">@color/action_mode_status_bar</item>
         <item name="reactions_overlay_custom_emoji_icon">@drawable/ic_any_emoji_32_dark</item>
         <item name="reactions_overlay_old_background">@drawable/reactions_old_background_dark</item>

@@ -137,6 +137,10 @@ public final class StringUtil {
    * https://www.w3.org/International/questions/qa-bidi-unicode-controls
    */
   public static @NonNull String isolateBidi(@NonNull String text) {
+    if (text.isEmpty()) {
+      return text;
+    }
+
     int overrideCount      = 0;
     int overrideCloseCount = 0;
     int isolateCount       = 0;
@@ -175,5 +179,22 @@ public final class StringUtil {
               .append(suffix)
               .appendCodePoint(Bidi.PDI)
               .toString();
+  }
+
+  /**
+   * Trims a {@link CharSequence} of starting and trailing whitespace. Behavior matches
+   * {@link String#trim()} to preserve expectations around results.
+   */
+  public static CharSequence trimSequence(CharSequence text) {
+    int length     = text.length();
+    int startIndex = 0;
+
+    while ((startIndex < length) && (text.charAt(startIndex) <= ' ')) {
+      startIndex++;
+    }
+    while ((startIndex < length) && (text.charAt(length - 1) <= ' ')) {
+      length--;
+    }
+    return (startIndex > 0 || length < text.length()) ? text.subSequence(startIndex, length) : text;
   }
 }

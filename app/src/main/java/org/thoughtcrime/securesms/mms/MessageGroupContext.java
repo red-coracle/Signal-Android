@@ -128,7 +128,9 @@ public final class MessageGroupContext {
     public @NonNull List<RecipientId> getMembersListExcludingSelf() {
       RecipientId selfId = Recipient.self().getId();
 
-      return Stream.of(groupContext.getMembersE164List())
+      return Stream.of(groupContext.getMembersList())
+                   .map(GroupContext.Member::getE164)
+                   .withoutNulls()
                    .map(e164 -> new SignalServiceAddress(null, e164))
                    .map(RecipientId::from)
                    .filterNot(selfId::equals)
@@ -166,6 +168,7 @@ public final class MessageGroupContext {
       memberUuids.addAll(DecryptedGroupUtil.membersToUuidList(decryptedGroupV2Context.getGroupState().getMembersList()));
       memberUuids.addAll(DecryptedGroupUtil.pendingToUuidList(decryptedGroupV2Context.getGroupState().getPendingMembersList()));
       memberUuids.addAll(DecryptedGroupUtil.removedMembersUuidList(decryptedGroupV2Context.getChange()));
+      memberUuids.addAll(DecryptedGroupUtil.removedPendingMembersUuidList(decryptedGroupV2Context.getChange()));
 
       return UuidUtil.filterKnown(memberUuids);
     }

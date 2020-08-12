@@ -463,7 +463,6 @@
     <string name="GroupMembersDialog_you">You</string>
 
     <!-- GV2 access levels -->
-    <string name="GroupManagement_access_level_anyone">Anyone</string>
     <string name="GroupManagement_access_level_all_members">All members</string>
     <string name="GroupManagement_access_level_only_admins">Only admins</string>
     <string name="GroupManagement_access_level_unknown" translatable="false">Unknown</string>
@@ -493,15 +492,15 @@
     <string name="PendingMembersActivity_no_pending_invites_by_other_group_members">No pending invites by other group members.</string>
     <string name="PendingMembersActivity_missing_detail_explanation">Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.</string>
 
-    <string name="PendingMembersActivity_cancel_invite">Cancel invite</string>
-    <string name="PendingMembersActivity_cancel_invites">Cancel invites</string>
-    <plurals name="PendingMembersActivity_cancel_d_invites">
-        <item quantity="one">Cancel invite</item>
-        <item quantity="other">Cancel %1$d invites</item>
+    <string name="PendingMembersActivity_revoke_invite">Revoke invite</string>
+    <string name="PendingMembersActivity_revoke_invites">Revoke invites</string>
+    <plurals name="PendingMembersActivity_revoke_d_invites">
+        <item quantity="one">Revoke invite</item>
+        <item quantity="other">Revoke %1$d invites</item>
     </plurals>
-    <plurals name="PendingMembersActivity_error_canceling_invite">
-        <item quantity="one">Error canceling invite</item>
-        <item quantity="other">Error canceling invites</item>
+    <plurals name="PendingMembersActivity_error_revoking_invite">
+        <item quantity="one">Error revoking invite</item>
+        <item quantity="other">Error revoking invites</item>
     </plurals>
 
     <!-- AddMembersActivity -->
@@ -526,6 +525,17 @@
     <string name="AddGroupDetailsFragment__remove">Remove</string>
     <string name="AddGroupDetailsFragment__sms_contact">SMS contact</string>
     <string name="AddGroupDetailsFragment__remove_s_from_this_group">Remove %1$s from this group?</string>
+    <plurals name="AddGroupDetailsFragment__d_members_do_not_support_new_groups">
+        <item quantity="one">%d member does not support New Groups, so this will be a Legacy Group.</item>
+        <item quantity="other">%d members do not support New Groups, so this group will be a Legacy Group.</item>
+    </plurals>
+
+    <!-- NonGv2MemberDialog -->
+    <string name="NonGv2MemberDialog_single_users_are_non_gv2_capable">A Legacy Group will be created because “%1$s” is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+    <plurals name="NonGv2MemberDialog_d_users_are_non_gv2_capable">
+        <item quantity="one">A Legacy Group will be created because %1$d member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</item>
+        <item quantity="other">A Legacy Group will be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</item>
+    </plurals>
 
     <!-- ManageGroupActivity -->
     <string name="ManageGroupActivity_disappearing_messages">Disappearing messages</string>
@@ -539,6 +549,7 @@
     <string name="ManageGroupActivity_leave_group">Leave group</string>
     <string name="ManageGroupActivity_mute_notifications">Mute notifications</string>
     <string name="ManageGroupActivity_custom_notifications">Custom notifications</string>
+    <string name="ManageGroupActivity_mentions">Mentions</string>
     <string name="ManageGroupActivity_until_s">Until %1$s</string>
     <string name="ManageGroupActivity_off">Off</string>
     <string name="ManageGroupActivity_on">On</string>
@@ -566,6 +577,13 @@
     <string name="ManageGroupActivity_legacy_group">Legacy Group</string>
     <string name="ManageGroupActivity_legacy_group_learn_more">This is a Legacy Group. To access features like group admins, create a New Group.</string>
 
+    <!-- GroupMentionSettingDialog -->
+    <string name="GroupMentionSettingDialog_notify_me_for_mentions">Notify me for Mentions</string>
+    <string name="GroupMentionSettingDialog_receive_notifications_when_youre_mentioned_in_muted_chats">Receive notifications when you’re mentioned in muted chats?</string>
+    <string name="GroupMentionSettingDialog_default_notify_me">Default (Notify me)</string>
+    <string name="GroupMentionSettingDialog_default_dont_notify_me">Default (Don\'t notify me)</string>
+    <string name="GroupMentionSettingDialog_always_notify_me">Always notify me</string>
+    <string name="GroupMentionSettingDialog_dont_notify_me">Don\'t notify me</string>
     
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_add_to_system_contacts">Add to system contacts</string>
@@ -611,11 +629,11 @@
     <string name="CustomNotificationsDialogFragment__disabled">Disabled</string>
     <string name="CustomNotificationsDialogFragment__default">Default</string>
 
-    <!-- GV2 Invite cancellation confirmation -->
-    <string name="GroupManagement_cancel_own_single_invite">Do you want to cancel the invite you sent to %1$s?</string>
-    <plurals name="GroupManagement_cancel_others_invites">
-        <item quantity="one">Do you want to cancel the invite sent by %1$s?</item>
-        <item quantity="other">Do you want to cancel %2$d invites sent by %1$s?</item>
+    <!-- GV2 Invite Revoke confirmation dialog -->
+    <string name="InviteRevokeConfirmationDialog_revoke_own_single_invite">Do you want to revoke the invite you sent to %1$s?</string>
+    <plurals name="InviteRevokeConfirmationDialog_revoke_others_invites">
+        <item quantity="one">Do you want to revoke the invite sent by %1$s?</item>
+        <item quantity="other">Do you want to revoke %2$d invites sent by %1$s?</item>
     </plurals>
 
     <!-- CropImageActivity -->
@@ -847,7 +865,8 @@
     </plurals>
     <string name="MessageRecord_someone_declined_an_invitation_to_the_group">Someone declined an invitation to the group.</string>
     <string name="MessageRecord_you_declined_the_invitation_to_the_group">You declined the invitation to the group.</string>
-    <string name="MessageRecord_your_invitation_to_the_group_was_revoked">Your invitation to the group was revoked.</string>
+    <string name="MessageRecord_s_revoked_your_invitation_to_the_group">%1$s revoked your invitation to the group.</string>
+    <string name="MessageRecord_an_admin_revoked_your_invitation_to_the_group">An admin revoked your invitation to the group.</string>
     <plurals name="MessageRecord_d_invitations_were_revoked">
       <item quantity="one">An invitation to the group was revoked.</item>
       <item quantity="other">%1$d invitations to the group were revoked.</item>
@@ -895,7 +914,6 @@
     <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_they_wont_know_youve_seen_their_messages_until_you_accept">Let %1$s message you and share your name and photo with them? They won\'t know you\'ve seen their message until you accept.</string>
     <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_wont_receive_any_messages_until_you_unblock_them">Let %1$s message you and share your name and photo with them? You won\'t receive any messages until you unblock them.</string>
     <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Join this group and share your name and photo with its members? They won\'t know you\'ve seen their messages until you accept.</string>
-    <string name="MessageRequestBottomView_you_were_invited_to_join_the_group_s">You were invited to join the group %1$s. Do you want to let members of this group message you?</string>
     <string name="MessageRequestBottomView_unblock_this_group_and_share_your_name_and_photo_with_its_members">Unblock this group and share your name and photo with its members? You won\'t receive any messages until you unblock them.</string>
     <string name="MessageRequestProfileView_member_of_one_group">Member of %1$s</string>
     <string name="MessageRequestProfileView_member_of_two_groups">Member of %1$s and %2$s</string>
@@ -908,9 +926,9 @@
         <item quantity="one">%1$d member (+%2$d invited)</item>
         <item quantity="other">%1$d members (+%2$d invited)</item>
     </plurals>
-    <plurals name="MessageRequestProfileView_member_of_others">
-        <item quantity="one">%d other</item>
-        <item quantity="other">%d others</item>
+    <plurals name="MessageRequestProfileView_member_of_d_additional_groups">
+        <item quantity="one">%d additional group</item>
+        <item quantity="other">%d additional groups</item>
     </plurals>
 
     <!-- PassphraseChangeActivity -->
@@ -1322,6 +1340,7 @@
     <string name="MessageNotifier_error_delivering_message">Error delivering message.</string>
     <string name="MessageNotifier_mark_all_as_read">Mark all as read</string>
     <string name="MessageNotifier_mark_read">Mark read</string>
+    <string name="MessageNotifier_turn_off_these_notifications">Turn off these notifications</string>
     <string name="MessageNotifier_media_message">Media message</string>
     <string name="MessageNotifier_sticker">Sticker</string>
     <string name="MessageNotifier_view_once_photo">View-once photo</string>
@@ -1342,6 +1361,8 @@
     <string name="MessageNotifier_reacted_s_to_your_view_once_video">Reacted %1$s to your view-once video.</string>
     <string name="MessageNotifier_reacted_s_to_your_sticker">Reacted %1$s to your sticker.</string>
     <string name="MessageNotifier_this_message_was_deleted">This message was deleted.</string>
+
+    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Turn off contact joined Signal notifications? You can enable them again in Signal > Settings > Notifications.</string>
 
     <!-- Notification Channels -->
     <string name="NotificationChannel_messages">Default</string>
@@ -1809,6 +1830,7 @@
     <string name="HelpFragment__no_email_app_found">No email app found.</string>
 
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
+    <string name="ReactWithAnyEmojiBottomSheetDialogFragment__this_message">This Message</string>
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__recently_used">Recently Used</string>
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__smileys_and_people">Smileys &amp; People</string>
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__nature">Nature</string>
@@ -1985,6 +2007,9 @@
     <string name="preferences_communication__sealed_sender_allow_from_anyone">Allow from anyone</string>
     <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.</string>
     <string name="preferences_communication__sealed_sender_learn_more">Learn more</string>
+    <string name="preferences_notifications__mentions">Mentions</string>
+    <string name="preferences_notifications__notify_me">Notify me</string>
+    <string name="preferences_notifications__receive_notifications_when_youre_mentioned_in_muted_chats">Receive notifications when you’re mentioned in muted chats</string>
 
     <!-- Internal only preferences -->
     <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string>
@@ -2004,6 +2029,9 @@
     <string name="preferences__internal_rotate_profile_key_description" translatable="false">Creates a new versioned profile, and triggers an update of any GV2 group you belong to.</string>
     <string name="preferences__internal_refresh_remote_values" translatable="false">Refresh remote values</string>
     <string name="preferences__internal_refresh_remote_values_description" translatable="false">Forces a refresh of remote values locally instead of waiting for the elapsed time</string>
+    <string name="preferences__internal_display" translatable="false">Display</string>
+    <string name="preferences__internal_user_details" translatable="false">User Details</string>
+    <string name="preferences__internal_user_details_description" translatable="false">See more information about a user when viewing conversation settings.</string>
     <string name="preferences__internal_storage_service" translatable="false">Storage service</string>
     <string name="preferences__internal_force_storage_service_sync" translatable="false">Overwrite remote data</string>
     <string name="preferences__internal_force_storage_service_sync_description" translatable="false">Forces remote storage to match the local device state.</string>
