@@ -22,7 +22,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.MergeCursor;
 import android.net.Uri;
-import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
+import org.jsoup.helper.StringUtil;
 import org.signal.storageservice.protos.groups.local.DecryptedGroup;
 import org.signal.storageservice.protos.groups.local.DecryptedMember;
 import org.thoughtcrime.securesms.database.MessagingDatabase.MarkedMessageInfo;
@@ -97,6 +97,7 @@ public class ThreadDatabase extends Database {
   public  static final String LAST_SEEN              = "last_seen";
   public  static final String HAS_SENT               = "has_sent";
   private static final String LAST_SCROLLED          = "last_scrolled";
+  private static final String PINNED                 = "pinned";
 
   public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + ID                     + " INTEGER PRIMARY KEY, " +
                                                                                   DATE                   + " INTEGER DEFAULT 0, " +
@@ -119,16 +120,18 @@ public class ThreadDatabase extends Database {
                                                                                   HAS_SENT               + " INTEGER DEFAULT 0, " +
                                                                                   READ_RECEIPT_COUNT     + " INTEGER DEFAULT 0, " +
                                                                                   UNREAD_COUNT           + " INTEGER DEFAULT 0, " +
-                                                                                  LAST_SCROLLED          + " INTEGER DEFAULT 0);";
+                                                                                  LAST_SCROLLED          + " INTEGER DEFAULT 0, " +
+                                                                                  PINNED                 + " INTEGER DEFAULT 0);";
 
   public static final String[] CREATE_INDEXS = {
     "CREATE INDEX IF NOT EXISTS thread_recipient_ids_index ON " + TABLE_NAME + " (" + RECIPIENT_ID + ");",
     "CREATE INDEX IF NOT EXISTS archived_count_index ON " + TABLE_NAME + " (" + ARCHIVED + ", " + MESSAGE_COUNT + ");",
+    "CREATE INDEX IF NOT EXISTS thread_pinned_index ON " + TABLE_NAME + " (" + PINNED + ");",
   };
 
   private static final String[] THREAD_PROJECTION = {
       ID, DATE, MESSAGE_COUNT, RECIPIENT_ID, SNIPPET, SNIPPET_CHARSET, READ, UNREAD_COUNT, TYPE, ERROR, SNIPPET_TYPE,
-      SNIPPET_URI, SNIPPET_CONTENT_TYPE, SNIPPET_EXTRAS, ARCHIVED, STATUS, DELIVERY_RECEIPT_COUNT, EXPIRES_IN, LAST_SEEN, READ_RECEIPT_COUNT, LAST_SCROLLED
+      SNIPPET_URI, SNIPPET_CONTENT_TYPE, SNIPPET_EXTRAS, ARCHIVED, STATUS, DELIVERY_RECEIPT_COUNT, EXPIRES_IN, LAST_SEEN, READ_RECEIPT_COUNT, LAST_SCROLLED, PINNED
   };
 
   private static final List<String> TYPED_THREAD_PROJECTION = Stream.of(THREAD_PROJECTION)
@@ -139,6 +142,8 @@ public class ThreadDatabase extends Database {
                                                                                                              Stream.of(RecipientDatabase.TYPED_RECIPIENT_PROJECTION)),
                                                                                                Stream.of(GroupDatabase.TYPED_GROUP_PROJECTION))
                                                                                        .toList();
+
+  private static final String ORDER_BY_DEFAULT = TABLE_NAME + "." + DATE + " DESC";
 
   public ThreadDatabase(Context context, SQLCipherOpenHelper databaseHelper) {
     super(context, databaseHelper);
@@ -167,7 +172,7 @@ public class ThreadDatabase extends Database {
   private void updateThread(long threadId, long count, String body, @Nullable Uri attachment,
                             @Nullable String contentType, @Nullable Extra extra,
                             long date, int status, int deliveryReceiptCount, long type, boolean unarchive,
-                            long expiresIn, int readReceiptCount, boolean causedByDeletion)
+                            long expiresIn, int readReceiptCount)
   {
     String extraSerialized = null;
 
@@ -180,14 +185,12 @@ public class ThreadDatabase extends Database {
     }
 
     ContentValues contentValues = new ContentValues();
-    if (!MmsSmsColumns.Types.isProfileChange(type) || causedByDeletion) {
-      contentValues.put(DATE, date - date % 1000);
-      contentValues.put(SNIPPET, body);
-      contentValues.put(SNIPPET_URI, attachment == null ? null : attachment.toString());
-      contentValues.put(SNIPPET_TYPE, type);
-      contentValues.put(SNIPPET_CONTENT_TYPE, contentType);
-      contentValues.put(SNIPPET_EXTRAS, extraSerialized);
-    }
+    contentValues.put(DATE, date - date % 1000);
+    contentValues.put(SNIPPET, body);
+    contentValues.put(SNIPPET_URI, attachment == null ? null : attachment.toString());
+    contentValues.put(SNIPPET_TYPE, type);
+    contentValues.put(SNIPPET_CONTENT_TYPE, contentType);
+    contentValues.put(SNIPPET_EXTRAS, extraSerialized);
     contentValues.put(MESSAGE_COUNT, count);
     contentValues.put(STATUS, status);
     contentValues.put(DELIVERY_RECEIPT_COUNT, deliveryReceiptCount);
@@ -386,6 +389,7 @@ public class ThreadDatabase extends Database {
       db.endTransaction();
     }
 
+    notifyConversationListeners(new HashSet<>(threadIds));
     notifyConversationListListeners();
     return Util.concatenatedList(smsRecords, mmsRecords);
   }
@@ -486,7 +490,7 @@ public class ThreadDatabase extends Database {
       query += " AND " + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.GROUP_ID + " NOT NULL";
     }
 
-    return db.rawQuery(createQuery(query, limit), null);
+    return db.rawQuery(createQuery(query, 0, limit, true), null);
   }
 
   public Cursor getRecentPushConversationList(int limit, boolean includeInactiveGroups) {
@@ -501,7 +505,7 @@ public class ThreadDatabase extends Database {
                                           activeGroupQuery +
                                         ")" +
                                       ")";
-    String         query = createQuery(where, limit);
+    String         query = createQuery(where, 0, limit, true);
 
     return db.rawQuery(query, null);
   }
@@ -540,7 +544,12 @@ public class ThreadDatabase extends Database {
       String query = RECIPIENT_ID + " = ?";
 
       for (Map.Entry<RecipientId, Boolean> entry : status.entrySet()) {
-        ContentValues values = new ContentValues(1);
+        ContentValues values   = new ContentValues(1);
+
+        if (entry.getValue()) {
+          values.put(PINNED, "0");
+        }
+
         values.put(ARCHIVED, entry.getValue() ? "1" : "0");
         db.update(TABLE_NAME, values, query, new String[] { entry.getKey().serialize() });
       }
@@ -582,10 +591,6 @@ public class ThreadDatabase extends Database {
     return positions;
   }
 
-  public Cursor getConversationList(long offset, long limit) {
-    return getConversationList("0", offset, limit);
-  }
-
   public Cursor getArchivedConversationList(long offset, long limit) {
     return getConversationList("1", offset, limit);
   }
@@ -594,9 +599,19 @@ public class ThreadDatabase extends Database {
     return getConversationList(archived, 0, 0);
   }
 
+  public Cursor getUnarchivedConversationList(boolean pinned, long offset, long limit) {
+    SQLiteDatabase db     = databaseHelper.getReadableDatabase();
+    String         query  = createQuery(ARCHIVED + " = 0 AND " + MESSAGE_COUNT + " != 0 AND " + PINNED + " = ?", offset, limit, false);
+    Cursor         cursor = db.rawQuery(query, new String[]{pinned ? "1" : "0"});
+
+    setNotifyConversationListListeners(cursor);
+
+    return cursor;
+  }
+
   private Cursor getConversationList(@NonNull String archived, long offset, long limit) {
     SQLiteDatabase db     = databaseHelper.getReadableDatabase();
-    String         query  = createQuery(ARCHIVED + " = ? AND " + MESSAGE_COUNT + " != 0", offset, limit);
+    String         query  = createQuery(ARCHIVED + " = ? AND " + MESSAGE_COUNT + " != 0", offset, limit, false);
     Cursor         cursor = db.rawQuery(query, new String[]{archived});
 
     setNotifyConversationListListeners(cursor);
@@ -604,19 +619,11 @@ public class ThreadDatabase extends Database {
     return cursor;
   }
 
-  public int getUnarchivedConversationListCount() {
-    return getConversationListCount(false);
-  }
-
   public int getArchivedConversationListCount() {
-    return getConversationListCount(true);
-  }
-
-  private int getConversationListCount(boolean archived) {
     SQLiteDatabase db      = databaseHelper.getReadableDatabase();
     String[]       columns = new String[] { "COUNT(*)" };
     String         query   = ARCHIVED + " = ? AND " + MESSAGE_COUNT + " != 0";
-    String[]       args    = new String[] { archived ? "1" : "0" };
+    String[]       args    = new String[] {"1"};
 
     try (Cursor cursor = db.query(TABLE_NAME, columns, query, args, null, null, null)) {
       if (cursor != null && cursor.moveToFirst()) {
@@ -627,9 +634,63 @@ public class ThreadDatabase extends Database {
     return 0;
   }
 
+  public int getPinnedConversationListCount() {
+    SQLiteDatabase db      = databaseHelper.getReadableDatabase();
+    String[]       columns = new String[] { "COUNT(*)" };
+    String         query   = ARCHIVED + " = 0 AND " + PINNED + " = 1 AND " + MESSAGE_COUNT + " != 0";
+
+    try (Cursor cursor = db.query(TABLE_NAME, columns, query, null, null, null, null)) {
+      if (cursor != null && cursor.moveToFirst()) {
+        return cursor.getInt(0);
+      }
+    }
+
+    return 0;
+  }
+
+  public int getUnarchivedConversationListCount() {
+    SQLiteDatabase db      = databaseHelper.getReadableDatabase();
+    String[]       columns = new String[] { "COUNT(*)" };
+    String         query   = ARCHIVED + " = 0 AND " + MESSAGE_COUNT + " != 0";
+
+    try (Cursor cursor = db.query(TABLE_NAME, columns, query, null, null, null, null)) {
+      if (cursor != null && cursor.moveToFirst()) {
+        return cursor.getInt(0);
+      }
+    }
+
+    return 0;
+  }
+
+  public void pinConversations(@NonNull Set<Long> threadIds) {
+    SQLiteDatabase db            = databaseHelper.getWritableDatabase();
+    ContentValues  contentValues = new ContentValues(1);
+    String         placeholders  = StringUtil.join(Stream.of(threadIds).map(unused -> "?").toList(), ",");
+    String         selection     = ID + " IN (" + placeholders + ")";
+
+    contentValues.put(PINNED, 1);
+
+    db.update(TABLE_NAME, contentValues, selection, SqlUtil.buildArgs(Stream.of(threadIds).toArray()));
+
+    notifyConversationListListeners();
+  }
+
+  public void unpinConversations(@NonNull Set<Long> threadIds) {
+    SQLiteDatabase db            = databaseHelper.getWritableDatabase();
+    ContentValues  contentValues = new ContentValues(1);
+    String         placeholders  = StringUtil.join(Stream.of(threadIds).map(unused -> "?").toList(), ",");
+    String         selection     = ID + " IN (" + placeholders + ")";
+
+    contentValues.put(PINNED, 0);
+
+    db.update(TABLE_NAME, contentValues, selection, SqlUtil.buildArgs(Stream.of(threadIds).toArray()));
+    notifyConversationListListeners();
+  }
+
   public void archiveConversation(long threadId) {
     SQLiteDatabase db            = databaseHelper.getWritableDatabase();
     ContentValues  contentValues = new ContentValues(1);
+    contentValues.put(PINNED, 0);
     contentValues.put(ARCHIVED, 1);
 
     db.update(TABLE_NAME, contentValues, ID_WHERE, new String[] {threadId + ""});
@@ -827,12 +888,12 @@ public class ThreadDatabase extends Database {
   }
 
   public boolean update(long threadId, boolean unarchive) {
-    return update(threadId, unarchive, true, false);
+    return update(threadId, unarchive, true);
   }
 
-  public boolean update(long threadId, boolean unarchive, boolean allowDeletion, boolean causedByDeletion) {
+  public boolean update(long threadId, boolean unarchive, boolean allowDeletion) {
     MmsSmsDatabase mmsSmsDatabase = DatabaseFactory.getMmsSmsDatabase(context);
-    long count                    = mmsSmsDatabase.getConversationCount(threadId);
+    long count                    = mmsSmsDatabase.getConversationCountForThreadSummary(threadId);
 
     if (count == 0) {
       if (allowDeletion) {
@@ -852,7 +913,7 @@ public class ThreadDatabase extends Database {
         updateThread(threadId, count, ThreadBodyUtil.getFormattedBodyFor(context, record), getAttachmentUriFor(record),
                      getContentTypeFor(record), getExtrasFor(record),
                      record.getTimestamp(), record.getDeliveryStatus(), record.getDeliveryReceiptCount(),
-                     record.getType(), unarchive, record.getExpiresIn(), record.getReadReceiptCount(), causedByDeletion);
+                     record.getType(), unarchive, record.getExpiresIn(), record.getReadReceiptCount());
         notifyConversationListListeners();
         return false;
       } else {
@@ -878,7 +939,7 @@ public class ThreadDatabase extends Database {
 
     if (primary != null && secondary == null) {
       Log.w(TAG, "[merge] Only had a thread for primary. Returning that.");
-      return new MergeResult(primary.getThreadId(), false);
+      return new MergeResult(primary.getThreadId(), -1, false);
     } else if (primary == null && secondary != null) {
       Log.w(TAG, "[merge] Only had a thread for secondary. Updating it to have the recipientId of the primary.");
 
@@ -886,10 +947,10 @@ public class ThreadDatabase extends Database {
       values.put(RECIPIENT_ID, primaryRecipientId.serialize());
 
       databaseHelper.getWritableDatabase().update(TABLE_NAME, values, ID_WHERE, SqlUtil.buildArgs(secondary.getThreadId()));
-      return new MergeResult(secondary.getThreadId(), false);
+      return new MergeResult(secondary.getThreadId(), -1, false);
     } else if (primary == null && secondary == null) {
       Log.w(TAG, "[merge] No thread for either.");
-      return new MergeResult(-1, false);
+      return new MergeResult(-1, -1, false);
     } else {
       Log.w(TAG, "[merge] Had a thread for both. Deleting the secondary and merging the attributes together.");
 
@@ -921,7 +982,7 @@ public class ThreadDatabase extends Database {
 
       RemappedRecords.getInstance().addThread(context, secondary.getThreadId(), primary.getThreadId());
 
-      return new MergeResult(primary.getThreadId(), true);
+      return new MergeResult(primary.getThreadId(), secondary.getThreadId(), true);
     }
   }
 
@@ -1013,11 +1074,13 @@ public class ThreadDatabase extends Database {
   }
 
   private @NonNull String createQuery(@NonNull String where, long limit) {
-    return createQuery(where, 0, limit);
+    return createQuery(where, 0, limit, false);
   }
 
-  private @NonNull String createQuery(@NonNull String where, long offset, long limit) {
+  private @NonNull String createQuery(@NonNull String where, long offset, long limit, boolean preferPinned) {
+    String orderBy    = (preferPinned ? TABLE_NAME + "." + PINNED + " DESC, " : "") + TABLE_NAME + "." + DATE + " DESC";
     String projection = Util.join(COMBINED_THREAD_RECIPIENT_GROUP_PROJECTION, ",");
+
     String query =
     "SELECT " + projection + " FROM " + TABLE_NAME +
            " LEFT OUTER JOIN " + RecipientDatabase.TABLE_NAME +
@@ -1025,7 +1088,7 @@ public class ThreadDatabase extends Database {
            " LEFT OUTER JOIN " + GroupDatabase.TABLE_NAME +
            " ON " + TABLE_NAME + "." + RECIPIENT_ID + " = " + GroupDatabase.TABLE_NAME + "." + GroupDatabase.RECIPIENT_ID +
            " WHERE " + where +
-           " ORDER BY " + TABLE_NAME + "." + DATE + " DESC";
+           " ORDER BY " + orderBy;
 
     if (limit >  0) {
       query += " LIMIT " + limit;
@@ -1054,12 +1117,20 @@ public class ThreadDatabase extends Database {
     public static final int INBOX_ZERO   = 4;
   }
 
-  public class Reader implements Closeable {
-
-    private final Cursor cursor;
-
+  public class Reader extends StaticReader {
     public Reader(Cursor cursor) {
-      this.cursor = cursor;
+      super(cursor, context);
+    }
+  }
+
+  public static class StaticReader implements Closeable {
+
+    private final Cursor  cursor;
+    private final Context context;
+
+    public StaticReader(Cursor cursor, Context context) {
+      this.cursor  = cursor;
+      this.context = context;
     }
 
     public ThreadRecord getNext() {
@@ -1125,6 +1196,7 @@ public class ThreadDatabase extends Database {
                              .setCount(cursor.getLong(cursor.getColumnIndexOrThrow(ThreadDatabase.MESSAGE_COUNT)))
                              .setUnreadCount(cursor.getInt(cursor.getColumnIndexOrThrow(ThreadDatabase.UNREAD_COUNT)))
                              .setForcedUnread(cursor.getInt(cursor.getColumnIndexOrThrow(ThreadDatabase.READ)) == ReadStatus.FORCED_UNREAD.serialize())
+                             .setPinned(CursorUtil.requireBoolean(cursor, ThreadDatabase.PINNED))
                              .setExtra(extra)
                              .build();
     }
@@ -1283,11 +1355,13 @@ public class ThreadDatabase extends Database {
 
   static final class MergeResult {
     final long    threadId;
+    final long    previousThreadId;
     final boolean neededMerge;
 
-    private MergeResult(long threadId, boolean neededMerge) {
-      this.threadId    = threadId;
-      this.neededMerge = neededMerge;
+    private MergeResult(long threadId, long previousThreadId, boolean neededMerge) {
+      this.threadId         = threadId;
+      this.previousThreadId = previousThreadId;
+      this.neededMerge      = neededMerge;
     }
   }
 }

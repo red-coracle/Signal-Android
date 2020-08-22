@@ -1820,7 +1820,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
   private void initializeLinkPreviewObserver() {
     linkPreviewViewModel = ViewModelProviders.of(this, new LinkPreviewViewModel.Factory(new LinkPreviewRepository())).get(LinkPreviewViewModel.class);
 
-    if (!TextSecurePreferences.isLinkPreviewsEnabled(this)) {
+    if (!SignalStore.settings().isLinkPreviewsEnabled()) {
       linkPreviewViewModel.onUserCancel();
       return;
     }
@@ -1831,6 +1831,9 @@ public class ConversationActivity extends PassphraseRequiredActivity
       if (previewState.isLoading()) {
         Log.d(TAG, "Loading link preview.");
         inputPanel.setLinkPreviewLoading();
+      } else if (previewState.hasLinks() && !previewState.getLinkPreview().isPresent()) {
+        Log.d(TAG, "No preview found.");
+        inputPanel.setLinkPreviewNoPreview();
       } else {
         Log.d(TAG, "Setting link preview: " + previewState.getLinkPreview().isPresent());
         inputPanel.setLinkPreview(glideRequests, previewState.getLinkPreview());
@@ -1899,7 +1902,12 @@ public class ConversationActivity extends PassphraseRequiredActivity
   private void initializeMentionsViewModel() {
     MentionsPickerViewModel mentionsViewModel = ViewModelProviders.of(this, new MentionsPickerViewModel.Factory()).get(MentionsPickerViewModel.class);
 
-    recipient.observe(this, mentionsViewModel::onRecipientChange);
+    recipient.observe(this, r -> {
+      if (r.isPushV2Group() && !mentionsSuggestions.resolved()) {
+        mentionsSuggestions.get();
+      }
+      mentionsViewModel.onRecipientChange(r);
+    });
 
     composeText.setMentionQueryChangedListener(query -> {
       if (getRecipient().isPushV2Group()) {
@@ -2358,6 +2366,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
     attachmentManager.cleanup();
 
     updateLinkPreviewState();
+    linkPreviewViewModel.onSend();
   }
 
   private void sendMessage() {
@@ -2393,7 +2402,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
       if ((recipient.isMmsGroup() || recipient.getEmail().isPresent()) && !isMmsEnabled) {
         handleManualMmsRequired();
-      } else if (!forceSms && (identityRecords.isUnverified() || identityRecords.isUntrusted())) {
+      } else if (!forceSms && (identityRecords.isUnverified(true) || identityRecords.isUntrusted(true))) {
         handleRecentSafetyNumberChange();
       } else if (isMediaMessage) {
         sendMediaMessage(forceSms, expiresIn, false, subscriptionId, initiating);
@@ -2591,7 +2600,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
       buttonToggle.display(sendButton);
       quickAttachmentToggle.hide();
 
-      if (!attachmentManager.isAttachmentPresent() && !linkPreviewViewModel.hasLinkPreview()) {
+      if (!attachmentManager.isAttachmentPresent() && !linkPreviewViewModel.hasLinkPreviewUi()) {
         inlineAttachmentToggle.show();
       } else {
         inlineAttachmentToggle.hide();
@@ -2600,7 +2609,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
   }
 
   private void updateLinkPreviewState() {
-    if (TextSecurePreferences.isLinkPreviewsEnabled(this) && !sendButton.getSelectedTransport().isSms() && !attachmentManager.isAttachmentPresent()) {
+    if (SignalStore.settings().isLinkPreviewsEnabled() && !sendButton.getSelectedTransport().isSms() && !attachmentManager.isAttachmentPresent()) {
       linkPreviewViewModel.onEnabled();
       linkPreviewViewModel.onTextChanged(this, composeText.getTextTrimmed().toString(), composeText.getSelectionStart(), composeText.getSelectionEnd());
     } else {

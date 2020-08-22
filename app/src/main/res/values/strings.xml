@@ -484,6 +484,14 @@
     <string name="GroupManagement_learn_more">Learn more</string>
     <string name="GroupManagement_invite_multiple_users">These users can’t be automatically added to this group by you.\n\nThey’ve been invited to join the group, and won’t see any group messages until they accept.</string>
 
+    <!-- LinkPreviewsMegaphone -->
+    <string name="LinkPreviewsMegaphone_disable">Disable</string>
+    <string name="LinkPreviewsMegaphone_preview_any_link">Preview any link</string>
+    <string name="LinkPreviewsMegaphone_you_can_now_retrieve_link_previews_directly_from_any_website">You can now retrieve link previews directly from any website for messages you send.</string>
+
+    <!-- LinkPreviewView -->
+    <string name="LinkPreviewView_no_link_preview_available">No link preview available</string>
+
     <!-- PendingMembersActivity -->
     <string name="PendingMemberInvitesActivity_pending_group_invites">Pending group invites</string>
     <string name="PendingMembersActivity_people_you_invited">People you invited</string>
@@ -635,6 +643,14 @@
         <item quantity="one">Do you want to revoke the invite sent by %1$s?</item>
         <item quantity="other">Do you want to revoke %2$d invites sent by %1$s?</item>
     </plurals>
+
+    <!-- GroupJoinBottomSheetDialogFragment -->
+    <string name="GroupJoinBottomSheetDialogFragment_you_are_already_a_member">You are already a member</string>
+
+    <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Update Signal to use group links</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">The version of Signal you’re using does not support sharable group links. Update to the latest version to join this group via link.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Update Signal</string>
 
     <!-- CropImageActivity -->
     <string name="CropImageActivity_group_avatar">Group avatar</string>
@@ -1304,9 +1320,6 @@
     <!-- MuteDialog -->
     <string name="MuteDialog_mute_notifications">Mute notifications</string>
 
-    <!-- OutdatedBuildReminder -->
-    <string name="OutdatedBuildReminder_no_web_browser_installed">No web browser installed!</string>
-
     <!-- ApplicationMigrationService -->
     <string name="ApplicationMigrationService_import_in_progress">Import in progress</string>
     <string name="ApplicationMigrationService_importing_text_messages">Importing text messages</string>
@@ -1889,8 +1902,8 @@
     <string name="preferences__use_signal_for_viewing_and_storing_all_incoming_multimedia_messages">Use Signal for all incoming multimedia messages</string>
     <string name="preferences__pref_enter_sends_title">Enter key sends</string>
     <string name="preferences__pressing_the_enter_key_will_send_text_messages">Pressing the Enter key will send text messages</string>
-    <string name="preferences__send_link_previews">Send link previews</string>
-    <string name="preferences__previews_are_supported_for">Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links</string>
+    <string name="preferences__generate_link_previews">Generate link previews</string>
+    <string name="preferences__retrieve_link_previews_from_websites_for_messages">Retrieve link previews directly from websites for messages you send.</string>
     <string name="preferences__choose_identity">Choose identity</string>
     <string name="preferences__choose_your_contact_entry_from_the_contacts_list">Choose your contact entry from the contacts list.</string>
     <string name="preferences__change_passphrase">Change passphrase</string>
@@ -2076,6 +2089,8 @@
 
     <!-- conversation_list_batch -->
     <string name="conversation_list_batch__menu_delete_selected">Delete selected</string>
+    <string name="conversation_list_batch__menu_pin_selected">Pin selected</string>
+    <string name="conversation_list_batch__menu_unpin_selected">Unpin selected</string>
     <string name="conversation_list_batch__menu_select_all">Select all</string>
     <string name="conversation_list_batch_archive__menu_archive_selected">Archive selected</string>
     <string name="conversation_list_batch_unarchive__menu_unarchive_selected">Unarchive selected</string>
@@ -2086,6 +2101,9 @@
     <!-- conversation_list -->
     <string name="conversation_list_settings_shortcut">Settings shortcut</string>
     <string name="conversation_list_search_description">Search</string>
+    <string name="conversation_list__pinned">Pinned</string>
+    <string name="conversation_list__chats">Chats</string>
+    <string name="conversation_list__you_can_only_pin_up_to_d_chats">You can only pin up to %1$d chats</string>
 
     <!-- conversation_list_item_view -->
     <string name="conversation_list_item_view__contact_photo_image">Contact Photo Image</string>
@@ -2319,6 +2337,10 @@
     <string name="KbsMegaphone__update_pin">Update PIN</string>
     <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">We\'ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
     <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">We\'ll remind you later. Confirming your PIN will become mandatory in %1$d days.</string>
+
+    <!-- Mention Megaphone -->
+    <string name="MentionsMegaphone__introducing_mentions">Introducing @Mentions</string>
+    <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Get someone\'s attention in a \"New Group\" by typing @</string>
 
     <!-- transport_selection_list_item -->
     <string name="transport_selection_list_item__transport_icon">Transport icon</string>

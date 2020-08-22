@@ -34,6 +34,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -245,24 +246,31 @@ public class DefaultMessageNotifier implements MessageNotifier {
                                  long threadId,
                                  boolean signal)
   {
-    boolean isVisible = visibleThread == threadId;
+    boolean   isVisible = visibleThread == threadId;
+    Recipient recipient = DatabaseFactory.getThreadDatabase(context).getRecipientForThreadId(threadId);
 
-    ThreadDatabase threads = DatabaseFactory.getThreadDatabase(context);
-
-    if (isVisible) {
-      List<MarkedMessageInfo> messageIds = threads.setRead(threadId, false);
-      MarkReadReceiver.process(context, messageIds);
+    if (shouldNotify(context, recipient, threadId)) {
+      if (isVisible) {
+        sendInThreadNotification(context, recipient);
+      } else {
+        updateNotification(context, threadId, signal, 0);
+      }
     }
+  }
 
+  private boolean shouldNotify(@NonNull Context context, @Nullable Recipient recipient, long threadId) {
     if (!TextSecurePreferences.isNotificationsEnabled(context)) {
-      return;
+      return false;
     }
 
-    if (isVisible) {
-      sendInThreadNotification(context, threads.getRecipientForThreadId(threadId));
-    } else {
-      updateNotification(context, threadId, signal, 0);
+    if (recipient == null || !recipient.isMuted()) {
+      return true;
     }
+
+    return FeatureFlags.mentions()                                                         &&
+           recipient.isPushV2Group()                                                       &&
+           recipient.getMentionSetting() == RecipientDatabase.MentionSetting.ALWAYS_NOTIFY &&
+           DatabaseFactory.getMmsDatabase(context).getUnreadMentionCount(threadId) > 0;
   }
 
   @Override
@@ -536,12 +544,9 @@ public class DefaultMessageNotifier implements MessageNotifier {
 
         boolean includeMessage = true;
         if (threadRecipients != null && threadRecipients.isMuted()) {
-          RecipientDatabase.MentionSetting mentionSetting = threadRecipients.getMentionSetting();
+          boolean mentionsOverrideMute = threadRecipients.getMentionSetting() == RecipientDatabase.MentionSetting.ALWAYS_NOTIFY;
 
-          boolean overrideMuted = (mentionSetting == RecipientDatabase.MentionSetting.GLOBAL && SignalStore.notificationSettings().isMentionNotifiesMeEnabled()) ||
-                                  mentionSetting == RecipientDatabase.MentionSetting.ALWAYS_NOTIFY;
-
-          includeMessage = FeatureFlags.mentions() && overrideMuted && record.hasSelfMention();
+          includeMessage = FeatureFlags.mentions() && mentionsOverrideMute && record.hasSelfMention();
         }
 
         if (threadRecipients == null || includeMessage) {

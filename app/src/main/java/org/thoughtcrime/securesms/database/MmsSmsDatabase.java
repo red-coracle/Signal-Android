@@ -185,7 +185,7 @@ public class MmsSmsDatabase extends Database {
 
   public Cursor getConversationSnippet(long threadId) {
     String order     = MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " DESC";
-    String selection = MmsSmsColumns.THREAD_ID + " = " + threadId;
+    String selection = MmsSmsColumns.THREAD_ID + " = " + threadId + " AND (" + SmsDatabase.TYPE + " IS NULL OR " + SmsDatabase.TYPE + " != " + SmsDatabase.Types.PROFILE_CHANGE_TYPE + ")";
 
     return  queryTables(PROJECTION, selection, order, "1");
   }
@@ -252,6 +252,13 @@ public class MmsSmsDatabase extends Database {
   public int getConversationCount(long threadId, long beforeTime) {
     return DatabaseFactory.getSmsDatabase(context).getMessageCountForThread(threadId, beforeTime) +
            DatabaseFactory.getMmsDatabase(context).getMessageCountForThread(threadId, beforeTime);
+  }
+
+  public int getConversationCountForThreadSummary(long threadId) {
+    int count = DatabaseFactory.getSmsDatabase(context).getMessageCountForThreadSummary(threadId);
+    count    += DatabaseFactory.getMmsDatabase(context).getMessageCountForThread(threadId);
+
+    return count;
   }
 
   public int getInsecureSentCount(long threadId) {
