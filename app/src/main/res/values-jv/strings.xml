@@ -793,7 +793,7 @@
   <string name="UnverifiedSendDialog_send">Kirimaken</string>
   <!--UsernameEditFragment-->
   <string name="UsernameEditFragment_username">Nami panggina</string>
-  <string name="UsernameEditFragment_submit">Ajengaken</string>
+  <!-- Removed by excludeNonTranslatables <string name="UsernameEditFragment_submit">Ajengaken</string> -->
   <string name="UsernameEditFragment_delete">Brusak</string>
   <string name="UsernameEditFragment_successfully_set_username">Kedadosan netapaken nami panggina.</string>
   <string name="UsernameEditFragment_successfully_removed_username">Kedadosan mbrusak nami panggina.</string>
@@ -803,7 +803,7 @@
   <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">Nami panggina mboten saged diawiti nomer.</string>
   <string name="UsernameEditFragment_username_is_invalid">Nami panggina mboten valid.</string>
   <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">Panjangipun nami panggina wajib antawis %1$d lan %2$d karakter.</string>
-  <string name="UsernameEditFragment_other_signal_users_can_send_message_requests_to_your_unique_username">Panggina Signal bentenipun saged ngirimaken panedha pesen dhateng nami pengguna unik sampeyan tanpa betah nyumerepi nomer telepon sampeyan. Ngginaken nami panggina ngrupikaken prakawis ingkang mboten wajib.</string>
+  <!-- Removed by excludeNonTranslatables <string name="UsernameEditFragment_other_signal_users_can_send_message_requests_to_your_unique_username">Panggina Signal bentenipun saged ngirimaken panedha pesen dhateng nami pengguna unik sampeyan tanpa betah nyumerepi nomer telepon sampeyan. Ngginaken nami panggina ngrupikaken prakawis ingkang mboten wajib.</string> -->
   <!--VerifyIdentityActivity-->
   <string name="VerifyIdentityActivity_your_contact_is_running_an_old_version_of_signal">Kontak sampeyan ngginakaken versi dangunipun Signal. Tedhakaken supados ngenggalaken saderengipun ngeverifikasi nomer keamanan.</string>
   <string name="VerifyIdentityActivity_your_contact_is_running_a_newer_version_of_Signal">Kontak sampeyan ngginakaken versi enggalipun Signal kaliyan format kode QR ingkang mboten gathuk. Cobi enggalaken supados gathuk.</string>
@@ -1283,13 +1283,13 @@
   <string name="preferences__mmsc_password">Sandi MMSC</string>
   <string name="preferences__sms_delivery_reports">Laporan pangiriman SMS</string>
   <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">Tedhaken laporan kangge saben SMS ingkang dipunkirimaken</string>
-  <string name="preferences__automatically_delete_older_messages_once_a_conversation_exceeds_a_specified_length">Brusak pesen ingkang dangu sacara otomatis kala obrolan sampun langkung wates ingkang dipuntetapaken</string>
-  <string name="preferences__delete_old_messages">Brusak pesen-pesen dangu</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__automatically_delete_older_messages_once_a_conversation_exceeds_a_specified_length">Brusak pesen ingkang dangu sacara otomatis kala obrolan sampun langkung wates ingkang dipuntetapaken</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="preferences__delete_old_messages">Brusak pesen-pesen dangu</string> -->
   <string name="preferences__chats">Obrolan lan media</string>
   <string name="preferences__storage">Penyimpenan</string>
   <string name="preferences__conversation_length_limit">Wates panjangipun obrolan</string>
-  <string name="preferences__trim_all_conversations_now">Kirangi sedaya obrolan sakmenika</string>
-  <string name="preferences__scan_through_all_conversations_and_enforce_conversation_length_limits">Scan sedaya obrolan lan tumindakaken wates panjang obrolan</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__trim_all_conversations_now">Kirangi sedaya obrolan sakmenika</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="preferences__scan_through_all_conversations_and_enforce_conversation_length_limits">Scan sedaya obrolan lan tumindakaken wates panjang obrolan</string> -->
   <string name="preferences__linked_devices">Pirantos ingkang dipuntautaken</string>
   <string name="preferences__light_theme">Pajar</string>
   <string name="preferences__dark_theme">Peteng</string>
@@ -1313,7 +1313,7 @@
   <string name="preferences_chats__when_using_wifi">Kala ngginakaken Wi-Fi</string>
   <string name="preferences_chats__when_roaming">Kala roaming</string>
   <string name="preferences_chats__media_auto_download">Pangunduhan media sacara otomatis</string>
-  <string name="preferences_chats__message_trimming">Pangirangan pesen</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences_chats__message_trimming">Pangirangan pesen</string> -->
   <string name="preferences_storage__storage_usage">Pangginaan penyimpenan</string>
   <string name="preferences_storage__photos">Foto</string>
   <string name="preferences_storage__videos">Video</string>
@@ -1423,13 +1423,13 @@
   <string name="verify_display_fragment_context_menu__copy_to_clipboard">Salin dhateng clipboard</string>
   <string name="verify_display_fragment_context_menu__compare_with_clipboard">Bandingaken kaliyan clipboard</string>
   <!--reminder_header-->
-  <string name="reminder_header_outdated_build">Versi Signal sampeyan sampun dangu</string>
-  <plurals name="reminder_header_outdated_build_details">
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_outdated_build">Versi Signal sampeyan sampun dangu</string> -->
+  <!-- Removed by excludeNonTranslatables <plurals name="reminder_header_outdated_build_details">
     <item quantity="other">Versi Signal sampeyan bakal kedaluwaran saksampune %d dinten. Tutul kangge ngenggalaken dados versi paling enggal.</item>
-  </plurals>
-  <string name="reminder_header_outdated_build_details_today">Versi Signal sampeyan bakal kedaluwarsa dinten niki. Tutul kangge ngenggalaken dados versi paling enggal.</string>
-  <string name="reminder_header_expired_build">Versi Signal sampeyan sampun kedaluwarsa!</string>
-  <string name="reminder_header_expired_build_details">Pesen bakalan mboten saged dipunkirimaken sacara leres. Tutul kangge ngenggalaken dados versi paling enggal.</string>
+  </plurals> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_outdated_build_details_today">Versi Signal sampeyan bakal kedaluwarsa dinten niki. Tutul kangge ngenggalaken dados versi paling enggal.</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_expired_build">Versi Signal sampeyan sampun kedaluwarsa!</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_expired_build_details">Pesen bakalan mboten saged dipunkirimaken sacara leres. Tutul kangge ngenggalaken dados versi paling enggal.</string> -->
   <string name="reminder_header_sms_default_title">Ginakaken dados aplikasi SMS default</string>
   <string name="reminder_header_sms_default_text">Tutul kangge ngginakaken Signal dados aplikasi SMS default.</string>
   <string name="reminder_header_sms_import_title">Impor SMS sistem</string>

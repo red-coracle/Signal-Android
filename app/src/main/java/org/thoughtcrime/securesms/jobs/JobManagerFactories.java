@@ -39,6 +39,7 @@ import org.thoughtcrime.securesms.migrations.StickerAdditionMigrationJob;
 import org.thoughtcrime.securesms.migrations.StickerLaunchMigrationJob;
 import org.thoughtcrime.securesms.migrations.StorageCapabilityMigrationJob;
 import org.thoughtcrime.securesms.migrations.StorageServiceMigrationJob;
+import org.thoughtcrime.securesms.migrations.TrimByLengthSettingsMigrationJob;
 import org.thoughtcrime.securesms.migrations.UuidMigrationJob;
 
 import java.util.Arrays;
@@ -100,7 +101,6 @@ public final class JobManagerFactories {
       put(StorageAccountRestoreJob.KEY,              new StorageAccountRestoreJob.Factory());
       put(RequestGroupV2InfoWorkerJob.KEY,           new RequestGroupV2InfoWorkerJob.Factory());
       put(RequestGroupV2InfoJob.KEY,                 new RequestGroupV2InfoJob.Factory());
-      put(WakeGroupV2Job.KEY,                        new WakeGroupV2Job.Factory());
       put(GroupV2UpdateSelfProfileKeyJob.KEY,        new GroupV2UpdateSelfProfileKeyJob.Factory());
       put(RetrieveProfileAvatarJob.KEY,              new RetrieveProfileAvatarJob.Factory());
       put(RetrieveProfileJob.KEY,                    new RetrieveProfileJob.Factory());
@@ -139,6 +139,7 @@ public final class JobManagerFactories {
       put(StickerAdditionMigrationJob.KEY,           new StickerAdditionMigrationJob.Factory());
       put(StorageCapabilityMigrationJob.KEY,         new StorageCapabilityMigrationJob.Factory());
       put(StorageServiceMigrationJob.KEY,            new StorageServiceMigrationJob.Factory());
+      put(TrimByLengthSettingsMigrationJob.KEY,      new TrimByLengthSettingsMigrationJob.Factory());
       put(UuidMigrationJob.KEY,                      new UuidMigrationJob.Factory());
 
       // Dead jobs
@@ -151,6 +152,7 @@ public final class JobManagerFactories {
       put("Argon2TestJob",                           new FailingJob.Factory());
       put("Argon2TestMigrationJob",                  new PassingMigrationJob.Factory());
       put("StorageKeyRotationMigrationJob",          new PassingMigrationJob.Factory());
+      put("WakeGroupV2Job",                          new FailingJob.Factory());
     }};
   }
 

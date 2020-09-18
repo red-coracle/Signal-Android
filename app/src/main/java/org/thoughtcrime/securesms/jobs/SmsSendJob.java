@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
 
+import org.thoughtcrime.securesms.database.Database;
+import org.thoughtcrime.securesms.database.MessageDatabase;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.jobmanager.Data;
 import org.thoughtcrime.securesms.jobmanager.Job;
@@ -77,8 +79,8 @@ public class SmsSendJob extends SendJob {
       throw new TooManyRetriesException();
     }
 
-    SmsDatabase      database = DatabaseFactory.getSmsDatabase(context);
-    SmsMessageRecord record   = database.getMessageRecord(messageId);
+    MessageDatabase  database = DatabaseFactory.getSmsDatabase(context);
+    SmsMessageRecord record   = database.getSmsMessage(messageId);
 
     if (!record.isPending() && !record.isFailed()) {
       warn(TAG, "Message " + messageId + " was already sent. Ignoring.");
@@ -86,9 +88,9 @@ public class SmsSendJob extends SendJob {
     }
 
     try {
-      log(TAG, "Sending message: " + messageId + " (attempt " + runAttempt + ")");
+      log(TAG, String.valueOf(record.getDateSent()), "Sending message: " + messageId + " (attempt " + runAttempt + ")");
       deliver(record);
-      log(TAG, "Sent message: " + messageId);
+      log(TAG, String.valueOf(record.getDateSent()), "Sent message: " + messageId);
     } catch (UndeliverableMessageException ude) {
       warn(TAG, ude);
       DatabaseFactory.getSmsDatabase(context).markAsSentFailed(record.getId());
@@ -147,8 +149,8 @@ public class SmsSendJob extends SendJob {
       getSmsManagerFor(message.getSubscriptionId()).sendMultipartTextMessage(recipient, null, messages, sentIntents, deliveredIntents);
     } catch (NullPointerException | IllegalArgumentException npe) {
       warn(TAG, npe);
-      log(TAG, "Recipient: " + recipient);
-      log(TAG, "Message Parts: " + messages.size());
+      log(TAG, String.valueOf(message.getDateSent()), "Recipient: " + recipient);
+      log(TAG, String.valueOf(message.getDateSent()), "Message Parts: " + messages.size());
 
       try {
         for (int i=0;i<messages.size();i++) {

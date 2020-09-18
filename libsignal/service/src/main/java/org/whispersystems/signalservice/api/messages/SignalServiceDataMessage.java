@@ -412,12 +412,16 @@ public class SignalServiceDataMessage {
   public static class Preview {
     private final String                            url;
     private final String                            title;
+    private final String                            description;
+    private final long                              date;
     private final Optional<SignalServiceAttachment> image;
 
-    public Preview(String url, String title, Optional<SignalServiceAttachment> image) {
-      this.url   = url;
-      this.title = title;
-      this.image = image;
+    public Preview(String url, String title, String description, long date, Optional<SignalServiceAttachment> image) {
+      this.url         = url;
+      this.title       = title;
+      this.description = description;
+      this.date        = date;
+      this.image       = image;
     }
 
     public String getUrl() {
@@ -426,6 +430,14 @@ public class SignalServiceDataMessage {
 
     public String getTitle() {
       return title;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public long getDate() {
+      return date;
     }
 
     public Optional<SignalServiceAttachment> getImage() {
@@ -437,12 +449,14 @@ public class SignalServiceDataMessage {
     private final byte[]                  packId;
     private final byte[]                  packKey;
     private final int                     stickerId;
+    private final String                  emoji;
     private final SignalServiceAttachment attachment;
 
-    public Sticker(byte[] packId, byte[] packKey, int stickerId, SignalServiceAttachment attachment) {
+    public Sticker(byte[] packId, byte[] packKey, int stickerId, String emoji, SignalServiceAttachment attachment) {
       this.packId     = packId;
       this.packKey    = packKey;
       this.stickerId  = stickerId;
+      this.emoji      = emoji;
       this.attachment = attachment;
     }
 
@@ -456,6 +470,10 @@ public class SignalServiceDataMessage {
 
     public int getStickerId() {
       return stickerId;
+    }
+
+    public String getEmoji() {
+      return emoji;
     }
 
     public SignalServiceAttachment getAttachment() {

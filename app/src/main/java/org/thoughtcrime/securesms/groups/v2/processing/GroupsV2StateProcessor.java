@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import com.annimon.stream.Stream;
+
 import org.signal.storageservice.protos.groups.local.DecryptedGroup;
 import org.signal.storageservice.protos.groups.local.DecryptedGroupChange;
 import org.signal.storageservice.protos.groups.local.DecryptedMember;
@@ -16,9 +18,8 @@ import org.signal.zkgroup.groups.GroupMasterKey;
 import org.signal.zkgroup.groups.GroupSecretParams;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.GroupDatabase;
-import org.thoughtcrime.securesms.database.MmsDatabase;
+import org.thoughtcrime.securesms.database.MessageDatabase;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
-import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.database.model.databaseprotos.DecryptedGroupV2Context;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
@@ -65,6 +66,18 @@ public final class GroupsV2StateProcessor {
   private static final String TAG = Log.tag(GroupsV2StateProcessor.class);
 
   public static final int LATEST = GroupStateMapper.LATEST;
+
+  /**
+   * Used to mark a group state as a placeholder when there is partial knowledge (title and avater)
+   * gathered from a group join link.
+   */
+  public static final int PLACEHOLDER_REVISION = GroupStateMapper.PLACEHOLDER_REVISION;
+
+  /**
+   * Used to mark a group state as a placeholder when you have no knowledge at all of the group
+   * e.g. from a group master key from a storage service restore.
+   */
+  public static final int RESTORE_PLACEHOLDER_REVISION = GroupStateMapper.RESTORE_PLACEHOLDER_REVISION;
 
   private final Context               context;
   private final JobManager            jobManager;
@@ -174,11 +187,29 @@ public final class GroupsV2StateProcessor {
 
       if (inputGroupState == null) {
         try {
-          inputGroupState = queryServer(localState, revision == LATEST && localState == null);
+          boolean latestRevisionOnly = revision == LATEST && (localState == null || localState.getRevision() == GroupsV2StateProcessor.RESTORE_PLACEHOLDER_REVISION);
+          inputGroupState = queryServer(localState, latestRevisionOnly);
         } catch (GroupNotAMemberException e) {
-          Log.w(TAG, "Unable to query server for group " + groupId + " server says we're not in group, inserting leave message");
-          insertGroupLeave();
-          throw e;
+          if (localState != null && signedGroupChange != null) {
+            try {
+              Log.i(TAG, "Applying P2P group change when not a member");
+              DecryptedGroup newState = DecryptedGroupUtil.applyWithoutRevisionCheck(localState, signedGroupChange);
+
+              inputGroupState = new GlobalGroupState(localState, Collections.singletonList(new ServerGroupLogEntry(newState, signedGroupChange)));
+            } catch (NotAbleToApplyGroupV2ChangeException failed) {
+              Log.w(TAG, "Unable to apply P2P group change when not a member", failed);
+            }
+          }
+
+          if (inputGroupState == null) {
+            if (localState != null && DecryptedGroupUtil.isPendingOrRequesting(localState, Recipient.self().getUuid().get())) {
+              Log.w(TAG, "Unable to query server for group " + groupId + " server says we're not in group, but we think we are a pending or requesting member");
+            } else {
+              Log.w(TAG, "Unable to query server for group " + groupId + " server says we're not in group, inserting leave message");
+              insertGroupLeave();
+            }
+            throw e;
+          }
         }
       } else {
         Log.i(TAG, "Saved server query for group change");
@@ -192,7 +223,13 @@ public final class GroupsV2StateProcessor {
       }
 
       updateLocalDatabaseGroupState(inputGroupState, newLocalState);
-      insertUpdateMessages(timestamp, advanceGroupStateResult.getProcessedLogEntries());
+      determineProfileSharing(inputGroupState, newLocalState);
+      if (localState != null && localState.getRevision() == GroupsV2StateProcessor.RESTORE_PLACEHOLDER_REVISION) {
+        Log.i(TAG, "Inserting single update message for restore placeholder");
+        insertUpdateMessages(timestamp, Collections.singleton(new LocalGroupLogEntry(newLocalState, null)));
+      } else {
+        insertUpdateMessages(timestamp, advanceGroupStateResult.getProcessedLogEntries());
+      }
       persistLearnedProfileKeys(inputGroupState);
 
       GlobalGroupState remainingWork = advanceGroupStateResult.getNewGlobalGroupState();
@@ -236,9 +273,9 @@ public final class GroupsV2StateProcessor {
                                                                                           Collections.emptyList());
 
       try {
-        MmsDatabase mmsDatabase = DatabaseFactory.getMmsDatabase(context);
-        long        threadId    = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(groupRecipient);
-        long        id          = mmsDatabase.insertMessageOutbox(leaveMessage, threadId, false, null);
+        MessageDatabase mmsDatabase = DatabaseFactory.getMmsDatabase(context);
+        long            threadId    = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(groupRecipient);
+        long            id          = mmsDatabase.insertMessageOutbox(leaveMessage, threadId, false, null);
         mmsDatabase.markAsSent(id, true);
       } catch (MmsException e) {
         Log.w(TAG, "Failed to insert leave message.", e);
@@ -276,30 +313,52 @@ public final class GroupsV2StateProcessor {
         jobManager.add(new AvatarGroupsV2DownloadJob(groupId, newLocalState.getAvatar()));
       }
 
-      boolean fullMemberPostUpdate = GroupProtoUtil.isMember(Recipient.self().getUuid().get(), newLocalState.getMembersList());
-      boolean trustedAdder         = false;
+      determineProfileSharing(inputGroupState, newLocalState);
+    }
 
-      if (newLocalState.getRevision() == 0) {
-        Optional<DecryptedMember> foundingMember = DecryptedGroupUtil.firstMember(newLocalState.getMembersList());
+    private void determineProfileSharing(@NonNull GlobalGroupState inputGroupState,
+                                         @NonNull DecryptedGroup newLocalState)
+    {
+      if (inputGroupState.getLocalState() != null) {
+        boolean wasAMemberAlready = DecryptedGroupUtil.findMemberByUuid(inputGroupState.getLocalState().getMembersList(), Recipient.self().getUuid().get()).isPresent();
 
-        if (foundingMember.isPresent()) {
-          UUID      foundingMemberUuid = UuidUtil.fromByteString(foundingMember.get().getUuid());
-          Recipient foundingRecipient  = Recipient.externalPush(context, foundingMemberUuid, null, false);
-
-          if (foundingRecipient.isSystemContact() || foundingRecipient.isProfileSharing()) {
-            Log.i(TAG, "Group 'adder' is trusted. contact: " + foundingRecipient.isSystemContact() + ", profileSharing: " + foundingRecipient.isProfileSharing());
-            trustedAdder = true;
-          }
-        } else {
-          Log.i(TAG, "Could not find founding member during gv2 create. Not enabling profile sharing.");
+        if (wasAMemberAlready) {
+          Log.i(TAG, "Skipping profile sharing detection as was already a full member before update");
+          return;
         }
       }
 
-      if (fullMemberPostUpdate && trustedAdder) {
-        Log.i(TAG, "Added to a group and auto-enabling profile sharing");
-        recipientDatabase.setProfileSharing(Recipient.externalGroup(context, groupId).getId(), true);
+      Optional<DecryptedMember> selfAsMemberOptional = DecryptedGroupUtil.findMemberByUuid(newLocalState.getMembersList(), Recipient.self().getUuid().get());
+
+      if (selfAsMemberOptional.isPresent()) {
+        DecryptedMember     selfAsMember     = selfAsMemberOptional.get();
+        int                 revisionJoinedAt = selfAsMember.getJoinedAtRevision();
+
+        Optional<Recipient> addedByOptional  = Stream.of(inputGroupState.getServerHistory())
+                                                     .map(ServerGroupLogEntry::getChange)
+                                                     .filter(c -> c != null && c.getRevision() == revisionJoinedAt)
+                                                     .findFirst()
+                                                     .map(c -> Optional.fromNullable(UuidUtil.fromByteStringOrNull(c.getEditor()))
+                                                                       .transform(a -> Recipient.externalPush(context, UuidUtil.fromByteStringOrNull(c.getEditor()), null, false)))
+                                                     .orElse(Optional.absent());
+
+        if (addedByOptional.isPresent()) {
+          Recipient addedBy = addedByOptional.get();
+
+          Log.i(TAG, String.format("Added as a full member of %s by %s", groupId, addedBy.getId()));
+
+          if (addedBy.isSystemContact() || addedBy.isProfileSharing()) {
+            Log.i(TAG, "Group 'adder' is trusted. contact: " + addedBy.isSystemContact() + ", profileSharing: " + addedBy.isProfileSharing());
+            Log.i(TAG, "Added to a group and auto-enabling profile sharing");
+            recipientDatabase.setProfileSharing(Recipient.externalGroup(context, groupId).getId(), true);
+          } else {
+            Log.i(TAG, "Added to a group, but not enabling profile sharing, as 'adder' is not trusted");
+          }
+        } else {
+          Log.w(TAG, "Could not find founding member during gv2 create. Not enabling profile sharing.");
+        }
       } else {
-        Log.i(TAG, "Added to a group, but not enabling profile sharing. fullMember: " + fullMemberPostUpdate + ", trustedAdded: " + trustedAdder);
+        Log.i(TAG, String.format("Added to %s, but not enabling profile sharing as not a fullMember.", groupId));
       }
     }
 
@@ -395,7 +454,7 @@ public final class GroupsV2StateProcessor {
 
       if (outgoing) {
         try {
-          MmsDatabase                mmsDatabase     = DatabaseFactory.getMmsDatabase(context);
+          MessageDatabase            mmsDatabase     = DatabaseFactory.getMmsDatabase(context);
           RecipientId                recipientId     = recipientDatabase.getOrInsertFromGroupId(groupId);
           Recipient                  recipient       = Recipient.resolved(recipientId);
           OutgoingGroupUpdateMessage outgoingMessage = new OutgoingGroupUpdateMessage(recipient, decryptedGroupV2Context, null, timestamp, 0, false, null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
@@ -407,7 +466,7 @@ public final class GroupsV2StateProcessor {
           Log.w(TAG, e);
         }
       } else {
-        SmsDatabase                smsDatabase  = DatabaseFactory.getSmsDatabase(context);
+        MessageDatabase            smsDatabase  = DatabaseFactory.getSmsDatabase(context);
         RecipientId                sender       = RecipientId.from(editor.get(), null);
         IncomingTextMessage        incoming     = new IncomingTextMessage(sender, -1, timestamp, timestamp, "", Optional.of(groupId), 0, false);
         IncomingGroupUpdateMessage groupMessage = new IncomingGroupUpdateMessage(incoming, decryptedGroupV2Context);

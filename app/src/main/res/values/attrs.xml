@@ -20,6 +20,8 @@
     <attr name="secondary_background" format="reference" />
     <attr name="secondary_background_bubble" format="reference" />
 
+    <attr name="radio_theme" format="reference" />
+
     <attr name="conversation_list_item_background" format="reference"/>
     <attr name="conversation_list_item_contact_color" format="reference|color"/>
     <attr name="conversation_list_item_subject_color" format="reference|color"/>
@@ -33,6 +35,8 @@
     <attr name="conversation_list_camera_icon_tint" format="color"/>
     <attr name="conversation_list_compose_icon_tint" format="color" />
     <attr name="conversation_list_camera_button_background" format="color"/>
+
+    <attr name="camera_icon_background_tint" format="color" />
 
     <attr name="resource_placeholder_gradient" format="reference" />
 
@@ -156,6 +160,8 @@
     <attr name="conversation_scroll_to_bottom_background" format="reference" />
     <attr name="conversation_scroll_to_bottom_foreground_color" format="color" />
 
+    <attr name="low_priority_button_text_color" format="color|reference" />
+
     <attr name="safety_number_change_dialog_button_background" format="reference|color" />
     <attr name="safety_number_change_dialog_button_text_color" format="color" />
 
@@ -189,6 +195,11 @@
 
     <attr name="invite_edit_text_background" format="reference" />
     <attr name="invite_share_icon" format="reference" />
+
+    <attr name="share_icon" format="reference" />
+    <attr name="copy_icon" format="reference" />
+    <attr name="qr_icon" format="reference" />
+    <attr name="reset_link_icon" format="reference" />
 
     <attr name="linkpreview_background_color" format="color" />
     <attr name="linkpreview_primary_text_color" format="color" />
@@ -233,6 +244,7 @@
     <attr name="advanced_icon" format="reference" />
     <attr name="safety_number_icon" format="reference" />
     <attr name="help_icon" format="reference" />
+    <attr name="donate_icon" format="reference" />
 
     <attr name="help_problem_background" format="reference" />
     <attr name="help_next_background" format="reference" />
@@ -247,6 +259,8 @@
     <attr name="pref_icon_tint" format="color"/>
 
     <attr name="pref_divider" format="reference" />
+
+    <attr name="preference_username_background" format="reference" />
 
     <attr name="quote_missing_icon_color" format="color" />
     <attr name="quote_dismiss_button_tint" format="color" />
@@ -551,6 +565,11 @@
 
     <declare-styleable name="PopupMenuView">
         <attr name="background_tint" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="QrView">
+        <attr name="qr_foreground_color" format="color" />
+        <attr name="qr_background_color" format="color" />
     </declare-styleable>
 
     <declare-styleable name="WebRtcAudioOutputToggleButtonState">

@@ -30,14 +30,15 @@ import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Telephony;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
 import android.telephony.TelephonyManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 
 import com.annimon.stream.Stream;
 import com.google.android.mms.pdu_alt.CharacterSets;
@@ -48,6 +49,7 @@ import com.google.i18n.phonenumbers.Phonenumber;
 
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.components.ComposeText;
+import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mms.OutgoingLegacyMmsConnection;
 import org.whispersystems.libsignal.util.guava.Optional;
@@ -75,6 +77,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Util {
   private static final String TAG = Util.class.getSimpleName();
+
+  private static final long BUILD_LIFESPAN = TimeUnit.DAYS.toMillis(90);
 
   private static volatile Handler handler;
 
@@ -339,6 +343,10 @@ public class Util {
     return Optional.fromNullable(simCountryIso != null ? simCountryIso.toUpperCase() : null);
   }
 
+  public static @NonNull <T> T firstNonNull(@Nullable T optional, @NonNull T fallback) {
+    return optional != null ? optional : fallback;
+  }
+
   @SafeVarargs
   public static @NonNull <T> T firstNonNull(T ... ts) {
     for (T t : ts) {
@@ -453,9 +461,25 @@ public class Util {
     return secret;
   }
 
-  public static int getDaysTillBuildExpiry() {
-    int age = (int) TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis() - BuildConfig.BUILD_TIMESTAMP);
-    return 90 - age;
+  /**
+   * @return The amount of time (in ms) until this build of Signal will be considered 'expired'.
+   *         Takes into account both the build age as well as any remote deprecation values.
+   */
+  public static long getTimeUntilBuildExpiry() {
+    if (SignalStore.misc().isClientDeprecated()) {
+      return 0;
+    }
+
+    long buildAge                   = System.currentTimeMillis() - BuildConfig.BUILD_TIMESTAMP;
+    long timeUntilBuildDeprecation  = BUILD_LIFESPAN - buildAge;
+    long timeUntilRemoteDeprecation = RemoteDeprecation.getTimeUntilDeprecation();
+
+    if (timeUntilRemoteDeprecation != -1) {
+      long timeUntilDeprecation = Math.min(timeUntilBuildDeprecation, timeUntilRemoteDeprecation);
+      return Math.max(timeUntilDeprecation, 0);
+    } else {
+      return Math.max(timeUntilBuildDeprecation, 0);
+    }
   }
 
   @TargetApi(VERSION_CODES.LOLLIPOP)

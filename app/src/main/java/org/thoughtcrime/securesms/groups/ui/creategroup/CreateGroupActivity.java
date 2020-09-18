@@ -31,7 +31,6 @@ import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
 import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,8 +54,8 @@ public class CreateGroupActivity extends ContactSelectionActivity {
                                                                   : ContactsCursorLoader.DisplayMode.FLAG_PUSH;
 
     intent.putExtra(ContactSelectionListFragment.DISPLAY_MODE, displayMode);
-    intent.putExtra(ContactSelectionListFragment.TOTAL_CAPACITY, FeatureFlags.groupsV2create() ? FeatureFlags.gv2GroupCapacity() - 1
-                                                                                               : ContactSelectionListFragment.NO_LIMIT);
+    intent.putExtra(ContactSelectionListFragment.SELECTION_LIMIT, FeatureFlags.groupsV2create() ? FeatureFlags.gv2GroupCapacity() - 1
+                                                                                                : ContactSelectionListFragment.NO_LIMIT);
 
     return intent;
   }
@@ -93,7 +92,7 @@ public class CreateGroupActivity extends ContactSelectionActivity {
   }
 
   @Override
-  public boolean onContactSelected(Optional<RecipientId> recipientId, String number) {
+  public boolean onBeforeContactSelected(Optional<RecipientId> recipientId, String number) {
     if (contactsFragment.hasQueryFilter()) {
       getToolbar().clear();
     }

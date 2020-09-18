@@ -143,8 +143,11 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper {
   private static final int MENTIONS                         = 68;
   private static final int PINNED_CONVERSATIONS             = 69;
   private static final int MENTION_GLOBAL_SETTING_MIGRATION = 70;
+  private static final int UNKNOWN_STORAGE_FIELDS           = 71;
+  private static final int STICKER_CONTENT_TYPE             = 72;
+  private static final int STICKER_EMOJI_IN_NOTIFICATIONS   = 73;
 
-  private static final int    DATABASE_VERSION = 70;
+  private static final int    DATABASE_VERSION = 73;
   private static final String DATABASE_NAME    = "signal.db";
 
   private final Context        context;
@@ -1006,6 +1009,18 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper {
         ContentValues updateNever = new ContentValues();
         updateNever.put("mention_setting", 1);
         db.update("recipient", updateNever, "mention_setting = 2", null);
+      }
+
+      if (oldVersion < UNKNOWN_STORAGE_FIELDS) {
+        db.execSQL("ALTER TABLE recipient ADD COLUMN storage_proto TEXT DEFAULT NULL");
+      }
+
+      if (oldVersion < STICKER_CONTENT_TYPE) {
+        db.execSQL("ALTER TABLE sticker ADD COLUMN content_type TEXT DEFAULT NULL");
+      }
+
+      if (oldVersion < STICKER_EMOJI_IN_NOTIFICATIONS) {
+        db.execSQL("ALTER TABLE part ADD COLUMN sticker_emoji TEXT DEFAULT NULL");
       }
 
       db.setTransactionSuccessful();

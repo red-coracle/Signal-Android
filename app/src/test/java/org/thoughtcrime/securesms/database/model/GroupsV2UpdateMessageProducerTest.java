@@ -143,7 +143,7 @@ public final class GroupsV2UpdateMessageProducerTest {
                                     .addMember(you)
                                     .build();
 
-    assertThat(describeChange(change), is(singletonList("You joined the group.")));
+    assertThat(describeChange(change), is(singletonList("You joined the group via the group link.")));
   }
 
   @Test
@@ -152,7 +152,7 @@ public final class GroupsV2UpdateMessageProducerTest {
                                     .addMember(bob)
                                     .build();
 
-    assertThat(describeChange(change), is(singletonList("Bob joined the group.")));
+    assertThat(describeChange(change), is(singletonList("Bob joined the group via the group link.")));
   }
 
   @Test
@@ -209,7 +209,7 @@ public final class GroupsV2UpdateMessageProducerTest {
                                     .addMember(you)
                                     .build();
 
-    assertThat(describeChange(change), is(Arrays.asList("You joined the group.", "You added Alice.")));
+    assertThat(describeChange(change), is(Arrays.asList("You joined the group via the group link.", "You added Alice.")));
   }
 
   // Member removals
@@ -838,6 +838,284 @@ public final class GroupsV2UpdateMessageProducerTest {
     assertThat(describeChange(change), is(singletonList("Who can edit group membership has been changed to \"Only admins\".")));
   }
 
+  // Group link access change
+
+  @Test
+  public void you_changed_group_link_access_to_any() {
+    DecryptedGroupChange change = changeBy(you)
+                                    .inviteLinkAccess(AccessControl.AccessRequired.ANY)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("You turned on the group link with admin approval off.")));
+  }
+
+  @Test
+  public void you_changed_group_link_access_to_administrator_approval() {
+    DecryptedGroupChange change = changeBy(you)
+                                    .inviteLinkAccess(AccessControl.AccessRequired.ADMINISTRATOR)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("You turned on the group link with admin approval on.")));
+  }
+
+  @Test
+  public void you_turned_off_group_link_access() {
+    DecryptedGroupChange change = changeBy(you)
+                                    .inviteLinkAccess(AccessControl.AccessRequired.UNSATISFIABLE)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("You turned off the group link.")));
+  }
+
+  @Test
+  public void member_changed_group_link_access_to_any() {
+    DecryptedGroupChange change = changeBy(alice)
+                                    .inviteLinkAccess(AccessControl.AccessRequired.ANY)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Alice turned on the group link with admin approval off.")));
+  }
+
+  @Test
+  public void member_changed_group_link_access_to_administrator_approval() {
+    DecryptedGroupChange change = changeBy(bob)
+                                    .inviteLinkAccess(AccessControl.AccessRequired.ADMINISTRATOR)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Bob turned on the group link with admin approval on.")));
+  }
+
+  @Test
+  public void member_turned_off_group_link_access() {
+    DecryptedGroupChange change = changeBy(alice)
+                                    .inviteLinkAccess(AccessControl.AccessRequired.UNSATISFIABLE)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Alice turned off the group link.")));
+  }
+
+  @Test
+  public void unknown_changed_group_link_access_to_any() {
+    DecryptedGroupChange change = changeByUnknown()
+                                    .inviteLinkAccess(AccessControl.AccessRequired.ANY)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("The group link has been turned on with admin approval off.")));
+  }
+
+  @Test
+  public void unknown_changed_group_link_access_to_administrator_approval() {
+    DecryptedGroupChange change = changeByUnknown()
+                                    .inviteLinkAccess(AccessControl.AccessRequired.ADMINISTRATOR)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("The group link has been turned on with admin approval on.")));
+  }
+
+  @Test
+  public void unknown_turned_off_group_link_access() {
+    DecryptedGroupChange change = changeByUnknown()
+                                    .inviteLinkAccess(AccessControl.AccessRequired.UNSATISFIABLE)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("The group link has been turned off.")));
+  }
+
+  // Group link reset
+
+  @Test
+  public void you_reset_group_link() {
+    DecryptedGroupChange change = changeBy(you)
+                                    .resetGroupLink()
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("You reset the group link.")));
+  }
+
+  @Test
+  public void member_reset_group_link() {
+    DecryptedGroupChange change = changeBy(alice)
+                                    .resetGroupLink()
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Alice reset the group link.")));
+  }
+
+  @Test
+  public void unknown_reset_group_link() {
+    DecryptedGroupChange change = changeByUnknown()
+                                    .resetGroupLink()
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("The group link has been reset.")));
+  }
+
+  /**
+   * When the group link is turned on and reset in the same change, assume this is the first time
+   * the link password it being set and do not show reset message.
+   */
+  @Test
+  public void member_changed_group_link_access_to_on_and_reset() {
+    DecryptedGroupChange change = changeBy(alice)
+                                    .inviteLinkAccess(AccessControl.AccessRequired.ANY)
+                                    .resetGroupLink()
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Alice turned on the group link with admin approval off.")));
+  }
+
+  /**
+   * When the group link is turned on and reset in the same change, assume this is the first time
+   * the link password it being set and do not show reset message.
+   */
+  @Test
+  public void you_changed_group_link_access_to_on_and_reset() {
+    DecryptedGroupChange change = changeBy(you)
+                                    .inviteLinkAccess(AccessControl.AccessRequired.ADMINISTRATOR)
+                                    .resetGroupLink()
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("You turned on the group link with admin approval on.")));
+  }
+
+  @Test
+  public void you_changed_group_link_access_to_off_and_reset() {
+    DecryptedGroupChange change = changeBy(you)
+                                    .inviteLinkAccess(AccessControl.AccessRequired.UNSATISFIABLE)
+                                    .resetGroupLink()
+                                    .build();
+
+    assertThat(describeChange(change), is(Arrays.asList("You turned off the group link.", "You reset the group link.")));
+  }
+
+  // Group link request
+
+  @Test
+  public void you_requested_to_join_the_group() {
+    DecryptedGroupChange change = changeBy(you)
+                                    .requestJoin()
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("You sent a request to join the group.")));
+  }
+
+  @Test
+  public void member_requested_to_join_the_group() {
+    DecryptedGroupChange change = changeBy(bob)
+                                    .requestJoin()
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Bob requested to join via the group link.")));
+  }
+
+  @Test
+  public void unknown_requested_to_join_the_group() {
+    DecryptedGroupChange change = changeByUnknown()
+                                    .requestJoin(alice)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Alice requested to join via the group link.")));
+  }
+
+  @Test
+  public void member_approved_your_join_request() {
+    DecryptedGroupChange change = changeBy(bob)
+                                    .approveRequest(you)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Bob approved your request to join the group.")));
+  }
+
+  @Test
+  public void member_approved_another_join_request() {
+    DecryptedGroupChange change = changeBy(alice)
+                                    .approveRequest(bob)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Alice approved a request to join the group from Bob.")));
+  }
+
+  @Test
+  public void you_approved_another_join_request() {
+    DecryptedGroupChange change = changeBy(you)
+                                    .approveRequest(alice)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("You approved a request to join the group from Alice.")));
+  }
+
+  @Test
+  public void unknown_approved_your_join_request() {
+    DecryptedGroupChange change = changeByUnknown()
+                                    .approveRequest(you)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Your request to join the group has been approved.")));
+  }
+
+  @Test
+  public void unknown_approved_another_join_request() {
+    DecryptedGroupChange change = changeByUnknown()
+                                    .approveRequest(bob)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("A request to join the group from Bob has been approved.")));
+  }
+  
+  @Test
+  public void member_denied_another_join_request() {
+    DecryptedGroupChange change = changeBy(alice)
+                                    .denyRequest(bob)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Alice denied a request to join the group from Bob.")));
+  }
+
+  @Test
+  public void member_denied_your_join_request() {
+    DecryptedGroupChange change = changeBy(alice)
+                                    .denyRequest(you)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Your request to join the group has been denied by an admin.")));
+  }
+
+  @Test
+  public void you_cancelled_your_join_request() {
+    DecryptedGroupChange change = changeBy(you)
+                                    .denyRequest(you)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("You canceled your request to join the group.")));
+  }
+
+  @Test
+  public void member_cancelled_their_join_request() {
+    DecryptedGroupChange change = changeBy(alice)
+                                    .denyRequest(alice)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Alice canceled their request to join the group.")));
+  }
+
+  @Test
+  public void unknown_denied_your_join_request() {
+    DecryptedGroupChange change = changeByUnknown()
+                                    .denyRequest(you)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("Your request to join the group has been denied by an admin.")));
+  }
+
+  @Test
+  public void unknown_denied_another_join_request() {
+    DecryptedGroupChange change = changeByUnknown()
+                                    .denyRequest(bob)
+                                    .build();
+
+    assertThat(describeChange(change), is(singletonList("A request to join the group from Bob has been denied.")));
+  }
+
   // Multiple changes
 
   @Test
@@ -919,11 +1197,35 @@ public final class GroupsV2UpdateMessageProducerTest {
   // Group state without a change record
 
   @Test
+  public void you_created_a_group_change_not_found() {
+    DecryptedGroup group = newGroupBy(you, 0)
+                             .build();
+
+    assertThat(describeNewGroup(group), is("You joined the group."));
+  }
+
+  @Test
   public void you_created_a_group() {
     DecryptedGroup group = newGroupBy(you, 0)
                              .build();
 
-    assertThat(describeNewGroup(group), is("You created the group."));
+    DecryptedGroupChange change = changeBy(you)
+                                    .addMember(alice)
+                                    .addMember(you)
+                                    .addMember(bob)
+                                    .title("New title")
+                                    .build();
+
+    assertThat(describeNewGroup(group, change), is("You created the group."));
+  }
+
+  @Test
+  public void alice_created_a_group_change_not_found() {
+    DecryptedGroup group = newGroupBy(alice, 0)
+                             .member(you)
+                             .build();
+
+    assertThat(describeNewGroup(group), is("You joined the group."));
   }
 
   @Test
@@ -932,7 +1234,14 @@ public final class GroupsV2UpdateMessageProducerTest {
                              .member(you)
                              .build();
 
-    assertThat(describeNewGroup(group), is("Alice added you to the group."));
+    DecryptedGroupChange change = changeBy(alice)
+                                    .addMember(you)
+                                    .addMember(alice)
+                                    .addMember(bob)
+                                    .title("New title")
+                                    .build();
+
+    assertThat(describeNewGroup(group, change), is("Alice added you to the group."));
   }
 
   @Test
@@ -969,8 +1278,12 @@ public final class GroupsV2UpdateMessageProducerTest {
   }
 
   private @NonNull String describeNewGroup(@NonNull DecryptedGroup group) {
+    return describeNewGroup(group, DecryptedGroupChange.getDefaultInstance());
+  }
+
+  private @NonNull String describeNewGroup(@NonNull DecryptedGroup group, @NonNull DecryptedGroupChange groupChange) {
     MainThreadUtil.setMainThread(false);
-    return producer.describeNewGroup(group).getString();
+    return producer.describeNewGroup(group, groupChange).getString();
   }
 
   private static GroupStateBuilder newGroupBy(UUID foundingMember, int revision) {

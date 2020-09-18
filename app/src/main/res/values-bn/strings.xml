@@ -46,6 +46,7 @@
   <string name="ApplicationPreferencesActivity_appearance_summary">%1$sথীম, %2$s ভাষা</string>
   <string name="ApplicationPreferencesActivity_pin_created">পিন তৈরি করা হয়েছে।</string>
   <string name="ApplicationPreferencesActivity_pin_disabled">পিন নিষ্ক্রিয়।</string>
+  <string name="ApplicationPreferencesActivity_hide">লুকান</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">%d মিনিট</item>
@@ -380,6 +381,7 @@
   <!--GroupMembersDialog-->
   <string name="GroupMembersDialog_you">আপনি</string>
   <!--GV2 access levels-->
+  <string name="GroupManagement_access_level_anyone">যেকেউ</string>
   <string name="GroupManagement_access_level_all_members">সকল সদস্য</string>
   <string name="GroupManagement_access_level_only_admins">শুধুমাত্র এডমিন</string>
   <!--GV2 invites sent-->
@@ -387,6 +389,7 @@
   <!--LinkPreviewsMegaphone-->
   <string name="LinkPreviewsMegaphone_disable">অক্ষম</string>
   <!--LinkPreviewView-->
+  <!--LinkPreviewRepository-->
   <!--PendingMembersActivity-->
   <string name="PendingMemberInvitesActivity_pending_group_invites">অনিষ্পাদিত গ্রুপ নিমন্ত্রণসমূহ</string>
   <string name="PendingMembersActivity_people_you_invited">আপনার আমন্ত্রিত লোকেরা</string>
@@ -394,6 +397,7 @@
   <string name="PendingMembersActivity_invites_by_other_group_members">গ্রুপের অন্যান্য সদস্যদের আমন্ত্রণ</string>
   <string name="PendingMembersActivity_no_pending_invites_by_other_group_members">গ্রুপের অন্যান্য সদস্যবৃন্দ কর্তৃক কোন অনিষ্পাদিত আমন্ত্রণ নেই।</string>
   <string name="PendingMembersActivity_missing_detail_explanation">গ্রুপের অন্যান্য সদস্যদের দ্বারা আমন্ত্রিত লোকদের বিবরণ দেখানো হয় না। আমন্ত্রিতরা যদি যোগদান করেন, তখন তাদের তথ্য গ্রুপের সাথে শেয়ার করা হবে। যোগদান না করা পর্যন্ত তারা গ্রুপের কোনও বার্তা দেখতে পাবেন না।</string>
+  <!--RequestingMembersFragment-->
   <!--AddMembersActivity-->
   <string name="AddMembersActivity__done">শেষ</string>
   <plurals name="AddMembersActivity__add_d_members_to_s">
@@ -473,10 +477,18 @@
   <string name="CustomNotificationsDialogFragment__enabled">সক্রিয়</string>
   <string name="CustomNotificationsDialogFragment__disabled">নিষ্ক্রিয়</string>
   <string name="CustomNotificationsDialogFragment__default">সচারচর</string>
+  <!--ShareableGroupLinkDialogFragment-->
+  <string name="ShareableGroupLinkDialogFragment__share">শেয়ার করুন</string>
+  <string name="ShareableGroupLinkDialogFragment__enabled">সক্রিয়</string>
+  <string name="ShareableGroupLinkDialogFragment__disabled">নিষ্ক্রিয়</string>
+  <string name="ShareableGroupLinkDialogFragment__default">সচারচর</string>
+  <!--GroupLinkShareQrDialogFragment-->
   <!--GV2 Invite Revoke confirmation dialog-->
   <!--GroupJoinBottomSheetDialogFragment-->
+  <string name="GroupJoinBottomSheetDialogFragment_encountered_a_network_error">একটি নেটওয়ার্ক ত্রুটি সম্মুখীন।</string>
   <!--GroupJoinUpdateRequiredBottomSheetDialogFragment-->
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Signal আপডেট করুন</string>
+  <!--GV2 Request confirmation dialog-->
   <!--CropImageActivity-->
   <string name="CropImageActivity_group_avatar">গ্রুপের ছবি</string>
   <string name="CropImageActivity_profile_avatar">প্রোফাইলের ছবি</string>
@@ -680,6 +692,12 @@
   <!--GV2 membership access level change-->
   <string name="MessageRecord_you_changed_who_can_edit_group_membership_to_s">কারা গ্রুপের সদস্যতা সম্পাদনা করতে পারবেন তা আপনি \"%1$s\" এ পরিবর্তন করেছেন।</string>
   <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">কারা গ্রুপের সদস্যতা সম্পাদনা করতে পারবেন তা %1$s \"%2$s\" এ পরিবর্তন করেছে।</string>
+  <!--GV2 group link invite access level change-->
+  <!--GV2 group link reset-->
+  <!--GV2 group link joins-->
+  <!--GV2 group link requests-->
+  <!--GV2 group link approvals-->
+  <!--GV2 group link deny-->
   <!--End of GV2 specific update messages-->
   <string name="MessageRecord_your_safety_number_with_s_has_changed">%sএর সাথে আপনার নিরাপত্তা নাম্বার পরিবর্তিত হয়েছে।</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_verified"> %sএর সাথে আপনি যাচাই করে আপনার নিরাপত্তা নাম্বার চিহ্নিত করেছেন</string>
@@ -781,10 +799,7 @@
   <!--RecipientProvider-->
   <string name="RecipientProvider_unnamed_group">নামবিহীন গ্রুপ</string>
   <!--RedPhone-->
-  <string name="RedPhone_answering">গ্রহণ করা হচ্ছে</string>
-  <string name="RedPhone_ending_call">কল শেষ করা হচ্ছে</string>
-  <string name="RedPhone_dialing">ডায়াল করা হচ্ছে</string>
-  <string name="RedPhone_ringing">রিং হচ্ছে</string>
+  <string name="RedPhone_ringing">রিং হচ্ছে …</string>
   <string name="RedPhone_busy">ব্যাস্ত আছে</string>
   <string name="RedPhone_connected">যুক্ত হয়েছে</string>
   <string name="RedPhone_recipient_unavailable">প্রাপককে পাওয়া যাচ্ছে না</string>
@@ -971,7 +986,6 @@
   <string name="UnverifiedSendDialog_send">পাঠান</string>
   <!--UsernameEditFragment-->
   <string name="UsernameEditFragment_username">ব্যবহারকারীর নাম</string>
-  <string name="UsernameEditFragment_submit">সাবমিট</string>
   <string name="UsernameEditFragment_delete">মুছে দিন</string>
   <string name="UsernameEditFragment_successfully_set_username">সফলভাবে ব্যবহারকারীর নাম সেট করা হয়েছে।</string>
   <string name="UsernameEditFragment_successfully_removed_username">সফলভাবে ব্যবহারকারীর নাম মুছে ফেলা হয়েছে।</string>
@@ -981,7 +995,6 @@
   <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">ব্যবহারকারীর নাম সংখ্যা দিয়ে শুরু করতে পারে না।</string>
   <string name="UsernameEditFragment_username_is_invalid">ব্যবহারকারীর নাম অবৈধ|</string>
   <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">ব্যবহারকারীর নামগুলি অবশ্যই %1$d এবং %2$d অক্ষরের মধ্যে থাকতে হবে।</string>
-  <string name="UsernameEditFragment_other_signal_users_can_send_message_requests_to_your_unique_username">অন্যান্য Signal ব্যবহারকারীরা আপনার ফোন নম্বরটি না জেনে আপনার অনন্য ব্যবহারকারী নামের মাধ্যমে আপনার কাছে বার্তা অনুরোধ পাঠাতে পারে। ব্যবহারকারীর নাম নির্বাচন করা ঐচ্ছিক।</string>
   <!--VerifyIdentityActivity-->
   <string name="VerifyIdentityActivity_your_contact_is_running_an_old_version_of_signal">আপনার পরিচিতি Signal এর একটি পুরানো সংস্করণ চলাচ্ছেন। আপনার নিরাপত্তা নাম্বার যাচাই করার আগে দয়া করে তাকে আপডেট করতে বলুন।</string>
   <string name="VerifyIdentityActivity_your_contact_is_running_a_newer_version_of_Signal">আপনার পরিচিতি একটি অসঙ্গত QR কোড ফর্ম্যাট সহ সিগন্যালের একটি নতুন সংস্করণ চলাচ্ছেন। তুলনা করার জন্য আপডেট করুন।</string>
@@ -1497,13 +1510,9 @@
   <string name="preferences__mmsc_password">এমএমএসসি পাসওয়ার্ড</string>
   <string name="preferences__sms_delivery_reports">এসএমএস বিতরণ রিপোর্ট</string>
   <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">আপনার প্রেরিত প্রতিটি এসএমএস বার্তার জন্য একটি বিতরণ রিপোর্টের জন্য অনুরোধ করুন</string>
-  <string name="preferences__automatically_delete_older_messages_once_a_conversation_exceeds_a_specified_length">কোনও কথোপকথন একটি নির্দিষ্ট দৈর্ঘ্য ছাড়িয়ে গেলে স্বয়ংক্রিয়ভাবে পুরানো বার্তাগুলি মুছে দিন</string>
-  <string name="preferences__delete_old_messages">পুরানো বার্তা মুছে দিন</string>
   <string name="preferences__chats">চ্যাট আর মিডিয়া</string>
   <string name="preferences__storage">স্টোরেজ</string>
   <string name="preferences__conversation_length_limit">কথোপকথন দৈর্ঘ্য সীমা</string>
-  <string name="preferences__trim_all_conversations_now">এখন সমস্ত কথোপকথন সংক্ষিপ্ত করুন</string>
-  <string name="preferences__scan_through_all_conversations_and_enforce_conversation_length_limits">সমস্ত কথোপকথন স্ক্যান করুন এবং কথোপকথন দৈর্ঘ্যের সীমাটি প্রয়োগ করুন</string>
   <string name="preferences__linked_devices">সংযুক্ত ডিভাইস সমূহ</string>
   <string name="preferences__light_theme">আলো</string>
   <string name="preferences__dark_theme">অন্ধকার</string>
@@ -1528,13 +1537,13 @@
   <string name="preferences_chats__when_using_wifi">ওয়াইফাই ব্যবহার করার সময়</string>
   <string name="preferences_chats__when_roaming">রোমিং করার সময়</string>
   <string name="preferences_chats__media_auto_download">মিডিয়া অটো-ডাউনলোড</string>
-  <string name="preferences_chats__message_trimming">বার্তা ছাঁটাই</string>
   <string name="preferences_storage__storage_usage">স্টোরেজ ব্যবহার</string>
   <string name="preferences_storage__photos">ছবিসমূহ</string>
   <string name="preferences_storage__videos">ভিডিওসমূহ</string>
   <string name="preferences_storage__files">ফাইলসমূহ</string>
   <string name="preferences_storage__audio">শব্দ</string>
   <string name="preferences_storage__review_storage">স্টোরেজ পর্যালোচনা</string>
+  <string name="preferences_storage__none">কিছুই না</string>
   <string name="preferences_advanced__use_system_emoji">সিস্টেম ইমোজি ব্যবহার করুন</string>
   <string name="preferences_advanced__disable_signal_built_in_emoji_support">Signal এর অন্তর্নির্মিত ইমোজি সমর্থন অক্ষম করুন</string>
   <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">আপনার যোগাযোগের আইপি ঠিকানাটি প্রকাশ না করার জন্য Signal সার্ভারের মাধ্যমে কল সমূহ রিলে করুন। সক্ষম করা কল এর মান হ্রাস পাবে|</string>
@@ -1644,14 +1653,14 @@
   <string name="verify_display_fragment_context_menu__copy_to_clipboard">ক্লিপবোর্ডে অনুলিপি করুন</string>
   <string name="verify_display_fragment_context_menu__compare_with_clipboard">ক্লিপবোর্ডের সাথে তুলনা করুন</string>
   <!--reminder_header-->
-  <string name="reminder_header_outdated_build">আপনার Signal সংস্করণটি পুরানো</string>
-  <plurals name="reminder_header_outdated_build_details">
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_outdated_build">আপনার Signal সংস্করণটি পুরানো</string> -->
+  <!-- Removed by excludeNonTranslatables <plurals name="reminder_header_outdated_build_details">
     <item quantity="one">আপনার Signal সংস্করণ %d দিন পরে বাতিল হয়ে যাবে। অতি সাম্প্রতিক সংস্করণে আপডেট করতে আলতো চাপুন।</item>
     <item quantity="other">আপনার Signal সংস্করণ %d দিনের মধ্যেই বাতিল হয়ে যাবে। অতি সাম্প্রতিক সংস্করণে আপডেট করতে আলতো চাপুন।</item>
-  </plurals>
-  <string name="reminder_header_outdated_build_details_today">আপনার Signal সংস্করণ আজ বাতিল হয়ে যাবে। অতি সাম্প্রতিক সংস্করণে আপডেট করতে আলতো চাপুন।</string>
-  <string name="reminder_header_expired_build">আপনার Signal সংস্করণ বাতিল হয়ে গেছে।</string>
-  <string name="reminder_header_expired_build_details">বার্তা সফলভাবে আর প্রেরণ করবে না। অতি সাম্প্রতিক সংস্করণে আপডেট করতে আলতো চাপুন।</string>
+  </plurals> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_outdated_build_details_today">আপনার Signal সংস্করণ আজ বাতিল হয়ে যাবে। অতি সাম্প্রতিক সংস্করণে আপডেট করতে আলতো চাপুন।</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_expired_build">আপনার Signal সংস্করণ বাতিল হয়ে গেছে।</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_expired_build_details">বার্তা সফলভাবে আর প্রেরণ করবে না। অতি সাম্প্রতিক সংস্করণে আপডেট করতে আলতো চাপুন।</string> -->
   <string name="reminder_header_sms_default_title">ডিফল্ট এসএমএস অ্যাপ হিসাবে ব্যবহার করুন</string>
   <string name="reminder_header_sms_default_text">Signal কে আপনার ডিফল্ট এসএমএস অ্যাপ করতে আলতো চাপুন।</string>
   <string name="reminder_header_sms_import_title">সিস্টেম এসএমএস আমদানি করুন</string>
@@ -1907,5 +1916,9 @@
   <string name="RecipientBottomSheet_copied_to_clipboard">ক্লিপবোর্ডে অনুলিপি করা হয়েছে</string>
   <string name="GroupRecipientListItem_admin">প্রশাসক</string>
   <!--GroupsLearnMoreBottomSheetDialogFragment-->
+  <!--GroupLinkBottomSheetDialogFragment-->
+  <string name="GroupLinkBottomSheet_copy">অনুলিপি</string>
+  <string name="GroupLinkBottomSheet_share">শেয়ার করুন</string>
+  <string name="GroupLinkBottomSheet_copied_to_clipboard">ক্লিপবোর্ডে অনুলিপি করা হয়েছে</string>
   <!--EOF-->
 </resources>

@@ -15,6 +15,7 @@ import org.signal.storageservice.protos.groups.AvatarUploadAttributes;
 import org.signal.storageservice.protos.groups.Group;
 import org.signal.storageservice.protos.groups.GroupChange;
 import org.signal.storageservice.protos.groups.GroupChanges;
+import org.signal.storageservice.protos.groups.GroupJoinInfo;
 import org.signal.zkgroup.VerificationFailedException;
 import org.signal.zkgroup.profiles.ClientZkProfileOperations;
 import org.signal.zkgroup.profiles.ProfileKey;
@@ -48,6 +49,7 @@ import org.whispersystems.signalservice.api.push.exceptions.AuthorizationFailedE
 import org.whispersystems.signalservice.api.push.exceptions.CaptchaRequiredException;
 import org.whispersystems.signalservice.api.push.exceptions.ConflictException;
 import org.whispersystems.signalservice.api.push.exceptions.ContactManifestMismatchException;
+import org.whispersystems.signalservice.api.push.exceptions.DeprecatedVersionException;
 import org.whispersystems.signalservice.api.push.exceptions.ExpectationFailedException;
 import org.whispersystems.signalservice.api.push.exceptions.MissingConfigurationException;
 import org.whispersystems.signalservice.api.push.exceptions.NoContentException;
@@ -72,6 +74,7 @@ import org.whispersystems.signalservice.internal.contacts.entities.DiscoveryResp
 import org.whispersystems.signalservice.internal.contacts.entities.KeyBackupRequest;
 import org.whispersystems.signalservice.internal.contacts.entities.KeyBackupResponse;
 import org.whispersystems.signalservice.internal.contacts.entities.TokenResponse;
+import org.whispersystems.signalservice.internal.push.exceptions.ForbiddenException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupPatchNotAcceptedException;
 import org.whispersystems.signalservice.internal.push.exceptions.MismatchedDevicesException;
 import org.whispersystems.signalservice.internal.push.exceptions.NotInGroupException;
@@ -93,6 +96,7 @@ import org.whispersystems.signalservice.internal.util.concurrent.FutureTransform
 import org.whispersystems.signalservice.internal.util.concurrent.ListenableFuture;
 import org.whispersystems.signalservice.internal.util.concurrent.SettableFuture;
 import org.whispersystems.util.Base64;
+import org.whispersystems.util.Base64UrlSafe;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -102,7 +106,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -179,8 +182,8 @@ public class PushServiceSocket {
   private static final String PROFILE_PATH              = "/v1/profile/%s";
   private static final String PROFILE_USERNAME_PATH     = "/v1/profile/username/%s";
 
-  private static final String SENDER_CERTIFICATE_LEGACY_PATH = "/v1/certificate/delivery";
-  private static final String SENDER_CERTIFICATE_PATH        = "/v1/certificate/delivery?includeUuid=true";
+  private static final String SENDER_CERTIFICATE_PATH         = "/v1/certificate/delivery?includeUuid=true";
+  private static final String SENDER_CERTIFICATE_NO_E164_PATH = "/v1/certificate/delivery?includeUuid=true&includeE164=false";
 
   private static final String KBS_AUTH_PATH                  = "/v1/backup/auth";
 
@@ -194,8 +197,10 @@ public class PushServiceSocket {
 
   private static final String GROUPSV2_CREDENTIAL       = "/v1/certificate/group/%d/%d";
   private static final String GROUPSV2_GROUP            = "/v1/groups/";
+  private static final String GROUPSV2_GROUP_PASSWORD   = "/v1/groups/?inviteLinkPassword=%s";
   private static final String GROUPSV2_GROUP_CHANGES    = "/v1/groups/logs/%s";
   private static final String GROUPSV2_AVATAR_REQUEST   = "/v1/groups/avatar/form";
+  private static final String GROUPSV2_GROUP_JOIN       = "/v1/groups/join/%s";
 
   private static final String SERVER_DELIVERED_TIMESTAMP_HEADER = "X-Signal-Timestamp";
 
@@ -288,10 +293,11 @@ public class PushServiceSocket {
   public VerifyAccountResponse verifyAccountCode(String verificationCode, String signalingKey, int registrationId, boolean fetchesMessages,
                                                  String pin, String registrationLock,
                                                  byte[] unidentifiedAccessKey, boolean unrestrictedUnidentifiedAccess,
-                                                 SignalServiceProfile.Capabilities capabilities)
+                                                 SignalServiceProfile.Capabilities capabilities,
+                                                 boolean discoverableByPhoneNumber)
       throws IOException
   {
-    AccountAttributes signalingKeyEntity = new AccountAttributes(signalingKey, registrationId, fetchesMessages, pin, registrationLock, unidentifiedAccessKey, unrestrictedUnidentifiedAccess, capabilities);
+    AccountAttributes signalingKeyEntity = new AccountAttributes(signalingKey, registrationId, fetchesMessages, pin, registrationLock, unidentifiedAccessKey, unrestrictedUnidentifiedAccess, capabilities, discoverableByPhoneNumber);
     String            requestBody        = JsonUtil.toJson(signalingKeyEntity);
     String            responseBody       = makeServiceRequest(String.format(VERIFY_ACCOUNT_CODE_PATH, verificationCode), "PUT", requestBody);
 
@@ -301,7 +307,8 @@ public class PushServiceSocket {
   public void setAccountAttributes(String signalingKey, int registrationId, boolean fetchesMessages,
                                    String pin, String registrationLock,
                                    byte[] unidentifiedAccessKey, boolean unrestrictedUnidentifiedAccess,
-                                   SignalServiceProfile.Capabilities capabilities)
+                                   SignalServiceProfile.Capabilities capabilities,
+                                   boolean discoverableByPhoneNumber)
       throws IOException
   {
     if (registrationLock != null && pin != null) {
@@ -309,7 +316,8 @@ public class PushServiceSocket {
     }
 
     AccountAttributes accountAttributes = new AccountAttributes(signalingKey, registrationId, fetchesMessages, pin, registrationLock,
-                                                                unidentifiedAccessKey, unrestrictedUnidentifiedAccess, capabilities);
+                                                                unidentifiedAccessKey, unrestrictedUnidentifiedAccess, capabilities,
+                                                                discoverableByPhoneNumber);
     makeServiceRequest(SET_ACCOUNT_ATTRIBUTES, "PUT", JsonUtil.toJson(accountAttributes));
   }
 
@@ -359,13 +367,13 @@ public class PushServiceSocket {
     makeServiceRequest(REGISTRATION_LOCK_PATH, "DELETE", null);
   }
 
-  public byte[] getSenderCertificateLegacy() throws IOException {
-    String responseText = makeServiceRequest(SENDER_CERTIFICATE_LEGACY_PATH, "GET", null);
+  public byte[] getSenderCertificate() throws IOException {
+    String responseText = makeServiceRequest(SENDER_CERTIFICATE_PATH, "GET", null);
     return JsonUtil.fromJson(responseText, SenderCertificate.class).getCertificate();
   }
 
-  public byte[] getSenderCertificate() throws IOException {
-    String responseText = makeServiceRequest(SENDER_CERTIFICATE_PATH, "GET", null);
+  public byte[] getUuidOnlySenderCertificate() throws IOException {
+    String responseText = makeServiceRequest(SENDER_CERTIFICATE_NO_E164_PATH, "GET", null);
     return JsonUtil.fromJson(responseText, SenderCertificate.class).getCertificate();
   }
 
@@ -1124,12 +1132,17 @@ public class PushServiceSocket {
     Request.Builder request = new Request.Builder().url(urlBuilder.build())
                                                    .post(RequestBody.create(null, ""));
     for (Map.Entry<String, String> header : headers.entrySet()) {
-      request.header(header.getKey(), header.getValue());
+      if (!header.getKey().equalsIgnoreCase("host")) {
+        request.header(header.getKey(), header.getValue());
+      }
     }
 
     if (connectionHolder.getHostHeader().isPresent()) {
       request.header("host", connectionHolder.getHostHeader().get());
     }
+
+    request.addHeader("Content-Length", "0");
+    request.addHeader("Content-Type", "application/octet-stream");
 
     Call call = okHttpClient.newCall(request.build());
 
@@ -1447,6 +1460,8 @@ public class PushServiceSocket {
         throw new LockedException(accountLockFailure.length,
                                   accountLockFailure.timeRemaining,
                                   basicStorageCredentials);
+      case 499:
+        throw new DeprecatedVersionException();
     }
 
     if (responseCode != 200 && responseCode != 204) {
@@ -1623,7 +1638,6 @@ public class PushServiceSocket {
                                                         .readTimeout(soTimeoutMillis, TimeUnit.MILLISECONDS)
                                                         .build();
 
-//    Log.d(TAG, "Opening URL: " + String.format("%s%s", connectionHolder.getUrl(), path));
     Log.d(TAG, "Opening URL: <REDACTED>");
 
     Request.Builder request = new Request.Builder().url(connectionHolder.getUrl() + path);
@@ -1677,6 +1691,8 @@ public class PushServiceSocket {
         }
       case 429:
         throw new RateLimitException("Rate limit exceeded: " + response.code());
+      case 499:
+        throw new DeprecatedVersionException();
     }
 
     throw new NonSuccessfulResponseCodeException("Response: " + response);
@@ -1910,6 +1926,9 @@ public class PushServiceSocket {
   private static final ResponseCodeHandler GROUPS_V2_PATCH_RESPONSE_HANDLER = responseCode -> {
     if (responseCode == 400) throw new GroupPatchNotAcceptedException();
   };
+  private static final ResponseCodeHandler GROUPS_V2_GET_JOIN_INFO_HANDLER  = responseCode -> {
+    if (responseCode == 403) throw new ForbiddenException();
+  };
 
   public void putNewGroupsV2Group(Group group, GroupsV2AuthorizationString authorization)
       throws NonSuccessfulResponseCodeException, PushNetworkException
@@ -1945,11 +1964,19 @@ public class PushServiceSocket {
     return AvatarUploadAttributes.parseFrom(readBodyBytes(response));
   }
 
-  public GroupChange patchGroupsV2Group(GroupChange.Actions groupChange, String authorization)
+  public GroupChange patchGroupsV2Group(GroupChange.Actions groupChange, String authorization, Optional<byte[]> groupLinkPassword)
       throws NonSuccessfulResponseCodeException, PushNetworkException, InvalidProtocolBufferException
   {
+    String path;
+
+    if (groupLinkPassword.isPresent()) {
+      path = String.format(GROUPSV2_GROUP_PASSWORD, Base64UrlSafe.encodeBytesWithoutPadding(groupLinkPassword.get()));
+    } else {
+      path = GROUPSV2_GROUP;
+    }
+
     ResponseBody response = makeStorageRequest(authorization,
-                                               GROUPSV2_GROUP,
+                                               path,
                                                "PATCH",
                                                protobufRequestBody(groupChange),
                                                GROUPS_V2_PATCH_RESPONSE_HANDLER);
@@ -1967,6 +1994,19 @@ public class PushServiceSocket {
                                                GROUPS_V2_GET_LOGS_HANDLER);
 
     return GroupChanges.parseFrom(readBodyBytes(response));
+  }
+
+  public GroupJoinInfo getGroupJoinInfo(Optional<byte[]> groupLinkPassword, GroupsV2AuthorizationString authorization)
+      throws NonSuccessfulResponseCodeException, PushNetworkException, InvalidProtocolBufferException
+  {
+    String       passwordParam = groupLinkPassword.transform(Base64UrlSafe::encodeBytesWithoutPadding).or("");
+    ResponseBody response      = makeStorageRequest(authorization.toString(),
+                                                    String.format(GROUPSV2_GROUP_JOIN, passwordParam),
+                                                    "GET",
+                                                    null,
+                                                    GROUPS_V2_GET_JOIN_INFO_HANDLER);
+
+    return GroupJoinInfo.parseFrom(readBodyBytes(response));
   }
 
   private final class ResumeInfo {

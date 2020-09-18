@@ -397,6 +397,7 @@
   <!--GroupMembersDialog-->
   <string name="GroupMembersDialog_you">आपण</string>
   <!--GV2 access levels-->
+  <string name="GroupManagement_access_level_anyone">कोणीही</string>
   <string name="GroupManagement_access_level_all_members">सर्व सदस्य </string>
   <string name="GroupManagement_access_level_only_admins">केवळ प्रशासक</string>
   <!--GV2 invites sent-->
@@ -622,6 +623,12 @@
   <!--GV2 avatar change-->
   <!--GV2 attribute access level change-->
   <!--GV2 membership access level change-->
+  <!--GV2 group link invite access level change-->
+  <!--GV2 group link reset-->
+  <!--GV2 group link joins-->
+  <!--GV2 group link requests-->
+  <!--GV2 group link approvals-->
+  <!--GV2 group link deny-->
   <!--End of GV2 specific update messages-->
   <string name="MessageRecord_your_safety_number_with_s_has_changed">%s सोबतचा आपला सुरक्षितता नंबर बदलला आहे.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_verified">%s सोबत आपण आपला सुरक्षितता नंबर सत्यापित म्हणून चिन्हांकित केला आहे</string>
@@ -710,10 +717,7 @@
   <!--RecipientProvider-->
   <string name="RecipientProvider_unnamed_group">अनामित गट</string>
   <!--RedPhone-->
-  <string name="RedPhone_answering">उत्तर देत आहे</string>
-  <string name="RedPhone_ending_call">कॉल संपवत आहे</string>
-  <string name="RedPhone_dialing">डायल करत आहे</string>
-  <string name="RedPhone_ringing">रिंग होत आहे</string>
+  <string name="RedPhone_ringing">रिंग होत आहे…</string>
   <string name="RedPhone_busy">व्यस्त</string>
   <string name="RedPhone_connected">कनेक्ट केले</string>
   <string name="RedPhone_recipient_unavailable">प्राप्तकर्ता अनुपलब्ध</string>
@@ -877,7 +881,7 @@
   <string name="UnverifiedSendDialog_send">पाठवा</string>
   <!--UsernameEditFragment-->
   <string name="UsernameEditFragment_username">वापरकर्तानाव</string>
-  <string name="UsernameEditFragment_submit">सादर करा</string>
+  <!-- Removed by excludeNonTranslatables <string name="UsernameEditFragment_submit">सादर करा</string> -->
   <string name="UsernameEditFragment_delete">हटवा</string>
   <string name="UsernameEditFragment_successfully_set_username">वापरकर्तानाव यशस्वीरीत्या सेट.</string>
   <string name="UsernameEditFragment_successfully_removed_username">वापरकर्तानाव यशस्वीरीत्या काढले.</string>
@@ -887,7 +891,7 @@
   <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">वापरकर्तानाव अंकांसोबत सोबत चालू होऊ शकत नाही.</string>
   <string name="UsernameEditFragment_username_is_invalid">वापरकर्तानाव अवैध आहे.</string>
   <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">वापरकर्तानाव %1$d आणि %2$d कॅरेक्टर मध्येच असायला हवे.</string>
-  <string name="UsernameEditFragment_other_signal_users_can_send_message_requests_to_your_unique_username">इतर Signal वापरकर्ते आपला फोन नंबर न जाणता आपल्या एकमेव वापरकर्त्यानावावर संदेश विनंत्या पाठवू शकतात. वापरकर्तानाव निवडणे पर्यायी आहे.</string>
+  <!-- Removed by excludeNonTranslatables <string name="UsernameEditFragment_other_signal_users_can_send_message_requests_to_your_unique_username">इतर Signal वापरकर्ते आपला फोन नंबर न जाणता आपल्या एकमेव वापरकर्त्यानावावर संदेश विनंत्या पाठवू शकतात. वापरकर्तानाव निवडणे पर्यायी आहे.</string> -->
   <!--VerifyIdentityActivity-->
   <string name="VerifyIdentityActivity_your_contact_is_running_an_old_version_of_signal">आपला संपर्क Signal ची जुनी आवृत्ती वापरत आहे.आपला सुरक्षितता नंबर सत्यापित करण्यापूर्वी कृपया त्यांना अद्यतन करण्यास विचारा.</string>
   <string name="VerifyIdentityActivity_your_contact_is_running_a_newer_version_of_Signal">आपला संपर्क विसंगत QR कोड स्वरूपन सोबत Signal ची नवीन आवृत्ती वापरत आहे. तुलना करण्यासाठी कृपया अद्यतन करा.</string>
@@ -1371,13 +1375,13 @@
   <string name="preferences__mmsc_password">MMSC संकेतशब्द</string>
   <string name="preferences__sms_delivery_reports">SMS पोचवणी अहवाल</string>
   <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">आपण पाठविणाऱ्या प्रत्येक संदेशावर पोचवणी अहवालाची विनंती करा</string>
-  <string name="preferences__automatically_delete_older_messages_once_a_conversation_exceeds_a_specified_length">एकदा संभाषण एका निर्दिष्ट लांबीच्या पुढे गेले की स्वयंचलितपणे जुने संदेश हटवा</string>
-  <string name="preferences__delete_old_messages">जुने संदेश हटवा</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__automatically_delete_older_messages_once_a_conversation_exceeds_a_specified_length">एकदा संभाषण एका निर्दिष्ट लांबीच्या पुढे गेले की स्वयंचलितपणे जुने संदेश हटवा</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="preferences__delete_old_messages">जुने संदेश हटवा</string> -->
   <string name="preferences__chats">चॅट आणि मिडिया</string>
   <string name="preferences__storage">संचयन</string>
   <string name="preferences__conversation_length_limit">संभाषण लांबी मर्यादा</string>
-  <string name="preferences__trim_all_conversations_now">आता संभाषण ट्रिम करा</string>
-  <string name="preferences__scan_through_all_conversations_and_enforce_conversation_length_limits">सर्व संभाषणातून स्कॅन करा आणि संभाषण लांबी मर्यादा अंमलात आणा</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__trim_all_conversations_now">आता संभाषण ट्रिम करा</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="preferences__scan_through_all_conversations_and_enforce_conversation_length_limits">सर्व संभाषणातून स्कॅन करा आणि संभाषण लांबी मर्यादा अंमलात आणा</string> -->
   <string name="preferences__linked_devices">लिंक केलेले डिव्हाईस</string>
   <string name="preferences__light_theme">फिकट</string>
   <string name="preferences__dark_theme">गडद</string>
@@ -1401,7 +1405,7 @@
   <string name="preferences_chats__when_using_wifi">Wi-Fi वापरताना</string>
   <string name="preferences_chats__when_roaming">रोमिंग असताना</string>
   <string name="preferences_chats__media_auto_download">मिडिया स्वयं-डाऊनलोड करा</string>
-  <string name="preferences_chats__message_trimming">संदेश ट्रि्मिंग</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences_chats__message_trimming">संदेश ट्रि्मिंग</string> -->
   <string name="preferences_storage__storage_usage">संचयन वापर</string>
   <string name="preferences_storage__photos">फोटो</string>
   <string name="preferences_storage__videos">व्हिडिओ</string>
@@ -1513,14 +1517,14 @@
   <string name="verify_display_fragment_context_menu__copy_to_clipboard">क्लिपबोर्ड वर कॉपी करा</string>
   <string name="verify_display_fragment_context_menu__compare_with_clipboard">क्लिपबोर्ड सोबत तुलना करा</string>
   <!--reminder_header-->
-  <string name="reminder_header_outdated_build">Signal ची आपली आवृत्ती कालबाह्य आहे</string>
-  <plurals name="reminder_header_outdated_build_details">
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_outdated_build">Signal ची आपली आवृत्ती कालबाह्य आहे</string> -->
+  <!-- Removed by excludeNonTranslatables <plurals name="reminder_header_outdated_build_details">
     <item quantity="one">Signal ची आपली आवृत्ती %dदिवसामध्ये कालबाह्य होणार आहे. सर्वात अलीकडील आवृत्तीवर अद्यतन करण्यासाठी टॅप करा.</item>
     <item quantity="other">Signal ची आपली आवृत्ती %dदिवसांमध्ये कालबाह्य होणार आहे. सर्वात अलीकडील आवृत्तीवर अद्यतन करण्यासाठी टॅप करा.</item>
-  </plurals>
-  <string name="reminder_header_outdated_build_details_today">Signal ची आपली आवृत्ती आज कालबाह्य होणार आहे. सर्वात अलीकडील आवृत्तीवर अद्यतन करण्यासाठी टॅप करा.</string>
-  <string name="reminder_header_expired_build">Signal ची आपली आवृत्ती कालबाह्य झाली आहे</string>
-  <string name="reminder_header_expired_build_details">संदेश यापुढे यशस्वीरीत्या पाठविले जाणार नाहीत. सर्वात अलीकडील आवृत्तीवर अद्यतन करण्यासाठी टॅप करा.</string>
+  </plurals> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_outdated_build_details_today">Signal ची आपली आवृत्ती आज कालबाह्य होणार आहे. सर्वात अलीकडील आवृत्तीवर अद्यतन करण्यासाठी टॅप करा.</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_expired_build">Signal ची आपली आवृत्ती कालबाह्य झाली आहे</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_expired_build_details">संदेश यापुढे यशस्वीरीत्या पाठविले जाणार नाहीत. सर्वात अलीकडील आवृत्तीवर अद्यतन करण्यासाठी टॅप करा.</string> -->
   <string name="reminder_header_sms_default_title">पूर्वनिर्धारित SMS अॅप म्हणून वापरा</string>
   <string name="reminder_header_sms_default_text">Signal ला आपले पूर्वनिर्धारित SMS अॅप बनवण्यासाठी टॅप करा.</string>
   <string name="reminder_header_sms_import_title">सिस्टिम SMS आयात करा</string>

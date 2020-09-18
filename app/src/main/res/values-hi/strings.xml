@@ -806,7 +806,7 @@
   <string name="UnverifiedSendDialog_send">भेजें</string>
   <!--UsernameEditFragment-->
   <string name="UsernameEditFragment_username">उपयोगकर्ता नाम</string>
-  <string name="UsernameEditFragment_submit">सबमिट</string>
+  <!-- Removed by excludeNonTranslatables <string name="UsernameEditFragment_submit">सबमिट</string> -->
   <string name="UsernameEditFragment_delete">हटाए </string>
   <string name="UsernameEditFragment_successfully_set_username">उपयोगकर्ता नाम सफलतापूर्वक सेट करें।</string>
   <string name="UsernameEditFragment_successfully_removed_username">सफलतापूर्वक उपयोगकर्ता नाम हटा दिया गया।</string>
@@ -816,7 +816,7 @@
   <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">उपयोगकर्ता नाम एक संख्या से शुरू नहीं हो सकते हैं।</string>
   <string name="UsernameEditFragment_username_is_invalid">उपयोगकर्ता का नाम अमान्य है।</string>
   <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">उपयोगकर्ता नाम %1$d और %2$d वर्णों के बीच होना चाहिए।</string>
-  <string name="UsernameEditFragment_other_signal_users_can_send_message_requests_to_your_unique_username">अन्य Signal उपयोगकर्ता आपके फ़ोन नंबर को जाने बिना आपके अनन्य उपयोगकर्ता नाम पर मेसेज अनुरोध भेज सकते हैं। उपयोगकर्ता नाम चुनना वैकल्पिक है।</string>
+  <!-- Removed by excludeNonTranslatables <string name="UsernameEditFragment_other_signal_users_can_send_message_requests_to_your_unique_username">अन्य Signal उपयोगकर्ता आपके फ़ोन नंबर को जाने बिना आपके अनन्य उपयोगकर्ता नाम पर मेसेज अनुरोध भेज सकते हैं। उपयोगकर्ता नाम चुनना वैकल्पिक है।</string> -->
   <!--VerifyIdentityActivity-->
   <string name="VerifyIdentityActivity_your_contact_is_running_an_old_version_of_signal">आपका संपर्क Signal का पुराना वर्ज़न चला रहा है। कृपया अपनी सुरक्षा संख्या सत्यापित करने से पहले उन्हें अपडेट करने के लिए कहें।</string>
   <string name="VerifyIdentityActivity_your_contact_is_running_a_newer_version_of_Signal">आपका संपर्क एक असंगत क्यूआर कोड ड्राफ्ट के साथ Signal का एक नया वर्ज़न चला रहा है। तुलना करने के लिए कृपया अपडेट करें।</string>
@@ -1303,13 +1303,13 @@
   <string name="preferences__mmsc_password">MMSC पासवर्ड</string>
   <string name="preferences__sms_delivery_reports">SMS वितरण रिपोर्ट</string>
   <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">आपके द्वारा भेजे जाने वाले प्रत्येक SMS मेसेज के लिए डिलीवरी रिपोर्ट का अनुरोध करें</string>
-  <string name="preferences__automatically_delete_older_messages_once_a_conversation_exceeds_a_specified_length">वार्तालाप एक निर्दिष्ट लंबाई से अधिक हो जाने के बाद स्वचालित रूप से पुराने मेसेज को हटा दें</string>
-  <string name="preferences__delete_old_messages">पुराने मेसेज हटाएं</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__automatically_delete_older_messages_once_a_conversation_exceeds_a_specified_length">वार्तालाप एक निर्दिष्ट लंबाई से अधिक हो जाने के बाद स्वचालित रूप से पुराने मेसेज को हटा दें</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="preferences__delete_old_messages">पुराने मेसेज हटाएं</string> -->
   <string name="preferences__chats">चैट और मीडिया</string>
   <string name="preferences__storage">स्टॉरेज </string>
   <string name="preferences__conversation_length_limit">वार्तालाप लंबाई सीमा</string>
-  <string name="preferences__trim_all_conversations_now">अब सभी वार्तालापों को ट्रिम करें</string>
-  <string name="preferences__scan_through_all_conversations_and_enforce_conversation_length_limits">सभी वार्तालापों के माध्यम से स्कैन करें और बातचीत की लंबाई सीमा लागू करें</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__trim_all_conversations_now">अब सभी वार्तालापों को ट्रिम करें</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="preferences__scan_through_all_conversations_and_enforce_conversation_length_limits">सभी वार्तालापों के माध्यम से स्कैन करें और बातचीत की लंबाई सीमा लागू करें</string> -->
   <string name="preferences__linked_devices">जुड़े हुए उपकरण </string>
   <string name="preferences__light_theme">रोशनी </string>
   <string name="preferences__dark_theme">अँधेरा </string>
@@ -1333,7 +1333,7 @@
   <string name="preferences_chats__when_using_wifi">Wi-Fi का उपयोग करते समय</string>
   <string name="preferences_chats__when_roaming">रोमिंग करते समय</string>
   <string name="preferences_chats__media_auto_download">मीडिया ऑटो डाउनलोड</string>
-  <string name="preferences_chats__message_trimming">मेसेज ट्रिमिंग</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences_chats__message_trimming">मेसेज ट्रिमिंग</string> -->
   <string name="preferences_storage__storage_usage">स्टॉरेज का उपयोग</string>
   <string name="preferences_storage__photos">तस्वीरें</string>
   <string name="preferences_storage__videos">वीडियो</string>
@@ -1443,14 +1443,14 @@
   <string name="verify_display_fragment_context_menu__copy_to_clipboard">क्लिपबोर्ड पर कॉपी करें</string>
   <string name="verify_display_fragment_context_menu__compare_with_clipboard">क्लिपबोर्ड के साथ तुलना करें</string>
   <!--reminder_header-->
-  <string name="reminder_header_outdated_build">Signal का आपका वर्ज़न पुराना है</string>
-  <plurals name="reminder_header_outdated_build_details">
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_outdated_build">Signal का आपका वर्ज़न पुराना है</string> -->
+  <!-- Removed by excludeNonTranslatables <plurals name="reminder_header_outdated_build_details">
     <item quantity="one">Signal का आपका वर्ज़न %d दिनों में समाप्त हो जाएगा। नवीनतम वर्ज़न में अपडेट करने के लिए टैप करें।</item>
     <item quantity="other">Signal का आपका वर्ज़न %d दिनों में समाप्त हो जाएगा। नवीनतम वर्ज़न में अपडेट करने के लिए टैप करें।</item>
-  </plurals>
-  <string name="reminder_header_outdated_build_details_today">Signal का आपका वर्ज़न आज समाप्त हो जाएगा। नवीनतम वर्ज़न में अपडेट करने के लिए टैप करें।</string>
-  <string name="reminder_header_expired_build">Signal का आपका वर्ज़न समाप्त हो गया है!</string>
-  <string name="reminder_header_expired_build_details">मेसेज अब सफलतापूर्वक नहीं भेजे जाएंगे। नवीनतम वर्ज़न में अपडेट करने के लिए टैप करें।</string>
+  </plurals> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_outdated_build_details_today">Signal का आपका वर्ज़न आज समाप्त हो जाएगा। नवीनतम वर्ज़न में अपडेट करने के लिए टैप करें।</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_expired_build">Signal का आपका वर्ज़न समाप्त हो गया है!</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_expired_build_details">मेसेज अब सफलतापूर्वक नहीं भेजे जाएंगे। नवीनतम वर्ज़न में अपडेट करने के लिए टैप करें।</string> -->
   <string name="reminder_header_sms_default_title">डिफ़ॉल्ट SMS ऐप के रूप में उपयोग करें</string>
   <string name="reminder_header_sms_default_text">अपने डिफ़ॉल्ट SMS ऐप को Signal करने के लिए टैप करें</string>
   <string name="reminder_header_sms_import_title">सिस्टम SMS आयात करें</string>

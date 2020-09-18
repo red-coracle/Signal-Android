@@ -3,6 +3,7 @@
     <string name="app_name" translatable="false">Signal</string>
 
     <string name="install_url" translatable="false">https://signal.org/install</string>
+    <string name="donate_url" translatable="false">https://signal.org/donate</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -56,6 +57,8 @@
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">PINs are required for registration lock. To disable PINs, please first disable registration lock.</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN created.</string>
     <string name="ApplicationPreferencesActivity_pin_disabled">PIN disabled.</string>
+    <string name="ApplicationPreferencesActivity_hide">Hide</string>
+    <string name="ApplicationPreferencesActivity_hide_reminder">Hide reminder?</string>
 
     <!-- AppProtectionPreferenceFragment -->
     <plurals name="AppProtectionPreferenceFragment_minutes">
@@ -147,6 +150,14 @@
     <string name="ClearProfileActivity_remove">Remove</string>
     <string name="ClearProfileActivity_remove_profile_photo">Remove profile photo?</string>
     <string name="ClearProfileActivity_remove_group_photo">Remove group photo?</string>
+
+    <!-- ClientDeprecatedActivity -->
+    <string name="ClientDeprecatedActivity_update_signal">Update Signal</string>
+    <string name="ClientDeprecatedActivity_this_version_of_the_app_is_no_longer_supported">This version of the app is no longer supported. To continue sending and receiving messages, update to the latest version.</string>
+    <string name="ClientDeprecatedActivity_update">Update</string>
+    <string name="ClientDeprecatedActivity_dont_update">Don\'t Update</string>
+    <string name="ClientDeprecatedActivity_warning">Warning</string>
+    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Your version of Signal has expired. You can view your message history but you won\'t be able to send or receive messages until you update.</string>
 
     <!-- CommunicationActions -->
     <string name="CommunicationActions_no_browser_found">No web browser found.</string>
@@ -245,6 +256,8 @@
     <string name="ConversationActivity_unable_to_record_audio">Unable to record audio!</string>
     <string name="ConversationActivity_you_cant_send_messages_to_this_group">You can\'t send messages to this group because you\'re no longer a member.</string>
     <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">There is no app available to handle this link on your device.</string>
+    <string name="ConversationActivity_your_request_to_join_has_been_sent_to_the_group_admin">Your request to join has been sent to the group admin. You\'ll be notified when they take action.</string>
+    <string name="ConversationActivity_cancel_request">Cancel Request</string>
 
     <string name="ConversationActivity_to_send_audio_messages_allow_signal_access_to_your_microphone">To send audio messages, allow Signal access to your microphone.</string>
     <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Signal requires the Microphone permission in order to send audio messages, but it has been permanently denied. Please continue to app settings, select \"Permissions\", and enable \"Microphone\".</string>
@@ -387,6 +400,7 @@
     <string name="AvatarSelectionBottomSheetDialogFragment__take_photo">Take photo</string>
     <string name="AvatarSelectionBottomSheetDialogFragment__choose_from_gallery">Choose from gallery</string>
     <string name="AvatarSelectionBottomSheetDialogFragment__remove_photo">Remove photo</string>
+    <string name="AvatarSelectionBottomSheetDialogFragment__taking_a_photo_requires_the_camera_permission">Taking a photo requires the camera permission.</string>
 
     <!-- DateUtils -->
     <string name="DateUtils_just_now">Now</string>
@@ -421,6 +435,10 @@
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">Optimize for missing Play Services</string>
     <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">This device does not support Play Services. Tap to disable system battery optimizations that prevent Signal from retrieving messages while inactive.</string>
+
+    <!-- ExpiredBuildReminder -->
+    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">This version of Signal has expired. Update now to send and receive messages.</string>
+    <string name="ExpiredBuildReminder_update_now">Update now</string>
 
     <!-- ShareActivity -->
     <string name="ShareActivity_share_with">Share with</string>
@@ -463,8 +481,10 @@
     <string name="GroupMembersDialog_you">You</string>
 
     <!-- GV2 access levels -->
+    <string name="GroupManagement_access_level_anyone">Anyone</string>
     <string name="GroupManagement_access_level_all_members">All members</string>
     <string name="GroupManagement_access_level_only_admins">Only admins</string>
+    <string name="GroupManagement_access_level_no_one">No one</string>
     <string name="GroupManagement_access_level_unknown" translatable="false">Unknown</string>
     <array name="GroupManagement_edit_group_membership_choices">
         <item>@string/GroupManagement_access_level_all_members</item>
@@ -491,9 +511,19 @@
 
     <!-- LinkPreviewView -->
     <string name="LinkPreviewView_no_link_preview_available">No link preview available</string>
+    <string name="LinkPreviewView_this_group_link_is_not_active">This group link is not active</string>
+    <string name="LinkPreviewView_domain_date">%1$s · %2$s</string>
+
+    <!-- LinkPreviewRepository -->
+    <plurals name="LinkPreviewRepository_d_members">
+        <item quantity="one">%1$d member</item>
+        <item quantity="other">%1$d members</item>
+    </plurals>
 
     <!-- PendingMembersActivity -->
     <string name="PendingMemberInvitesActivity_pending_group_invites">Pending group invites</string>
+    <string name="PendingMembersActivity_requests">Requests</string>
+    <string name="PendingMembersActivity_invites">Invites</string>
     <string name="PendingMembersActivity_people_you_invited">People you invited</string>
     <string name="PendingMembersActivity_you_have_no_pending_invites">You have no pending invites.</string>
     <string name="PendingMembersActivity_invites_by_other_group_members">Invites by other group members</string>
@@ -510,6 +540,13 @@
         <item quantity="one">Error revoking invite</item>
         <item quantity="other">Error revoking invites</item>
     </plurals>
+    
+    <!-- RequestingMembersFragment -->
+    <string name="RequestingMembersFragment_pending_member_requests">Pending member requests</string>
+    <string name="RequestingMembersFragment_no_member_requests_to_show">No member requests to show.</string>
+    <string name="RequestingMembersFragment_explanation">People on this list are attempting to join this group via the group link.</string>
+    <string name="RequestingMembersFragment_added_s">Added "%1$s"</string>
+    <string name="RequestingMembersFragment_denied_s">Denied "%1$s"</string>
 
     <!-- AddMembersActivity -->
     <string name="AddMembersActivity__done">Done</string>
@@ -548,10 +585,12 @@
     <!-- ManageGroupActivity -->
     <string name="ManageGroupActivity_disappearing_messages">Disappearing messages</string>
     <string name="ManageGroupActivity_pending_group_invites">Pending group invites</string>
+    <string name="ManageGroupActivity_member_requests_and_invites">Member requests &amp; invites</string>
     <string name="ManageGroupActivity_add_members">Add members</string>
     <string name="ManageGroupActivity_edit_group_info">Edit group info</string>
     <string name="ManageGroupActivity_choose_who_can_edit_the_group_name_avatar_and_disappearing_messages">Choose who can edit the group name, avatar, and disappearing messages.</string>
     <string name="ManageGroupActivity_choose_who_can_add_or_invite_new_members">Choose who can add or invite new members.</string>
+    <string name="ManageGroupActivity_group_link">Group link</string>
     <string name="ManageGroupActivity_block_group">Block group</string>
     <string name="ManageGroupActivity_unblock_group">Unblock group</string>
     <string name="ManageGroupActivity_leave_group">Leave group</string>
@@ -636,6 +675,26 @@
     <string name="CustomNotificationsDialogFragment__enabled">Enabled</string>
     <string name="CustomNotificationsDialogFragment__disabled">Disabled</string>
     <string name="CustomNotificationsDialogFragment__default">Default</string>
+    
+    <!-- ShareableGroupLinkDialogFragment -->
+    <string name="ShareableGroupLinkDialogFragment__shareable_group_link">Shareable group link</string>
+    <string name="ShareableGroupLinkDialogFragment__manage_and_share">Manage &amp; share</string>
+    <string name="ShareableGroupLinkDialogFragment__group_link">Group link</string>
+    <string name="ShareableGroupLinkDialogFragment__share">Share</string>
+    <string name="ShareableGroupLinkDialogFragment__reset_link">Reset link</string>
+    <string name="ShareableGroupLinkDialogFragment__member_requests">Member requests</string>
+    <string name="ShareableGroupLinkDialogFragment__approve_new_members">Approve new members</string>
+    <string name="ShareableGroupLinkDialogFragment__enabled">Enabled</string>
+    <string name="ShareableGroupLinkDialogFragment__disabled">Disabled</string>
+    <string name="ShareableGroupLinkDialogFragment__default">Default</string>
+    <string name="ShareableGroupLinkDialogFragment__group_link_reset">Group link reset</string>
+    <string name="ShareableGroupLinkDialogFragment__require_an_admin_to_approve_new_members_joining_via_the_group_link">Require an admin to approve new members joining via the group link.</string>
+    <string name="ShareableGroupLinkDialogFragment__are_you_sure_you_want_to_reset_the_group_link">Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.</string>
+
+    <!-- GroupLinkShareQrDialogFragment -->
+    <string name="GroupLinkShareQrDialogFragment__qr_code">QR code</string>
+    <string name="GroupLinkShareQrDialogFragment__people_who_scan_this_code_will">People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.</string>
+    <string name="GroupLinkShareQrDialogFragment__share_code">Share code</string>
 
     <!-- GV2 Invite Revoke confirmation dialog -->
     <string name="InviteRevokeConfirmationDialog_revoke_own_single_invite">Do you want to revoke the invite you sent to %1$s?</string>
@@ -646,11 +705,33 @@
 
     <!-- GroupJoinBottomSheetDialogFragment -->
     <string name="GroupJoinBottomSheetDialogFragment_you_are_already_a_member">You are already a member</string>
+    <string name="GroupJoinBottomSheetDialogFragment_join">Join</string>
+    <string name="GroupJoinBottomSheetDialogFragment_request_to_join">Request to join</string>
+    <string name="GroupJoinBottomSheetDialogFragment_unable_to_join_group_please_try_again_later">Unable to join group. Please try again later</string>
+    <string name="GroupJoinBottomSheetDialogFragment_encountered_a_network_error">Encountered a network error.</string>
+    <string name="GroupJoinBottomSheetDialogFragment_this_group_link_is_not_active">This group link is not active</string>
+
+    <string name="GroupJoinBottomSheetDialogFragment_unable_to_get_group_information_please_try_again_later">Unable to get group information, please try again later</string>
+    <string name="GroupJoinBottomSheetDialogFragment_direct_join">Do you want to join this group and share your name and photo with its members?</string>
+    <string name="GroupJoinBottomSheetDialogFragment_admin_approval_needed">An admin of this group must approve your request before you can join this group. When you request to join, your name and photo will be shared with its members.</string>
+    <plurals name="GroupJoinBottomSheetDialogFragment_group_dot_d_members">
+        <item quantity="one">Group · %1$d member</item>
+        <item quantity="other">Group · %1$d members</item>
+    </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_links_coming_soon">Group links coming soon</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Update Signal to use group links</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">The version of Signal you’re using does not support sharable group links. Update to the latest version to join this group via link.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_coming_soon">Joining a group via a link is not yet supported by Signal. This feature will be released in an upcoming update.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">The version of Signal you’re using does not support group links. Update to the latest version to join this group via link.</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Update Signal</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">Group link is not valid</string>
+
+    <!-- GV2 Request confirmation dialog -->
+    <string name="RequestConfirmationDialog_add_s_to_the_group">Add “%1$s” to the group?</string>
+    <string name="RequestConfirmationDialog_deny_request_from_s">Deny request from “%1$s”?</string>
+    <string name="RequestConfirmationDialog_add">Add</string>
+    <string name="RequestConfirmationDialog_deny">Deny</string>
 
     <!-- CropImageActivity -->
     <string name="CropImageActivity_group_avatar">Group avatar</string>
@@ -914,6 +995,44 @@
     <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">%1$s changed who can edit group membership to \"%2$s\".</string>
     <string name="MessageRecord_who_can_edit_group_membership_has_been_changed_to_s">Who can edit group membership has been changed to \"%1$s\".</string>
 
+    <!-- GV2 group link invite access level change -->
+    <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_off">You turned on the group link with admin approval off.</string>
+    <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_on">You turned on the group link with admin approval on.</string>
+    <string name="MessageRecord_you_turned_off_the_group_link">You turned off the group link.</string>
+    <string name="MessageRecord_s_turned_on_the_group_link_with_admin_approval_off">%1$s turned on the group link with admin approval off.</string>
+    <string name="MessageRecord_s_turned_on_the_group_link_with_admin_approval_on">%1$s turned on the group link with admin approval on.</string>
+    <string name="MessageRecord_s_turned_off_the_group_link">%1$s turned off the group link.</string>
+    <string name="MessageRecord_the_group_link_has_been_turned_on_with_admin_approval_off">The group link has been turned on with admin approval off.</string>
+    <string name="MessageRecord_the_group_link_has_been_turned_on_with_admin_approval_on">The group link has been turned on with admin approval on.</string>
+    <string name="MessageRecord_the_group_link_has_been_turned_off">The group link has been turned off.</string>
+
+    <!-- GV2 group link reset -->
+    <string name="MessageRecord_you_reset_the_group_link">You reset the group link.</string>
+    <string name="MessageRecord_s_reset_the_group_link">%1$s reset the group link.</string>
+    <string name="MessageRecord_the_group_link_has_been_reset">The group link has been reset.</string>
+
+    <!-- GV2 group link joins -->
+    <string name="MessageRecord_you_joined_the_group_via_the_group_link">You joined the group via the group link.</string>
+    <string name="MessageRecord_s_joined_the_group_via_the_group_link">%1$s joined the group via the group link.</string>
+
+    <!-- GV2 group link requests -->
+    <string name="MessageRecord_you_sent_a_request_to_join_the_group">You sent a request to join the group.</string>
+    <string name="MessageRecord_s_requested_to_join_via_the_group_link">%1$s requested to join via the group link.</string>
+
+    <!-- GV2 group link approvals -->
+    <string name="MessageRecord_s_approved_your_request_to_join_the_group">%1$s approved your request to join the group.</string>
+    <string name="MessageRecord_s_approved_a_request_to_join_the_group_from_s">%1$s approved a request to join the group from %2$s.</string>
+    <string name="MessageRecord_you_approved_a_request_to_join_the_group_from_s">You approved a request to join the group from %1$s.</string>
+    <string name="MessageRecord_your_request_to_join_the_group_has_been_approved">Your request to join the group has been approved.</string>
+    <string name="MessageRecord_a_request_to_join_the_group_from_s_has_been_approved">A request to join the group from %1$s has been approved.</string>
+
+    <!-- GV2 group link deny -->
+    <string name="MessageRecord_your_request_to_join_the_group_has_been_denied_by_an_admin">Your request to join the group has been denied by an admin.</string>
+    <string name="MessageRecord_s_denied_a_request_to_join_the_group_from_s">%1$s denied a request to join the group from %2$s.</string>
+    <string name="MessageRecord_a_request_to_join_the_group_from_s_has_been_denied">A request to join the group from %1$s has been denied.</string>
+    <string name="MessageRecord_you_canceled_your_request_to_join_the_group">You canceled your request to join the group.</string>
+    <string name="MessageRecord_s_canceled_their_request_to_join_the_group">%1$s canceled their request to join the group.</string>
+
     <!-- End of GV2 specific update messages -->
 
     <string name="MessageRecord_your_safety_number_with_s_has_changed">Your safety number with %s has changed.</string>
@@ -979,6 +1098,14 @@
     <string name="ExpirationDialog_disappearing_messages">Disappearing messages</string>
     <string name="ExpirationDialog_your_messages_will_not_expire">Your messages will not expire.</string>
     <string name="ExpirationDialog_your_messages_will_disappear_s_after_they_have_been_seen">Messages sent and received in this conversation will disappear %s after they have been seen.</string>
+
+    <!-- OutdatedBuildReminder -->
+    <string name="OutdatedBuildReminder_update_now">Update now</string>
+    <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
+        <item quantity="zero">This version of Signal will expire today. Update to the most recent version.</item>
+        <item quantity="one">This version of Signal will expire tomorrow. Update to the most recent version.</item>
+        <item quantity="other">This version of Signal will expire in %d days. Update to the most recent version.</item>
+    </plurals>
 
     <!-- PassphrasePromptActivity -->
     <string name="PassphrasePromptActivity_enter_passphrase">Enter passphrase</string>
@@ -1055,10 +1182,10 @@
     <string name="RecipientProvider_unnamed_group">Unnamed group</string>
 
     <!-- RedPhone -->
-    <string name="RedPhone_answering">Answering</string>
-    <string name="RedPhone_ending_call">Ending call</string>
-    <string name="RedPhone_dialing">Dialing</string>
-    <string name="RedPhone_ringing">Ringing</string>
+    <string name="RedPhone_answering">Answering…</string>
+    <string name="RedPhone_ending_call">Ending call…</string>
+    <string name="RedPhone_dialing">Dialing…</string>
+    <string name="RedPhone_ringing">Ringing…</string>
     <string name="RedPhone_busy">Busy</string>
     <string name="RedPhone_connected">Connected</string>
     <string name="RedPhone_recipient_unavailable">Recipient unavailable</string>
@@ -1279,7 +1406,6 @@
 
     <!-- UsernameEditFragment -->
     <string name="UsernameEditFragment_username">Username</string>
-    <string name="UsernameEditFragment_submit">Submit</string>
     <string name="UsernameEditFragment_delete">Delete</string>
     <string name="UsernameEditFragment_successfully_set_username">Successfully set username.</string>
     <string name="UsernameEditFragment_successfully_removed_username">Successfully removed username.</string>
@@ -1290,7 +1416,7 @@
     <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">Usernames cannot begin with a number.</string>
     <string name="UsernameEditFragment_username_is_invalid">Username is invalid.</string>
     <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">Usernames must be between %1$d and %2$d characters.</string>
-    <string name="UsernameEditFragment_other_signal_users_can_send_message_requests_to_your_unique_username">Other Signal users can send message requests to your unique username without knowing your phone number. Choosing a username is optional.</string>
+    <string name="UsernameEditFragment_usernames_on_signal_are_optional">Usernames on Signal are optional. If you choose to create a username, other Signal users will be able to find you by this username and contact you without knowing your phone number.</string>
 
     <!-- VerifyIdentityActivity -->
     <string name="VerifyIdentityActivity_your_contact_is_running_an_old_version_of_signal">Your contact is running an old version of Signal. Please ask them to update before verifying your safety number.</string>
@@ -1582,6 +1708,7 @@
     <!-- safety_number_change_dialog -->
     <string name="safety_number_change_dialog__safety_number_changes">Safety Number Changes</string>
     <string name="safety_number_change_dialog__send_anyway">Send anyway</string>
+    <string name="safety_number_change_dialog__call_anyway">Call anyway</string>
     <string name="safety_number_change_dialog__the_following_people_may_have_reinstalled_or_changed_devices">The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.</string>
     <string name="safety_number_change_dialog__view">View</string>
     <string name="safety_number_change_dialog__previous_verified">Previous verified</string>
@@ -1943,6 +2070,7 @@
     <string name="preferences__slow">Slow</string>
     <string name="preferences__help">Help</string>
     <string name="preferences__advanced">Advanced</string>
+    <string name="preferences__donate_to_signal">Donate to Signal</string>
     <string name="preferences__privacy">Privacy</string>
     <string name="preferences__mms_user_agent">MMS User Agent</string>
     <string name="preferences__advanced_mms_access_point_names">Manual MMS settings</string>
@@ -1953,13 +2081,11 @@
     <string name="preferences__mmsc_password">MMSC Password</string>
     <string name="preferences__sms_delivery_reports">SMS delivery reports</string>
     <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">Request a delivery report for each SMS message you send</string>
-    <string name="preferences__automatically_delete_older_messages_once_a_conversation_exceeds_a_specified_length">Automatically delete older messages once a conversation exceeds a specified length</string>
-    <string name="preferences__delete_old_messages">Delete old messages</string>
     <string name="preferences__chats">Chats and media</string>
     <string name="preferences__storage">Storage</string>
     <string name="preferences__conversation_length_limit">Conversation length limit</string>
-    <string name="preferences__trim_all_conversations_now">Trim all conversations now</string>
-    <string name="preferences__scan_through_all_conversations_and_enforce_conversation_length_limits">Scan through all conversations and enforce conversation length limits</string>
+    <string name="preferences__keep_messages">Keep messages</string>
+    <string name="preferences__clear_message_history">Clear message history</string>
     <string name="preferences__linked_devices">Linked devices</string>
     <string name="preferences__light_theme">Light</string>
     <string name="preferences__dark_theme">Dark</string>
@@ -1989,17 +2115,33 @@
     <string name="preferences_chats__when_using_wifi">When using Wi-Fi</string>
     <string name="preferences_chats__when_roaming">When roaming</string>
     <string name="preferences_chats__media_auto_download">Media auto-download</string>
-    <string name="preferences_chats__message_trimming">Message trimming</string>
+    <string name="preferences_chats__message_history">Message history</string>
     <string name="preferences_storage__storage_usage">Storage usage</string>
     <string name="preferences_storage__photos">Photos</string>
     <string name="preferences_storage__videos">Videos</string>
     <string name="preferences_storage__files">Files</string>
     <string name="preferences_storage__audio">Audio</string>
     <string name="preferences_storage__review_storage">Review storage</string>
+    <string name="preferences_storage__delete_older_messages">Delete older messages?</string>
+    <string name="preferences_storage__clear_message_history">Clear message history?</string>
+    <string name="preferences_storage__this_will_permanently_delete_all_message_history_and_media">This will permanently delete all message history and media from your device that are older than %1$s.</string>
+    <string name="preferences_storage__this_will_permanently_trim_all_conversations_to_the_d_most_recent_messages">This will permanently trim all conversations to the %1$s most recent messages.</string>
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device">This will permanently delete all message history and media from your device.</string>
+    <string name="preferences_storage__are_you_sure_you_want_to_delete_all_message_history">Are you sure you want to delete all message history?</string>
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone">All message history will be permanently removed. This action cannot be undone.</string>
+    <string name="preferences_storage__delete_all_now">Delete all now</string>
+    <string name="preferences_storage__forever">Forever</string>
+    <string name="preferences_storage__one_year">1 year</string>
+    <string name="preferences_storage__six_months">6 months</string>
+    <string name="preferences_storage__thirty_days">30 days</string>
+    <string name="preferences_storage__none">None</string>
+    <string name="preferences_storage__s_messages">%1$s messages</string>
+    <string name="preferences_storage__custom">Custom</string>
     <string name="preferences_advanced__use_system_emoji">Use system emoji</string>
     <string name="preferences_advanced__disable_signal_built_in_emoji_support">Disable Signal\'s built-in emoji support</string>
     <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Relay all calls through the Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.</string>
     <string name="preferences_advanced__always_relay_calls">Always relay calls</string>
+    <string name="preferences_app_protection__who_can">Who can…</string>
     <string name="preferences_app_protection__app_access">App access</string>
     <string name="preferences_app_protection__communication">Communication</string>
     <string name="preferences_chats__chats">Chats</string>
@@ -2023,6 +2165,9 @@
     <string name="preferences_notifications__mentions">Mentions</string>
     <string name="preferences_notifications__notify_me">Notify me</string>
     <string name="preferences_notifications__receive_notifications_when_youre_mentioned_in_muted_chats">Receive notifications when you’re mentioned in muted chats</string>
+    <string name="preferences_setup_a_username">Setup a username</string>
+
+    <string name="configurable_single_select__customize_option">Customize option</string>
 
     <!-- Internal only preferences -->
     <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string>
@@ -2164,14 +2309,6 @@
     <string name="verify_display_fragment_context_menu__compare_with_clipboard">Compare with clipboard</string>
 
     <!-- reminder_header -->
-    <string name="reminder_header_outdated_build">Your version of Signal is outdated</string>
-    <plurals name="reminder_header_outdated_build_details">
-        <item quantity="one">Your version of Signal will expire in %d day. Tap to update to the most recent version.</item>
-        <item quantity="other">Your version of Signal will expire in %d days. Tap to update to the most recent version.</item>
-    </plurals>
-    <string name="reminder_header_outdated_build_details_today">Your version of Signal will expire today. Tap to update to the most recent version.</string>
-    <string name="reminder_header_expired_build">Your version of Signal has expired!</string>
-    <string name="reminder_header_expired_build_details">Messages will no longer send successfully. Tap to update to the most recent version.</string>
     <string name="reminder_header_sms_default_title">Use as default SMS app</string>
     <string name="reminder_header_sms_default_text">Tap to make Signal your default SMS app.</string>
     <string name="reminder_header_sms_import_title">Import system SMS</string>
@@ -2399,6 +2536,14 @@
     <string name="RegistrationActivity_code_support_subject">Signal Registration - Verification Code for Android</string>
     <string name="BackupUtil_never">Never</string>
     <string name="BackupUtil_unknown">Unknown</string>
+    <string name="preferences_app_protection__see_my_phone_number">See my phone number</string>
+    <string name="preferences_app_protection__find_me_by_phone_number">Find me by phone number</string>
+    <string name="PhoneNumberPrivacy_everyone">Everyone</string>
+    <string name="PhoneNumberPrivacy_my_contacts">My contacts</string>
+    <string name="PhoneNumberPrivacy_nobody">Nobody</string>
+    <string name="PhoneNumberPrivacy_everyone_see_description">Your phone number will be visible to all people and groups you message.</string>
+    <string name="PhoneNumberPrivacy_everyone_find_description">Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in search.</string>
+    <string name="PhoneNumberPrivacy_my_contacts_see_description">Only your contacts will see your phone number on Signal.</string>
     <string name="preferences_app_protection__screen_lock">Screen lock</string>
     <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">Lock Signal access with Android screen lock or fingerprint</string>
     <string name="preferences_app_protection__screen_lock_inactivity_timeout">Screen lock inactivity timeout</string>
@@ -2482,6 +2627,8 @@
     <string name="RecipientBottomSheet_copied_to_clipboard">Copied to clipboard</string>
 
     <string name="GroupRecipientListItem_admin">Admin</string>
+    <string name="GroupRecipientListItem_approve_description">Approve</string>
+    <string name="GroupRecipientListItem_deny_description">Deny</string>
 
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
@@ -2491,6 +2638,14 @@
     <string name="GroupsLearnMore_how_do_i_use_new_groups">How do I use New Groups?</string>
     <string name="GroupsLearnMore_paragraph_2">Legacy Groups can’t be converted into New Groups, but you can create a New Group with the same members.</string>
     <string name="GroupsLearnMore_paragraph_3">To create a New Group, all members should update to the latest version of Signal.</string>
+
+    <!-- GroupLinkBottomSheetDialogFragment -->
+    <string name="GroupLinkBottomSheet_share_via_signal">Share via Signal</string>
+    <string name="GroupLinkBottomSheet_copy">Copy</string>
+    <string name="GroupLinkBottomSheet_qr_code">QR Code</string>
+    <string name="GroupLinkBottomSheet_share">Share</string>
+    <string name="GroupLinkBottomSheet_copied_to_clipboard">Copied to clipboard</string>
+    <string name="GroupLinkBottomSheet_the_link_is_not_currently_active">The link is not currently active</string>
 
     <!-- EOF -->
 

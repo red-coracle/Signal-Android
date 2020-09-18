@@ -13,6 +13,7 @@ import org.thoughtcrime.securesms.crypto.IdentityKeyUtil;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.database.AttachmentDatabase;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
+import org.thoughtcrime.securesms.database.MessageDatabase;
 import org.thoughtcrime.securesms.database.MmsDatabase;
 import org.thoughtcrime.securesms.database.MmsDatabase.Reader;
 import org.thoughtcrime.securesms.database.PushDatabase;
@@ -267,12 +268,12 @@ public class LegacyMigrationJob extends MigrationJob {
 
   private void schedulePendingIncomingParts(Context context) {
     final AttachmentDatabase       attachmentDb       = DatabaseFactory.getAttachmentDatabase(context);
-    final MmsDatabase              mmsDb              = DatabaseFactory.getMmsDatabase(context);
+    final MessageDatabase          mmsDb              = DatabaseFactory.getMmsDatabase(context);
     final List<DatabaseAttachment> pendingAttachments = DatabaseFactory.getAttachmentDatabase(context).getPendingAttachments();
 
     Log.i(TAG, pendingAttachments.size() + " pending parts.");
     for (DatabaseAttachment attachment : pendingAttachments) {
-      final Reader        reader = mmsDb.readerFor(mmsDb.getMessage(attachment.getMmsId()));
+      final Reader        reader = MmsDatabase.readerFor(mmsDb.getMessageCursor(attachment.getMmsId()));
       final MessageRecord record = reader.getNext();
 
       if (attachment.hasData()) {

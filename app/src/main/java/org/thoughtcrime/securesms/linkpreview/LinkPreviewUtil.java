@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -13,14 +15,20 @@ import android.text.util.Linkify;
 import com.annimon.stream.Stream;
 import com.google.android.collect.Sets;
 
+import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.stickers.StickerUrl;
+import org.thoughtcrime.securesms.util.DateUtils;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.util.OptionalUtil;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -30,16 +38,19 @@ import okhttp3.HttpUrl;
 
 public final class LinkPreviewUtil {
 
+  private static final String TAG = Log.tag(LinkPreviewUtil.class);
+
   private static final Pattern DOMAIN_PATTERN             = Pattern.compile("^(https?://)?([^/]+).*$");
   private static final Pattern ALL_ASCII_PATTERN          = Pattern.compile("^[\\x00-\\x7F]*$");
   private static final Pattern ALL_NON_ASCII_PATTERN      = Pattern.compile("^[^\\x00-\\x7F]*$");
   private static final Pattern OPEN_GRAPH_TAG_PATTERN     = Pattern.compile("<\\s*meta[^>]*property\\s*=\\s*\"\\s*og:([^\"]+)\"[^>]*/?\\s*>");
+  private static final Pattern ARTICLE_TAG_PATTERN        = Pattern.compile("<\\s*meta[^>]*property\\s*=\\s*\"\\s*article:([^\"]+)\"[^>]*/?\\s*>");
   private static final Pattern OPEN_GRAPH_CONTENT_PATTERN = Pattern.compile("content\\s*=\\s*\"([^\"]*)\"");
   private static final Pattern TITLE_PATTERN              = Pattern.compile("<\\s*title[^>]*>(.*)<\\s*/title[^>]*>");
   private static final Pattern FAVICON_PATTERN            = Pattern.compile("<\\s*link[^>]*rel\\s*=\\s*\".*icon.*\"[^>]*>");
   private static final Pattern FAVICON_HREF_PATTERN       = Pattern.compile("href\\s*=\\s*\"([^\"]*)\"");
 
-  private static final Set<String> INVALID_TOP_LEVEL_DOMAINS = Sets.newHashSet("onion");
+  private static final Set<String> INVALID_TOP_LEVEL_DOMAINS = Sets.newHashSet("onion", "i2p");
 
   /**
    * @return All whitelisted URLs in the source text.
@@ -112,7 +123,22 @@ public final class LinkPreviewUtil {
         Matcher contentMatcher = OPEN_GRAPH_CONTENT_PATTERN.matcher(tag);
         if (contentMatcher.find() && contentMatcher.groupCount() > 0) {
           String content = htmlDecoder.fromEncoded(contentMatcher.group(1));
-          openGraphTags.put(property, content);
+          openGraphTags.put(property.toLowerCase(), content);
+        }
+      }
+    }
+
+    Matcher articleMatcher = ARTICLE_TAG_PATTERN.matcher(html);
+
+    while (articleMatcher.find()) {
+      String tag      = articleMatcher.group();
+      String property = articleMatcher.groupCount() > 0 ? articleMatcher.group(1) : null;
+
+      if (property != null) {
+        Matcher contentMatcher = OPEN_GRAPH_CONTENT_PATTERN.matcher(tag);
+        if (contentMatcher.find() && contentMatcher.groupCount() > 0) {
+          String content = htmlDecoder.fromEncoded(contentMatcher.group(1));
+          openGraphTags.put(property.toLowerCase(), content);
         }
       }
     }
@@ -154,8 +180,13 @@ public final class LinkPreviewUtil {
     private final @Nullable String htmlTitle;
     private final @Nullable String faviconUrl;
 
-    private static final String KEY_TITLE     = "title";
-    private static final String KEY_IMAGE_URL = "image";
+    private static final String KEY_TITLE            = "title";
+    private static final String KEY_DESCRIPTION_URL  = "description";
+    private static final String KEY_IMAGE_URL        = "image";
+    private static final String KEY_PUBLISHED_TIME_1 = "published_time";
+    private static final String KEY_PUBLISHED_TIME_2 = "article:published_time";
+    private static final String KEY_MODIFIED_TIME_1  = "modified_time";
+    private static final String KEY_MODIFIED_TIME_2  = "article:modified_time";
 
     public OpenGraph(@NonNull Map<String, String> values, @Nullable String htmlTitle, @Nullable String faviconUrl) {
       this.values     = values;
@@ -169,6 +200,22 @@ public final class LinkPreviewUtil {
 
     public @NonNull Optional<String> getImageUrl() {
       return OptionalUtil.absentIfEmpty(Util.getFirstNonEmpty(values.get(KEY_IMAGE_URL), faviconUrl));
+    }
+
+    @SuppressLint("ObsoleteSdkInt")
+    public long getDate() {
+      return Stream.of(values.get(KEY_PUBLISHED_TIME_1),
+                       values.get(KEY_PUBLISHED_TIME_2),
+                       values.get(KEY_MODIFIED_TIME_1),
+                       values.get(KEY_MODIFIED_TIME_2))
+                   .map(DateUtils::parseIso8601)
+                   .filter(time -> time > 0)
+                   .findFirst()
+                   .orElse(0L);
+    }
+
+    public @NonNull Optional<String> getDescription() {
+      return OptionalUtil.absentIfEmpty(values.get(KEY_DESCRIPTION_URL));
     }
   }
 

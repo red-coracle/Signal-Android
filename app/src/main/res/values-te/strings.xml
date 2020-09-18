@@ -378,6 +378,7 @@
   <!--GroupMembersDialog-->
   <string name="GroupMembersDialog_you">మీరు</string>
   <!--GV2 access levels-->
+  <string name="GroupManagement_access_level_anyone">ఎవరైనా</string>
   <string name="GroupManagement_access_level_all_members">సభ్యులందరు</string>
   <string name="GroupManagement_access_level_only_admins">పరిపాలకులు మాత్రమే</string>
   <!--GV2 invites sent-->
@@ -640,6 +641,12 @@
   <!--GV2 membership access level change-->
   <string name="MessageRecord_you_changed_who_can_edit_group_membership_to_s">మీరు సమూహ సభ్యత్వాన్ని మార్చగలిగినవారు ని \"%1$s\"కు మార్చారు. </string>
   <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">%1$s సమూహ సభ్యత్వాన్ని మార్చగలిగినవారు ని \"%2$s\"కు మార్చారు. </string>
+  <!--GV2 group link invite access level change-->
+  <!--GV2 group link reset-->
+  <!--GV2 group link joins-->
+  <!--GV2 group link requests-->
+  <!--GV2 group link approvals-->
+  <!--GV2 group link deny-->
   <!--End of GV2 specific update messages-->
   <string name="MessageRecord_your_safety_number_with_s_has_changed">%s తో మీ భద్రత సంఖ్య మార్చబడింది.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_verified">మీరు మీ భద్రతా నంబర్ను%s ధృవీకరించినట్లు గుర్తు పెట్టారు</string>
@@ -745,10 +752,7 @@
   <!--RecipientProvider-->
   <string name="RecipientProvider_unnamed_group">పేరులేని సమూహం</string>
   <!--RedPhone-->
-  <string name="RedPhone_answering">స్పందిస్తున్న </string>
-  <string name="RedPhone_ending_call"> కాల్ ముగుస్తుంది</string>
-  <string name="RedPhone_dialing">డయలింగ్</string>
-  <string name="RedPhone_ringing">మోగుతున్నది</string>
+  <string name="RedPhone_ringing">మోగుతున్నది…</string>
   <string name="RedPhone_busy">పనిలో ఉన్నారు </string>
   <string name="RedPhone_connected">కలిసింది</string>
   <string name="RedPhone_recipient_unavailable">గ్రహీత అందుబాటులోలేరు</string>
@@ -909,7 +913,7 @@
   <string name="UnverifiedSendDialog_send">పంపుము</string>
   <!--UsernameEditFragment-->
   <string name="UsernameEditFragment_username">వినియోగదారుడు </string>
-  <string name="UsernameEditFragment_submit">సమర్పించండి</string>
+  <!-- Removed by excludeNonTranslatables <string name="UsernameEditFragment_submit">సమర్పించండి</string> -->
   <string name="UsernameEditFragment_delete">తొలగించండి</string>
   <string name="UsernameEditFragment_successfully_set_username">వినియోగదారు పేరును విజయవంతంగా సెట్ చేయండి.</string>
   <string name="UsernameEditFragment_successfully_removed_username">వినియోగదారు పేరు విజయవంతంగా తొలగించబడింది.</string>
@@ -919,7 +923,7 @@
   <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">వినియోగదారు పేర్లు సంఖ్యతో ప్రారంభం కావు.</string>
   <string name="UsernameEditFragment_username_is_invalid">మీ యూసర్ నేమ్ సరైనది కాదు.</string>
   <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">వినియోగదారు పేర్లు %1$dమరియు %2$dఅక్షరాల మధ్య ఉండాలి.</string>
-  <string name="UsernameEditFragment_other_signal_users_can_send_message_requests_to_your_unique_username">ఇతర Signal వినియోగదారులు మీ ఫోన్ నంబర్ తెలియకుండానే మీ ప్రత్యేక వినియోగదారు పేరుకు సందేశ అభ్యర్థనలను పంపవచ్చు. వినియోగదారు పేరును ఎంచుకోవడం ఐచ్ఛికం.</string>
+  <!-- Removed by excludeNonTranslatables <string name="UsernameEditFragment_other_signal_users_can_send_message_requests_to_your_unique_username">ఇతర Signal వినియోగదారులు మీ ఫోన్ నంబర్ తెలియకుండానే మీ ప్రత్యేక వినియోగదారు పేరుకు సందేశ అభ్యర్థనలను పంపవచ్చు. వినియోగదారు పేరును ఎంచుకోవడం ఐచ్ఛికం.</string> -->
   <!--VerifyIdentityActivity-->
   <string name="VerifyIdentityActivity_your_contact_is_running_an_old_version_of_signal">మీ పరిచయం Signal యొక్క ఒక పాత వెర్షన్ను పై నడుస్థుంది. మీ భద్రత సంఖ్య ధ్రువీకరించే ముందుగా అప్డేట్ కోరండి.</string>
   <string name="VerifyIdentityActivity_your_contact_is_running_a_newer_version_of_Signal">మీ పరిచయం అననుకూల QR కోడ్ ఫార్మాట్ Signal యొక్క కొత్త సంస్కరణను అమలు చేస్తోంది. దయచేసి పోల్చడానికి అప్డేట్ చెయండీ.</string>
@@ -1403,13 +1407,13 @@
   <string name="preferences__mmsc_password">ఎమ్మెమ్మెస్సి సాంకేతిక పదము</string>
   <string name="preferences__sms_delivery_reports">చేరిన ఎస్సెమ్మెస్ నివేదికలు</string>
   <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">మీరు పంపే ప్రతి SMS కోసం బట్వాడా నివేదికను అభ్యర్థించండి</string>
-  <string name="preferences__automatically_delete_older_messages_once_a_conversation_exceeds_a_specified_length">ఒక సంభాషణ ఒక పేర్కొన్న పొడవు మించితె స్వయంచాలకంగా పాత సందేశాలను తొలగించు</string>
-  <string name="preferences__delete_old_messages">పాత సందేశాలను తొలగించు</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__automatically_delete_older_messages_once_a_conversation_exceeds_a_specified_length">ఒక సంభాషణ ఒక పేర్కొన్న పొడవు మించితె స్వయంచాలకంగా పాత సందేశాలను తొలగించు</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="preferences__delete_old_messages">పాత సందేశాలను తొలగించు</string> -->
   <string name="preferences__chats">ముచ్చట్లు మరియు ప్రసార మాధ్యమం</string>
   <string name="preferences__storage">నిల్వ</string>
   <string name="preferences__conversation_length_limit">సంభాషణ విస్తృతికి పరిమితి</string>
-  <string name="preferences__trim_all_conversations_now">ఇప్పుడు అన్ని సంభాషణలు  కత్తిరించి సరి చేయుట </string>
-  <string name="preferences__scan_through_all_conversations_and_enforce_conversation_length_limits">అన్ని సంభాషణలు స్కాన్ చేసి తద్వారా సంభాషణ పొడవు పరిమితులు అమలుపరచు</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__trim_all_conversations_now">ఇప్పుడు అన్ని సంభాషణలు  కత్తిరించి సరి చేయుట </string> -->
+  <!-- Removed by excludeNonTranslatables <string name="preferences__scan_through_all_conversations_and_enforce_conversation_length_limits">అన్ని సంభాషణలు స్కాన్ చేసి తద్వారా సంభాషణ పొడవు పరిమితులు అమలుపరచు</string> -->
   <string name="preferences__linked_devices">పరికరాలు అనుసంధానించు </string>
   <string name="preferences__light_theme">లైటు</string>
   <string name="preferences__dark_theme">గుప్తమైన</string>
@@ -1433,7 +1437,7 @@
   <string name="preferences_chats__when_using_wifi">వైఫై ఉపయోగించి చేసినప్పుడు</string>
   <string name="preferences_chats__when_roaming">రోమింగ్లో ఉన్నప్పుడు</string>
   <string name="preferences_chats__media_auto_download">ప్రసార మాధ్యమం దానంతట అదే దిగుమతి</string>
-  <string name="preferences_chats__message_trimming">సందేశం కత్తిరించి సరి చేయుట </string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences_chats__message_trimming">సందేశం కత్తిరించి సరి చేయుట </string> -->
   <string name="preferences_storage__storage_usage">నిల్వ వినియోగం</string>
   <string name="preferences_storage__photos">ఫోటోలు</string>
   <string name="preferences_storage__videos">వీడియోలు</string>
@@ -1544,14 +1548,14 @@
   <string name="verify_display_fragment_context_menu__copy_to_clipboard">తాత్కాలికంగా  భద్రపరుచు  ప్రదేశముకు నకలు చెయ్యి</string>
   <string name="verify_display_fragment_context_menu__compare_with_clipboard"> తాత్కాలికంగా  భద్రపరుచు ప్రదేశముతో పోల్చడం</string>
   <!--reminder_header-->
-  <string name="reminder_header_outdated_build">మీ Signal అనువాదముకు కాలం చెల్లినది</string>
-  <plurals name="reminder_header_outdated_build_details">
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_outdated_build">మీ Signal అనువాదముకు కాలం చెల్లినది</string> -->
+  <!-- Removed by excludeNonTranslatables <plurals name="reminder_header_outdated_build_details">
     <item quantity="one">Signal యొక్క మీ వెర్షన్ %d రోజులో ముగుస్తుంది. తాజా సంస్కరణకు నవీకరించడానికి నొక్కండి.</item>
     <item quantity="other">Signal యొక్క మీ వెర్షన్ %d రోజుల్లో ముగుస్తుంది. తాజా సంస్కరణకు నవీకరించడానికి నొక్కండి.</item>
-  </plurals>
-  <string name="reminder_header_outdated_build_details_today">మీ Signal వెర్షన్ను యొక్క  గడువు నేటితో తీరిపోయింది. ఇటీవల వెర్షన్ కు  నవీకరించడానికి నొక్కండి.</string>
-  <string name="reminder_header_expired_build">మీ Signal అనువాదము గడువు ముగిసింది!</string>
-  <string name="reminder_header_expired_build_details">సందేశాలు విజయవంతంగా పంపుతుంది. ఇటీవల సంస్కరణకు అప్డేట్ నొక్కండి.</string>
+  </plurals> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_outdated_build_details_today">మీ Signal వెర్షన్ను యొక్క  గడువు నేటితో తీరిపోయింది. ఇటీవల వెర్షన్ కు  నవీకరించడానికి నొక్కండి.</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_expired_build">మీ Signal అనువాదము గడువు ముగిసింది!</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="reminder_header_expired_build_details">సందేశాలు విజయవంతంగా పంపుతుంది. ఇటీవల సంస్కరణకు అప్డేట్ నొక్కండి.</string> -->
   <string name="reminder_header_sms_default_title">డిఫాల్ట్ ఎస్ఎంఎస్ అప్లికేషన్ ని  ఉపయోగించండి</string>
   <string name="reminder_header_sms_default_text">Signal ను  మీ వైఫల్య  యస్  యం యస్ అనువర్తనంగా చేయడానికి నొక్కండి.</string>
   <string name="reminder_header_sms_import_title">వ్యవస్థ ఎస్సెమ్మెస్ దిగుమతి</string>
