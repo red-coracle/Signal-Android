@@ -2193,8 +2193,8 @@ Prejeto sporočilo za izmenjavo ključev za napačno različico protokola.</stri
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Spomnili vas bomo kasneje. Uporaba PINa postala obvezna čez %1$d dni.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Spomnili vas bomo kasneje. Potrditev PINa bo obvezna čez %1$d dni.</string>
   <!--Mention Megaphone-->
-  <string name="MentionsMegaphone__introducing_mentions">Predstavljamo @Omembe</string>
-  <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Pridobite si pozornost posameznikov/ic v \"Novih skupinah\" s predpono @</string>
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__introducing_mentions">Predstavljamo @Omembe</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Pridobite si pozornost posameznikov/ic v \"Novih skupinah\" s predpono @</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Ikona transporta</string>
   <string name="ConversationListFragment_loading">Nalaganje …</string>
@@ -2345,7 +2345,7 @@ Prejeto sporočilo za izmenjavo ključev za napačno različico protokola.</stri
   <string name="GroupsLearnMore_legacy_vs_new_groups">Stare in Nove skupine</string>
   <string name="GroupsLearnMore_what_are_legacy_groups">Kaj so stare skupine?</string>
   <string name="GroupsLearnMore_paragraph_1">Stare skupine so skupine, ki niso združljive z naprednimi funkcijami Novih skupin, kot so skrbniki in bolj natančno upravljanje.</string>
-  <string name="GroupsLearnMore_how_do_i_use_new_groups">Kako uporabljam Nove skupine?</string>
+  <!-- Removed by excludeNonTranslatables <string name="GroupsLearnMore_how_do_i_use_new_groups">Kako uporabljam Nove skupine?</string> -->
   <string name="GroupsLearnMore_paragraph_2">Stare skupine ne morejo biti pretvorjene v Nove, lahko pa ustvarite Novo skupino z identičnim članstvom.</string>
   <string name="GroupsLearnMore_paragraph_3">Če želite ustvariti Novo skupino, morajo vsi člani nadgraditi Signal na zadnjo različico.</string>
   <!--GroupLinkBottomSheetDialogFragment-->

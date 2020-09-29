@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.annimon.stream.Stream;
-import com.google.android.gms.common.util.ArrayUtils;
 
 import net.sqlcipher.database.SQLiteConstraintException;
 import net.sqlcipher.database.SQLiteDatabase;
@@ -152,14 +151,14 @@ public class RecipientDatabase extends Database {
 
   private static final String[] MENTION_SEARCH_PROJECTION  = new String[]{ID, removeWhitespace("COALESCE(" + nullIfEmpty(SYSTEM_DISPLAY_NAME) + ", " + nullIfEmpty(PROFILE_JOINED_NAME) + ", " + nullIfEmpty(PROFILE_GIVEN_NAME) + ", " + nullIfEmpty(USERNAME) + ", " + nullIfEmpty(PHONE) + ")") + " AS " + SORT_NAME};
 
-  private static final String[] RECIPIENT_FULL_PROJECTION = ArrayUtils.concat(
+  private static final String[] RECIPIENT_FULL_PROJECTION = Stream.of(
       new String[] { TABLE_NAME + "." + ID,
                      TABLE_NAME + "." + STORAGE_PROTO },
       TYPED_RECIPIENT_PROJECTION,
       new String[] {
         IdentityDatabase.TABLE_NAME + "." + IdentityDatabase.VERIFIED + " AS " + IDENTITY_STATUS,
         IdentityDatabase.TABLE_NAME + "." + IdentityDatabase.IDENTITY_KEY + " AS " + IDENTITY_KEY
-      });
+      }).flatMap(Stream::of).toArray(String[]::new);
 
   public static final String[] CREATE_INDEXS = new String[] {
       "CREATE INDEX IF NOT EXISTS recipient_dirty_index ON " + TABLE_NAME + " (" + DIRTY + ");",
@@ -393,10 +392,6 @@ public class RecipientDatabase extends Database {
   public @NonNull RecipientId getAndPossiblyMerge(@Nullable UUID uuid, @Nullable String e164, boolean highTrust) {
     if (uuid == null && e164 == null) {
       throw new IllegalArgumentException("Must provide a UUID or E164!");
-    }
-
-    if (!FeatureFlags.cds()) {
-      highTrust = true;
     }
 
     RecipientId                    recipientNeedingRefresh = null;
@@ -1000,7 +995,7 @@ public class RecipientDatabase extends Database {
     values.put(STORAGE_SERVICE_ID, Base64.encodeBytes(contact.getId().getRaw()));
     values.put(DIRTY, DirtyState.CLEAN.getId());
 
-    if (contact.isProfileSharingEnabled() && isInsert) {
+    if (contact.isProfileSharingEnabled() && isInsert && !profileName.isEmpty()) {
       values.put(COLOR, ContactColors.generateFor(profileName.toString()).serialize());
     }
 
@@ -1055,8 +1050,8 @@ public class RecipientDatabase extends Database {
                                                + " LEFT OUTER JOIN " + GroupDatabase.TABLE_NAME + " ON " + TABLE_NAME + "." + GROUP_ID + " = " + GroupDatabase.TABLE_NAME + "." + GroupDatabase.GROUP_ID;
     List<RecipientSettings> out   = new ArrayList<>();
 
-    String[] columns = ArrayUtils.concat(RECIPIENT_FULL_PROJECTION,
-      new String[]{GroupDatabase.TABLE_NAME + "." + GroupDatabase.V2_MASTER_KEY });
+    String[] columns = Stream.of(RECIPIENT_FULL_PROJECTION,
+      new String[]{GroupDatabase.TABLE_NAME + "." + GroupDatabase.V2_MASTER_KEY }).flatMap(Stream::of).toArray(String[]::new);
 
     try (Cursor cursor = db.query(table, columns, query, args, null, null, null)) {
       while (cursor != null && cursor.moveToNext()) {
@@ -1080,7 +1075,7 @@ public class RecipientDatabase extends Database {
   public @NonNull Map<RecipientId, StorageId> getContactStorageSyncIdsMap() {
     SQLiteDatabase              db    = databaseHelper.getReadableDatabase();
     String                      query = STORAGE_SERVICE_ID + " NOT NULL AND " + DIRTY + " != ? AND " + ID + " != ? AND " + GROUP_TYPE + " != ?";
-    String[]                    args  = { String.valueOf(DirtyState.DELETE), Recipient.self().getId().serialize(), String.valueOf(GroupType.SIGNAL_V2.getId()) };
+    String[]                    args  = { String.valueOf(DirtyState.DELETE.getId()), Recipient.self().getId().serialize(), String.valueOf(GroupType.SIGNAL_V2.getId()) };
     Map<RecipientId, StorageId> out   = new HashMap<>();
 
     try (Cursor cursor = db.query(TABLE_NAME, new String[] { ID, STORAGE_SERVICE_ID, GROUP_TYPE }, query, args, null, null, null)) {
@@ -1802,6 +1797,12 @@ public class RecipientDatabase extends Database {
     }
   }
 
+  /**
+   * Handles inserts the (e164, UUID) pairs, which could result in merges. Does not mark users as
+   * registered.
+   *
+   * @return A mapping of (RecipientId, UUID)
+   */
   public @NonNull Map<RecipientId, String> bulkProcessCdsResult(@NonNull Map<String, UUID> mapping) {
     SQLiteDatabase               db      = databaseHelper.getWritableDatabase();
     HashMap<RecipientId, String> uuidMap = new HashMap<>();

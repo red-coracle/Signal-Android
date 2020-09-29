@@ -204,7 +204,7 @@
   <string name="ConversationActivity_leave_group">לעזוב קבוצה?</string>
   <string name="ConversationActivity_are_you_sure_you_want_to_leave_this_group">האם אתה בטוח שאתה רוצה לעזוב קבוצה זו?</string>
   <string name="ConversationActivity_choose_new_admin">בחר מנהלן חדש</string>
-  <string name="ConversationActivity_before_you_leave_you_must_choose_at_least_one_new_admin_for_this_group">לפני שאתה עוזב, אתה חייב לבחור לפחות מנהלן חדש אחד עבור קבוצה זו.</string>
+  <string name="ConversationActivity_before_you_leave_you_must_choose_at_least_one_new_admin_for_this_group">לפני עזיבתך, חובה לבחור מנהלן חדש אחד לפחות עבור קבוצה זו.</string>
   <string name="ConversationActivity_choose_admin">בחר מנהלן</string>
   <string name="ConversationActivity_transport_insecure_sms">מסרון בלתי מאובטח</string>
   <string name="ConversationActivity_transport_insecure_mms">MMS בלתי מאובטח</string>
@@ -849,7 +849,7 @@
   <string name="MessageRecord_s_removed_you_from_the_group">%1$s הסיר אותך מהקבוצה.</string>
   <string name="MessageRecord_you_left_the_group">עזבת את הקבוצה.</string>
   <string name="MessageRecord_s_left_the_group">%1$s עזב את הקבוצה.</string>
-  <string name="MessageRecord_you_are_no_longer_in_the_group">אתה לא נמצא יותר בקבוצה.</string>
+  <string name="MessageRecord_you_are_no_longer_in_the_group">אינך בקבוצה יותר.</string>
   <string name="MessageRecord_s_is_no_longer_in_the_group">%1$s לא נמצא יותר בקבוצה.</string>
   <!--GV2 role change-->
   <string name="MessageRecord_you_made_s_an_admin">עשית את %1$s מנהלן.</string>
@@ -923,11 +923,14 @@
   <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">%1$s שינה מי יכול לערוך חברות קבוצה אל \"%2$s\".</string>
   <string name="MessageRecord_who_can_edit_group_membership_has_been_changed_to_s">מי יכול לערוך חברות קבוצה השתנה אל \"%1$s\".</string>
   <!--GV2 group link invite access level change-->
+  <string name="MessageRecord_you_turned_off_the_group_link">כיבית את קישור הקבוצה.</string>
+  <string name="MessageRecord_s_turned_off_the_group_link">%1$s כיבה/כיבתה את קישור הקבוצה.</string>
   <!--GV2 group link reset-->
   <string name="MessageRecord_you_reset_the_group_link">איפסת את קישור הקבוצה.</string>
   <string name="MessageRecord_s_reset_the_group_link">%1$s איפס/ה את קישור הקבוצה.</string>
   <string name="MessageRecord_the_group_link_has_been_reset">קישור הקבוצה אופס.</string>
   <!--GV2 group link joins-->
+  <string name="MessageRecord_you_joined_the_group_via_the_group_link">הצטרפת אל הקבוצה באמצעות קישור הקבוצה.</string>
   <!--GV2 group link requests-->
   <string name="MessageRecord_you_sent_a_request_to_join_the_group">שלחת בקשה להצטרף אל הקבוצה.</string>
   <!--GV2 group link approvals-->
@@ -1883,7 +1886,12 @@
   <string name="preferences_storage__files">קבצים</string>
   <string name="preferences_storage__audio">שמע</string>
   <string name="preferences_storage__review_storage">סקור אחסון</string>
+  <string name="preferences_storage__forever">לנצח</string>
+  <string name="preferences_storage__one_year">שנה 1</string>
+  <string name="preferences_storage__six_months">6 חודשים</string>
+  <string name="preferences_storage__thirty_days">30 ימים</string>
   <string name="preferences_storage__none">אין</string>
+  <string name="preferences_storage__s_messages">%1$s הודעות</string>
   <string name="preferences_storage__custom">מותאם אישית</string>
   <string name="preferences_advanced__use_system_emoji">השתמש באימוג\'י של מערכת</string>
   <string name="preferences_advanced__disable_signal_built_in_emoji_support">השבת תמיכת אימוג\'י מובנית של Signal</string>
@@ -1957,7 +1965,7 @@
   <string name="conversation_list_search_description">חפש</string>
   <string name="conversation_list__pinned">מוצמד</string>
   <string name="conversation_list__chats">התכתבויות</string>
-  <string name="conversation_list__you_can_only_pin_up_to_d_chats">אתה יכול להצמיד רק עד %1$d התכתבויות</string>
+  <string name="conversation_list__you_can_only_pin_up_to_d_chats">ניתן להצמיד עד %1$d התכתבויות בלבד</string>
   <!--conversation_list_item_view-->
   <string name="conversation_list_item_view__contact_photo_image">תמונת איש קשר</string>
   <string name="conversation_list_item_view__archived">בארכיון</string>
@@ -2082,7 +2090,7 @@
   <string name="CreateKbsPinFragment__create_a_new_pin">צור PIN חדש</string>
   <string name="CreateKbsPinFragment__you_can_choose_a_new_pin_as_long_as_this_device_is_registered">אתה יכול לשנות את ה־PIN שלך כל עוד מכשיר זה רשום.</string>
   <string name="CreateKbsPinFragment__create_your_pin">צור את ה־PIN שלך</string>
-  <string name="CreateKbsPinFragment__pins_keep_information_stored_with_signal_encrypted">קודי PIN שומרים על מידע מאוחסן עם Signal מוצפן כך שרק אתה יכול להשיג גישה אליו. הפרופיל, ההגדרות ואנשי הקשר שלך ישוחזרו כשתתקין מחדש את Signal. לא תצטרך את ה־PIN שלך כדי לפתוח את היישום.</string>
+  <string name="CreateKbsPinFragment__pins_keep_information_stored_with_signal_encrypted">קודי PIN שומרים על המידע שמאוחסן עם Signal מוצפן כך שרק באפשרותך לגשת אליו. הפרופיל שלך, ההגדרות, ואנשי הקשר שלך יתאפסו בעת התקנה מחדש. אין צורך בקוד PIN לפתיחת יישום זה.</string>
   <string name="CreateKbsPinFragment__choose_a_stronger_pin">בחר PIN חזק יותר</string>
   <!--ConfirmKbsPinFragment-->
   <string name="ConfirmKbsPinFragment__pins_dont_match">קודי PIN אינם תואמים. נסה שוב.</string>
@@ -2168,8 +2176,8 @@
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">נזכיר לך מאוחר יותר. יצירת PIN תהיה חובה עוד %1$d ימים.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">נזכיר לך מאוחר יותר. אימות PIN יהיה חובה עוד %1$d ימים.</string>
   <!--Mention Megaphone-->
-  <string name="MentionsMegaphone__introducing_mentions">היכרות עם @אזכורים</string>
-  <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">תפוס תשומת לב של מישהו ב\"קבוצה חדשה\" על ידי הקלדת @</string>
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__introducing_mentions">היכרות עם @אזכורים</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">תפוס תשומת לב של מישהו ב\"קבוצה חדשה\" על ידי הקלדת @</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">צלמית תעבורה</string>
   <string name="ConversationListFragment_loading">טוען…</string>
@@ -2227,7 +2235,10 @@
   <string name="RegistrationActivity_code_support_subject">הרשמת Signal - קוד וידוא עבור Android</string>
   <string name="BackupUtil_never">אף פעם</string>
   <string name="BackupUtil_unknown">בלתי ידוע</string>
+  <string name="PhoneNumberPrivacy_everyone">כולם</string>
+  <string name="PhoneNumberPrivacy_my_contacts">אנשי הקשר שלי</string>
   <string name="PhoneNumberPrivacy_nobody">אף אחד</string>
+  <string name="PhoneNumberPrivacy_my_contacts_see_description">רק אנשי הקשר שלך יראו את מספר הטלפון שלך ב־Signal.</string>
   <string name="preferences_app_protection__screen_lock">נעילת מסך</string>
   <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">נעל גישה אל Signal באמצעות נעילת מסך או טביעת אצבע</string>
   <string name="preferences_app_protection__screen_lock_inactivity_timeout">פסק זמן אי־פעילות של נעילת מסך</string>
@@ -2313,7 +2324,7 @@
   <string name="GroupsLearnMore_legacy_vs_new_groups">קבוצות מיושנות לעומת חדשות</string>
   <string name="GroupsLearnMore_what_are_legacy_groups">מהן קבוצות מיושנות?</string>
   <string name="GroupsLearnMore_paragraph_1">קבוצות מיושנות הן קבוצות שאינן תואמות עם מאפיינים של קבוצה חדשה כמו מנהלנים ועדכוני קבוצה תיאוריים יותר.</string>
-  <string name="GroupsLearnMore_how_do_i_use_new_groups">איך אני משתמש בקבוצות חדשות?</string>
+  <!-- Removed by excludeNonTranslatables <string name="GroupsLearnMore_how_do_i_use_new_groups">איך אני משתמש בקבוצות חדשות?</string> -->
   <string name="GroupsLearnMore_paragraph_2">קבוצות מיושנות אינן ניתנות להמרה אל קבוצות חדשות, אבל אתה יכול ליצור קבוצה חדשה עם אותם חברי קבוצה.</string>
   <string name="GroupsLearnMore_paragraph_3">כדי ליצור קבוצה חדשה, כל חברי הקבוצה צריכים לעדכן אל הגרסה האחרונה של Signal.</string>
   <!--GroupLinkBottomSheetDialogFragment-->

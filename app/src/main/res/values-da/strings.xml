@@ -2078,8 +2078,8 @@ Modtog en nøgle besked, for en ugyldig protokol-version
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Du vil blive påmindet senere. Oprettelse af PIN vil blive krævet om %1$d dage</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Du vil blive påmindet senere. Bekræftelse af din PIN vil blive krævet om %1$d dage</string>
   <!--Mention Megaphone-->
-  <string name="MentionsMegaphone__introducing_mentions">Introducerer @Omtaler</string>
-  <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Få nogens opmærksomhed i en \"Ny gruppe\" ved at skrive @</string>
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__introducing_mentions">Introducerer @Omtaler</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Få nogens opmærksomhed i en \"Ny gruppe\" ved at skrive @</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Transport ikon</string>
   <string name="ConversationListFragment_loading">Henter…</string>
@@ -2189,7 +2189,7 @@ Der er %d dage tilbage</string>
   <string name="RegistrationLockDialog_registration_lock_is_enabled_for_your_phone_number">Registreringslås er slået til for dit telefonnummer. For at hjælpe dig med at huske PIN-koden, beder Signal dig bekræfte den periodisk</string>
   <string name="RegistrationLockDialog_i_forgot_my_pin">Jeg har glemt min PIN-kode</string>
   <string name="RegistrationLockDialog_forgotten_pin">Glemt PIN-kode?</string>
-  <string name="RegistrationLockDialog_registration_lock_helps_protect_your_phone_number_from_unauthorized_registration_attempts">Registreringslås hjælper dig med at beskytte dit telefonnummer fra uautoriserede registreringsforsøg. Denne funktion kan til enhver tid slås fra under Privatlivsindstillinger</string>
+  <string name="RegistrationLockDialog_registration_lock_helps_protect_your_phone_number_from_unauthorized_registration_attempts">Registreringslås hjælper dig med at beskytte dit telefonnummer fra uautoriserede registreringsforsøg. Denne funktion kan til enhver tid slås fra i dine Signal privatlivsindstillinger</string>
   <string name="RegistrationLockDialog_registration_lock">Registreringslås</string>
   <string name="RegistrationLockDialog_enable">Aktivér</string>
   <string name="RegistrationLockDialog_the_registration_lock_pin_must_be_at_least_d_digits">Registreringslås PIN skal være på mindst %d cifre</string>
@@ -2199,7 +2199,7 @@ Der er %d dage tilbage</string>
   <string name="RegistrationLockDialog_disable">Deaktivér</string>
   <string name="RegistrationActivity_pin_incorrect">Forkert PIN</string>
   <string name="RegistrationActivity_you_have_d_tries_remaining">Du har %d forsøg tilbage</string>
-  <string name="preferences_chats__backups">Backup´s</string>
+  <string name="preferences_chats__backups">Backups</string>
   <string name="prompt_passphrase_activity__signal_is_locked">Signal er låst</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">TAP FOR AT LÅSE OP</string>
   <string name="RegistrationLockDialog_reminder">Påmindelse:</string>
@@ -2231,7 +2231,7 @@ Der er %d dage tilbage</string>
   <string name="GroupsLearnMore_legacy_vs_new_groups">Forældede vs. nye grupper</string>
   <string name="GroupsLearnMore_what_are_legacy_groups">Hvad er forældede grupper?</string>
   <string name="GroupsLearnMore_paragraph_1">Forældede grupper, er grupper der ikke er kompatible med nye gruppefunktioner, som administratorer og mere beskrivende opdateringer af grupper</string>
-  <string name="GroupsLearnMore_how_do_i_use_new_groups">Hvordan bruger jeg nye grupper?</string>
+  <!-- Removed by excludeNonTranslatables <string name="GroupsLearnMore_how_do_i_use_new_groups">Hvordan bruger jeg nye grupper?</string> -->
   <string name="GroupsLearnMore_paragraph_2">Forældede grupper kan ikke konverteres til nye grupper, men du kan oprette en ny gruppe med de samme medlemmer</string>
   <string name="GroupsLearnMore_paragraph_3">For at oprette en ny gruppe, skal alle medlemmer opdatere til den nyeste version af Signal</string>
   <!--GroupLinkBottomSheetDialogFragment-->

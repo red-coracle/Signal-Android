@@ -2004,8 +2004,8 @@ Nhận thông tin trao đổi mã khóa về phiên bản giao thức không h�
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Chúng tôi sẽ nhắc bạn sau. Việc tạo mã PIN sẽ trở nên bắt buộc sau %1$d ngày.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Chúng tôi sẽ nhắc bạn sau. Xác minh mã PIN của bạn sẽ trở nên bắt buộc sau %1$d ngày.</string>
   <!--Mention Megaphone-->
-  <string name="MentionsMegaphone__introducing_mentions">Giới thiệu tính năng @Nhắc tên</string>
-  <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Lấy sự chú ý của ai đó trong \"Nhóm Mới\" bằng cách gõ @</string>
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__introducing_mentions">Giới thiệu tính năng @Nhắc tên</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Lấy sự chú ý của ai đó trong \"Nhóm Mới\" bằng cách gõ @</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Biểu tượng chuyển tải</string>
   <string name="ConversationListFragment_loading">Đang tải…</string>
@@ -2156,7 +2156,7 @@ Nhận thông tin trao đổi mã khóa về phiên bản giao thức không h�
   <string name="GroupsLearnMore_legacy_vs_new_groups">Nhóm Mới và Nhóm Cũ</string>
   <string name="GroupsLearnMore_what_are_legacy_groups">Nhóm Cũ là gì?</string>
   <string name="GroupsLearnMore_paragraph_1">Nhóm Cũ là nhóm không tương thích với các tính năng mới như quản trị viên hay cập nhật cụ thể thông tin nhóm.</string>
-  <string name="GroupsLearnMore_how_do_i_use_new_groups">Làm thế nào tôi có thể sử dụng Nhóm Mới?</string>
+  <!-- Removed by excludeNonTranslatables <string name="GroupsLearnMore_how_do_i_use_new_groups">Làm thế nào tôi có thể sử dụng Nhóm Mới?</string> -->
   <string name="GroupsLearnMore_paragraph_2">Nhóm Cũ không thể được chuyển đổi thành Nhóm Mới, nhưng bạn có thể tạo một Nhóm Mới với những thành viên cũ.</string>
   <string name="GroupsLearnMore_paragraph_3">Để tạo Nhóm Mới, tất cả thành viên cần phải cập nhật lên phiên bản Signal mới nhất.</string>
   <!--GroupLinkBottomSheetDialogFragment-->

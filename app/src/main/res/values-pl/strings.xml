@@ -531,7 +531,7 @@
   <string name="ManageGroupActivity_member_requests_and_invites">Prośby o przyjęcie i zaproszenia</string>
   <string name="ManageGroupActivity_add_members">Dodaj członków</string>
   <string name="ManageGroupActivity_edit_group_info">Edytuj informacje o grupie</string>
-  <string name="ManageGroupActivity_choose_who_can_edit_the_group_name_avatar_and_disappearing_messages">Wybierz kto może edytować nazwę i awatara grupy, oraz czas znikania wiadomości.</string>
+  <string name="ManageGroupActivity_choose_who_can_edit_the_group_name_avatar_and_disappearing_messages">Kto może edytować nazwę i awatara grupy, i czas znikania wiadomości.</string>
   <string name="ManageGroupActivity_choose_who_can_add_or_invite_new_members">Wybierz, kto może dodawać lub zapraszać nowych członków.</string>
   <string name="ManageGroupActivity_group_link">Link do grupy</string>
   <string name="ManageGroupActivity_block_group">Zablokuj grupę</string>
@@ -2194,8 +2194,8 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Przypomnimy Ci o tym później. Utworzenie PINu stanie się obowiązkowe za %1$d dni.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Przypomnimy Ci o tym później. Potwierdzenie Twojego PINu stanie się obowiązkowe za %1$d dni.</string>
   <!--Mention Megaphone-->
-  <string name="MentionsMegaphone__introducing_mentions">Przedstawiamy @wzmianki</string>
-  <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Przyciągnij czyjąś uwagę w \"Nowej grupie\", wpisując @</string>
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__introducing_mentions">Przedstawiamy @wzmianki</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Przyciągnij czyjąś uwagę w \"Nowej grupie\", wpisując @</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Ikona transportu</string>
   <string name="ConversationListFragment_loading">Wczytywanie…</string>
@@ -2327,7 +2327,7 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="RecipientBottomSheet_add_to_a_group">Dodaj do grupy</string>
   <string name="RecipientBottomSheet_add_to_another_group">Dodaj do innej grupy</string>
   <string name="RecipientBottomSheet_view_safety_number">Zobacz numer bezpieczeństwa</string>
-  <string name="RecipientBottomSheet_make_group_admin">Mianuj administratorem grupy</string>
+  <string name="RecipientBottomSheet_make_group_admin">Mianuj administratorem</string>
   <string name="RecipientBottomSheet_remove_as_admin">Usuń administratora</string>
   <string name="RecipientBottomSheet_remove_from_group">Usuń z grupy</string>
   <string name="RecipientBottomSheet_message_description">Wiadomość</string>
@@ -2346,7 +2346,7 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="GroupsLearnMore_legacy_vs_new_groups">Stare vs. Nowe grupy</string>
   <string name="GroupsLearnMore_what_are_legacy_groups">Czym są Stare grupy?</string>
   <string name="GroupsLearnMore_paragraph_1">Stare grupy nie obsługują takich funkcji nowych grup jak administratorzy i dokładniejsze informacje o zmianach w grupach.</string>
-  <string name="GroupsLearnMore_how_do_i_use_new_groups">Jak skorzystać z Nowych grup?</string>
+  <!-- Removed by excludeNonTranslatables <string name="GroupsLearnMore_how_do_i_use_new_groups">Jak skorzystać z Nowych grup?</string> -->
   <string name="GroupsLearnMore_paragraph_2">Starych grup nie można przekonwertować na Nowe, ale możesz stworzyć Nową grupę z tymi samymi członkami.</string>
   <string name="GroupsLearnMore_paragraph_3">Aby utworzyć Nową grupę, wszyscy członkowie muszą zaktualizować Signal do najnowszej wersji.</string>
   <!--GroupLinkBottomSheetDialogFragment-->

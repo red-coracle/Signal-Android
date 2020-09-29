@@ -622,7 +622,9 @@
 
     <string name="ManageGroupActivity_edit_name_and_picture">Edit name and picture</string>
     <string name="ManageGroupActivity_legacy_group">Legacy Group</string>
-    <string name="ManageGroupActivity_legacy_group_learn_more">This is a Legacy Group. To access features like group admins, create a New Group.</string>
+    <string name="ManageGroupActivity_legacy_group_learn_more">This is a Legacy Group. Features like group admins are only available for New Groups.</string>
+    <string name="ManageGroupActivity_this_is_an_insecure_mms_group">This is an insecure MMS Group. To chat privately and access features like group names, invite your contacts to Signal.</string>
+    <string name="ManageGroupActivity_invite_now">Invite now</string>
 
     <!-- GroupMentionSettingDialog -->
     <string name="GroupMentionSettingDialog_notify_me_for_mentions">Notify me for Mentions</string>
@@ -725,6 +727,7 @@
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_coming_soon">Joining a group via a link is not yet supported by Signal. This feature will be released in an upcoming update.</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">The version of Signal you’re using does not support group links. Update to the latest version to join this group via link.</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Update Signal</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_linked_device_message">One or more of your linked devices are running a version of Signal that doesn\'t support group links. Update Signal on your linked device(s) to join this group.</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">Group link is not valid</string>
 
     <!-- GV2 Request confirmation dialog -->
@@ -1199,10 +1202,21 @@
     <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">To call %1$s, Signal needs access to your camera</string>
     <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
     <string name="WebRtcCallActivity__calling">Calling…</string>
+    <string name="WebRtcCallActivity__group_call">Group Call</string>
 
     <!-- WebRtcCallView -->
     <string name="WebRtcCallView__signal_voice_call">Signal voice call…</string>
     <string name="WebRtcCallView__signal_video_call">Signal video call…</string>
+    <string name="WebRtcCallView__start_call">Start Call</string>
+    <string name="WebRtcCallView__group_call">Group Call</string>
+    <string name="WebRtcCallView__view_participants_list">View participants</string>
+    <string name="WebRtcCallView__your_video_is_off">Your video is off</string>
+
+    <!-- CallParticipantsListDialog -->
+    <plurals name="CallParticipantsListDialog_in_this_call_d_people">
+        <item quantity="one">In this call · %1$d person</item>
+        <item quantity="other">In this call · %1$d people</item>
+    </plurals>
 
     <!-- RegistrationActivity -->
     <string name="RegistrationActivity_select_your_country">Select your country</string>
@@ -1687,6 +1701,9 @@
 
     <!-- conversation_item_received -->
     <string name="conversation_item_received__contact_photo_description">Contact photo</string>
+
+    <!-- ConversationUpdateItem -->
+    <string name="ConversationUpdateItem_loading">Loading</string>
 
     <!-- audio_view -->
     <string name="audio_view__play_pause_accessibility_description">Play … Pause</string>
@@ -2475,9 +2492,17 @@
     <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">We\'ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
     <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">We\'ll remind you later. Confirming your PIN will become mandatory in %1$d days.</string>
 
-    <!-- Mention Megaphone -->
-    <string name="MentionsMegaphone__introducing_mentions">Introducing @Mentions</string>
-    <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Get someone\'s attention in a \"New Group\" by typing @</string>
+    <!-- Research Megaphone -->
+    <string name="ResearchMegaphone_tell_signal_what_you_think">Tell Signal what you think</string>
+    <string name="ResearchMegaphone_to_make_signal_the_best_messaging_app_on_the_planet">To make Signal the best messaging app on the planet, we\'d love to hear your feedback.</string>
+    <string name="ResearchMegaphone_learn_more">Learn more</string>
+    <string name="ResearchMegaphone_dismiss">Dismiss</string>
+
+    <string name="ResearchMegaphoneDialog_signal_research">Signal Research</string>
+    <string name="ResearchMegaphoneDialog_we_believe_in_privacy"><![CDATA[<p><b>We believe in privacy.</b></p><p>Signal doesn\'t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <b>and we\'d love yours.</b></p><p>We\'re running a survey to understand how you use Signal. Our survey doesn\'t collect any data that will identify you. If you’re interested in sharing additional feedback, you\'ll have the option to provide contact information.</p><p>If you have a few minutes and feedback to offer, we\'d love to hear from you.</p>]]></string>
+    <string name="ResearchMegaphoneDialog_take_the_survey">Take the survey</string>
+    <string name="ResearchMegaphoneDialog_no_thanks">No thanks</string>
+    <string name="ResearchMegaphoneDialog_the_survey_is_hosted_by_surveygizmo_at_the_secure_domain">The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org</string>
 
     <!-- transport_selection_list_item -->
     <string name="transport_selection_list_item__transport_icon">Transport icon</string>
@@ -2635,9 +2660,9 @@
     <string name="GroupsLearnMore_legacy_vs_new_groups">Legacy vs. New Groups</string>
     <string name="GroupsLearnMore_what_are_legacy_groups">What are Legacy Groups?</string>
     <string name="GroupsLearnMore_paragraph_1">Legacy Groups are groups that are not compatible with New Group features like admins and more descriptive group updates.</string>
-    <string name="GroupsLearnMore_how_do_i_use_new_groups">How do I use New Groups?</string>
-    <string name="GroupsLearnMore_paragraph_2">Legacy Groups can’t be converted into New Groups, but you can create a New Group with the same members.</string>
-    <string name="GroupsLearnMore_paragraph_3">To create a New Group, all members should update to the latest version of Signal.</string>
+    <string name="GroupsLearnMore_can_i_upgrade_a_legacy_group">Can I upgrade a Legacy Group?</string>
+    <string name="GroupsLearnMore_paragraph_2">Legacy Groups can\'t yet be upgraded to New Groups, but you can create a New Group with the same members if they\'re on the latest version of Signal.</string>
+    <string name="GroupsLearnMore_paragraph_3">Signal will offer a way to upgrade Legacy Groups in the future.</string>
 
     <!-- GroupLinkBottomSheetDialogFragment -->
     <string name="GroupLinkBottomSheet_share_via_signal">Share via Signal</string>

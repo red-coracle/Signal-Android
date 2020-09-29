@@ -1977,8 +1977,8 @@
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Tuletame sulle hiljem meelde. PIN-koodi loomine muutub %1$d päeva pärast kohustuslikuks.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Tuletame sulle hiljem meelde. PIN-koodi kinnitamine muutub %1$d päeva pärast kohustuslikuks.</string>
   <!--Mention Megaphone-->
-  <string name="MentionsMegaphone__introducing_mentions">Tutvustame @mainimisi</string>
-  <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Võida \"uues grupis\" kellegi tähelepanu, kirjutades @</string>
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__introducing_mentions">Tutvustame @mainimisi</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Võida \"uues grupis\" kellegi tähelepanu, kirjutades @</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Transpordi ikoon</string>
   <string name="ConversationListFragment_loading">Laadimine…</string>
@@ -2119,11 +2119,12 @@
   <string name="GroupsLearnMore_legacy_vs_new_groups">Vanad vs uued grupid</string>
   <string name="GroupsLearnMore_what_are_legacy_groups">Mis on vana tüüpi grupid?</string>
   <string name="GroupsLearnMore_paragraph_1">Vana tüüpi grupid on need grupid, mis pole ühilduvad uut tüüpi gruppide funktsionaalsustega nagu administraatorid ja rohkem kirjeldavad grupi muudatused.</string>
-  <string name="GroupsLearnMore_how_do_i_use_new_groups">Kuidas ma saan uusi gruppe kasutada?</string>
+  <!-- Removed by excludeNonTranslatables <string name="GroupsLearnMore_how_do_i_use_new_groups">Kuidas ma saan uusi gruppe kasutada?</string> -->
   <string name="GroupsLearnMore_paragraph_2">Vana tüüpi gruppe ei saa uut tüüpi gruppideks teisendada, aga sa saad luua samade liikmetega uut tüüpi grupi.</string>
   <string name="GroupsLearnMore_paragraph_3">Uue grupi loomiseks peavad kõik liikmed uuendama enda Signal-i uusimale versioonile.</string>
   <!--GroupLinkBottomSheetDialogFragment-->
   <string name="GroupLinkBottomSheet_copy">Kopeeri</string>
+  <string name="GroupLinkBottomSheet_qr_code">QR-kood</string>
   <string name="GroupLinkBottomSheet_share">Jaga</string>
   <string name="GroupLinkBottomSheet_copied_to_clipboard">Lõikelauale kopeeritud</string>
   <!--EOF-->

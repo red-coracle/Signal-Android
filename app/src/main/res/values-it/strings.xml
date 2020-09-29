@@ -2078,8 +2078,8 @@
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra %1$d giorni.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Te lo ricorderemo più tardi. Confermare il tuo PIN diventerà obbligatorio tra %1$d giorni.</string>
   <!--Mention Megaphone-->
-  <string name="MentionsMegaphone__introducing_mentions">Ti presentiamo le @menzioni</string>
-  <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Attira l\'attenzione di qualcuno in un \"Nuovo Gruppo\" scrivendo @</string>
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__introducing_mentions">Ti presentiamo le @menzioni</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Attira l\'attenzione di qualcuno in un \"Nuovo Gruppo\" scrivendo @</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Icona trasporto</string>
   <string name="ConversationListFragment_loading">Caricamento…</string>
@@ -2230,7 +2230,7 @@
   <string name="GroupsLearnMore_legacy_vs_new_groups">Gruppi Legacy vs. Nuovi</string>
   <string name="GroupsLearnMore_what_are_legacy_groups">Cos\'è un Gruppo Legacy?</string>
   <string name="GroupsLearnMore_paragraph_1">I Gruppi Legacy sono gruppi che non sono compatibili con le funzionalità dei Nuovi Gruppi come amministratori e aggiornamenti del gruppo più descrittivi.</string>
-  <string name="GroupsLearnMore_how_do_i_use_new_groups">Come si usano i Nuovi Gruppi?</string>
+  <!-- Removed by excludeNonTranslatables <string name="GroupsLearnMore_how_do_i_use_new_groups">Come si usano i Nuovi Gruppi?</string> -->
   <string name="GroupsLearnMore_paragraph_2">I Gruppi Legacy non possono essere convertiti in Nuovi Gruppi, ma puoi creare un Nuovo Gruppo con gli stessi membri.</string>
   <string name="GroupsLearnMore_paragraph_3">Per creare un Nuovo Gruppo, tutti i membri devono eseguire l\'aggiornamento all\'ultima versione di Signal.</string>
   <!--GroupLinkBottomSheetDialogFragment-->

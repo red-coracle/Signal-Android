@@ -798,12 +798,12 @@
   <string name="MessageRecord_you_are_no_longer_an_admin">Et ole enää ylläpitäjä.</string>
   <!--GV2 invitations-->
   <string name="MessageRecord_you_invited_s_to_the_group">Kutsuit käyttäjän %1$s ryhmään.</string>
-  <string name="MessageRecord_s_invited_you_to_the_group">%1$s kutsui sinut ryhmään.</string>
+  <string name="MessageRecord_s_invited_you_to_the_group">%1$s kutsui sinut liittymään ryhmään.</string>
   <plurals name="MessageRecord_s_invited_members">
     <item quantity="one">%1$s kutsui 1 henkilön ryhmään.</item>
     <item quantity="other">%1$s kutsui %2$d henkilöä ryhmään.</item>
   </plurals>
-  <string name="MessageRecord_you_were_invited_to_the_group">Sinut kutsuttiin ryhmään.</string>
+  <string name="MessageRecord_you_were_invited_to_the_group">Sinut kutsuttiin liittymään ryhmään.</string>
   <plurals name="MessageRecord_d_people_were_invited_to_the_group">
     <item quantity="one">1 henkilö kutsuttiin ryhmään.</item>
     <item quantity="other">%1$d henkilöä kutsuttiin ryhmään.</item>
@@ -811,7 +811,7 @@
   <!--GV2 invitation revokes-->
   <plurals name="MessageRecord_you_revoked_invites">
     <item quantity="one">Peruutit yhden kutsun ryhmään.</item>
-    <item quantity="other">Peruutit %1$d kutsua ryhmään.</item>
+    <item quantity="other">Peruutit %1$d kutsua liittyä ryhmään.</item>
   </plurals>
   <plurals name="MessageRecord_s_revoked_invites">
     <item quantity="one">%1$s perui yhden kutsun ryhmään.</item>
@@ -847,8 +847,14 @@
   <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">%1$s muutti kuka voi muokata ryhmän jäsenyyttä käyttäjiin \"%2$s\".</string>
   <string name="MessageRecord_who_can_edit_group_membership_has_been_changed_to_s">Ryhmän jäsenyyttä voi nyt muokata \"%1$s\".</string>
   <!--GV2 group link invite access level change-->
+  <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_off">Otit ryhmälinkin käyttöön ilman jäsenten hyväksymistä.</string>
+  <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_on">Otit ryhmälinkin käyttöön. Ylläpitäjä tarkistaa ryhmäänliittymispyynnöt.</string>
   <string name="MessageRecord_you_turned_off_the_group_link">Poistit ryhmälinkin käytöstä.</string>
+  <string name="MessageRecord_s_turned_on_the_group_link_with_admin_approval_off">%1$s otti ryhmälinkin käyttöön. Jäsenten hyväksyminen ei ole käytössä.</string>
+  <string name="MessageRecord_s_turned_on_the_group_link_with_admin_approval_on">%1$s otti ryhmälinkin käyttöön. Ylläpitäjä tarkistaa ryhmäänliittymispyynnöt.</string>
   <string name="MessageRecord_s_turned_off_the_group_link">%1$s poisti ryhmälinkin käytöstä.</string>
+  <string name="MessageRecord_the_group_link_has_been_turned_on_with_admin_approval_off">Ryhmälinkki on otettu käyttöön. Jäsenten hyväksyminen ei ole käytössä.</string>
+  <string name="MessageRecord_the_group_link_has_been_turned_on_with_admin_approval_on">Ryhmälinkki on otettu käyttöön. Ylläpitäjä tarkistaa ryhmäänliittymispyynnöt.</string>
   <string name="MessageRecord_the_group_link_has_been_turned_off">Ryhmälinkki on poistettu käytöstä.</string>
   <!--GV2 group link reset-->
   <string name="MessageRecord_you_reset_the_group_link">Sinä uudelleenasetit ryhmälinkin.</string>
@@ -2066,8 +2072,8 @@ Vastaanotetiin avaintenvaihtoviesti, joka kuuluu väärälle protokollaversiolle
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Muistutamme sinua myöhemmin. PIN-koodin luomisesta tulee pakollinen %1$d päivän kuluttua.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Muistutamme sinua myöhemmin. PIN-koodin vahvistamisesta tulee pakollinen %1$d päivän kuluttua.</string>
   <!--Mention Megaphone-->
-  <string name="MentionsMegaphone__introducing_mentions">Esittelemme @maininnat</string>
-  <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Saa toisen huomio ”uudessa ryhmässä” kirjoittamalla @</string>
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__introducing_mentions">Esittelemme @maininnat</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Saa toisen huomio ”uudessa ryhmässä” kirjoittamalla @</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Tyypin kuvake</string>
   <string name="ConversationListFragment_loading">Ladataan…</string>
@@ -2218,7 +2224,7 @@ Vastaanotetiin avaintenvaihtoviesti, joka kuuluu väärälle protokollaversiolle
   <string name="GroupsLearnMore_legacy_vs_new_groups">Vanhan tyyliset vs. uudet ryhmät</string>
   <string name="GroupsLearnMore_what_are_legacy_groups">Mitä ovat vanhan tyylin ryhmät?</string>
   <string name="GroupsLearnMore_paragraph_1">Vanhan tyylin ryhmät ovat ryhmiä, jotka eivät ole yhteensopivia uusien ryhmien ominaisuuksien kanssa, kuten ylläpitäjyyden ja kuvaavien ryhmäpäivityksien.</string>
-  <string name="GroupsLearnMore_how_do_i_use_new_groups">Kuinka voin käyttää uusia ryhmiä?</string>
+  <!-- Removed by excludeNonTranslatables <string name="GroupsLearnMore_how_do_i_use_new_groups">Kuinka voin käyttää uusia ryhmiä?</string> -->
   <string name="GroupsLearnMore_paragraph_2">Vanhan tyylin ryhmiä ei voida muuttaa uusiksi ryhmiksi, mutta voit luoda uuden ryhmän samoilla jäsenillä.</string>
   <string name="GroupsLearnMore_paragraph_3">Uuden ryhmän luomiseksi kaikkien jäsenten tulee päivittää Signalin uusimpaan versioon.</string>
   <!--GroupLinkBottomSheetDialogFragment-->

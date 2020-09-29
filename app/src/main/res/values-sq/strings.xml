@@ -2081,8 +2081,8 @@ spastrohet dhe krejt lënda do të fshihet.</item>
   <string name="KbsMegaphone__well_remind_you_later_creating_a_pin">Do t’jua kujtojmë më vonë. Krijimi i një PIN-i do të jetë i detyrueshëm pas %1$d ditësh.</string>
   <string name="KbsMegaphone__well_remind_you_later_confirming_your_pin">Do t’jua kujtojmë më vonë. Ripohimi i PIN-it tuaj do të jetë i detyrueshëm pas %1$d ditësh.</string>
   <!--Mention Megaphone-->
-  <string name="MentionsMegaphone__introducing_mentions">Ju paraqesim @Përmendjet</string>
-  <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Tërhiqini vëmendjen dikujt në një “Grup të Ri” duke shtypur @</string>
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__introducing_mentions">Ju paraqesim @Përmendjet</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="MentionsMegaphone__get_someones_attention_in_a_group_by_typing">Tërhiqini vëmendjen dikujt në një “Grup të Ri” duke shtypur @</string> -->
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Ikonë bartjesh</string>
   <string name="ConversationListFragment_loading">Po ngarkohet…</string>
@@ -2233,7 +2233,7 @@ spastrohet dhe krejt lënda do të fshihet.</item>
   <string name="GroupsLearnMore_legacy_vs_new_groups">Grupe të Dikurshëm vs. Grupesh të Rinj</string>
   <string name="GroupsLearnMore_what_are_legacy_groups">Ç’janë Grupet e Dikurshëm?</string>
   <string name="GroupsLearnMore_paragraph_1">Grupet e dikurshëm janë grupe që nuk janë të përputhshëm me veçori Grupesh të Rinj, bie fjala, përgjegjës dhe përditësime grupi më përshkruese.</string>
-  <string name="GroupsLearnMore_how_do_i_use_new_groups">Si t’i përdor Grupet e Rinj?</string>
+  <!-- Removed by excludeNonTranslatables <string name="GroupsLearnMore_how_do_i_use_new_groups">Si t’i përdor Grupet e Rinj?</string> -->
   <string name="GroupsLearnMore_paragraph_2">Grupet e Dikurshëm s’mund të shndërrohen në Grupe të Rinj, por mund të krijoni një Grup të ri me të njëjtët anëtarë.</string>
   <string name="GroupsLearnMore_paragraph_3">Që të krijoni një Grup të Ri, krejt anëtarët duhet ta përditësojnë Signal-in me versionin më të ri.</string>
   <!--GroupLinkBottomSheetDialogFragment-->
