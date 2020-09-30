@@ -87,7 +87,6 @@ public final class FeatureFlags {
    */
   @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
   private static final Map<String, Object> FORCED_VALUES = new HashMap<String, Object>() {{
-    put(USERNAMES, true);
   }};
 
   /**
