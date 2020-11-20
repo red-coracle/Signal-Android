@@ -15,6 +15,7 @@ import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.logsubmit.util.Scrubber;
 import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
+import org.thoughtcrime.securesms.tracing.Tracer;
 import org.thoughtcrime.securesms.util.concurrent.SignalExecutors;
 import org.whispersystems.libsignal.util.guava.Optional;
 
@@ -22,9 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 import okhttp3.MediaType;
@@ -59,10 +58,13 @@ public class SubmitDebugLogRepository {
       add(new LogSectionPower());
     }
     add(new LogSectionPin());
-    add(new LogSectionThreads());
     add(new LogSectionCapabilities());
     add(new LogSectionFeatureFlags());
     add(new LogSectionPermissions());
+    if (Tracer.getInstance().isEnabled()) {
+      add(new LogSectionTrace());
+    }
+    add(new LogSectionThreads());
     add(new LogSectionLogcat());
     add(new LogSectionLogger());
   }};
@@ -134,30 +136,18 @@ public class SubmitDebugLogRepository {
 
     int maxTitleLength = Stream.of(SECTIONS).reduce(0, (max, section) -> Math.max(max, section.getTitle().length()));
 
-    List<Future<List<LogLine>>> futures = new ArrayList<>();
-
-    for (LogSection section : SECTIONS) {
-      futures.add(SignalExecutors.BOUNDED.submit(() -> {
-        List<LogLine> lines = getLinesForSection(context, section, maxTitleLength);
-
-        if (SECTIONS.indexOf(section) != SECTIONS.size() - 1) {
-          for (int i = 0; i < SECTION_SPACING; i++) {
-            lines.add(SimpleLogLine.EMPTY);
-          }
-        }
-
-        return lines;
-      }));
-    }
-
     List<LogLine> allLines = new ArrayList<>();
 
-    for (Future<List<LogLine>> future : futures) {
-      try {
-        allLines.addAll(future.get());
-      } catch (ExecutionException | InterruptedException e) {
-        throw new AssertionError(e);
+    for (LogSection section : SECTIONS) {
+      List<LogLine> lines = getLinesForSection(context, section, maxTitleLength);
+
+      if (SECTIONS.indexOf(section) != SECTIONS.size() - 1) {
+        for (int i = 0; i < SECTION_SPACING; i++) {
+          lines.add(SimpleLogLine.EMPTY);
+        }
       }
+
+      allLines.addAll(lines);
     }
 
     List<LogLine> withIds = new ArrayList<>(allLines.size());

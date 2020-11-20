@@ -35,6 +35,7 @@ import org.thoughtcrime.securesms.revealable.ViewOnceExpirationInfo;
 import org.thoughtcrime.securesms.sms.IncomingTextMessage;
 import org.thoughtcrime.securesms.sms.OutgoingTextMessage;
 import org.thoughtcrime.securesms.util.JsonUtils;
+import org.thoughtcrime.securesms.util.SqlUtil;
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.util.Pair;
 import org.whispersystems.libsignal.util.guava.Optional;
@@ -48,6 +49,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 public abstract class MessageDatabase extends Database implements MmsSmsColumns {
 
@@ -83,6 +85,7 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
   public abstract boolean hasReceivedAnyCallsSince(long threadId, long timestamp);
   public abstract @Nullable ViewOnceExpirationInfo getNearestExpiringViewOnceMessage();
   public abstract boolean isSent(long messageId);
+  public abstract List<MessageRecord> getProfileChangeDetailsRecords(long threadId, long afterTimestamp);
 
   public abstract void markExpireStarted(long messageId);
   public abstract void markExpireStarted(long messageId, long startTime);
@@ -108,7 +111,7 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
   public abstract void markUnidentified(long messageId, boolean unidentified);
   public abstract void markAsSending(long messageId);
   public abstract void markAsRemoteDelete(long messageId);
-  public abstract void markAsMissedCall(long id);
+  public abstract void markAsMissedCall(long id, boolean isVideoOffer);
   public abstract void markAsNotified(long id);
   public abstract void markSmsStatus(long id, int status);
   public abstract void markDownloadState(long messageId, long state);
@@ -124,9 +127,15 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
   public abstract void addFailures(long messageId, List<NetworkFailure> failure);
   public abstract void removeFailure(long messageId, NetworkFailure failure);
 
-  public abstract @NonNull Pair<Long, Long> insertReceivedCall(@NonNull RecipientId address);
-  public abstract @NonNull Pair<Long, Long> insertOutgoingCall(@NonNull RecipientId address);
-  public abstract @NonNull Pair<Long, Long> insertMissedCall(@NonNull RecipientId address, long timestamp);
+  public abstract @NonNull Pair<Long, Long> insertReceivedCall(@NonNull RecipientId address, boolean isVideoOffer);
+  public abstract @NonNull Pair<Long, Long> insertOutgoingCall(@NonNull RecipientId address, boolean isVideoOffer);
+  public abstract @NonNull Pair<Long, Long> insertMissedCall(@NonNull RecipientId address, long timestamp, boolean isVideoOffer);
+  public abstract @NonNull void insertOrUpdateGroupCall(@NonNull RecipientId groupRecipientId,
+                                                        @NonNull RecipientId sender,
+                                                        long timestamp,
+                                                        @Nullable String messageGroupCallEraId,
+                                                        @Nullable String peekGroupCallEraId,
+                                                        @NonNull Collection<UUID> peekJoinedUuids);
 
   public abstract Optional<InsertResult> insertMessageInbox(IncomingTextMessage message, long type);
   public abstract Optional<InsertResult> insertMessageInbox(IncomingTextMessage message);
@@ -137,6 +146,7 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
   public abstract long insertMessageOutbox(@NonNull OutgoingMediaMessage message, long threadId, boolean forceSms, @Nullable SmsDatabase.InsertListener insertListener) throws MmsException;
   public abstract long insertMessageOutbox(@NonNull OutgoingMediaMessage message, long threadId, boolean forceSms, int defaultReceiptStatus, @Nullable SmsDatabase.InsertListener insertListener) throws MmsException;
   public abstract void insertProfileNameChangeMessages(@NonNull Recipient recipient, @NonNull String newProfileName, @NonNull String previousProfileName);
+  public abstract void insertGroupV1MigrationEvents(@NonNull RecipientId recipientId, long threadId, List<RecipientId> pendingRecipients);
 
   public abstract boolean deleteMessage(long messageId);
   abstract void deleteThread(long threadId);
@@ -145,7 +155,6 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
   abstract void deleteAllThreads();
   abstract void deleteAbandonedMessages();
 
-  public abstract List<MessageRecord> getMessagesInThreadBeforeExclusive(long threadId, long timestamp, long limit);
   public abstract List<MessageRecord> getMessagesInThreadAfterInclusive(long threadId, long timestamp, long limit);
 
   public abstract SQLiteDatabase beginTransaction();
@@ -331,6 +340,20 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
     }
 
     return false;
+  }
+
+  public void setNotifiedTimestamp(long timestamp, @NonNull List<Long> ids) {
+    if (ids.isEmpty()) {
+      return;
+    }
+
+    SQLiteDatabase db     = databaseHelper.getWritableDatabase();
+    SqlUtil.Query  where  = SqlUtil.buildCollectionQuery(ID, ids);
+    ContentValues  values = new ContentValues();
+
+    values.put(NOTIFIED_TIMESTAMP, timestamp);
+
+    db.update(getTableName(), values, where.getWhere(), where.getWhereArgs());
   }
 
   public void addMismatchedIdentity(long messageId, @NonNull RecipientId recipientId, IdentityKey identityKey) {

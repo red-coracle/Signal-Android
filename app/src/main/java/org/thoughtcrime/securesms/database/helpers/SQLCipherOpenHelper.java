@@ -64,7 +64,6 @@ import org.thoughtcrime.securesms.util.SqlUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Triple;
 import org.thoughtcrime.securesms.util.Util;
-import org.whispersystems.signalservice.internal.push.SignalServiceProtos;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -157,8 +156,12 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper {
   private static final int MENTION_CLEANUP                  = 76;
   private static final int MENTION_CLEANUP_V2               = 77;
   private static final int REACTION_CLEANUP                 = 78;
+  private static final int CAPABILITIES_REFACTOR            = 79;
+  private static final int GV1_MIGRATION                    = 80;
+  private static final int NOTIFIED_TIMESTAMP               = 81;
+  private static final int GV1_MIGRATION_LAST_SEEN          = 82;
 
-  private static final int    DATABASE_VERSION = 78;
+  private static final int    DATABASE_VERSION = 82;
   private static final String DATABASE_NAME    = "signal.db";
 
   private final Context        context;
@@ -1129,6 +1132,42 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.putNull("reactions");
         db.update("sms", values, "remote_deleted = ?", new String[] { "1" });
+      }
+
+      if (oldVersion < CAPABILITIES_REFACTOR) {
+        db.execSQL("ALTER TABLE recipient ADD COLUMN capabilities INTEGER DEFAULT 0");
+
+        db.execSQL("UPDATE recipient SET capabilities = 1 WHERE gv2_capability = 1");
+        db.execSQL("UPDATE recipient SET capabilities = 2 WHERE gv2_capability = -1");
+      }
+
+      if (oldVersion < GV1_MIGRATION) {
+        db.execSQL("ALTER TABLE groups ADD COLUMN expected_v2_id TEXT DEFAULT NULL");
+        db.execSQL("ALTER TABLE groups ADD COLUMN former_v1_members TEXT DEFAULT NULL");
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS expected_v2_id_index ON groups (expected_v2_id)");
+
+        int count = 0;
+        try (Cursor cursor = db.rawQuery("SELECT * FROM groups WHERE group_id LIKE '__textsecure_group__!%' AND LENGTH(group_id) = 53", null)) {
+          while (cursor.moveToNext()) {
+            String gv1 = CursorUtil.requireString(cursor, "group_id");
+            String gv2 = GroupId.parseOrThrow(gv1).requireV1().deriveV2MigrationGroupId().toString();
+
+            ContentValues values = new ContentValues();
+            values.put("expected_v2_id", gv2);
+            count += db.update("groups", values, "group_id = ?", SqlUtil.buildArgs(gv1));
+          }
+        }
+
+        Log.i(TAG, "Updated " + count + " GV1 groups with expected GV2 IDs.");
+      }
+
+      if (oldVersion < NOTIFIED_TIMESTAMP) {
+        db.execSQL("ALTER TABLE sms ADD COLUMN notified_timestamp INTEGER DEFAULT 0");
+        db.execSQL("ALTER TABLE mms ADD COLUMN notified_timestamp INTEGER DEFAULT 0");
+      }
+
+      if (oldVersion < GV1_MIGRATION_LAST_SEEN) {
+        db.execSQL("ALTER TABLE recipient ADD COLUMN last_gv1_migrate_reminder INTEGER DEFAULT 0");
       }
 
       db.setTransactionSuccessful();

@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import com.amulyakhare.textdrawable.TextDrawable;
 
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.util.ContextUtil;
 import org.thoughtcrime.securesms.util.ThemeUtil;
 import org.thoughtcrime.securesms.util.ViewUtil;
 
@@ -53,17 +54,24 @@ public class GeneratedContactPhoto implements FallbackContactPhoto {
                                   .endConfig()
                                   .buildRound(character, inverted ? Color.WHITE : color);
 
-      Drawable gradient = context.getResources().getDrawable(ThemeUtil.isDarkTheme(context) ? R.drawable.avatar_gradient_dark
-                                                                                            : R.drawable.avatar_gradient_light);
+      Drawable gradient = ContextUtil.requireDrawable(context, R.drawable.avatar_gradient);
       return new LayerDrawable(new Drawable[] { base, gradient });
     }
 
-    return new ResourceContactPhoto(fallbackResId).asDrawable(context, color, inverted);
+    return newFallbackDrawable(context, color, inverted);
   }
 
   @Override
   public Drawable asSmallDrawable(Context context, int color, boolean inverted) {
     return asDrawable(context, color, inverted);
+  }
+
+  protected @DrawableRes int getFallbackResId() {
+    return fallbackResId;
+  }
+
+  protected Drawable newFallbackDrawable(@NonNull Context context, int color, boolean inverted) {
+    return new ResourceContactPhoto(fallbackResId).asDrawable(context, color, inverted);
   }
 
   private @Nullable String getAbbreviation(String name) {

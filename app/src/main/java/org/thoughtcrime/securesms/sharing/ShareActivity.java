@@ -49,6 +49,7 @@ import org.thoughtcrime.securesms.stickers.StickerLocator;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
+import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
@@ -96,6 +97,10 @@ public class ShareActivity extends PassphraseRequiredActivity
 
       if (TextSecurePreferences.isSmsEnabled(this))  {
         mode |= DisplayMode.FLAG_SMS;
+      }
+
+      if (FeatureFlags.groupsV1ForcedMigration()) {
+        mode |= DisplayMode.FLAG_HIDE_GROUPS_V1;
       }
 
       getIntent().putExtra(ContactSelectionListFragment.DISPLAY_MODE, mode);
@@ -320,7 +325,7 @@ public class ShareActivity extends PassphraseRequiredActivity
       Log.i(TAG, "Shared data was not external.");
     }
 
-    intent.putExtra(ConversationActivity.RECIPIENT_EXTRA, recipientId);
+    intent.putExtra(ConversationActivity.RECIPIENT_EXTRA, recipientId.serialize());
     intent.putExtra(ConversationActivity.THREAD_ID_EXTRA, threadId);
     intent.putExtra(ConversationActivity.DISTRIBUTION_TYPE_EXTRA, ThreadDatabase.DistributionTypes.DEFAULT);
 

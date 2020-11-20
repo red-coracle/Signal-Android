@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,8 +32,8 @@ import com.codewaves.stickyheadergrid.StickyHeaderGridLayoutManager;
 import org.thoughtcrime.securesms.MediaPreviewActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment;
-import org.thoughtcrime.securesms.components.AudioView;
 import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaController;
+import org.thoughtcrime.securesms.components.voice.VoiceNotePlaybackState;
 import org.thoughtcrime.securesms.database.MediaDatabase;
 import org.thoughtcrime.securesms.database.loaders.GroupedThreadMediaLoader;
 import org.thoughtcrime.securesms.database.loaders.MediaLoader;
@@ -41,10 +42,11 @@ import org.thoughtcrime.securesms.mms.GlideApp;
 import org.thoughtcrime.securesms.mms.PartAuthority;
 import org.thoughtcrime.securesms.util.MediaUtil;
 import org.thoughtcrime.securesms.util.Util;
+import org.thoughtcrime.securesms.util.WindowUtil;
 
 public final class MediaOverviewPageFragment extends Fragment
   implements MediaGalleryAllAdapter.ItemClickListener,
-             AudioView.Callbacks,
+             MediaGalleryAllAdapter.AudioItemListener,
              LoaderManager.LoaderCallbacks<GroupedThreadMediaLoader.GroupedThreadMedia>
 {
 
@@ -310,8 +312,8 @@ public final class MediaOverviewPageFragment extends Fragment
   }
 
   @Override
-  public void onPlay(@NonNull Uri audioUri, long position) {
-    voiceNoteMediaController.startPlayback(audioUri, -1, position);
+  public void onPlay(@NonNull Uri audioUri, double progress, long messageId) {
+    voiceNoteMediaController.startSinglePlayback(audioUri, messageId, progress);
   }
 
   @Override
@@ -320,13 +322,23 @@ public final class MediaOverviewPageFragment extends Fragment
   }
 
   @Override
-  public void onSeekTo(@NonNull Uri audioUri, long position) {
-    voiceNoteMediaController.seekToPosition(audioUri, position);
+  public void onSeekTo(@NonNull Uri audioUri, double progress) {
+    voiceNoteMediaController.seekToPosition(audioUri, progress);
   }
 
   @Override
   public void onStopAndReset(@NonNull Uri audioUri) {
     voiceNoteMediaController.stopPlaybackAndReset(audioUri);
+  }
+
+  @Override
+  public void registerPlaybackStateObserver(@NonNull Observer<VoiceNotePlaybackState> observer) {
+    voiceNoteMediaController.getVoiceNotePlaybackState().observe(getViewLifecycleOwner(), observer);
+  }
+
+  @Override
+  public void unregisterPlaybackStateObserver(@NonNull Observer<VoiceNotePlaybackState> observer) {
+    voiceNoteMediaController.getVoiceNotePlaybackState().removeObserver(observer);
   }
 
   private class ActionModeCallback implements ActionMode.Callback {
@@ -341,7 +353,7 @@ public final class MediaOverviewPageFragment extends Fragment
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         Window window = requireActivity().getWindow();
         originalStatusBarColor = window.getStatusBarColor();
-        window.setStatusBarColor(getResources().getColor(R.color.action_mode_status_bar));
+        WindowUtil.setStatusBarColor(requireActivity().getWindow(), getResources().getColor(R.color.action_mode_status_bar));
       }
       return true;
     }
@@ -379,9 +391,7 @@ public final class MediaOverviewPageFragment extends Fragment
 
       ((MediaOverviewActivity) activity).onExitMultiSelect();
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        activity.getWindow().setStatusBarColor(originalStatusBarColor);
-      }
+      WindowUtil.setStatusBarColor(requireActivity().getWindow(), originalStatusBarColor);
     }
   }
 

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -166,12 +167,11 @@ public class BackupUtil {
   }
 
   @RequiresApi(29)
-  public static @Nullable BackupInfo getBackupInfoForUri(@NonNull Context context, @NonNull Uri uri) {
-    DocumentFile documentFile = DocumentFile.fromSingleUri(context, uri);
+  public static @Nullable BackupInfo getBackupInfoFromSingleUri(@NonNull Context context, @NonNull Uri singleUri) {
+    DocumentFile documentFile = DocumentFile.fromSingleUri(context, singleUri);
 
-    if (documentFile != null && documentFile.exists() && documentFile.canRead() && documentFile.canWrite() && documentFile.getName().endsWith(".backup")) {
-      long backupTimestamp = getBackupTimestamp(documentFile.getName());
-
+    if (isBackupFileReadable(documentFile)) {
+      long backupTimestamp = getBackupTimestamp(Objects.requireNonNull(documentFile.getName()));
       return new BackupInfo(backupTimestamp, documentFile.length(), documentFile.getUri());
     } else {
       Log.w(TAG, "Could not load backup info.");
@@ -180,7 +180,7 @@ public class BackupUtil {
   }
 
   private static List<BackupInfo> getAllBackupsNewestFirstLegacy() throws NoExternalStorageException {
-    File             backupDirectory = StorageUtil.getBackupDirectory();
+    File             backupDirectory = StorageUtil.getOrCreateBackupDirectory();
     File[]           files           = backupDirectory.listFiles();
     List<BackupInfo> backups         = new ArrayList<>(files.length);
 
@@ -212,6 +212,26 @@ public class BackupUtil {
     return result;
   }
 
+  public static boolean hasBackupFiles(@NonNull Context context) {
+    if (Permissions.hasAll(context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+      try {
+        File directory = StorageUtil.getBackupDirectory();
+
+        if (directory.exists() && directory.isDirectory()) {
+          File[] files = directory.listFiles();
+          return files != null && files.length > 0;
+        } else {
+          return false;
+        }
+      } catch (NoExternalStorageException e) {
+        Log.w(TAG, "Failed to read storage!", e);
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   private static long getBackupTimestamp(@NonNull String backupName) {
     String[] prefixSuffix = backupName.split("[.]");
 
@@ -239,11 +259,29 @@ public class BackupUtil {
     return -1;
   }
 
+  private static boolean isBackupFileReadable(@Nullable DocumentFile documentFile) {
+    if (documentFile == null) {
+      throw new AssertionError("We do not support platforms prior to KitKat.");
+    } else if (!documentFile.exists()) {
+      Log.w(TAG, "isBackupFileReadable: The document at the specified Uri cannot be found.");
+      return false;
+    } else if (!documentFile.canRead()) {
+      Log.w(TAG, "isBackupFileReadable: The document at the specified Uri cannot be read.");
+      return false;
+    } else if (TextUtils.isEmpty(documentFile.getName()) || !documentFile.getName().endsWith(".backup")) {
+      Log.w(TAG, "isBackupFileReadable: The document at the specified Uri has an unsupported file extension.");
+      return false;
+    } else {
+      Log.i(TAG, "isBackupFileReadable: The document at the specified Uri looks like a readable backup");
+      return true;
+    }
+  }
+
   public static class BackupInfo {
 
     private final long timestamp;
     private final long size;
-    private final Uri uri;
+    private final Uri  uri;
 
     BackupInfo(long timestamp, long size, Uri uri) {
       this.timestamp = timestamp;
@@ -264,22 +302,24 @@ public class BackupUtil {
     }
 
     private void delete() {
-      DocumentFile document = DocumentFile.fromSingleUri(ApplicationDependencies.getApplication(), uri);
-      if (document != null && document.exists()) {
-          Log.i(TAG, "Deleting: " + uri);
+      File file = new File(Objects.requireNonNull(uri.getPath()));
 
-          if (!document.delete()) {
-            Log.w(TAG, "Delete failed: " + uri);
-          }
-      } else {
-        File file = new File(uri.toString());
-        Log.i(TAG, "Deleting: " + file.getAbsolutePath());
+      if (file.exists()) {
+        Log.i(TAG, "Deleting File: " + file.getAbsolutePath());
 
         if (!file.delete()) {
           Log.w(TAG, "Delete failed: " + file.getAbsolutePath());
         }
-      }
+      } else {
+        DocumentFile document = DocumentFile.fromSingleUri(ApplicationDependencies.getApplication(), uri);
+        if (document != null && document.exists()) {
+          Log.i(TAG, "Deleting DocumentFile: " + uri);
 
+          if (!document.delete()) {
+            Log.w(TAG, "Delete failed: " + uri);
+          }
+        }
+      }
     }
   }
 }

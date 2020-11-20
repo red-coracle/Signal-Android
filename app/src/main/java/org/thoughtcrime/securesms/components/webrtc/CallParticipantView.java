@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms.components.webrtc;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -15,12 +16,14 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.AvatarImageView;
 import org.thoughtcrime.securesms.contacts.avatars.ContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.FallbackContactPhoto;
+import org.thoughtcrime.securesms.contacts.avatars.ProfileContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.ResourceContactPhoto;
 import org.thoughtcrime.securesms.events.CallParticipant;
 import org.thoughtcrime.securesms.mms.GlideApp;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.AvatarUtil;
+import org.thoughtcrime.securesms.util.ViewUtil;
 
 import java.util.Objects;
 
@@ -32,11 +35,15 @@ public class CallParticipantView extends ConstraintLayout {
 
   private static final FallbackPhotoProvider FALLBACK_PHOTO_PROVIDER = new FallbackPhotoProvider();
 
+  private static final int SMALL_AVATAR = ViewUtil.dpToPx(96);
+  private static final int LARGE_AVATAR = ViewUtil.dpToPx(112);
+
   private RecipientId         recipientId;
   private AvatarImageView     avatar;
   private TextureViewRenderer renderer;
   private ImageView           pipAvatar;
   private ContactPhoto        contactPhoto;
+  private View                audioMuted;
 
   public CallParticipantView(@NonNull Context context) {
     super(context);
@@ -54,11 +61,13 @@ public class CallParticipantView extends ConstraintLayout {
   @Override
   protected void onFinishInflate() {
     super.onFinishInflate();
-    avatar    = findViewById(R.id.call_participant_item_avatar);
-    pipAvatar = findViewById(R.id.call_participant_item_pip_avatar);
-    renderer  = findViewById(R.id.call_participant_renderer);
+    avatar     = findViewById(R.id.call_participant_item_avatar);
+    pipAvatar  = findViewById(R.id.call_participant_item_pip_avatar);
+    renderer   = findViewById(R.id.call_participant_renderer);
+    audioMuted = findViewById(R.id.call_participant_mic_muted);
 
     avatar.setFallbackPhotoProvider(FALLBACK_PHOTO_PROVIDER);
+    useLargeAvatar();
   }
 
   void setCallParticipant(@NonNull CallParticipant participant) {
@@ -77,16 +86,39 @@ public class CallParticipantView extends ConstraintLayout {
     }
 
     if (participantChanged || !Objects.equals(contactPhoto, participant.getRecipient().getContactPhoto())) {
-      avatar.setAvatar(participant.getRecipient());
-      AvatarUtil.loadBlurredIconIntoViewBackground(participant.getRecipient(), this);
+      avatar.setAvatarUsingProfile(participant.getRecipient());
+      AvatarUtil.loadBlurredIconIntoViewBackground(participant.getRecipient(), this, true);
       setPipAvatar(participant.getRecipient());
       contactPhoto = participant.getRecipient().getContactPhoto();
     }
+
+    audioMuted.setVisibility(participant.isMicrophoneEnabled() ? View.GONE : View.VISIBLE);
   }
 
   void setRenderInPip(boolean shouldRenderInPip) {
     avatar.setVisibility(shouldRenderInPip ? View.GONE : View.VISIBLE);
     pipAvatar.setVisibility(shouldRenderInPip ? View.VISIBLE : View.GONE);
+  }
+
+  void useLargeAvatar() {
+    changeAvatarParams(LARGE_AVATAR);
+  }
+
+  void useSmallAvatar() {
+    changeAvatarParams(SMALL_AVATAR);
+  }
+
+  void releaseRenderer() {
+    renderer.release();
+  }
+
+  private void changeAvatarParams(int dimension) {
+    ViewGroup.LayoutParams params = avatar.getLayoutParams();
+    if (params.height != dimension) {
+      params.height = dimension;
+      params.width  = dimension;
+      avatar.setLayoutParams(params);
+    }
   }
 
   private void setPipAvatar(@NonNull Recipient recipient) {

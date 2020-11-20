@@ -2,11 +2,11 @@ package org.thoughtcrime.securesms.jobs;
 
 
 import android.Manifest;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.backup.BackupFileIOError;
 import org.thoughtcrime.securesms.backup.BackupPassphrase;
 import org.thoughtcrime.securesms.backup.FullBackupExporter;
 import org.thoughtcrime.securesms.crypto.AttachmentSecretProvider;
@@ -79,6 +79,8 @@ public final class LocalBackupJob extends BaseJob {
   public void onRun() throws NoExternalStorageException, IOException {
     Log.i(TAG, "Executing backup job...");
 
+    BackupFileIOError.clearNotification(context);
+
     if (!Permissions.hasAll(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
       throw new IOException("No external storage permission!");
     }
@@ -91,7 +93,7 @@ public final class LocalBackupJob extends BaseJob {
       notification.setIndeterminateProgress();
 
       String backupPassword  = BackupPassphrase.get(context);
-      File   backupDirectory = StorageUtil.getBackupDirectory();
+      File   backupDirectory = StorageUtil.getOrCreateBackupDirectory();
       String timestamp       = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US).format(new Date());
       String fileName        = String.format("signal-%s.backup", timestamp);
       File   backupFile      = new File(backupDirectory, fileName);
@@ -119,6 +121,9 @@ public final class LocalBackupJob extends BaseJob {
           Log.w(TAG, "Failed to rename temp file");
           throw new IOException("Renaming temporary backup file failed!");
         }
+      } catch (IOException e) {
+        BackupFileIOError.postNotificationForException(context, e, getRunAttempt());
+        throw e;
       } finally {
         if (tempFile.exists()) {
           if (tempFile.delete()) {

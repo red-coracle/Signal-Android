@@ -35,8 +35,6 @@ import org.conscrypt.Conscrypt;
 import org.signal.aesgcmprovider.AesGcmProvider;
 import org.signal.glide.SignalGlideCodecs;
 import org.signal.ringrtc.CallManager;
-import org.thoughtcrime.securesms.components.TypingStatusRepository;
-import org.thoughtcrime.securesms.components.TypingStatusSender;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.helpers.SQLCipherOpenHelper;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
@@ -44,6 +42,7 @@ import org.thoughtcrime.securesms.dependencies.ApplicationDependencyProvider;
 import org.thoughtcrime.securesms.gcm.FcmJobService;
 import org.thoughtcrime.securesms.jobs.CreateSignedPreKeyJob;
 import org.thoughtcrime.securesms.jobs.FcmRefreshJob;
+import org.thoughtcrime.securesms.jobs.GroupV1MigrationJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob;
 import org.thoughtcrime.securesms.jobs.PushNotificationReceiveJob;
 import org.thoughtcrime.securesms.jobs.RefreshPreKeysJob;
@@ -69,6 +68,8 @@ import org.thoughtcrime.securesms.service.RotateSenderCertificateListener;
 import org.thoughtcrime.securesms.service.RotateSignedPreKeyListener;
 import org.thoughtcrime.securesms.service.UpdateApkRefreshListener;
 import org.thoughtcrime.securesms.storage.StorageSyncHelper;
+import org.thoughtcrime.securesms.tracing.Trace;
+import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
@@ -91,15 +92,14 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Moxie Marlinspike
  */
+@Trace
 public class ApplicationContext extends MultiDexApplication implements DefaultLifecycleObserver {
 
   private static final String TAG = ApplicationContext.class.getSimpleName();
 
-  private ExpiringMessageManager   expiringMessageManager;
-  private ViewOnceMessageManager   viewOnceMessageManager;
-  private TypingStatusRepository   typingStatusRepository;
-  private TypingStatusSender       typingStatusSender;
-  private PersistentLogger         persistentLogger;
+  private ExpiringMessageManager expiringMessageManager;
+  private ViewOnceMessageManager viewOnceMessageManager;
+  private PersistentLogger       persistentLogger;
 
   private volatile boolean isAppVisible;
 
@@ -121,8 +121,6 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
     initializeMessageRetrieval();
     initializeExpiringMessageManager();
     initializeRevealableMessageManager();
-    initializeTypingStatusRepository();
-    initializeTypingStatusSender();
     initializeGcmCheck();
     initializeSignedPreKeyCheck();
     initializePeriodicTasks();
@@ -145,6 +143,9 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
     }
 
     ApplicationDependencies.getJobManager().beginJobLoop();
+
+    DynamicTheme.setDefaultDayNightMode(this);
+
     Log.d(TAG, "onCreate() took " + (System.currentTimeMillis() - startTime) + " ms");
   }
 
@@ -155,6 +156,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
     FeatureFlags.refreshIfNecessary();
     ApplicationDependencies.getRecipientCache().warmUp();
     RetrieveProfileJob.enqueueRoutineFetchIfNecessary(this);
+    GroupV1MigrationJob.enqueueRoutineMigrationsIfNecessary(this);
     executePendingContactSync();
     KeyCachingService.onAppForegrounded(this);
     ApplicationDependencies.getFrameRateTracker().begin();
@@ -177,14 +179,6 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
 
   public ViewOnceMessageManager getViewOnceMessageManager() {
     return viewOnceMessageManager;
-  }
-
-  public TypingStatusRepository getTypingStatusRepository() {
-    return typingStatusRepository;
-  }
-
-  public TypingStatusSender getTypingStatusSender() {
-    return typingStatusSender;
   }
 
   public boolean isAppVisible() {
@@ -284,14 +278,6 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
 
   private void initializeRevealableMessageManager() {
     this.viewOnceMessageManager = new ViewOnceMessageManager(this);
-  }
-
-  private void initializeTypingStatusRepository() {
-    this.typingStatusRepository = new TypingStatusRepository();
-  }
-
-  private void initializeTypingStatusSender() {
-    this.typingStatusSender = new TypingStatusSender(this);
   }
 
   private void initializePeriodicTasks() {
@@ -422,7 +408,8 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
 
   @Override
   protected void attachBaseContext(Context base) {
-    super.attachBaseContext(DynamicLanguageContextWrapper.updateContext(base, TextSecurePreferences.getLanguage(base)));
+    DynamicLanguageContextWrapper.updateContext(base);
+    super.attachBaseContext(base);
   }
 
   private static class ProviderInitializationException extends RuntimeException {

@@ -14,7 +14,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -22,7 +21,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import org.thoughtcrime.securesms.logging.Log;
-import org.thoughtcrime.securesms.util.Util;
 
 import java.util.Objects;
 
@@ -37,7 +35,8 @@ import java.util.Objects;
 public class VoiceNoteMediaController implements DefaultLifecycleObserver {
 
   public static final String EXTRA_MESSAGE_ID = "voice.note.message_id";
-  public static final String EXTRA_PLAYHEAD   = "voice.note.playhead";
+  public static final String EXTRA_PROGRESS = "voice.note.playhead";
+  public static final String EXTRA_PLAY_SINGLE = "voice.note.play.single";
 
   private static final String TAG = Log.tag(VoiceNoteMediaController.class);
 
@@ -97,22 +96,35 @@ public class VoiceNoteMediaController implements DefaultLifecycleObserver {
     return MediaControllerCompat.getMediaController(activity);
   }
 
+
+  public void startConsecutivePlayback(@NonNull Uri audioSlideUri, long messageId, double progress) {
+    startPlayback(audioSlideUri, messageId, progress, false);
+  }
+
+  public void startSinglePlayback(@NonNull Uri audioSlideUri, long messageId, double progress) {
+    startPlayback(audioSlideUri, messageId, progress, true);
+  }
+
   /**
    * Tells the Media service to begin playback of a given audio slide. If the audio
    * slide is currently playing, we jump to the desired position and then begin playback.
    *
-   * @param audioSlideUri The Uri of the desired audio slide
-   * @param messageId     The Message id of the given audio slide
-   * @param position      The desired position in milliseconds at which to start playback.
+   * @param audioSlideUri  The Uri of the desired audio slide
+   * @param messageId      The Message id of the given audio slide
+   * @param progress       The desired progress % to seek to.
+   * @param singlePlayback The player will only play back the specified Uri, and not build a playlist.
    */
-  public void startPlayback(@NonNull Uri audioSlideUri, long messageId, long position) {
+  private void startPlayback(@NonNull Uri audioSlideUri, long messageId, double progress, boolean singlePlayback) {
     if (isCurrentTrack(audioSlideUri)) {
-      getMediaController().getTransportControls().seekTo(position);
+      long duration = getMediaController().getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+
+      getMediaController().getTransportControls().seekTo((long) (duration * progress));
       getMediaController().getTransportControls().play();
     } else {
       Bundle extras = new Bundle();
       extras.putLong(EXTRA_MESSAGE_ID, messageId);
-      extras.putLong(EXTRA_PLAYHEAD, position);
+      extras.putDouble(EXTRA_PROGRESS, progress);
+      extras.putBoolean(EXTRA_PLAY_SINGLE, singlePlayback);
 
       getMediaController().getTransportControls().playFromUri(audioSlideUri, extras);
     }
@@ -134,12 +146,14 @@ public class VoiceNoteMediaController implements DefaultLifecycleObserver {
    * is ignored if the given audio slide is not currently playing.
    *
    * @param audioSlideUri The Uri of the audio slide to seek.
-   * @param position      The position in milliseconds to seek to.
+   * @param progress      The progress percentage to seek to.
    */
-  public void seekToPosition(@NonNull Uri audioSlideUri, long position) {
+  public void seekToPosition(@NonNull Uri audioSlideUri, double progress) {
     if (isCurrentTrack(audioSlideUri)) {
+      long duration = getMediaController().getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+
       getMediaController().getTransportControls().pause();
-      getMediaController().getTransportControls().seekTo(position);
+      getMediaController().getTransportControls().seekTo((long) (duration * progress));
       getMediaController().getTransportControls().play();
     }
   }
@@ -211,12 +225,25 @@ public class VoiceNoteMediaController implements DefaultLifecycleObserver {
           mediaMetadataCompat.getDescription() != null)
       {
 
-        Uri     mediaUri  = Objects.requireNonNull(mediaMetadataCompat.getDescription().getMediaUri());
-        boolean autoReset = Objects.equals(mediaUri, VoiceNotePlaybackPreparer.NEXT_URI) || Objects.equals(mediaUri, VoiceNotePlaybackPreparer.END_URI);
+        Uri                    mediaUri      = Objects.requireNonNull(mediaMetadataCompat.getDescription().getMediaUri());
+        boolean                autoReset     = Objects.equals(mediaUri, VoiceNotePlaybackPreparer.NEXT_URI) || Objects.equals(mediaUri, VoiceNotePlaybackPreparer.END_URI);
+        VoiceNotePlaybackState previousState = voiceNotePlaybackState.getValue();
+        long                   position      = mediaController.getPlaybackState().getPosition();
+        long                   duration      = mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
 
-        voiceNotePlaybackState.postValue(new VoiceNotePlaybackState(mediaUri,
-                                                                    mediaController.getPlaybackState().getPosition(),
-                                                                    autoReset));
+        if (previousState != null && Objects.equals(mediaUri, previousState.getUri())) {
+          if (position < 0 && previousState.getPlayheadPositionMillis() >= 0) {
+            position = previousState.getPlayheadPositionMillis();
+          }
+
+          if (duration <= 0 && previousState.getTrackDuration() > 0) {
+            duration = previousState.getTrackDuration();
+          }
+        }
+
+        if (duration > 0 && position >= 0 && position <= duration) {
+          voiceNotePlaybackState.postValue(new VoiceNotePlaybackState(mediaUri, position, duration, autoReset));
+        }
 
         sendEmptyMessageDelayed(0, 50);
       } else {

@@ -15,6 +15,7 @@ import org.signal.storageservice.protos.groups.AvatarUploadAttributes;
 import org.signal.storageservice.protos.groups.Group;
 import org.signal.storageservice.protos.groups.GroupChange;
 import org.signal.storageservice.protos.groups.GroupChanges;
+import org.signal.storageservice.protos.groups.GroupExternalCredential;
 import org.signal.storageservice.protos.groups.GroupJoinInfo;
 import org.signal.zkgroup.VerificationFailedException;
 import org.signal.zkgroup.profiles.ClientZkProfileOperations;
@@ -38,6 +39,7 @@ import org.whispersystems.signalservice.api.groupsv2.CredentialResponse;
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2AuthorizationString;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachment.ProgressListener;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachmentRemoteId;
+import org.whispersystems.signalservice.api.messages.calls.CallingResponse;
 import org.whispersystems.signalservice.api.messages.calls.TurnServerInfo;
 import org.whispersystems.signalservice.api.messages.multidevice.DeviceInfo;
 import org.whispersystems.signalservice.api.profiles.ProfileAndCredential;
@@ -76,6 +78,8 @@ import org.whispersystems.signalservice.internal.contacts.entities.KeyBackupRequ
 import org.whispersystems.signalservice.internal.contacts.entities.KeyBackupResponse;
 import org.whispersystems.signalservice.internal.contacts.entities.TokenResponse;
 import org.whispersystems.signalservice.internal.push.exceptions.ForbiddenException;
+import org.whispersystems.signalservice.internal.push.exceptions.GroupExistsException;
+import org.whispersystems.signalservice.internal.push.exceptions.GroupNotFoundException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupPatchNotAcceptedException;
 import org.whispersystems.signalservice.internal.push.exceptions.MismatchedDevicesException;
 import org.whispersystems.signalservice.internal.push.exceptions.NotInGroupException;
@@ -202,6 +206,7 @@ public class PushServiceSocket {
   private static final String GROUPSV2_GROUP_CHANGES    = "/v1/groups/logs/%s";
   private static final String GROUPSV2_AVATAR_REQUEST   = "/v1/groups/avatar/form";
   private static final String GROUPSV2_GROUP_JOIN       = "/v1/groups/join/%s";
+  private static final String GROUPSV2_TOKEN            = "/v1/groups/token";
 
   private static final String SERVER_DELIVERED_TIMESTAMP_HEADER = "X-Signal-Timestamp";
 
@@ -209,6 +214,8 @@ public class PushServiceSocket {
   private static final ResponseCodeHandler NO_HANDLER = new EmptyResponseCodeHandler();
 
   private static final long CDN2_RESUMABLE_LINK_LIFETIME_MILLIS = TimeUnit.DAYS.toMillis(7);
+
+  private static final int MAX_FOLLOW_UPS = 20;
 
   private       long      soTimeoutMillis = TimeUnit.SECONDS.toMillis(30);
   private final Set<Call> connections     = new HashSet<>();
@@ -1663,6 +1670,56 @@ public class PushServiceSocket {
     throw new NonSuccessfulResponseCodeException("Response: " + response);
   }
 
+  public CallingResponse makeCallingRequest(long requestId, String url, String httpMethod, List<Pair<String, String>> headers, byte[] body) {
+    ConnectionHolder connectionHolder = getRandom(serviceClients, random);
+    OkHttpClient     okHttpClient     = connectionHolder.getClient()
+                                                        .newBuilder()
+                                                        .followRedirects(false)
+                                                        .connectTimeout(soTimeoutMillis, TimeUnit.MILLISECONDS)
+                                                        .readTimeout(soTimeoutMillis, TimeUnit.MILLISECONDS)
+                                                        .build();
+
+    RequestBody     requestBody = body != null ? RequestBody.create(null, body) : null;
+    Request.Builder builder     = new Request.Builder()
+                                             .url(url)
+                                             .method(httpMethod, requestBody);
+
+    if (headers != null) {
+      for (Pair<String, String> header : headers) {
+        builder.addHeader(header.first(), header.second());
+      }
+    }
+
+    Request request = builder.build();
+
+    for (int i = 0; i < MAX_FOLLOW_UPS; i++) {
+      try (Response response = okHttpClient.newCall(request).execute()) {
+        int responseStatus = response.code();
+
+        if (responseStatus != 307) {
+          return new CallingResponse.Success(requestId,
+                                             responseStatus,
+                                             response.body() != null ? response.body().bytes() : new byte[0]);
+        }
+
+        String  location = response.header("Location");
+        HttpUrl newUrl   = location != null ? request.url().resolve(location) : null;
+
+        if (newUrl != null) {
+          request = request.newBuilder().url(newUrl).build();
+        } else {
+          return new CallingResponse.Error(requestId, new IOException("Received redirect without a valid Location header"));
+        }
+      } catch (IOException e) {
+        Log.w(TAG, "Exception during ringrtc http call.", e);
+        return new CallingResponse.Error(requestId, e);
+      }
+    }
+
+    Log.w(TAG, "Calling request max redirects exceeded");
+    return new CallingResponse.Error(requestId, new IOException("Redirect limit exceeded"));
+  }
+
   private ServiceConnectionHolder[] createServiceConnectionHolders(SignalUrl[] urls,
                                                                    List<Interceptor> interceptors,
                                                                    Optional<Dns> dns)
@@ -1924,10 +1981,15 @@ public class PushServiceSocket {
     return JsonUtil.fromJson(response, CredentialResponse.class);
   }
 
-  private static final ResponseCodeHandler GROUPS_V2_PUT_RESPONSE_HANDLER   = NO_HANDLER;
+  private static final ResponseCodeHandler GROUPS_V2_PUT_RESPONSE_HANDLER   = responseCode -> {
+    if (responseCode == 409) throw new GroupExistsException();
+  };;
   private static final ResponseCodeHandler GROUPS_V2_GET_LOGS_HANDLER       = NO_HANDLER;
   private static final ResponseCodeHandler GROUPS_V2_GET_CURRENT_HANDLER    = responseCode -> {
-    if (responseCode == 403) throw new NotInGroupException();
+    switch (responseCode) {
+      case 403: throw new NotInGroupException();
+      case 404: throw new GroupNotFoundException();
+    }
   };
   private static final ResponseCodeHandler GROUPS_V2_PATCH_RESPONSE_HANDLER = responseCode -> {
     if (responseCode == 400) throw new GroupPatchNotAcceptedException();
@@ -2028,6 +2090,18 @@ public class PushServiceSocket {
                                                     GROUPS_V2_GET_JOIN_INFO_HANDLER);
 
     return GroupJoinInfo.parseFrom(readBodyBytes(response));
+  }
+
+  public GroupExternalCredential getGroupExternalCredential(GroupsV2AuthorizationString authorization)
+    throws NonSuccessfulResponseCodeException, PushNetworkException, InvalidProtocolBufferException
+  {
+    ResponseBody response = makeStorageRequest(authorization.toString(),
+                                               GROUPSV2_TOKEN,
+                                               "GET",
+                                               null,
+                                               NO_HANDLER);
+
+    return GroupExternalCredential.parseFrom(readBodyBytes(response));
   }
 
   public static final class GroupHistory {

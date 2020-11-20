@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class CallParticipant {
 
-  public static final CallParticipant EMPTY = createRemote(Recipient.UNKNOWN, null, new BroadcastVideoSink(null), false);
+  public static final CallParticipant EMPTY = createRemote(Recipient.UNKNOWN, null, new BroadcastVideoSink(null), false, false);
 
   private final @NonNull  CameraState        cameraState;
   private final @NonNull  Recipient          recipient;
@@ -36,9 +36,10 @@ public class CallParticipant {
   public static @NonNull CallParticipant createRemote(@NonNull Recipient recipient,
                                                       @Nullable IdentityKey identityKey,
                                                       @NonNull BroadcastVideoSink renderer,
+                                                      boolean audioEnabled,
                                                       boolean videoEnabled)
   {
-    return new CallParticipant(recipient, identityKey, renderer, CameraState.UNKNOWN, videoEnabled, true);
+    return new CallParticipant(recipient, identityKey, renderer, CameraState.UNKNOWN, videoEnabled, audioEnabled);
   }
 
   private CallParticipant(@NonNull Recipient recipient,
@@ -115,5 +116,17 @@ public class CallParticipant {
   @Override
   public int hashCode() {
     return Objects.hash(cameraState, recipient, identityKey, videoSink, videoEnabled, microphoneEnabled);
+  }
+
+  @Override
+  public @NonNull String toString() {
+    return "CallParticipant{" +
+           "cameraState=" + cameraState +
+           ", recipient=" + recipient.getId() +
+           ", identityKey=" + (identityKey == null ? "absent" : "present") +
+           ", videoSink=" + (videoSink.getEglBase() == null ? "not initialized" : "initialized") +
+           ", videoEnabled=" + videoEnabled +
+           ", microphoneEnabled=" + microphoneEnabled +
+           '}';
   }
 }
