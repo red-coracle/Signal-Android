@@ -1,17 +1,12 @@
 package org.thoughtcrime.securesms.jobs;
 
 
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.documentfile.provider.DocumentFile;
 
-import org.thoughtcrime.securesms.ApplicationPreferencesActivity;
+import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.backup.BackupFileIOError;
 import org.thoughtcrime.securesms.backup.BackupPassphrase;
@@ -21,7 +16,6 @@ import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.jobmanager.Data;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.service.GenericForegroundService;
 import org.thoughtcrime.securesms.service.NotificationController;
@@ -122,6 +116,7 @@ public final class LocalBackupJobApi29 extends BaseJob {
           throw new IOException("Renaming temporary backup file failed!");
         }
       } catch (IOException e) {
+        Log.w(TAG, "Error during backup!", e);
         BackupFileIOError.postNotificationForException(context, e, getRunAttempt());
         throw e;
       } finally {

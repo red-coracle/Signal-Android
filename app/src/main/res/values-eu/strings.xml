@@ -255,6 +255,7 @@
   <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone">%1$s erabiltzaileari deitzeko, Signalek zure mikrofonoa erabiltzeko baimena behar du</string>
   <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone_and_camera">%1$s erabiltzaileari deitzeko, Signalek zure mikrofono eta kamera erabiltzeko baimena behar du.</string>
   <string name="ConversationActivity__more_options_now_in_group_settings">Aukera gehiago orain \"Taldeko ezarpenak\" atalean</string>
+  <string name="ConversationActivity_join">Batu</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d mezu irakurri gabe</item>
@@ -415,7 +416,8 @@
   <string name="DonateMegaphone_donate_to_signal">Signal-i dohaintza eman</string>
   <string name="DonateMegaphone_Signal_is_powered_by_people_like_you_show_your_support_today">Signalen indarra zu moduko jendearengandik dator. Erakutsi zure laguntza gaur bertan!</string>
   <string name="DonateMegaphone_donate">Dohaintza egin</string>
-  <!-- Removed by excludeNonTranslatables <string name="DonateMegaphone_not_now">Orain ez</string> -->
+  <string name="DonateMegaphone_no_thanks">Ez eskerrik asko</string>
+  <!--GroupCallingMegaphone-->
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">Optimizatu Google Play-ren zerbitzuetarko</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Gailu honek ez dauka Play Services erabiltzerik. Signal irekita ez dagoenean, sistemaren bateria optimizazioek galarazten diote mezuak jasotzea. Ukitu sistemaren bateria optimizazioak desaktibatzeko.</string>
@@ -508,7 +510,7 @@
     <item quantity="one">Gehitu kidea</item>
     <item quantity="other">Gehitu kideak</item>
   </plurals>
-  <string name="GroupsV1MigrationSuggestionsReminder_not_now">Orain ez</string>
+  <string name="GroupsV1MigrationSuggestionsReminder_no_thanks">Ez, eskerrik asko</string>
   <!--GroupsV1MigrationSuggestionsDialog-->
   <plurals name="GroupsV1MigrationSuggestionsDialog_add_members_question">
     <item quantity="one">Kidea gehitu?</item>
@@ -551,7 +553,7 @@
     <item quantity="other">%1$d kide</item>
   </plurals>
   <!--PendingMembersActivity-->
-  <string name="PendingMemberInvitesActivity_pending_group_invites">Falta diren talde gonbidapenak</string>
+  <string name="PendingMembersActivity_pending_group_invites">Falta diren talde gonbidapenak</string>
   <string name="PendingMembersActivity_requests">Eskaerak</string>
   <string name="PendingMembersActivity_invites">Gonbidapenak</string>
   <string name="PendingMembersActivity_people_you_invited">Gondibatu duzun jendea</string>
@@ -609,7 +611,6 @@
   </plurals>
   <!--ManageGroupActivity-->
   <string name="ManageGroupActivity_disappearing_messages">Mezuen desagerpena</string>
-  <string name="ManageGroupActivity_pending_group_invites">Falta diren talde gonbidapenak</string>
   <string name="ManageGroupActivity_member_requests_and_invites">Kideen eskaera &amp; gonbidapenak</string>
   <string name="ManageGroupActivity_add_members">Kideak gehitu</string>
   <string name="ManageGroupActivity_edit_group_info">Editatu taldeari buruzko informazioa</string>
@@ -651,7 +652,6 @@
   <string name="ManageGroupActivity_legacy_group_upgrade">Hau Jarauntsitako Talde bat da. Talde administratzaile eta @aipamenak moduko ezaugarriak erabili ahal izateko, </string>
   <string name="ManageGroupActivity_legacy_group_too_large">Jarauntsitako Talde Hau ezin da Talde Berrira eguneratu oso handia delako. Gehienezko talde tamaina %1$d da.</string>
   <string name="ManageGroupActivity_upgrade_this_group">eguneratu talde hau.</string>
-  <string name="ManageGroupActivity_this_is_an_insecure_mms_group">Hau segurtasunik gabeko MMS Talde bat da. Modu pribatuan txateatzeko eta talde izenak moduko ezaugarriak erabili ahal izateko, Signalera gonbidatu zure kontaktuak.</string>
   <string name="ManageGroupActivity_invite_now">Gonbidatu orain</string>
   <!--GroupMentionSettingDialog-->
   <string name="GroupMentionSettingDialog_notify_me_for_mentions">Nahi dut aipamenak jakinaraztea</string>
@@ -742,8 +742,6 @@
   <!--GroupJoinUpdateRequiredBottomSheetDialogFragment-->
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_links_coming_soon">Talderako estekak eskuragarri egongo dira laster</string>
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Talderako estekak erabiltzeko Signal eguneatu behar duzu</string>
-  <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_coming_soon">Talde batean sartzea link baten bidez oraindik ez dago onartuta Signal-en. Ezaugarri hau eskuragarri egongo da aurrerantzean egingo den egunerapen batean.</string>
-  <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Erabiltzen ari zare Signalen bertsioak ez du talde estekak onartzen. Eguneratu azken bertsiora esteka bidez talde honetan sartzeko.</string>
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Eguneratu Signal</string>
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_linked_device_message">Gutxienez lotuta dituzun gailuetako batek Talde estekak onartzen ez dituen Signalen bertsio bat dauka instalatuta. Signal eguneratu lotutako gailuetan talde honetara gehitu ahal izateko.</string>
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">Talde esteka hau ez da baliagarria</string>
@@ -898,10 +896,6 @@
   <string name="MessageRecord_s_set_disappearing_message_time_to_s">Mezuen desagerpenaren denbora %2$s-tan ezarri du %1$s erabiltzaileak</string>
   <string name="MessageRecord_disappearing_message_time_set_to_s">Desagertzen diren mezuen tenporizadorea honela ezarri da: %1$s</string>
   <string name="MessageRecord_this_group_was_updated_to_a_new_group">Talde hau eguneratu da eta Talde Berria bilakatu da.</string>
-  <plurals name="MessageRecord_members_couldnt_be_added_to_the_new_group_and_have_been_invited">
-    <item quantity="one">Kide %1$s ezin izan da Talde Berrira gehitu eta sartzeko gonbidapena bidali zaio.</item>
-    <item quantity="other">%1$s kide ezin izan dira Talde Berrira gehitu eta sartzeko gonbidapena bidali zaie.</item>
-  </plurals>
   <!--Profile change updates-->
   <string name="MessageRecord_changed_their_profile_name_to">%1$s erabiltzaileak bere profilaren izena aldatu du. Orain %2$s da.</string>
   <string name="MessageRecord_changed_their_profile_name_from_to">%1$s erabiltzaileak bere profilaren izena aldatu du. Lehen %2$s zen eta orain %3$s da.</string>
@@ -1028,6 +1022,8 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_verified_from_another_device">%s erabiltzailearekin duzun segurtasun zenbakia egiaztatutzat markatu duzu beste gailu batetik</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">%s erabiltzailearekin duzun segurtasun zenbakia ez egiaztatutzat markatu duzu</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">%s erabiltzailearekin duzun segurtasun zenbakia ez egiaztatutzat markatu duzu beste gailu batetik </string>
+  <!--Group Calling update messages-->
+  <string name="MessageRecord_you">Zu</string>
   <!--MessageRequestBottomView-->
   <string name="MessageRequestBottomView_accept">Onartu</string>
   <string name="MessageRequestBottomView_continue">Jarraitu</string>
@@ -1195,6 +1191,8 @@
     <item quantity="one">Dei honetan - pertsona %1$d</item>
     <item quantity="other">Dei honetan - %1$d pertsona</item>
   </plurals>
+  <!--CallParticipantView-->
+  <string name="CallParticipantView__more_info">Informazio gehiago</string>
   <!--RegistrationActivity-->
   <string name="RegistrationActivity_select_your_country">Aukeratu zure herrialdea</string>
   <string name="RegistrationActivity_you_must_specify_your_country_code">Zure herrialdearen 
@@ -1450,8 +1448,6 @@ Gakoaren elkar-trukeraro mezua jaso da protokoloaren bertsio baliogabe baterako.
   <string name="MessageNotifier_reacted_s_to_your_image">%1$s izan da zure irudiarekiko erreakzioa.</string>
   <string name="MessageNotifier_reacted_s_to_your_file">%1$s izan da zure fitxategiarekiko erreakzioa.</string>
   <string name="MessageNotifier_reacted_s_to_your_audio">%1$s izan da zure audioarekiko erreakzioa.</string>
-  <string name="MessageNotifier_reacted_s_to_your_view_once_photo">%1$s izan da zure behin ikusteko argazkiarekiko erreakzioa.</string>
-  <string name="MessageNotifier_reacted_s_to_your_view_once_video">%1$s izan da zure behin ikusteko bideoarekiko erreakzioa.</string>
   <string name="MessageNotifier_reacted_s_to_your_sticker">%1$s izan da zure eranskailuarekiko erreakzioa.</string>
   <string name="MessageNotifier_this_message_was_deleted">Mezu hau ezabatu da.</string>
   <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Desaktibatu nahi duzu kontaktu bat batzen denean bidaltzen diren jakinarazpenak? Berriro aktiba ditzakezu Signal &gt; Ezarpenak &gt; Jakinarazpenak atalean.</string>
@@ -2023,9 +2019,6 @@ Gakoaren elkar-trukeraro mezua jaso da protokoloaren bertsio baliogabe baterako.
   <string name="preferences_setup_a_username">Ezarri erabiltzaile izena</string>
   <string name="configurable_single_select__customize_option">Pertsonalizatu aukera</string>
   <!--Internal only preferences-->
-  <string name="preferences__internal_conversations_and_shortcuts">Solasaldiak eta Lasterbideak</string>
-  <string name="preferences__internal_delete_all_dynamic_shortcuts">Ezabatu lasterbide dinamiko guztiak</string>
-  <string name="preferences__internal_click_to_delete_all_dynamic_shortcuts">Ukitu lasterbide dinamiko guztiak ezabatzeko</string>
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -2473,5 +2466,10 @@ Gakoaren elkar-trukeraro mezua jaso da protokoloaren bertsio baliogabe baterako.
   <string name="ReviewCard__block">Blokeatu</string>
   <string name="ReviewCard__delete">Ezabatu</string>
   <string name="ReviewCard__recently_changed">Duela gutxi bere profilaren izena aldatu du. Lehen %1$s zen eta orain %2$s da.</string>
+  <!--CallParticipantsListUpdatePopupWindow-->
+  <string name="CallParticipantsListUpdatePopupWindow__you_on_another_device">Zu (beste gailu batean)</string>
+  <!--DeleteAccountFragment-->
+  <string name="DeleteAccountFragment__are_you_sure">Ziur zaude zure kontua ezabatu nahi duzula?</string>
+  <!--DeleteAccountCountryPickerFragment-->
   <!--EOF-->
 </resources>

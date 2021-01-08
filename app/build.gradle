@@ -2,46 +2,12 @@ import org.signal.signing.ApkSignerUtil
 
 import java.security.MessageDigest
 
-buildscript {
-    repositories {
-        google()
-        maven {
-            url "https://repo1.maven.org/maven2"
-        }
-        jcenter {
-            content {
-                includeVersion 'org.jetbrains.trove4j', 'trove4j', '20160824'
-                includeGroupByRegex "com\\.archinamon.*"
-            }
-        }
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.2'
-        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.1.0'
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
-        classpath 'com.archinamon:android-gradle-aspectj:4.2.0'
-    }
-}
-
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'witness'
-apply plugin: 'com.archinamon.aspectj-ext'
 apply from: 'translations.gradle'
 apply from: 'witness-verifications.gradle'
-
-if (getGradle().getStartParameter().getTaskRequests().toString().contains("Internal")) {
-    aspectj {
-        includeJar 'sqlcipher'
-        includeAspectsFromJar 'Signal-Android'
-        java = JavaVersion.VERSION_1_8
-    }
-} else if (getGradle().getStartParameter().getTaskRequests().toString().contains("Test")) {
-    aspectj {
-        compileTests = false
-    }
-}
 
 repositories {
     maven {
@@ -95,19 +61,23 @@ protobuf {
     }
 }
 
-def canonicalVersionCode = 744
-def canonicalVersionName = "4.78.3"
+def canonicalVersionCode = 759
+def canonicalVersionName = "5.0.8"
 
-def postFixSize = 2
+def postFixSize = 10
 def abiPostFix = ['universal'   : 0,
-                  'arm64-v8a'   : 2]
+                  'armeabi-v7a' : 1,
+                  'arm64-v8a'   : 2,
+                  'x86'         : 3,
+                  'x86_64'      : 4]
 
 def keystores = [ 'debug'  : loadKeystoreProperties('keystore.debug.properties') ]
 
 android {
+    buildToolsVersion BUILD_TOOL_VERSION
+    compileSdkVersion COMPILE_SDK
+
     flavorDimensions 'distribution', 'environment'
-    compileSdkVersion 30
-    buildToolsVersion '30.0.2'
     useLibrary 'org.apache.http.legacy'
 
     dexOptions {
@@ -130,8 +100,9 @@ android {
         versionName canonicalVersionName
 
         applicationId "org.libresignal"
-        minSdkVersion 19
-        targetSdkVersion 30
+        minSdkVersion MINIMUM_SDK
+        targetSdkVersion TARGET_SDK
+
         multiDexEnabled true
 
         vectorDrawables.useSupportLibrary = true
@@ -158,13 +129,13 @@ android {
         buildConfigField "String", "ZKGROUP_SERVER_PUBLIC_PARAMS", "\"AMhf5ywVwITZMsff/eCyudZx9JDmkkkbV6PInzG4p8x3VqVJSFiMvnvlEKWuRob/1eaIetR31IYeAbm0NdOuHH8Qi+Rexi1wLlpzIo1gstHWBfZzy1+qHRV5A4TqPp15YzBPm0WSggW6PbSn+F4lf57VCnHF7p8SvzAA2ZZJPYJURt8X7bbg+H3i+PEjH9DXItNEqs2sNcug37xZQDLm7X0=\""
         buildConfigField "String[]", "LANGUAGES", "new String[]{\"" + autoResConfig().collect { s -> s.replace('-r', '_') }.join('", "') + '"}'
         buildConfigField "int", "CANONICAL_VERSION_CODE", "$canonicalVersionCode"
-        buildConfigField "int", "TRACE_EVENT_MAX", "2000"
+        buildConfigField "int", "TRACE_EVENT_MAX", "3500"
 
         ndk {
-            abiFilters 'arm64-v8a'
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
         }
 
-        ndkVersion "21.0.6113669"
+        //ndkVersion "21.0.6113669"
 
         resConfigs autoResConfig()
 
@@ -172,8 +143,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JAVA_VERSION
+        targetCompatibility JAVA_VERSION
     }
 
     packagingOptions {
@@ -184,7 +155,7 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/proguard/androidx-annotations.pro'
-        pickFirst 'lib/arm64-v8a/libnative-utils.so'
+        //pickFirst 'lib/arm64-v8a/libnative-utils.so'
         //exclude 'lib/*/libzkgroup.so' // TODO: GV2 Remove line to include .so when used
     }
 
@@ -225,19 +196,20 @@ android {
             initWith debug
             isDefault false
             minifyEnabled false
+            matchingFallbacks = ['debug']
         }
         release {
             minifyEnabled true
-            shrinkResources true
+            //shrinkResources true
             proguardFiles = buildTypes.debug.proguardFiles
         }
     }
 
-    externalNativeBuild {
+    /*externalNativeBuild {
         ndkBuild {
             path file("jni/Android.mk")
         }
-    }
+    }*/
 
     productFlavors {
         play {
@@ -334,13 +306,13 @@ android {
         buildTypes.release.signingConfig = null
     }
 
-    splits {
+    /*splits {
         density {
             enable true
             reset()
             include "xxhdpi"
         }
-    }
+    }*/
 }
 
 dependencies {
@@ -392,12 +364,14 @@ dependencies {
     implementation 'org.signal:aesgcmprovider:0.0.3'
 
     implementation project(':libsignal-service')
+    implementation project(':paging')
+    implementation project(':core-util')
     implementation 'org.signal:zkgroup-android:0.7.0'
-    implementation 'org.whispersystems:signal-client-android:0.1.3'
+    implementation 'org.whispersystems:signal-client-android:0.1.5'
     implementation 'com.google.protobuf:protobuf-javalite:3.10.0'
     implementation 'org.signal:argon2:13.1@aar'
 
-    implementation 'org.signal:ringrtc-android:2.8.3'
+    implementation 'org.signal:ringrtc-android:2.8.7'
 
     implementation "me.leolin:ShortcutBadger:1.1.16"
     implementation 'se.emilsjolander:stickylistheaders:2.7.0'

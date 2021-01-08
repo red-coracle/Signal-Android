@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import org.signal.ringrtc.CallManager;
 import org.signal.ringrtc.GroupCall;
 import org.thoughtcrime.securesms.recipients.Recipient;
+import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.ringrtc.CameraEventListener;
 import org.thoughtcrime.securesms.ringrtc.RemotePeer;
 import org.thoughtcrime.securesms.service.WebRtcCallService;
@@ -18,6 +19,7 @@ import org.thoughtcrime.securesms.webrtc.audio.SignalAudioManager;
 import org.thoughtcrime.securesms.webrtc.locks.LockManager;
 import org.whispersystems.signalservice.api.messages.calls.SignalServiceCallMessage;
 
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -92,6 +94,10 @@ public class WebRtcInteractor {
     webRtcCallService.sendGroupCallMessage(recipient, groupCallEraId);
   }
 
+  void updateGroupCallUpdateMessage(@NonNull RecipientId groupId, @Nullable String groupCallEraId, @NonNull Collection<UUID> joinedMembers, boolean isCallFull) {
+    webRtcCallService.updateGroupCallUpdateMessage(groupId, groupCallEraId, joinedMembers, isCallFull);
+  }
+
   void setCallInProgressNotification(int type, @NonNull RemotePeer remotePeer) {
     webRtcCallService.setCallInProgressNotification(type, remotePeer.getRecipient());
   }
@@ -148,7 +154,7 @@ public class WebRtcInteractor {
     audioManager.startCommunication(preserveSpeakerphone);
   }
 
-  void peekGroupCall(@NonNull WebRtcData.GroupCallUpdateMetadata groupCallUpdateMetadata) {
-    webRtcCallService.peekGroupCall(groupCallUpdateMetadata);
+  void peekGroupCall(@NonNull RecipientId recipientId) {
+    webRtcCallService.peekGroupCall(recipientId);
   }
 }

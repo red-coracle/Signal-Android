@@ -29,9 +29,8 @@ import androidx.annotation.Nullable;
 import com.annimon.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import net.sqlcipher.database.SQLiteDatabase;
-
 import org.jsoup.helper.StringUtil;
+import org.signal.core.util.logging.Log;
 import org.signal.zkgroup.InvalidInputException;
 import org.signal.zkgroup.groups.GroupMasterKey;
 import org.thoughtcrime.securesms.database.MessageDatabase.MarkedMessageInfo;
@@ -43,7 +42,6 @@ import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.ThreadRecord;
 import org.thoughtcrime.securesms.groups.BadGroupIdException;
 import org.thoughtcrime.securesms.groups.GroupId;
-import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mms.Slide;
 import org.thoughtcrime.securesms.mms.SlideDeck;
 import org.thoughtcrime.securesms.mms.StickerSlide;
@@ -1107,7 +1105,7 @@ public class ThreadDatabase extends Database {
           pinnedRecipient = Recipient.externalPush(context, pinned.getContact().get());
         } else if (pinned.getGroupV1Id().isPresent()) {
           try {
-            pinnedRecipient = Recipient.externalGroupExact(context, GroupId.v1Exact(pinned.getGroupV1Id().get()));
+            pinnedRecipient = Recipient.externalGroupExact(context, GroupId.v1(pinned.getGroupV1Id().get()));
           } catch (BadGroupIdException e) {
             Log.w(TAG, "Failed to parse pinned groupV1 ID!", e);
             pinnedRecipient = null;

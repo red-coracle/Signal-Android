@@ -20,7 +20,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import org.thoughtcrime.securesms.logging.Log;
+import org.signal.core.util.logging.Log;
 
 import java.util.Objects;
 
@@ -222,7 +222,8 @@ public class VoiceNoteMediaController implements DefaultLifecycleObserver {
       MediaMetadataCompat mediaMetadataCompat = mediaController.getMetadata();
       if (isPlayerActive(mediaController.getPlaybackState()) &&
           mediaMetadataCompat != null                        &&
-          mediaMetadataCompat.getDescription() != null)
+          mediaMetadataCompat.getDescription() != null       &&
+          mediaMetadataCompat.getDescription().getMediaUri() != null)
       {
 
         Uri                    mediaUri      = Objects.requireNonNull(mediaMetadataCompat.getDescription().getMediaUri());

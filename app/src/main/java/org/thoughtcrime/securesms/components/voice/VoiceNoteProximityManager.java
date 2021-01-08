@@ -18,8 +18,8 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.util.Util;
 
+import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
-import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.util.ServiceUtil;
 
 import java.util.concurrent.TimeUnit;
@@ -96,7 +96,11 @@ class VoiceNoteProximityManager implements SensorEventListener {
     } else {
       MediaDescriptionCompat mediaDescriptionCompat = queueDataAdapter.getMediaDescription(windowIndex);
 
-      threadId = mediaDescriptionCompat.getExtras().getLong(VoiceNoteMediaDescriptionCompatFactory.EXTRA_THREAD_ID, -1);
+      if (mediaDescriptionCompat.getExtras() == null) {
+        threadId = -1;
+      } else {
+        threadId = mediaDescriptionCompat.getExtras().getLong(VoiceNoteMediaDescriptionCompatFactory.EXTRA_THREAD_ID, -1);
+      }
     }
 
     if (desiredStreamType == AudioManager.STREAM_VOICE_CALL &&

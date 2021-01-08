@@ -62,6 +62,9 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
+import org.signal.core.util.StreamUtil;
+import org.signal.core.util.concurrent.SignalExecutors;
+import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.LoggingFragment;
 import org.thoughtcrime.securesms.PassphraseRequiredActivity;
@@ -89,12 +92,12 @@ import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
+import org.thoughtcrime.securesms.groups.GroupMigrationMembershipChange;
 import org.thoughtcrime.securesms.groups.ui.migration.GroupsV1MigrationInfoBottomSheetDialogFragment;
 import org.thoughtcrime.securesms.jobs.DirectoryRefreshJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceViewOnceOpenJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
-import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.longmessage.LongMessageActivity;
 import org.thoughtcrime.securesms.mediasend.Media;
 import org.thoughtcrime.securesms.messagedetails.MessageDetailsActivity;
@@ -113,7 +116,7 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.ui.bottomsheet.RecipientBottomSheetDialogFragment;
 import org.thoughtcrime.securesms.revealable.ViewOnceMessageActivity;
 import org.thoughtcrime.securesms.revealable.ViewOnceUtil;
-import org.thoughtcrime.securesms.sharing.ShareActivity;
+import org.thoughtcrime.securesms.sharing.ShareIntents;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.sms.OutgoingTextMessage;
 import org.thoughtcrime.securesms.stickers.StickerLocator;
@@ -133,7 +136,6 @@ import org.thoughtcrime.securesms.util.ThemeUtil;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.ViewUtil;
 import org.thoughtcrime.securesms.util.WindowUtil;
-import org.thoughtcrime.securesms.util.concurrent.SignalExecutors;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.thoughtcrime.securesms.util.task.ProgressDialogAsyncTask;
 import org.thoughtcrime.securesms.util.views.AdaptiveActionsToolbar;
@@ -248,14 +250,13 @@ public class ConversationFragment extends LoggingFragment {
     this.messageCountsViewModel = ViewModelProviders.of(requireActivity()).get(MessageCountsViewModel.class);
     this.conversationViewModel  = ViewModelProviders.of(requireActivity(), new ConversationViewModel.Factory()).get(ConversationViewModel.class);
 
-    conversationViewModel.getMessages().observe(this, list -> {
-      if (getListAdapter() != null && !list.getDataSource().isInvalid()) {
-        Log.i(TAG, "submitList");
-        getListAdapter().submitList(list);
-      } else if (list.getDataSource().isInvalid()) {
-        Log.i(TAG, "submitList skipped an invalid list");
+    conversationViewModel.getMessages().observe(this, messages -> {
+      ConversationAdapter adapter = getListAdapter();
+      if (adapter != null) {
+        getListAdapter().submitList(messages);
       }
     });
+
     conversationViewModel.getConversationMetadata().observe(this, this::presentConversationMetadata);
 
     conversationViewModel.getShowMentionsButton().observe(this, shouldShow -> {
@@ -388,7 +389,7 @@ public class ConversationFragment extends LoggingFragment {
   }
 
   private int getStartPosition() {
-    return requireActivity().getIntent().getIntExtra(ConversationActivity.STARTING_POSITION_EXTRA, -1);
+    return conversationViewModel.getArgs().getStartingPosition();
   }
 
   private void initializeMessageRequestViewModel() {
@@ -480,9 +481,9 @@ public class ConversationFragment extends LoggingFragment {
 
     int startingPosition  = getStartPosition();
 
-    this.recipient         = Recipient.live(ConversationActivity.getRecipientId(requireActivity().getIntent()));
-    this.threadId          = this.getActivity().getIntent().getLongExtra(ConversationActivity.THREAD_ID_EXTRA, -1);
-    this.markReadHelper    = new MarkReadHelper(threadId, requireContext());
+    this.recipient      = Recipient.live(conversationViewModel.getArgs().getRecipientId());
+    this.threadId       = conversationViewModel.getArgs().getThreadId();
+    this.markReadHelper = new MarkReadHelper(threadId, requireContext());
 
     conversationViewModel.onConversationDataAvailable(threadId, startingPosition);
     messageCountsViewModel.setThreadId(threadId);
@@ -505,6 +506,7 @@ public class ConversationFragment extends LoggingFragment {
     if (this.recipient != null && this.threadId != -1) {
       Log.d(TAG, "Initializing adapter for " + recipient.getId());
       ConversationAdapter adapter = new ConversationAdapter(this, GlideApp.with(this), locale, selectionClickListener, this.recipient.get());
+      adapter.setPagingController(conversationViewModel.getPagingController());
       list.setAdapter(adapter);
       setStickyHeaderDecoration(adapter);
       ConversationAdapter.initializePool(list.getRecycledViewPool());
@@ -772,8 +774,8 @@ public class ConversationFragment extends LoggingFragment {
     listener.onForwardClicked();
 
     SimpleTask.run(getLifecycle(), () -> {
-      Intent composeIntent = new Intent(getActivity(), ShareActivity.class);
-      composeIntent.putExtra(Intent.EXTRA_TEXT, conversationMessage.getDisplayBody(requireContext()));
+      ShareIntents.Builder shareIntentBuilder = new ShareIntents.Builder(requireActivity());
+      shareIntentBuilder.setText(conversationMessage.getDisplayBody(requireContext()));
 
       if (conversationMessage.getMessageRecord().isMms()) {
         MmsMessageRecord mediaMessage = (MmsMessageRecord) conversationMessage.getMessageRecord();
@@ -809,31 +811,24 @@ public class ConversationFragment extends LoggingFragment {
           }
 
           if (!mediaList.isEmpty()) {
-            composeIntent.putExtra(ConversationActivity.MEDIA_EXTRA, mediaList);
+            shareIntentBuilder.setMedia(mediaList);
           }
         } else if (mediaMessage.containsMediaSlide()) {
           Slide slide = mediaMessage.getSlideDeck().getSlides().get(0);
-          composeIntent.putExtra(Intent.EXTRA_STREAM, slide.getUri());
-          composeIntent.setType(slide.getContentType());
-          composeIntent.putExtra(ConversationActivity.BORDERLESS_EXTRA, slide.isBorderless());
-
-          if (slide.hasSticker()) {
-            composeIntent.putExtra(ConversationActivity.STICKER_EXTRA, slide.asAttachment().getSticker());
-            composeIntent.setType(slide.asAttachment().getContentType());
-          }
+          shareIntentBuilder.setSlide(slide);
         }
 
         if (mediaMessage.getSlideDeck().getTextSlide() != null && mediaMessage.getSlideDeck().getTextSlide().getUri() != null) {
           try (InputStream stream = PartAuthority.getAttachmentStream(requireContext(), mediaMessage.getSlideDeck().getTextSlide().getUri())) {
-            String fullBody = Util.readFullyAsString(stream);
-            composeIntent.putExtra(Intent.EXTRA_TEXT, fullBody);
+            String fullBody = StreamUtil.readFullyAsString(stream);
+            shareIntentBuilder.setText(fullBody);
           } catch (IOException e) {
             Log.w(TAG, "Failed to read long message text when forwarding.");
           }
         }
       }
 
-      return composeIntent;
+      return shareIntentBuilder.build();
     }, this::startActivity);
   }
 
@@ -1012,7 +1007,8 @@ public class ConversationFragment extends LoggingFragment {
   }
 
   private void moveToPosition(int position, @Nullable Runnable onMessageNotFound) {
-    conversationViewModel.onConversationDataAvailable(threadId, position);
+    Log.d(TAG, "moveToPosition(" + position + ")");
+    conversationViewModel.getPagingController().onDataNeededAroundIndex(position);
     snapToTopDataObserver.buildScrollPosition(position)
                          .withOnPerformScroll(((layoutManager, p) ->
                              list.post(() -> {
@@ -1416,8 +1412,8 @@ public class ConversationFragment extends LoggingFragment {
     }
 
     @Override
-    public void onGroupMigrationLearnMoreClicked(@NonNull List<RecipientId> pendingRecipients) {
-      GroupsV1MigrationInfoBottomSheetDialogFragment.showForLearnMore(requireFragmentManager(), pendingRecipients);
+    public void onGroupMigrationLearnMoreClicked(@NonNull GroupMigrationMembershipChange membershipChange) {
+      GroupsV1MigrationInfoBottomSheetDialogFragment.show(requireFragmentManager(), membershipChange);
     }
 
     @Override

@@ -2,22 +2,22 @@ package org.thoughtcrime.securesms.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.WorkerThread;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.IconCompat;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 
@@ -25,10 +25,8 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.color.MaterialColor;
 import org.thoughtcrime.securesms.contacts.avatars.ContactColors;
 import org.thoughtcrime.securesms.contacts.avatars.ContactPhoto;
-import org.thoughtcrime.securesms.contacts.avatars.FallbackPhoto80dp;
 import org.thoughtcrime.securesms.contacts.avatars.GeneratedContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.ProfileContactPhoto;
-import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mms.GlideApp;
 import org.thoughtcrime.securesms.mms.GlideRequest;
 import org.thoughtcrime.securesms.recipients.Recipient;
@@ -38,23 +36,18 @@ import java.util.concurrent.ExecutionException;
 
 public final class AvatarUtil {
 
-  private static final String TAG = Log.tag(AvatarUtil.class);
-
   private AvatarUtil() {
   }
 
-  public static void loadBlurredIconIntoViewBackground(@NonNull Recipient recipient, @NonNull View target) {
-    loadBlurredIconIntoViewBackground(recipient, target, false);
-  }
-
-  public static void loadBlurredIconIntoViewBackground(@NonNull Recipient recipient, @NonNull View target, boolean useSelfProfileAvatar) {
+  public static void loadBlurredIconIntoImageView(@NonNull Recipient recipient, @NonNull AppCompatImageView target) {
     Context context = target.getContext();
 
     ContactPhoto photo;
 
-    if (recipient.isSelf() && useSelfProfileAvatar) {
+    if (recipient.isSelf()) {
       photo = new ProfileContactPhoto(Recipient.self(), Recipient.self().getProfileAvatar());
     } else if (recipient.getContactPhoto() == null) {
+      target.setImageDrawable(null);
       target.setBackgroundColor(ContextCompat.getColor(target.getContext(), R.color.black));
       return;
     } else {
@@ -63,21 +56,22 @@ public final class AvatarUtil {
 
     GlideApp.with(target)
             .load(photo)
-            .transform(new CenterCrop(), new BlurTransformation(context, 0.25f, BlurTransformation.MAX_RADIUS))
+            .transform(new BlurTransformation(context, 0.25f, BlurTransformation.MAX_RADIUS))
             .into(new CustomViewTarget<View, Drawable>(target) {
               @Override
               public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                target.setImageDrawable(null);
                 target.setBackgroundColor(ContextCompat.getColor(target.getContext(), R.color.black));
               }
 
               @Override
               public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                target.setBackground(resource);
+                target.setImageDrawable(resource);
               }
 
               @Override
               protected void onResourceCleared(@Nullable Drawable placeholder) {
-                target.setBackground(placeholder);
+                target.setImageDrawable(placeholder);
               }
             });
   }
@@ -112,11 +106,20 @@ public final class AvatarUtil {
 
   @RequiresApi(ConversationUtil.CONVERSATION_SUPPORT_VERSION)
   @WorkerThread
-  public static Icon getIconForShortcut(@NonNull Context context, @NonNull Recipient recipient) {
+  public static @NonNull Icon getIconForShortcut(@NonNull Context context, @NonNull Recipient recipient) {
     try {
-      return Icon.createWithAdaptiveBitmap(getShortcutInfoBitmap(context, recipient));
+      return Icon.createWithAdaptiveBitmap(GlideApp.with(context).asBitmap().load(new ConversationShortcutPhoto(recipient)).submit().get());
     } catch (ExecutionException | InterruptedException e) {
-      return Icon.createWithAdaptiveBitmap(getFallbackForShortcut(context, recipient));
+      throw new AssertionError("This call should not fail.");
+    }
+  }
+
+  @WorkerThread
+  public static @NonNull IconCompat getIconCompatForShortcut(@NonNull Context context, @NonNull Recipient recipient) {
+    try {
+      return IconCompat.createWithAdaptiveBitmap(GlideApp.with(context).asBitmap().load(new ConversationShortcutPhoto(recipient)).submit().get());
+    } catch (ExecutionException | InterruptedException e) {
+      throw new AssertionError("This call should not fail.");
     }
   }
 
@@ -127,10 +130,6 @@ public final class AvatarUtil {
     } catch (ExecutionException | InterruptedException e) {
       return null;
     }
-  }
-
-  private static @NonNull Bitmap getShortcutInfoBitmap(@NonNull Context context, @NonNull Recipient recipient) throws ExecutionException, InterruptedException {
-    return DrawableUtil.wrapBitmapForShortcutInfo(request(GlideApp.with(context).asBitmap(), context, recipient, false).circleCrop().submit().get());
   }
 
   private static <T> GlideRequest<T> requestCircle(@NonNull GlideRequest<T> glideRequest, @NonNull Context context, @NonNull Recipient recipient) {
@@ -156,24 +155,6 @@ public final class AvatarUtil {
     return glideRequest.load(photo)
                        .error(getFallback(context, recipient))
                        .diskCacheStrategy(DiskCacheStrategy.ALL);
-  }
-
-  private static @NonNull Bitmap getFallbackForShortcut(@NonNull Context context, @NonNull Recipient recipient) {
-    @DrawableRes final int photoSource;
-    if (recipient.isSelf()) {
-      photoSource = R.drawable.ic_note_80;
-    } else if (recipient.isGroup()) {
-      photoSource = R.drawable.ic_group_80;
-    } else {
-      photoSource = R.drawable.ic_profile_80;
-    }
-
-    Bitmap toWrap  = DrawableUtil.toBitmap(new FallbackPhoto80dp(photoSource, recipient.getColor()).asDrawable(context, -1), ViewUtil.dpToPx(80), ViewUtil.dpToPx(80));
-    Bitmap wrapped = DrawableUtil.wrapBitmapForShortcutInfo(toWrap);
-
-    toWrap.recycle();
-
-    return wrapped;
   }
 
   private static Drawable getFallback(@NonNull Context context, @NonNull Recipient recipient) {

@@ -248,6 +248,7 @@
   <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone">Jotta voit soittaa yhteystiedolle %1$s, Signal tarvitsee lupaa käyttää mikrofonia.</string>
   <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone_and_camera">Jotta voit soittaa yhteystiedolle %1$s, Signal tarvitsee lupaa käyttää mikrofonia ja kameraa.</string>
   <string name="ConversationActivity__more_options_now_in_group_settings">Ryhmän asetuksissa on nyt lisää vaihtoehtoja</string>
+  <string name="ConversationActivity_join">Liity</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d lukematon viesti</item>
@@ -400,7 +401,8 @@
   <string name="DocumentView_unnamed_file">Nimeämätön tiedosto</string>
   <!--DonateMegaphone-->
   <string name="DonateMegaphone_donate_to_signal">Lahjoita Signalille</string>
-  <!-- Removed by excludeNonTranslatables <string name="DonateMegaphone_not_now">Ei nyt</string> -->
+  <string name="DonateMegaphone_no_thanks">Ei kiitos</string>
+  <!--GroupCallingMegaphone-->
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">Optimoi Play Servicesin puuttumista</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Tämä laite ei tue Play Servicesiä. Napauta tästä ottaaksesi pois päältä virransäästöominaisuudet, jotka estävät Signalia hakemasta viestejä taustalla.</string>
@@ -464,7 +466,7 @@
   <string name="GroupsV1MigrationInitiationReminder_not_now">Ei nyt</string>
   <string name="GroupsV1MigrationInitiationReminder_update_group">Päivitä ryhmää</string>
   <!--GroupsV1MigrationSuggestionsReminder-->
-  <string name="GroupsV1MigrationSuggestionsReminder_not_now">Ei nyt</string>
+  <string name="GroupsV1MigrationSuggestionsReminder_no_thanks">Ei kiitos</string>
   <!--GroupsV1MigrationSuggestionsDialog-->
   <!--LeaveGroupDialog-->
   <string name="LeaveGroupDialog_leave_group">Poistu ryhmästä?</string>
@@ -487,7 +489,7 @@
     <item quantity="other">%1$d jäsentä</item>
   </plurals>
   <!--PendingMembersActivity-->
-  <string name="PendingMemberInvitesActivity_pending_group_invites">Odottavat ryhmäkutsut</string>
+  <string name="PendingMembersActivity_pending_group_invites">Odottavat ryhmäkutsut</string>
   <string name="PendingMembersActivity_requests">Pyynnöt</string>
   <string name="PendingMembersActivity_invites">Kutsut</string>
   <string name="PendingMembersActivity_people_you_invited">Kutsumasi henkilöt</string>
@@ -545,7 +547,6 @@
   </plurals>
   <!--ManageGroupActivity-->
   <string name="ManageGroupActivity_disappearing_messages">Katoavat viestit</string>
-  <string name="ManageGroupActivity_pending_group_invites">Odottavat ryhmäkutsut</string>
   <string name="ManageGroupActivity_member_requests_and_invites">Ryhmäänliittymispyynnöt &amp; kutsut</string>
   <string name="ManageGroupActivity_add_members">Lisää jäseniä</string>
   <string name="ManageGroupActivity_edit_group_info">Muokkaa ryhmän tietoja</string>
@@ -584,7 +585,6 @@
   <string name="ManageGroupActivity_edit_name_and_picture">Muokkaa nimeä ja kuvaa</string>
   <string name="ManageGroupActivity_legacy_group">Vanhan tyylin ryhmä</string>
   <string name="ManageGroupActivity_legacy_group_learn_more">Tämä on vanhan tyylin ryhmä. Ylläpitäjän kaltaiset ominaisuudet ovat käytettävissä vain uusissa ryhmissä.</string>
-  <string name="ManageGroupActivity_this_is_an_insecure_mms_group">Tämä on salaamaton MMS-ryhmä. Jos haluat keskustella yksityisesti ja käyttää ominaisuuksia, kuten ryhmien nimiä, kutsu yhteystietosi Signaliin.</string>
   <string name="ManageGroupActivity_invite_now">Kutsu nyt</string>
   <!--GroupMentionSettingDialog-->
   <string name="GroupMentionSettingDialog_notify_me_for_mentions">Ilmoita minulle maininnoista</string>
@@ -675,8 +675,6 @@
   <!--GroupJoinUpdateRequiredBottomSheetDialogFragment-->
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_links_coming_soon">Ryhmälinkit tulossa pian</string>
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Päivitä Signal käyttääksesi ryhmälinkkejä</string>
-  <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_coming_soon">Signal ei vielä tue ryhmään liittymistä linkin kautta. Tämä ominaisuus julkaistaan tulevassa päivityksessä.</string>
-  <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Käyttämäsi versio Signalista ei tue ryhmälinkkejä. Päivitä uusimpaan versioon liittyäksesi tähän ryhmään linkin kautta.</string>
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Päivitä Signal</string>
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_linked_device_message">Yhdellä tai useammalla linkitetyllä laitteellasi on Signal-versio, joka ei tue ryhmälinkkejä. Päivitä linkitettyjen laitteidesi sovellukset liittyäksesi tähän ryhmään.</string>
   <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">Ryhmälinkki ei ole kelvollinen</string>
@@ -957,6 +955,8 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_verified_from_another_device">Merkitsit turvanumerosi yhteystiedon %s kanssa varmennetuksi toisesta laitteestasi.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">Merkitsit turvanumerosi yhteystiedon %s kanssa varmentamattomaksi.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">Merkitsit turvanumerosi yhteystiedon %s kanssa varmentamattomaksi toisesta laitteesta.</string>
+  <!--Group Calling update messages-->
+  <string name="MessageRecord_you">Sinä</string>
   <!--MessageRequestBottomView-->
   <string name="MessageRequestBottomView_accept">Hyväksy</string>
   <string name="MessageRequestBottomView_continue">Jatka</string>
@@ -1113,6 +1113,8 @@
     <item quantity="one">Tässä puhelussa · %1$d henkilö</item>
     <item quantity="other">Tässä puhelussa · %1$d henkilöä</item>
   </plurals>
+  <!--CallParticipantView-->
+  <string name="CallParticipantView__more_info">Lisätietoja</string>
   <!--RegistrationActivity-->
   <string name="RegistrationActivity_select_your_country">Valitse maasi</string>
   <string name="RegistrationActivity_you_must_specify_your_country_code">Suuntanumero täytyy
@@ -1362,8 +1364,6 @@ Vastaanotetiin avaintenvaihtoviesti, joka kuuluu väärälle protokollaversiolle
   <string name="MessageNotifier_reacted_s_to_your_image">Reagoi %1$s kuvallesi.</string>
   <string name="MessageNotifier_reacted_s_to_your_file">Reagoi %1$s tiedostollesi.</string>
   <string name="MessageNotifier_reacted_s_to_your_audio">Reagoi %1$s ääniviestillesi.</string>
-  <string name="MessageNotifier_reacted_s_to_your_view_once_photo">Reagoi %1$s kerran katsottavalle kuvallesi.</string>
-  <string name="MessageNotifier_reacted_s_to_your_view_once_video">Reagoi %1$s kerran katsottavalle videollesi.</string>
   <string name="MessageNotifier_reacted_s_to_your_sticker">Reagoi %1$s tarrallesi.</string>
   <string name="MessageNotifier_this_message_was_deleted">Tämä viesti poistettiin.</string>
   <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Poista \'Yhteistietosi liittyi Signaliin\' ilmoitukset käytöstä? Voit ottaa ne uudelleen käyttöön avaamalla Signal &gt; Asetukset &gt; Ilmoitukset.</string>
@@ -2357,5 +2357,9 @@ Vastaanotetiin avaintenvaihtoviesti, joka kuuluu väärälle protokollaversiolle
   <string name="ReviewCard__remove_from_group">Poista ryhmästä</string>
   <string name="ReviewCard__block">Estä</string>
   <string name="ReviewCard__delete">Poista</string>
+  <!--CallParticipantsListUpdatePopupWindow-->
+  <!--DeleteAccountFragment-->
+  <string name="DeleteAccountFragment__are_you_sure">Haluatko varmasti poistaa tilisi?</string>
+  <!--DeleteAccountCountryPickerFragment-->
   <!--EOF-->
 </resources>

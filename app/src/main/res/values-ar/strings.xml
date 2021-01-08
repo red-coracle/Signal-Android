@@ -56,6 +56,7 @@
   <string name="ApplicationPreferencesActivity_pin_created">تم إنشاء الرقم التعريفي الشخصي.</string>
   <string name="ApplicationPreferencesActivity_pin_disabled">الرقم التعريفي الشخصي غير مفعل.</string>
   <string name="ApplicationPreferencesActivity_hide">إخفاء</string>
+  <string name="ApplicationPreferencesActivity_hide_reminder">إخفاء التذكير ؟</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="zero">%d دقيقة</item>
@@ -91,8 +92,15 @@
   <!--AudioSlidePlayer-->
   <string name="AudioSlidePlayer_error_playing_audio">خطأ في تشغيل الصوت!</string>
   <!--BlockedUsersActivity-->
+  <string name="BlockedUsersActivity__blocked_users">المستخدمون المحظورون</string>
+  <string name="BlockedUsersActivity__add_blocked_user">أضف مستخدما محظورا</string>
   <string name="BlockedUsersActivity__blocked_users_will">لن يتمكن المستخدم المحظور من الاتصال بك أو بعث الرسائل إليك.</string>
+  <string name="BlockedUsersActivity__no_blocked_users">لا أحد محظور</string>
+  <string name="BlockedUsersActivity__block_user">حظر المستخدم ؟</string>
+  <string name="BlockedUserActivity__s_will_not_be_able_to"> لن يتمكن \"%1$s\" من الاتصال بك ولا إرسال رسائل إليك.</string>
   <string name="BlockedUsersActivity__block">حظر</string>
+  <string name="BlockedUsersActivity__unblock_user">إلغاء حظر المستخدم ؟</string>
+  <string name="BlockedUsersActivity__do_you_want_to_unblock_s">أتريد إلغاء حظر \"%1$s\" ؟</string>
   <string name="BlockedUsersActivity__unblock">رفع الحظر</string>
   <!--BlockUnblockDialog-->
   <string name="BlockUnblockDialog_block_and_leave_s">حظر و مغادرة %1$s؟</string>
@@ -141,8 +149,11 @@
   <string name="ClearProfileActivity_remove_group_photo">حذف صورة المجموعة؟</string>
   <!--ClientDeprecatedActivity-->
   <string name="ClientDeprecatedActivity_update_signal">تحديث Signal</string>
+  <string name="ClientDeprecatedActivity_this_version_of_the_app_is_no_longer_supported">لم يعد هذا الإصدار من التطبيق مدعوما. لمواصلة إرسال الرسائل واستلامها ، قم بالتحديث إلى آخر إصدار.</string>
   <string name="ClientDeprecatedActivity_update">تحديث التطبيق</string>
+  <string name="ClientDeprecatedActivity_dont_update">لا تقم بالتحديث</string>
   <string name="ClientDeprecatedActivity_warning">تحذير</string>
+  <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">لقد انتهت صلاحية إصدار Signal الخاص بك. يمكنك عرض محفوظات رسائلك ولكنك لن تتمكن من إرسال أو استقبال الرسائل حتى تقوم بالتحديث.</string>
   <!--CommunicationActions-->
   <string name="CommunicationActions_no_browser_found">لم يتم العثور على متصفح للإنترنت.</string>
   <string name="CommunicationActions_no_email_app_found">لم يعثر على أي تطبيق للبريد الإلكتروني.</string>
@@ -254,6 +265,7 @@
   <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone">للاتصال ب%1$s يحتاج Signal الوصول إلى ميكروفونك.</string>
   <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone_and_camera">للاتصال ب%1$s يحتاج Signal الوصول إلى ميكروفونك وكاميرتك.</string>
   <string name="ConversationActivity__more_options_now_in_group_settings">ثمة خيارات إضافية الآن في \"إعدادات المجموعة\"</string>
+  <string name="ConversationActivity_join">انضم</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="zero">%d رسالة غير مقروءة</item>
@@ -438,12 +450,17 @@
   <!--DocumentView-->
   <string name="DocumentView_unnamed_file">ملف بدون اسم</string>
   <!--DonateMegaphone-->
+  <string name="DonateMegaphone_donate_to_signal">تبرع لـ Signal</string>
+  <string name="DonateMegaphone_Signal_is_powered_by_people_like_you_show_your_support_today">يشتغل Signal بفضل أفراد مثلك. أظهر دعمك لنا اليوم !</string>
   <string name="DonateMegaphone_donate">تبرع</string>
-  <!-- Removed by excludeNonTranslatables <string name="DonateMegaphone_not_now">ليس الآن</string> -->
+  <string name="DonateMegaphone_no_thanks">لا شكرًا</string>
+  <!--GroupCallingMegaphone-->
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">الإعداد الأمثل عند غياب خدمات Play Services</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">هذا الهاتف لا يدعم خدمات Play. أنقر لإلغاء تفعيل ميزة الأداء الأمثل للبطارية والتي تمنع Signal من استقبال الرسائل عند عدم النشاط.</string>
   <!--ExpiredBuildReminder-->
+  <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">انتهت صلاحية هذا الإصدار من Signal. قم بالتحديث الآن لإرسال واستقبال الرسائل.</string>
+  <string name="ExpiredBuildReminder_update_now">حدِّث الآن</string>
   <!--PendingGroupJoinRequestsReminder-->
   <string name="PendingGroupJoinRequestsReminder_view">معاينة</string>
   <!--ShareActivity-->
@@ -499,7 +516,7 @@
   <string name="GroupsV1MigrationInitiationReminder_not_now">ليس الآن</string>
   <string name="GroupsV1MigrationInitiationReminder_update_group">تحديث المجموعة</string>
   <!--GroupsV1MigrationSuggestionsReminder-->
-  <string name="GroupsV1MigrationSuggestionsReminder_not_now">ليس الآن</string>
+  <string name="GroupsV1MigrationSuggestionsReminder_no_thanks">لا شكرا</string>
   <!--GroupsV1MigrationSuggestionsDialog-->
   <!--LeaveGroupDialog-->
   <string name="LeaveGroupDialog_leave_group">ترك المجموعة؟</string>
@@ -517,7 +534,7 @@
   <string name="LinkPreviewView_this_group_link_is_not_active">رابط هذه المجموعة غير مفعّل</string>
   <!--LinkPreviewRepository-->
   <!--PendingMembersActivity-->
-  <string name="PendingMemberInvitesActivity_pending_group_invites">دعوات معلّقة</string>
+  <string name="PendingMembersActivity_pending_group_invites">دعوات معلّقة</string>
   <string name="PendingMembersActivity_people_you_invited">الأشخاص الذين دعوتهم</string>
   <string name="PendingMembersActivity_you_have_no_pending_invites">لا يوجد لديك دعوات معلقة.</string>
   <string name="PendingMembersActivity_invites_by_other_group_members">دعوات من أعضاء المجموعة الآخرين</string>
@@ -588,7 +605,6 @@
   </plurals>
   <!--ManageGroupActivity-->
   <string name="ManageGroupActivity_disappearing_messages">الرسائل المُختفية</string>
-  <string name="ManageGroupActivity_pending_group_invites">دعوات معلّقة</string>
   <string name="ManageGroupActivity_add_members">إضافة أعضاء</string>
   <string name="ManageGroupActivity_edit_group_info">تعديل معلومات المجموعة</string>
   <string name="ManageGroupActivity_block_group">حظر المجموعة</string>
@@ -1012,6 +1028,8 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_verified_from_another_device">لقد قمت بالإشعار بأنّك تحقّقت من رقم السلامة مع %s عن طريق جهاز آخر</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">لقد قمت بالإشعار بأنّ رقم السلامة مع %s لم يتم التحقّق منه</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">لقد قمت بالإشعار بأنّ رقم السلامة مع %s لم يتم التحقّق منه عن طريق جهاز آخر</string>
+  <!--Group Calling update messages-->
+  <string name="MessageRecord_you">أنت</string>
   <!--MessageRequestBottomView-->
   <string name="MessageRequestBottomView_accept">موافقة</string>
   <string name="MessageRequestBottomView_continue">استمرار</string>
@@ -1078,6 +1096,7 @@
   <string name="ExpirationDialog_your_messages_will_not_expire">صلاحية رسائلك لن تنتهي.</string>
   <string name="ExpirationDialog_your_messages_will_disappear_s_after_they_have_been_seen">الرسائل الصادرة والواردة في هذه المحادثة سوف تختفي بعد %s من رؤيتها.</string>
   <!--OutdatedBuildReminder-->
+  <string name="OutdatedBuildReminder_update_now">حدِّث الآن</string>
   <!--PassphrasePromptActivity-->
   <string name="PassphrasePromptActivity_enter_passphrase">أدخل العبارة السرية</string>
   <string name="PassphrasePromptActivity_watermark_content_description">أيقونة Signal</string>
@@ -1168,6 +1187,8 @@
   <string name="WebRtcCallView__disconnected">غير متّصل</string>
   <string name="WebRtcCallView__no_one_else_is_here">لا يوجد أحد هنا</string>
   <!--CallParticipantsListDialog-->
+  <!--CallParticipantView-->
+  <string name="CallParticipantView__more_info">معلومات أخرى</string>
   <!--RegistrationActivity-->
   <string name="RegistrationActivity_select_your_country">اختر بلدك</string>
   <string name="RegistrationActivity_you_must_specify_your_country_code">يجب عليك تحديد رمز دولتك</string>
@@ -1419,8 +1440,6 @@
   <string name="MessageNotifier_reacted_s_to_your_image">تفاعل %1$s مع الصورة الخاصة بك.</string>
   <string name="MessageNotifier_reacted_s_to_your_file">تفاعل %1$s مع الملف الخاص بك.</string>
   <string name="MessageNotifier_reacted_s_to_your_audio">تفاعل %1$s مع التسجيل الصوتي الخاص بك.</string>
-  <string name="MessageNotifier_reacted_s_to_your_view_once_photo">تفاعل %1$s مع الصورة لمشاهدة-واحدة الخاصّة بك.</string>
-  <string name="MessageNotifier_reacted_s_to_your_view_once_video">تفاعل %1$s مع فيديو المشاهدة-لمرة واحدة الخاص بك.</string>
   <string name="MessageNotifier_reacted_s_to_your_sticker">تم تفاعل %1$s مع الملصق الخاص بك.</string>
   <string name="MessageNotifier_this_message_was_deleted">تم حذف هذه الرسالة.</string>
   <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">تعطيل إشعارات انضمام شخص إلى Signal؟ تستطيع تفعيلهم مجدداً في Signal &gt; إعدادات &gt; إشعارات.</string>
@@ -1926,6 +1945,7 @@
   <string name="preferences__slow">بطىء</string>
   <string name="preferences__help">مساعدة</string>
   <string name="preferences__advanced">متقدم</string>
+  <string name="preferences__donate_to_signal">تبرع لـ Signal</string>
   <string name="preferences__privacy">الخصوصية</string>
   <string name="preferences__mms_user_agent">الوكيل المستخدم لرسائل الوسائط المتعددة</string>
   <string name="preferences__advanced_mms_access_point_names">الإعدادات اليدوية لرسائل الوسائط المتعددة</string>
@@ -1939,6 +1959,8 @@
   <string name="preferences__chats">المحادثات والوسائط</string>
   <string name="preferences__storage">التخزين</string>
   <string name="preferences__conversation_length_limit">حد طول المحادثة</string>
+  <string name="preferences__keep_messages">احتفظ بالرسائل</string>
+  <string name="preferences__clear_message_history">امسح محفوظات الرسائل</string>
   <string name="preferences__linked_devices">الأجهزة المتصلة</string>
   <string name="preferences__light_theme">فاتح</string>
   <string name="preferences__dark_theme">داكن</string>
@@ -1963,16 +1985,22 @@
   <string name="preferences__typing_indicators">مؤشرات الطباعة</string>
   <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">اذا تم الغاء تفعيل المؤشر على الطباعة، فلن يمكنك كذلك رؤية مؤشر عند قيام الآخرين بالطّباعة.</string>
   <string name="preferences__request_keyboard_to_disable_personalized_learning">الطلب من لوحة المفاتيح تعطيل التعليم الذاتي</string>
+  <string name="preferences_app_protection__blocked_users">المستخدمون المحظورون</string>
   <string name="preferences_chats__when_using_mobile_data">عند استخدام بيانات الجوّال</string>
   <string name="preferences_chats__when_using_wifi">عند استخدام واي فاي</string>
   <string name="preferences_chats__when_roaming">عند استخدام التجوال</string>
   <string name="preferences_chats__media_auto_download">تنزلي تلقائي للوسائط</string>
+  <string name="preferences_chats__message_history">محفوظات الرسائل</string>
   <string name="preferences_storage__storage_usage">استخدام سعة التخزين</string>
   <string name="preferences_storage__photos">الصور</string>
   <string name="preferences_storage__videos">الفيديوهات</string>
   <string name="preferences_storage__files">الملفات</string>
   <string name="preferences_storage__audio">صوت</string>
   <string name="preferences_storage__review_storage">مراجعة سعة التخزين</string>
+  <string name="preferences_storage__clear_message_history">أأمسح محفوظات الرسائل ؟</string>
+  <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device">سوف يتم حذف كل محفوظات الرسائل والوسائط نهائيا من جهازك.</string>
+  <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone">ستُزال محفوظات الرسائل نهائيا. لن يتم التراجع عن هذا الإجراء.</string>
+  <string name="preferences_storage__forever">للأبد</string>
   <string name="preferences_storage__none">لا شيء </string>
   <string name="preferences_storage__custom">مخصص</string>
   <string name="preferences_advanced__use_system_emoji">استخدام الرموز التعبيرية بالنظام</string>
@@ -2415,6 +2443,8 @@
   <!--VoiceNoteMediaDescriptionCompatFactory-->
   <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s إلى %2$s</string>
   <!--StorageUtil-->
+  <string name="BlockedUsersActivity__s_has_been_blocked">تم حظر \"%1$s\".</string>
+  <string name="BlockedUsersActivity__s_has_been_unblocked">تم إلغاء حظر \"%1$s\".</string>
   <!--ReviewCardDialogFragment-->
   <string name="ReviewCardDialogFragment__remove">إزالة</string>
   <!--ReviewCard-->
@@ -2422,5 +2452,9 @@
   <string name="ReviewCard__remove_from_group">أزل من المجموعة</string>
   <string name="ReviewCard__block">حظر</string>
   <string name="ReviewCard__delete">حذف</string>
+  <!--CallParticipantsListUpdatePopupWindow-->
+  <!--DeleteAccountFragment-->
+  <string name="DeleteAccountFragment__are_you_sure">هل أنت متأكد من أنك تريد حذف حسابك؟</string>
+  <!--DeleteAccountCountryPickerFragment-->
   <!--EOF-->
 </resources>

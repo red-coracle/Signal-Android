@@ -7,13 +7,13 @@ import androidx.annotation.Nullable;
 
 import com.annimon.stream.Stream;
 
+import org.signal.core.util.logging.Log;
 import org.signal.storageservice.protos.groups.local.DecryptedGroup;
 import org.signal.zkgroup.groups.GroupMasterKey;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.GroupDatabase;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mms.MmsException;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
 import org.thoughtcrime.securesms.recipients.Recipient;
@@ -22,7 +22,6 @@ import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.GroupUtil;
-import org.whispersystems.signalservice.api.groupsv2.DecryptedGroupUtil;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -87,22 +86,20 @@ public final class GroupsV1MigrationUtil {
           throw new InvalidMigrationStateException();
         }
 
-        if (!forced && !FeatureFlags.groupsV1AutoMigration()) {
-          Log.w(TAG, "Auto migration is not enabled! Skipping.");
-          throw new InvalidMigrationStateException();
-        }
-
         if (forced && !FeatureFlags.groupsV1ManualMigration()) {
           Log.w(TAG, "Manual migration is not enabled! Skipping.");
           throw new InvalidMigrationStateException();
         }
 
-        RecipientUtil.ensureUuidsAreAvailable(context, groupRecipient.getParticipants());
-        groupRecipient = groupRecipient.fresh();
-
         List<Recipient> registeredMembers = RecipientUtil.getEligibleForSending(groupRecipient.getParticipants());
-        List<Recipient> possibleMembers   = forced ? getMigratableManualMigrationMembers(registeredMembers)
-                                                   : getMigratableAutoMigrationMembers(registeredMembers);
+
+        if (RecipientUtil.ensureUuidsAreAvailable(context, registeredMembers)) {
+          Log.i(TAG, "Newly-discovered UUIDs. Getting fresh recipients.");
+          registeredMembers = Stream.of(registeredMembers).map(Recipient::fresh).toList();
+        }
+
+        List<Recipient> possibleMembers = forced ? getMigratableManualMigrationMembers(registeredMembers)
+                                                 : getMigratableAutoMigrationMembers(registeredMembers);
 
         if (!forced && possibleMembers.size() != registeredMembers.size()) {
           Log.w(TAG, "Not allowed to invite or leave registered users behind in an auto-migration! Skipping.");
@@ -140,17 +137,25 @@ public final class GroupsV1MigrationUtil {
     DecryptedGroup decryptedGroup = performLocalMigration(context, gv1Id, threadId, groupRecipient);
 
     if (newlyCreated && decryptedGroup != null && !SignalStore.internalValues().disableGv1AutoMigrateNotification()) {
+      Log.i(TAG, "Sending no-op update to notify others.");
       GroupManager.sendNoopUpdate(context, gv2MasterKey, decryptedGroup);
     }
   }
 
   public static void performLocalMigration(@NonNull Context context, @NonNull GroupId.V1 gv1Id) throws IOException
   {
+    Log.i(TAG, "Beginning local migration! V1 ID: " + gv1Id, new Throwable());
     try (Closeable ignored = GroupsV2ProcessingLock.acquireGroupProcessingLock()) {
+      if (DatabaseFactory.getGroupDatabase(context).groupExists(gv1Id.deriveV2MigrationGroupId())) {
+        Log.w(TAG, "Group was already migrated! Could have been waiting for the lock.", new Throwable());
+        return;
+      }
+
       Recipient recipient = Recipient.externalGroupExact(context, gv1Id);
       long      threadId  = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(recipient);
 
       performLocalMigration(context, gv1Id, threadId, recipient);
+      Log.i(TAG, "Migration complete! (" + gv1Id + ", " + threadId + ", " + recipient.getId() + ")", new Throwable());
     } catch (GroupChangeBusyException e) {
       throw new IOException(e);
     }
@@ -162,6 +167,8 @@ public final class GroupsV1MigrationUtil {
                                                                 @NonNull Recipient groupRecipient)
       throws IOException, GroupChangeBusyException
   {
+    Log.i(TAG, "performLocalMigration(" + gv1Id + ", " + threadId + ", " + groupRecipient.getId());
+
     try (Closeable ignored = GroupsV2ProcessingLock.acquireGroupProcessingLock()){
       DecryptedGroup decryptedGroup;
       try {
@@ -174,15 +181,8 @@ public final class GroupsV1MigrationUtil {
         return null;
       }
 
-      List<RecipientId> pendingRecipients = Stream.of(DecryptedGroupUtil.pendingToUuidList(decryptedGroup.getPendingMembersList()))
-                                                  .map(uuid -> Recipient.externalPush(context, uuid, null, false))
-                                                  .filterNot(Recipient::isSelf)
-                                                  .map(Recipient::getId)
-                                                  .toList();
-
       Log.i(TAG, "[Local] Migrating group over to the version we were added to: V" + decryptedGroup.getRevision());
-      DatabaseFactory.getGroupDatabase(context).migrateToV2(gv1Id, decryptedGroup);
-      DatabaseFactory.getSmsDatabase(context).insertGroupV1MigrationEvents(groupRecipient.getId(), threadId, pendingRecipients);
+      DatabaseFactory.getGroupDatabase(context).migrateToV2(threadId, gv1Id, decryptedGroup);
 
       Log.i(TAG, "[Local] Applying all changes since V" + decryptedGroup.getRevision());
       try {

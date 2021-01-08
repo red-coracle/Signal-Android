@@ -245,6 +245,7 @@
   <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone">%1$s에게 통화하려면, 시그널에서 마이크 권한이 필요합니다.</string>
   <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone_and_camera">%1$s에게 통화하려면, 시그널에서 마이크와 카메라 권한이 필요합니다.</string>
   <string name="ConversationActivity__more_options_now_in_group_settings">더 많은 옵션은 \'그룹 설정\'에서 가능합니다.</string>
+  <string name="ConversationActivity_join">참가</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="other">읽지 않은 메시지 %d개</item>
@@ -380,7 +381,7 @@
   <!--DonateMegaphone-->
   <string name="DonateMegaphone_donate_to_signal">Signal에 후원</string>
   <string name="DonateMegaphone_donate">기부</string>
-  <!-- Removed by excludeNonTranslatables <string name="DonateMegaphone_not_now">나중에</string> -->
+  <!--GroupCallingMegaphone-->
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">누락된 Play Services에 최적화</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">기기에서는 Play Services를 지원하지 않습니다. 탭하여 시스템 배터리 최적화 기능을 사용하지 않을 수 있습니다. 해당 기능은 Signal이 비활성화된 동안에 메시지를 검색하지 못하게 합니다.</string>
@@ -441,7 +442,7 @@
   <plurals name="GroupsV1MigrationSuggestionsReminder_add_members">
     <item quantity="other">멤버 추가하기</item>
   </plurals>
-  <string name="GroupsV1MigrationSuggestionsReminder_not_now">나중에</string>
+  <string name="GroupsV1MigrationSuggestionsReminder_no_thanks">괜찮습니다</string>
   <!--GroupsV1MigrationSuggestionsDialog-->
   <plurals name="GroupsV1MigrationSuggestionsDialog_add_members_question">
     <item quantity="other">멤버를 추가하시겠습니까?</item>
@@ -462,7 +463,7 @@
     <item quantity="other">%1$d명의 멤버</item>
   </plurals>
   <!--PendingMembersActivity-->
-  <string name="PendingMemberInvitesActivity_pending_group_invites">대기 중인 그룹 초대</string>
+  <string name="PendingMembersActivity_pending_group_invites">대기 중인 그룹 초대</string>
   <string name="PendingMembersActivity_requests">요청</string>
   <string name="PendingMembersActivity_invites">초대</string>
   <string name="PendingMembersActivity_people_you_invited">초대한 사람들</string>
@@ -498,7 +499,6 @@
   <!--NonGv2MemberDialog-->
   <!--ManageGroupActivity-->
   <string name="ManageGroupActivity_disappearing_messages">사라지는 메시지</string>
-  <string name="ManageGroupActivity_pending_group_invites">대기 중인 그룹 초대</string>
   <string name="ManageGroupActivity_add_members">멤버 추가</string>
   <string name="ManageGroupActivity_edit_group_info">그룹 정보 수정</string>
   <string name="ManageGroupActivity_who_can_add_new_members">누가 새로운 멤버들을 추가시킬 수 있습니까?</string>
@@ -796,6 +796,8 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_verified_from_another_device">%s 님과의 안전 번호를 다른 기기에서 인증됨 상태로 표시했습니다.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">%s 님과의 안전 번호를 인증되지 않음 상태로 표시했습니다.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">%s 님과의 안전 번호를 다른 기기에서 인증되지 않음 상태로 표시했습니다.</string>
+  <!--Group Calling update messages-->
+  <string name="MessageRecord_you">나</string>
   <!--MessageRequestBottomView-->
   <string name="MessageRequestBottomView_accept">수락</string>
   <string name="MessageRequestBottomView_continue">계속</string>
@@ -924,6 +926,8 @@
   <string name="WebRtcCallView__disconnected">연결 끊김</string>
   <string name="WebRtcCallView__no_one_else_is_here">아무도 없음</string>
   <!--CallParticipantsListDialog-->
+  <!--CallParticipantView-->
+  <string name="CallParticipantView__more_info">자세한 정보</string>
   <!--RegistrationActivity-->
   <string name="RegistrationActivity_select_your_country">국가 선택</string>
   <string name="RegistrationActivity_you_must_specify_your_country_code">국가 번호를
@@ -1166,8 +1170,6 @@
   <string name="MessageNotifier_reacted_s_to_your_image">이미지에 대해 %1$s로 리액션했습니다.</string>
   <string name="MessageNotifier_reacted_s_to_your_file">파일에 대해 %1$s로 리액션했습니다.</string>
   <string name="MessageNotifier_reacted_s_to_your_audio">오디오에 대해 %1$s로 리액션했습니다.</string>
-  <string name="MessageNotifier_reacted_s_to_your_view_once_photo">한 번 볼 수 있는 이미지에 대해 %1$s로 리액션했습니다.</string>
-  <string name="MessageNotifier_reacted_s_to_your_view_once_video">한 번 볼 수 있는 동영상에 대해 %1$s로 리액션했습니다.</string>
   <string name="MessageNotifier_reacted_s_to_your_sticker">스티커에 대해 %1$s로 리액션했습니다.</string>
   <string name="MessageNotifier_this_message_was_deleted">본 메세지는 삭제되었습니다.&lt;br&gt;</string>
   <!--Notification Channels-->
@@ -2076,5 +2078,9 @@
   <string name="ReviewCard__update_contact">연락처 업데이트</string>
   <string name="ReviewCard__block">차단</string>
   <string name="ReviewCard__delete">삭제</string>
+  <!--CallParticipantsListUpdatePopupWindow-->
+  <!--DeleteAccountFragment-->
+  <string name="DeleteAccountFragment__are_you_sure">계정을 삭제하시겠습니까?</string>
+  <!--DeleteAccountCountryPickerFragment-->
   <!--EOF-->
 </resources>

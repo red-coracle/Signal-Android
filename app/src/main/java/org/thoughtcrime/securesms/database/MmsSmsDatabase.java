@@ -24,16 +24,16 @@ import androidx.annotation.Nullable;
 
 import com.annimon.stream.Stream;
 
-import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteQueryBuilder;
 
+import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.database.MessageDatabase.SyncMessageId;
 import org.thoughtcrime.securesms.database.helpers.SQLCipherOpenHelper;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
-import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.tracing.Trace;
+import org.thoughtcrime.securesms.util.CursorUtil;
 import org.whispersystems.libsignal.util.Pair;
 
 import java.io.Closeable;
@@ -101,7 +101,8 @@ public class MmsSmsDatabase extends Database {
                                               MmsSmsColumns.REACTIONS_LAST_SEEN,
                                               MmsSmsColumns.REMOTE_DELETED,
                                               MmsDatabase.MENTIONS_SELF,
-                                              MmsSmsColumns.NOTIFIED_TIMESTAMP};
+                                              MmsSmsColumns.NOTIFIED_TIMESTAMP,
+                                              MmsSmsColumns.VIEWED_RECEIPT_COUNT};
 
   public MmsSmsDatabase(Context context, SQLCipherOpenHelper databaseHelper) {
     super(context, databaseHelper);
@@ -339,8 +340,8 @@ public class MmsSmsDatabase extends Database {
 
     db.beginTransaction();
     try {
-      DatabaseFactory.getSmsDatabase(context).incrementReceiptCount(syncMessageId, timestamp, true);
-      DatabaseFactory.getMmsDatabase(context).incrementReceiptCount(syncMessageId, timestamp, true);
+      DatabaseFactory.getSmsDatabase(context).incrementReceiptCount(syncMessageId, timestamp, MessageDatabase.ReceiptType.DELIVERY);
+      DatabaseFactory.getMmsDatabase(context).incrementReceiptCount(syncMessageId, timestamp, MessageDatabase.ReceiptType.DELIVERY);
       db.setTransactionSuccessful();
     } finally {
       db.endTransaction();
@@ -379,8 +380,8 @@ public class MmsSmsDatabase extends Database {
     try {
       boolean handled = false;
 
-      handled |= DatabaseFactory.getSmsDatabase(context).incrementReceiptCount(syncMessageId, timestamp, false);
-      handled |= DatabaseFactory.getMmsDatabase(context).incrementReceiptCount(syncMessageId, timestamp, false);
+      handled |= DatabaseFactory.getSmsDatabase(context).incrementReceiptCount(syncMessageId, timestamp, MessageDatabase.ReceiptType.READ);
+      handled |= DatabaseFactory.getMmsDatabase(context).incrementReceiptCount(syncMessageId, timestamp, MessageDatabase.ReceiptType.READ);
 
       db.setTransactionSuccessful();
 
@@ -390,11 +391,40 @@ public class MmsSmsDatabase extends Database {
     }
   }
 
+  /**
+   * @return A list of ID's that were not updated.
+   */
+  public @NonNull Collection<SyncMessageId> incrementViewedReceiptCounts(@NonNull List<SyncMessageId> syncMessageIds, long timestamp) {
+    SQLiteDatabase      db        = databaseHelper.getWritableDatabase();
+    List<SyncMessageId> unhandled = new LinkedList<>();
+
+    db.beginTransaction();
+    try {
+      for (SyncMessageId id : syncMessageIds) {
+        boolean handled = incrementViewedReceiptCount(id, timestamp);
+
+        if (!handled) {
+          unhandled.add(id);
+        }
+      }
+
+      db.setTransactionSuccessful();
+    } finally {
+      db.endTransaction();
+    }
+
+    return unhandled;
+  }
+
+  public boolean incrementViewedReceiptCount(SyncMessageId syncMessageId, long timestamp) {
+    return DatabaseFactory.getMmsDatabase(context).incrementReceiptCount(syncMessageId, timestamp, MessageDatabase.ReceiptType.VIEWED);
+  }
+
   public int getQuotedMessagePosition(long threadId, long quoteId, @NonNull RecipientId recipientId) {
     String order     = MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " DESC";
-    String selection = MmsSmsColumns.THREAD_ID + " = " + threadId + " AND " + MmsSmsColumns.REMOTE_DELETED + " = 0";
+    String selection = MmsSmsColumns.THREAD_ID + " = " + threadId;
 
-    try (Cursor cursor = queryTables(new String[]{ MmsSmsColumns.NORMALIZED_DATE_SENT, MmsSmsColumns.RECIPIENT_ID}, selection, order, null)) {
+    try (Cursor cursor = queryTables(new String[]{ MmsSmsColumns.NORMALIZED_DATE_SENT, MmsSmsColumns.RECIPIENT_ID, MmsSmsColumns.REMOTE_DELETED}, selection, order, null)) {
       boolean isOwnNumber = Recipient.resolved(recipientId).isSelf();
 
       while (cursor != null && cursor.moveToNext()) {
@@ -402,7 +432,11 @@ public class MmsSmsDatabase extends Database {
         boolean recipientIdMatches = recipientId.equals(RecipientId.from(cursor.getLong(1)));
 
         if (quoteIdMatches && (recipientIdMatches || isOwnNumber)) {
-          return cursor.getPosition();
+          if (CursorUtil.requireBoolean(cursor, MmsSmsColumns.REMOTE_DELETED)) {
+            return -1;
+          } else {
+            return cursor.getPosition();
+          }
         }
       }
     }
@@ -411,17 +445,22 @@ public class MmsSmsDatabase extends Database {
 
   public int getMessagePositionInConversation(long threadId, long receivedTimestamp, @NonNull RecipientId recipientId) {
     String order     = MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " DESC";
-    String selection = MmsSmsColumns.THREAD_ID + " = " + threadId + " AND " + MmsSmsColumns.REMOTE_DELETED + " = 0";
+    String selection = MmsSmsColumns.THREAD_ID + " = " + threadId;
 
-    try (Cursor cursor = queryTables(new String[]{ MmsSmsColumns.NORMALIZED_DATE_RECEIVED, MmsSmsColumns.RECIPIENT_ID}, selection, order, null)) {
+    try (Cursor cursor = queryTables(new String[]{ MmsSmsColumns.NORMALIZED_DATE_RECEIVED, MmsSmsColumns.RECIPIENT_ID, MmsSmsColumns.REMOTE_DELETED}, selection, order, null)) {
       boolean isOwnNumber = Recipient.resolved(recipientId).isSelf();
 
       while (cursor != null && cursor.moveToNext()) {
         boolean timestampMatches   = cursor.getLong(0) == receivedTimestamp;
         boolean recipientIdMatches = recipientId.equals(RecipientId.from(cursor.getLong(1)));
 
+
         if (timestampMatches && (recipientIdMatches || isOwnNumber)) {
-          return cursor.getPosition();
+          if (CursorUtil.requireBoolean(cursor, MmsSmsColumns.REMOTE_DELETED)) {
+            return -1;
+          } else {
+            return cursor.getPosition();
+          }
         }
       }
     }
@@ -443,8 +482,7 @@ public class MmsSmsDatabase extends Database {
   public int getMessagePositionInConversation(long threadId, long receivedTimestamp) {
     String order     = MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " DESC";
     String selection = MmsSmsColumns.THREAD_ID + " = " + threadId + " AND " +
-                       MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " > " + receivedTimestamp + " AND " +
-                       MmsSmsColumns.REMOTE_DELETED + " = 0";
+                       MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " > " + receivedTimestamp;
 
     try (Cursor cursor = queryTables(new String[]{ "COUNT(*)" }, selection, order, null)) {
       if (cursor != null && cursor.moveToFirst()) {
@@ -546,7 +584,8 @@ public class MmsSmsDatabase extends Database {
                               MmsSmsColumns.DATE_SERVER,
                               MmsSmsColumns.REMOTE_DELETED,
                               MmsDatabase.MENTIONS_SELF,
-                              MmsSmsColumns.NOTIFIED_TIMESTAMP };
+                              MmsSmsColumns.NOTIFIED_TIMESTAMP,
+                              MmsSmsColumns.VIEWED_RECEIPT_COUNT};
 
     String[] smsProjection = {SmsDatabase.DATE_SENT + " AS " + MmsSmsColumns.NORMALIZED_DATE_SENT,
                               SmsDatabase.DATE_RECEIVED + " AS " + MmsSmsColumns.NORMALIZED_DATE_RECEIVED,
@@ -581,7 +620,8 @@ public class MmsSmsDatabase extends Database {
                               MmsSmsColumns.DATE_SERVER,
                               MmsSmsColumns.REMOTE_DELETED,
                               MmsDatabase.MENTIONS_SELF,
-                              MmsSmsColumns.NOTIFIED_TIMESTAMP };
+                              MmsSmsColumns.NOTIFIED_TIMESTAMP,
+                              MmsSmsColumns.VIEWED_RECEIPT_COUNT};
 
     SQLiteQueryBuilder mmsQueryBuilder = new SQLiteQueryBuilder();
     SQLiteQueryBuilder smsQueryBuilder = new SQLiteQueryBuilder();
@@ -637,6 +677,7 @@ public class MmsSmsDatabase extends Database {
     mmsColumnsPresent.add(MmsDatabase.REMOTE_DELETED);
     mmsColumnsPresent.add(MmsDatabase.MENTIONS_SELF);
     mmsColumnsPresent.add(MmsSmsColumns.NOTIFIED_TIMESTAMP);
+    mmsColumnsPresent.add(MmsSmsColumns.VIEWED_RECEIPT_COUNT);
 
     Set<String> smsColumnsPresent = new HashSet<>();
     smsColumnsPresent.add(MmsSmsColumns.ID);

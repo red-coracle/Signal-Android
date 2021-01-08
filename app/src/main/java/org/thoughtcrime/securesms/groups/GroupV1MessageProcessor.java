@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.annimon.stream.Stream;
 import com.google.protobuf.ByteString;
 
+import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.GroupDatabase;
 import org.thoughtcrime.securesms.database.MessageDatabase;
@@ -16,7 +17,6 @@ import org.thoughtcrime.securesms.database.MessageDatabase.InsertResult;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.jobs.AvatarGroupsV1DownloadJob;
 import org.thoughtcrime.securesms.jobs.PushGroupUpdateJob;
-import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mms.MmsException;
 import org.thoughtcrime.securesms.mms.OutgoingGroupUpdateMessage;
 import org.thoughtcrime.securesms.recipients.Recipient;
@@ -51,6 +51,7 @@ public final class GroupV1MessageProcessor {
                                        @NonNull SignalServiceContent content,
                                        @NonNull SignalServiceDataMessage message,
                                        boolean outgoing)
+      throws BadGroupIdException
   {
     SignalServiceGroupContext    signalServiceGroupContext = message.getGroupContext().get();
     Optional<SignalServiceGroup> groupV1                   = signalServiceGroupContext.getGroupV1();
@@ -66,7 +67,7 @@ public final class GroupV1MessageProcessor {
 
     GroupDatabase         database = DatabaseFactory.getGroupDatabase(context);
     SignalServiceGroup    group    = groupV1.get();
-    GroupId               id       = GroupId.v1orThrow(group.getGroupId());
+    GroupId               id       = GroupId.v1(group.getGroupId());
     Optional<GroupRecord> record   = database.getGroup(id);
 
     if (record.isPresent() && group.getType() == Type.UPDATE) {
