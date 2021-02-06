@@ -40,11 +40,13 @@ import org.thoughtcrime.securesms.preferences.BackupsPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.ChatsPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.CorrectedPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.DataAndStoragePreferenceFragment;
+import org.thoughtcrime.securesms.preferences.EditProxyFragment;
 import org.thoughtcrime.securesms.preferences.NotificationsPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.SmsMmsPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.widgets.ProfilePreference;
 import org.thoughtcrime.securesms.preferences.widgets.UsernamePreference;
 import org.thoughtcrime.securesms.profiles.edit.EditProfileActivity;
+import org.thoughtcrime.securesms.profiles.manage.ManageProfileActivity;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.CachedInflater;
@@ -66,6 +68,7 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActivity
 {
   public static final String LAUNCH_TO_BACKUPS_FRAGMENT = "launch.to.backups.fragment";
   public static final String LAUNCH_TO_HELP_FRAGMENT    = "launch.to.help.fragment";
+  public static final String LAUNCH_TO_PROXY_FRAGMENT   = "launch.to.proxy.fragment";
 
   @SuppressWarnings("unused")
   private static final String TAG = ApplicationPreferencesActivity.class.getSimpleName();
@@ -107,6 +110,8 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActivity
       initFragment(android.R.id.content, new BackupsPreferenceFragment());
     } else if (getIntent() != null && getIntent().getBooleanExtra(LAUNCH_TO_HELP_FRAGMENT, false)) {
       initFragment(android.R.id.content, new HelpFragment());
+    } else if (getIntent() != null && getIntent().getBooleanExtra(LAUNCH_TO_PROXY_FRAGMENT, false)) {
+      initFragment(android.R.id.content, EditProxyFragment.newInstance());
     } else if (icicle == null) {
       initFragment(android.R.id.content, new ApplicationPreferenceFragment());
     } else {
@@ -345,7 +350,7 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActivity
     private class ProfileClickListener implements Preference.OnPreferenceClickListener {
       @Override
       public boolean onPreferenceClick(Preference preference) {
-        requireActivity().startActivity(EditProfileActivity.getIntentForUserProfileEdit(preference.getContext()));
+        requireActivity().startActivity(ManageProfileActivity.getIntent(requireActivity()));
         return true;
       }
     }
@@ -353,7 +358,7 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActivity
     private class UsernameClickListener implements Preference.OnPreferenceClickListener {
       @Override
       public boolean onPreferenceClick(Preference preference) {
-        requireActivity().startActivity(EditProfileActivity.getIntentForUsernameEdit(preference.getContext()));
+        requireActivity().startActivity(ManageProfileActivity.getIntentForUsernameEdit(preference.getContext()));
         return true;
       }
     }

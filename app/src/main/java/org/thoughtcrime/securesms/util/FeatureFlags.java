@@ -49,24 +49,32 @@ public final class FeatureFlags {
 
   private static final long FETCH_INTERVAL = TimeUnit.HOURS.toMillis(2);
 
-  private static final String USERNAMES                    = "android.usernames";
-  private static final String GROUPS_V2_RECOMMENDED_LIMIT  = "global.groupsv2.maxGroupSize";
-  private static final String GROUPS_V2_HARD_LIMIT         = "global.groupsv2.groupSizeHardLimit";
-  private static final String GROUP_NAME_MAX_LENGTH        = "global.groupsv2.maxNameLength";
-  private static final String INTERNAL_USER                = "android.internalUser";
-  private static final String VERIFY_V2                    = "android.verifyV2";
-  private static final String PHONE_NUMBER_PRIVACY_VERSION = "android.phoneNumberPrivacyVersion";
-  private static final String CLIENT_EXPIRATION            = "android.clientExpiration";
-  public  static final String RESEARCH_MEGAPHONE_1         = "research.megaphone.1";
-  public  static final String DONATE_MEGAPHONE             = "android.donate";
-  private static final String VIEWED_RECEIPTS              = "android.viewed.receipts";
-  private static final String GROUP_CALLING                = "android.groupsv2.calling.2";
-  private static final String GV1_MANUAL_MIGRATE           = "android.groupsV1Migration.manual";
-  private static final String GV1_FORCED_MIGRATE           = "android.groupsV1Migration.forced";
-  private static final String GV1_MIGRATION_JOB            = "android.groupsV1Migration.job";
-  private static final String SEND_VIEWED_RECEIPTS         = "android.sendViewedReceipts";
-  private static final String CUSTOM_VIDEO_MUXER           = "android.customVideoMuxer";
-  private static final String CDS_REFRESH_INTERVAL         = "cds.syncInterval.seconds";
+  private static final String USERNAMES                         = "android.usernames";
+  private static final String GROUPS_V2_RECOMMENDED_LIMIT       = "global.groupsv2.maxGroupSize";
+  private static final String GROUPS_V2_HARD_LIMIT              = "global.groupsv2.groupSizeHardLimit";
+  private static final String GROUP_NAME_MAX_LENGTH             = "global.groupsv2.maxNameLength";
+  private static final String INTERNAL_USER                     = "android.internalUser";
+  private static final String VERIFY_V2                         = "android.verifyV2";
+  private static final String PHONE_NUMBER_PRIVACY_VERSION      = "android.phoneNumberPrivacyVersion";
+  private static final String CLIENT_EXPIRATION                 = "android.clientExpiration";
+  public  static final String RESEARCH_MEGAPHONE_1              = "research.megaphone.1";
+  public  static final String DONATE_MEGAPHONE                  = "android.donate";
+  private static final String VIEWED_RECEIPTS                   = "android.viewed.receipts";
+  private static final String GROUP_CALLING                     = "android.groupsv2.calling.2";
+  private static final String GV1_MANUAL_MIGRATE                = "android.groupsV1Migration.manual";
+  private static final String GV1_FORCED_MIGRATE                = "android.groupsV1Migration.forced";
+  private static final String GV1_MIGRATION_JOB                 = "android.groupsV1Migration.job";
+  private static final String SEND_VIEWED_RECEIPTS              = "android.sendViewedReceipts";
+  private static final String CUSTOM_VIDEO_MUXER                = "android.customVideoMuxer";
+  private static final String CDS_REFRESH_INTERVAL              = "cds.syncInterval.seconds";
+  private static final String AUTOMATIC_SESSION_RESET           = "android.automaticSessionReset.2";
+  private static final String AUTOMATIC_SESSION_INTERVAL        = "android.automaticSessionResetInterval";
+  private static final String DEFAULT_MAX_BACKOFF               = "android.defaultMaxBackoff";
+  private static final String SERVER_ERROR_MAX_BACKOFF          = "android.serverErrorMaxBackoff";
+  private static final String OKHTTP_AUTOMATIC_RETRY            = "android.okhttpAutomaticRetry";
+  private static final String SHARE_SELECTION_LIMIT             = "android.share.limit";
+  private static final String ANIMATED_STICKER_MIN_MEMORY       = "android.animatedStickerMinMemory";
+  private static final String ANIMATED_STICKER_MIN_TOTAL_MEMORY = "android.animatedStickerMinTotalMemory";
 
   /**
    * We will only store remote values for flags in this set. If you want a flag to be controllable
@@ -90,7 +98,15 @@ public final class FeatureFlags {
       SEND_VIEWED_RECEIPTS,
       CUSTOM_VIDEO_MUXER,
       CDS_REFRESH_INTERVAL,
-      GROUP_NAME_MAX_LENGTH
+      GROUP_NAME_MAX_LENGTH,
+      AUTOMATIC_SESSION_RESET,
+      AUTOMATIC_SESSION_INTERVAL,
+      DEFAULT_MAX_BACKOFF,
+      SERVER_ERROR_MAX_BACKOFF,
+      OKHTTP_AUTOMATIC_RETRY,
+      SHARE_SELECTION_LIMIT,
+      ANIMATED_STICKER_MIN_MEMORY,
+      ANIMATED_STICKER_MIN_TOTAL_MEMORY
   );
 
   @VisibleForTesting
@@ -124,7 +140,15 @@ public final class FeatureFlags {
       GV1_MIGRATION_JOB,
       CUSTOM_VIDEO_MUXER,
       CDS_REFRESH_INTERVAL,
-      GROUP_NAME_MAX_LENGTH
+      GROUP_NAME_MAX_LENGTH,
+      AUTOMATIC_SESSION_RESET,
+      AUTOMATIC_SESSION_INTERVAL,
+      DEFAULT_MAX_BACKOFF,
+      SERVER_ERROR_MAX_BACKOFF,
+      OKHTTP_AUTOMATIC_RETRY,
+      SHARE_SELECTION_LIMIT,
+      ANIMATED_STICKER_MIN_MEMORY,
+      ANIMATED_STICKER_MIN_TOTAL_MEMORY
   );
 
   /**
@@ -280,9 +304,49 @@ public final class FeatureFlags {
     return getInteger(CDS_REFRESH_INTERVAL, (int) TimeUnit.HOURS.toSeconds(48));
   }
 
+  public static @NonNull SelectionLimits shareSelectionLimit() {
+    int limit = getInteger(SHARE_SELECTION_LIMIT, 5);
+    return new SelectionLimits(limit, limit);
+  }
+
   /** The maximum number of grapheme */
   public static int getMaxGroupNameGraphemeLength() {
     return Math.max(32, getInteger(GROUP_NAME_MAX_LENGTH, -1));
+  }
+
+  /** Whether or not to allow automatic session resets. */
+  public static boolean automaticSessionReset() {
+    return getBoolean(AUTOMATIC_SESSION_RESET, true);
+  }
+
+  /** How often we allow an automatic session reset. */
+  public static int automaticSessionResetIntervalSeconds() {
+    return getInteger(AUTOMATIC_SESSION_RESET, (int) TimeUnit.HOURS.toSeconds(1));
+  }
+
+  /** The default maximum backoff for jobs. */
+  public static long getDefaultMaxBackoff() {
+    return TimeUnit.SECONDS.toMillis(getInteger(DEFAULT_MAX_BACKOFF, 60));
+  }
+
+  /** The maximum backoff for network jobs that hit a 5xx error. */
+  public static long getServerErrorMaxBackoff() {
+    return TimeUnit.SECONDS.toMillis(getInteger(SERVER_ERROR_MAX_BACKOFF, (int) TimeUnit.HOURS.toSeconds(6)));
+  }
+
+  /** Whether or not to allow automatic retries from OkHttp */
+  public static boolean okHttpAutomaticRetry() {
+    return getBoolean(OKHTTP_AUTOMATIC_RETRY, false);
+  }
+
+  /** The minimum memory class required for rendering animated stickers in the keyboard and such */
+  public static int animatedStickerMinimumMemoryClass() {
+    return getInteger(ANIMATED_STICKER_MIN_MEMORY, 193);
+  }
+
+  /** The minimum total memory for rendering animated stickers in the keyboard and such */
+  public static int animatedStickerMinimumTotalMemoryMb() {
+    return getInteger(ANIMATED_STICKER_MIN_TOTAL_MEMORY, (int) ByteUnit.GIGABYTES.toMegabytes(3));
   }
 
   /** Only for rendering debug info. */

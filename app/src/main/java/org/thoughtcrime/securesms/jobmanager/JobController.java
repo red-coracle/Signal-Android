@@ -16,6 +16,7 @@ import org.thoughtcrime.securesms.jobmanager.persistence.FullSpec;
 import org.thoughtcrime.securesms.jobmanager.persistence.JobSpec;
 import org.thoughtcrime.securesms.jobmanager.persistence.JobStorage;
 import org.thoughtcrime.securesms.util.Debouncer;
+import org.thoughtcrime.securesms.util.FeatureFlags;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Manages the queue of jobs. This is the only class that should write to {@link JobStorage} to
@@ -159,9 +161,13 @@ class JobController {
   }
 
   @WorkerThread
-  synchronized void onRetry(@NonNull Job job) {
+  synchronized void onRetry(@NonNull Job job, long backoffInterval) {
+    if (backoffInterval <= 0) {
+      throw new IllegalArgumentException("Invalid backoff interval! " + backoffInterval);
+    }
+
     int    nextRunAttempt     = job.getRunAttempt() + 1;
-    long   nextRunAttemptTime = calculateNextRunAttemptTime(System.currentTimeMillis(), nextRunAttempt, job.getParameters().getMaxBackoff());
+    long   nextRunAttemptTime = System.currentTimeMillis() + backoffInterval;
     String serializedData     = dataSerializer.serialize(job.serialize());
 
     jobStorage.updateJobAfterRetry(job.getId(), false, nextRunAttempt, nextRunAttemptTime, serializedData);
@@ -353,7 +359,6 @@ class JobController {
                                   job.getNextRunAttemptTime(),
                                   job.getRunAttempt(),
                                   job.getParameters().getMaxAttempts(),
-                                  job.getParameters().getMaxBackoff(),
                                   job.getParameters().getLifespan(),
                                   dataSerializer.serialize(job.serialize()),
                                   null,
@@ -445,17 +450,8 @@ class JobController {
                   .setMaxAttempts(jobSpec.getMaxAttempts())
                   .setQueue(jobSpec.getQueueKey())
                   .setConstraints(Stream.of(constraintSpecs).map(ConstraintSpec::getFactoryKey).toList())
-                  .setMaxBackoff(jobSpec.getMaxBackoff())
                   .setInputData(jobSpec.getSerializedInputData() != null ? dataSerializer.deserialize(jobSpec.getSerializedInputData()) : null)
                   .build();
-  }
-
-  private long calculateNextRunAttemptTime(long currentTime, int nextAttempt, long maxBackoff) {
-    int  boundedAttempt     = Math.min(nextAttempt, 30);
-    long exponentialBackoff = (long) Math.pow(2, boundedAttempt) * 1000;
-    long actualBackoff      = Math.min(exponentialBackoff, maxBackoff);
-
-    return currentTime + actualBackoff;
   }
 
   private @NonNull JobSpec mapToJobWithInputData(@NonNull JobSpec jobSpec, @NonNull Data inputData) {
@@ -466,7 +462,6 @@ class JobController {
                        jobSpec.getNextRunAttemptTime(),
                        jobSpec.getRunAttempt(),
                        jobSpec.getMaxAttempts(),
-                       jobSpec.getMaxBackoff(),
                        jobSpec.getLifespan(),
                        jobSpec.getSerializedData(),
                        dataSerializer.serialize(inputData),

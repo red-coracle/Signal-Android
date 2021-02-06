@@ -186,15 +186,22 @@ public final class WelcomeFragment extends BaseRegistrationFragment {
 
     if (Permissions.hasAll(requireContext(), Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_PHONE_NUMBERS)) {
       localNumber = Util.getDeviceNumber(requireContext());
+    } else {
+      Log.i(TAG, "No phone permission");
     }
 
     if (localNumber.isPresent()) {
-      getModel().onNumberDetected(localNumber.get().getCountryCode(), localNumber.get().getNationalNumber());
+      Log.i(TAG, "Phone number detected");
+      Phonenumber.PhoneNumber phoneNumber    = localNumber.get();
+      String                  nationalNumber = PhoneNumberUtil.getInstance().format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
+
+      getModel().onNumberDetected(phoneNumber.getCountryCode(), nationalNumber);
     } else {
+      Log.i(TAG, "No number detected");
       Optional<String> simCountryIso = Util.getSimCountryIso(requireContext());
 
       if (simCountryIso.isPresent() && !TextUtils.isEmpty(simCountryIso.get())) {
-        getModel().onNumberDetected(PhoneNumberUtil.getInstance().getCountryCodeForRegion(simCountryIso.get()), 0);
+        getModel().onNumberDetected(PhoneNumberUtil.getInstance().getCountryCodeForRegion(simCountryIso.get()), "");
       }
     }
   }

@@ -13,12 +13,14 @@ import org.thoughtcrime.securesms.database.model.SmsMessageRecord;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.jobmanager.Data;
 import org.thoughtcrime.securesms.jobmanager.Job;
+import org.thoughtcrime.securesms.jobmanager.impl.BackoffUtil;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.service.ExpiringMessageManager;
 import org.thoughtcrime.securesms.transport.InsecureFallbackApprovalException;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
+import org.thoughtcrime.securesms.transport.UndeliverableMessageException;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.libsignal.util.guava.Optional;
@@ -28,9 +30,12 @@ import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException;
 import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage;
 import org.whispersystems.signalservice.api.messages.multidevice.SignalServiceSyncMessage;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
+import org.whispersystems.signalservice.api.push.exceptions.NonSuccessfulResponseCodeException;
+import org.whispersystems.signalservice.api.push.exceptions.ServerRejectedException;
 import org.whispersystems.signalservice.api.push.exceptions.UnregisteredUserException;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class PushTextSendJob extends PushSendJob {
 
@@ -67,7 +72,7 @@ public class PushTextSendJob extends PushSendJob {
   }
 
   @Override
-  public void onPushSend() throws NoSuchMessageException, RetryLaterException {
+  public void onPushSend() throws IOException, NoSuchMessageException, UndeliverableMessageException {
     ExpiringMessageManager expirationManager = ApplicationContext.getInstance(context).getExpiringMessageManager();
     MessageDatabase        database          = DatabaseFactory.getSmsDatabase(context);
     SmsMessageRecord       record            = database.getSmsMessage(messageId);
@@ -131,13 +136,6 @@ public class PushTextSendJob extends PushSendJob {
   }
 
   @Override
-  public boolean onShouldRetry(@NonNull Exception exception) {
-    if (exception instanceof RetryLaterException) return true;
-
-    return false;
-  }
-
-  @Override
   public void onFailure() {
     DatabaseFactory.getSmsDatabase(context).markAsSentFailed(messageId);
 
@@ -150,7 +148,7 @@ public class PushTextSendJob extends PushSendJob {
   }
 
   private boolean deliver(SmsMessageRecord message)
-      throws UntrustedIdentityException, InsecureFallbackApprovalException, RetryLaterException
+      throws UntrustedIdentityException, InsecureFallbackApprovalException, UndeliverableMessageException, IOException
   {
     try {
       rotateSenderCertificateIfNecessary();
@@ -183,9 +181,8 @@ public class PushTextSendJob extends PushSendJob {
     } catch (UnregisteredUserException e) {
       warn(TAG, "Failure", e);
       throw new InsecureFallbackApprovalException(e);
-    } catch (IOException e) {
-      warn(TAG, "Failure", e);
-      throw new RetryLaterException(e);
+    } catch (ServerRejectedException e) {
+      throw new UndeliverableMessageException(e);
     }
   }
 
