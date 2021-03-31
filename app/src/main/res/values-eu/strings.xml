@@ -837,6 +837,11 @@
   <string name="NotificationBarManager__answer_call">Erantzun deia</string>
   <string name="NotificationBarManager__end_call">Amaitu deia</string>
   <string name="NotificationBarManager__cancel_call">Deia utzi</string>
+  <!--NotificationsMegaphone-->
+  <string name="NotificationsMegaphone_turn_on_notifications">Aktibatu Jakinarazpenak?</string>
+  <string name="NotificationsMegaphone_never_miss_a_message">Zure kontaktu edo taldeen mezu bat ere ez galdu inoiz.</string>
+  <string name="NotificationsMegaphone_turn_on">Aktibatu</string>
+  <string name="NotificationsMegaphone_not_now">Orain ez</string>
   <!--NotificationMmsMessageRecord-->
   <string name="NotificationMmsMessageRecord_multimedia_message">Multimedia mezua</string>
   <string name="NotificationMmsMessageRecord_downloading_mms_message">MMS mezu berria deskargatzen</string>
@@ -1146,7 +1151,6 @@
   <string name="RatingManager_rate_now">Ebaluatu orain!</string>
   <string name="RatingManager_no_thanks">Ez eskerrik asko</string>
   <string name="RatingManager_later">Geroago</string>
-  <string name="RatingManager_whoops_the_play_store_app_does_not_appear_to_be_installed">Epa, Play Store applikazioa zure gailuan instalaturik ez dagoela ematen du.</string>
   <!--ReactionsBottomSheetDialogFragment-->
   <string name="ReactionsBottomSheetDialogFragment_all">Denak - %1$d</string>
   <!--ReactionsConversationView-->
@@ -1246,6 +1250,7 @@ zenbakia (%s) baliogabea da.
   <string name="RegistrationActivity_continue">Jarraitu</string>
   <string name="RegistrationActivity_take_privacy_with_you_be_yourself_in_every_message">Pribatutasuna zurekin eraman.\nZu zeu izan mezu bakoitzean.</string>
   <string name="RegistrationActivity_enter_your_phone_number_to_get_started">Hasteko, zure telefono zenbakia idatzi</string>
+  <string name="RegistrationActivity_enter_your_phone_number">Idatzi zure telefono zenbakia</string>
   <string name="RegistrationActivity_you_will_receive_a_verification_code">Berifikazio kode bat jasoko duzu. Operadoreak tarifa bat jarri dezake.</string>
   <string name="RegistrationActivity_enter_the_code_we_sent_to_s">Sartu %s telefonora bidali dugun kodea.</string>
   <string name="RegistrationActivity_make_sure_your_phone_has_a_cellular_signal">Ziurtatu zure telefonoa lineara konektatuta dagoela eta SMSak eta dei arruntak jasotzeko gai dela</string>
@@ -2310,6 +2315,29 @@ Gakoaren elkar-trukeraro mezua jaso da protokoloaren bertsio baliogabe baterako.
   <string name="prompt_passphrase_activity__signal_is_locked">Signal blokeatuta dago</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">SAKATU DESBLOKEATZEKO</string>
   <string name="Recipient_unknown">Ezezaguna</string>
+  <!--TransferOrRestoreFragment-->
+  <!--NewDeviceTransferInstructionsFragment-->
+  <string name="NewDeviceTransferInstructions__continue">Jarraitu</string>
+  <!--NewDeviceTransferSetupFragment-->
+  <!--OldDeviceTransferSetupFragment-->
+  <!--DeviceTransferSetupFragment-->
+  <string name="DeviceTransferSetup__retry">Berriro saiatu</string>
+  <string name="DeviceTransferSetup__continue">Jarraitu</string>
+  <string name="DeviceTransferSetup__wifi">Wi-Fi</string>
+  <string name="DeviceTransferSetup__try_again">Saiatu berriro</string>
+  <!--NewDeviceTransferFragment-->
+  <!--DeviceTransferFragment-->
+  <string name="DeviceTransfer__cancel">Utzi</string>
+  <string name="DeviceTransfer__try_again">Saiatu berriro</string>
+  <!--OldDeviceTransferInstructionsFragment-->
+  <string name="OldDeviceTransferInstructions__transfer_account">Kontua Transferitu</string>
+  <string name="OldDeviceTransferInstructions__continue">Jarraitu</string>
+  <!--OldDeviceTransferComplete-->
+  <string name="OldDeviceTransferComplete__close">Itxi</string>
+  <!--NewDeviceTransferComplete-->
+  <!--DeviceToDeviceTransferService-->
+  <!--OldDeviceTransferLockedDialog-->
+  <string name="OldDeviceTransferLockedDialog__done">Eginda</string>
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Blokeatu</string>
   <string name="RecipientBottomSheet_unblock">Desblokeatu</string>

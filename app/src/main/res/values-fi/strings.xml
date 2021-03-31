@@ -234,6 +234,7 @@
   <string name="ConversationActivity__more_options_now_in_group_settings">Ryhmän asetuksissa on nyt lisää vaihtoehtoja</string>
   <string name="ConversationActivity_join">Liity</string>
   <string name="ConversationActivity_full">Täynnä</string>
+  <string name="ConversationActivity_error_sending_media">Virhe median lähettämisessä</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d lukematon viesti</item>
@@ -283,7 +284,7 @@
   <string name="ConversationFragment__tap_to_review">Tarkista napauttamalla</string>
   <string name="ConversationFragment__review_requests_carefully">Tarkista pyynnöt huolellisesti</string>
   <string name="ConversationFragment__signal_found_another_contact_with_the_same_name">Signal löysi toisen yhteystiedon samalla nimellä.</string>
-  <string name="ConversationFragment_contact_us">Ota meihin yhteyttä</string>
+  <string name="ConversationFragment_contact_us">Ota yhteyttä</string>
   <string name="ConversationFragment_verify">Varmenna</string>
   <string name="ConversationFragment_not_now">Ei nyt</string>
   <string name="ConversationFragment_your_safety_number_with_s_changed">Turvanumerosi yhteystiedon %s kanssa on vaihtunut</string>
@@ -338,7 +339,7 @@
   <string name="BackupsPreferenceFragment__chat_backups">Keskustelujen varmuuskopiot</string>
   <string name="BackupsPreferenceFragment__backups_are_encrypted_with_a_passphrase">Varmuuskopiot salataan tunnuslauseella ja tallennetaan laitteellesi.</string>
   <string name="BackupsPreferenceFragment__create_backup">Luo varmuuskopio</string>
-  <string name="BackupsPreferenceFragment__last_backup">Viimeksi varmuuskopioitu: %1$s</string>
+  <string name="BackupsPreferenceFragment__last_backup">Varmuuskopioitu viimeksi: %1$s</string>
   <string name="BackupsPreferenceFragment__backup_folder">Varmuuskopiokansio</string>
   <string name="BackupsPreferenceFragment__verify_backup_passphrase">Varmenna varmuuskopion salalause</string>
   <string name="BackupsPreferenceFragment__test_your_backup_passphrase">Tarkista varmuuskopiosi salalause ja varmista että se täsmää</string>
@@ -836,6 +837,11 @@
   <string name="NotificationBarManager__answer_call">Vastaa puheluun</string>
   <string name="NotificationBarManager__end_call">Lopeta puhelu</string>
   <string name="NotificationBarManager__cancel_call">Peru puhelu</string>
+  <!--NotificationsMegaphone-->
+  <string name="NotificationsMegaphone_turn_on_notifications">Otetaanko Ilmoitukset käyttöön?</string>
+  <string name="NotificationsMegaphone_never_miss_a_message">Älä koskaan jää vaille viestiä yhteystiedoilta tai ryhmiltä.</string>
+  <string name="NotificationsMegaphone_turn_on">Ota käyttöön</string>
+  <string name="NotificationsMegaphone_not_now">Ei nyt</string>
   <!--NotificationMmsMessageRecord-->
   <string name="NotificationMmsMessageRecord_multimedia_message">Multimediaviesti</string>
   <string name="NotificationMmsMessageRecord_downloading_mms_message">Ladataan multimediaviestiä</string>
@@ -1144,7 +1150,6 @@
   <string name="RatingManager_rate_now">Arvostele nyt!</string>
   <string name="RatingManager_no_thanks">Ei kiitos</string>
   <string name="RatingManager_later">Myöhemmin</string>
-  <string name="RatingManager_whoops_the_play_store_app_does_not_appear_to_be_installed">Hups, Play Kauppa -sovellusta ei ole asennettu laitteeseen.</string>
   <!--ReactionsBottomSheetDialogFragment-->
   <string name="ReactionsBottomSheetDialogFragment_all">Kaikki · %1$d</string>
   <!--ReactionsConversationView-->
@@ -1241,6 +1246,7 @@ puhelinnumero</string>
   <string name="RegistrationActivity_continue">Jatka</string>
   <string name="RegistrationActivity_take_privacy_with_you_be_yourself_in_every_message">Ota yksityisyys mukaasi.\nOle itsesi jokaisessa viestissä.</string>
   <string name="RegistrationActivity_enter_your_phone_number_to_get_started">Aloita syöttämällä puhelinnumerosi</string>
+  <string name="RegistrationActivity_enter_your_phone_number">Syötä puhelinnumerosi</string>
   <string name="RegistrationActivity_you_will_receive_a_verification_code">Saat vahvistuskoodin. Matkapuhelinoperaattorisi hinnat voivat olla voimassa.</string>
   <string name="RegistrationActivity_enter_the_code_we_sent_to_s">Syötä koodi, jonka lähetimme numeroon %s</string>
   <string name="RegistrationActivity_make_sure_your_phone_has_a_cellular_signal">Varmista että puhelimellasi on verkkoa tekstarisi tai puhelusi vastaanottamiseen</string>
@@ -1770,7 +1776,7 @@ Vastaanotetiin avaintenvaihtoviesti, joka kuuluu väärälle protokollaversiolle
   <!--HelpFragment-->
   <string name="HelpFragment__have_you_read_our_faq_yet">Oletko tutustunut usein kysyttyihin kysymyksiin?</string>
   <string name="HelpFragment__next">Seuraava</string>
-  <string name="HelpFragment__contact_us">Ota meihin yhteyttä</string>
+  <string name="HelpFragment__contact_us">Ota yhteyttä</string>
   <string name="HelpFragment__tell_us_whats_going_on">Kerro asiasi</string>
   <string name="HelpFragment__include_debug_log">Liitä virheenkorjausloki.</string>
   <string name="HelpFragment__whats_this">Mikä tämä on?</string>
@@ -2127,7 +2133,7 @@ Vastaanotetiin avaintenvaihtoviesti, joka kuuluu väärälle protokollaversiolle
     <item quantity="other">Tunnusluvussa on oltava vähintään %1$d numeroa</item>
   </plurals>
   <string name="CreateKbsPinFragment__create_a_new_pin">Luo uusi tunnusluku</string>
-  <string name="CreateKbsPinFragment__you_can_choose_a_new_pin_as_long_as_this_device_is_registered">Voit vaihtaa tunnusluvun tämän laitteen ollessa rekisteröity.</string>
+  <string name="CreateKbsPinFragment__you_can_choose_a_new_pin_as_long_as_this_device_is_registered">Tunnusluvun voi vaihtaa vain laitteella, joka on rekisteröity.</string>
   <string name="CreateKbsPinFragment__create_your_pin">Valitse tunnusluku</string>
   <string name="CreateKbsPinFragment__pins_keep_information_stored_with_signal_encrypted">Tunnusluvulla salataan Signaliin tallentamasi tiedot. Profiilisi, asetuksesi ja yhteystietosi palautetaan, kun asennat Signalin uudelleen. Tunnuslukua ei tarvita sovelluksen avaamiseen.</string>
   <string name="CreateKbsPinFragment__choose_a_stronger_pin">Valitse vahvempi tunnusluku</string>
@@ -2303,6 +2309,29 @@ Vastaanotetiin avaintenvaihtoviesti, joka kuuluu väärälle protokollaversiolle
   <string name="prompt_passphrase_activity__signal_is_locked">Signal on lukittu</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">AVAA NAPAUTTAMALLA</string>
   <string name="Recipient_unknown">Tuntematon</string>
+  <!--TransferOrRestoreFragment-->
+  <!--NewDeviceTransferInstructionsFragment-->
+  <string name="NewDeviceTransferInstructions__continue">Jatka</string>
+  <!--NewDeviceTransferSetupFragment-->
+  <!--OldDeviceTransferSetupFragment-->
+  <!--DeviceTransferSetupFragment-->
+  <string name="DeviceTransferSetup__retry">Yritä uudelleen</string>
+  <string name="DeviceTransferSetup__continue">Jatka</string>
+  <string name="DeviceTransferSetup__wifi">Wi-Fi</string>
+  <string name="DeviceTransferSetup__try_again">Yritä uudelleen</string>
+  <!--NewDeviceTransferFragment-->
+  <!--DeviceTransferFragment-->
+  <string name="DeviceTransfer__cancel">Peruuta</string>
+  <string name="DeviceTransfer__try_again">Yritä uudelleen</string>
+  <!--OldDeviceTransferInstructionsFragment-->
+  <string name="OldDeviceTransferInstructions__transfer_account">Siirrä tili</string>
+  <string name="OldDeviceTransferInstructions__continue">Jatka</string>
+  <!--OldDeviceTransferComplete-->
+  <string name="OldDeviceTransferComplete__close">Sulje</string>
+  <!--NewDeviceTransferComplete-->
+  <!--DeviceToDeviceTransferService-->
+  <!--OldDeviceTransferLockedDialog-->
+  <string name="OldDeviceTransferLockedDialog__done">Valmis</string>
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Estä</string>
   <string name="RecipientBottomSheet_unblock">Poista esto</string>
@@ -2333,6 +2362,8 @@ Vastaanotetiin avaintenvaihtoviesti, joka kuuluu väärälle protokollaversiolle
   <string name="GroupsLearnMore_paragraph_2">Vanhoja ryhmiä ei voi vielä päivittää uusiksi ryhmiksi, mutta voit luoda uuden ryhmän samoilla jäsenillä, jos he käyttävät Signalin uusinta versiota.</string>
   <string name="GroupsLearnMore_paragraph_3">Signal tulee tarjoamaan tavan päivittää vanhan tyylin ryhmiä tulevaisuudessa.</string>
   <!--GroupLinkBottomSheetDialogFragment-->
+  <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Kuka tahansa, jolla on tämä linkki, voi nähdä tämän ryhmän nimen ja kuvan, sekä lähettää liittymispyynnön. Jaa se ihmisille, joihin luotat.</string>
+  <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Kuka tahansa, jolla on tämä linkki, voi nähdä tämän ryhmän nimen ja kuvan, sekä lähettää liittymispyynnön. Jaa se ihmisille, joihin luotat.</string>
   <string name="GroupLinkBottomSheet_share_via_signal">Jaa Signalin kautta</string>
   <string name="GroupLinkBottomSheet_copy">Kopioi</string>
   <string name="GroupLinkBottomSheet_qr_code">QR-koodi</string>

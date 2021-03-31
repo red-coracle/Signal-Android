@@ -236,6 +236,7 @@
   <string name="ConversationActivity__more_options_now_in_group_settings">Více možností nyní v \"Nastavení skupiny\"</string>
   <string name="ConversationActivity_join">Připojit</string>
   <string name="ConversationActivity_full">Plno</string>
+  <string name="ConversationActivity_error_sending_media">Chyba při odesílání médií</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d nepřečtená zpráva</item>
@@ -922,6 +923,11 @@
   <string name="NotificationBarManager__answer_call">Přijmout hovor</string>
   <string name="NotificationBarManager__end_call">Ukončit hovor</string>
   <string name="NotificationBarManager__cancel_call">Zrušit hovor</string>
+  <!--NotificationsMegaphone-->
+  <string name="NotificationsMegaphone_turn_on_notifications">Zapnout Notifikace?</string>
+  <string name="NotificationsMegaphone_never_miss_a_message">Nezmeškejte žádnou zprávu od svých kontaktů a skupin.</string>
+  <string name="NotificationsMegaphone_turn_on">Zapnout</string>
+  <string name="NotificationsMegaphone_not_now">Teď ne</string>
   <!--NotificationMmsMessageRecord-->
   <string name="NotificationMmsMessageRecord_multimedia_message">Multimediální zpráva</string>
   <string name="NotificationMmsMessageRecord_downloading_mms_message">Stahuji MMS zprávu</string>
@@ -1260,7 +1266,6 @@
   <string name="RatingManager_rate_now">Ohodnotit teď!</string>
   <string name="RatingManager_no_thanks">Ne, díky</string>
   <string name="RatingManager_later">Později</string>
-  <string name="RatingManager_whoops_the_play_store_app_does_not_appear_to_be_installed">Ajaj, vypadá to, že aplikace Obchod Play není nainstalována na vašem zařízení.</string>
   <!--ReactionsBottomSheetDialogFragment-->
   <string name="ReactionsBottomSheetDialogFragment_all">Vše · %1$d</string>
   <!--ReactionsConversationView-->
@@ -1366,6 +1371,7 @@ telefonní číslo
   <string name="RegistrationActivity_continue">Pokračovat</string>
   <string name="RegistrationActivity_take_privacy_with_you_be_yourself_in_every_message">Noste soukromí s sebou.\nBuďte sami sebou v každé zprávě.</string>
   <string name="RegistrationActivity_enter_your_phone_number_to_get_started">Začněte zadáním telefonního čísla</string>
+  <string name="RegistrationActivity_enter_your_phone_number">Zadejte vaše tel. číslo</string>
   <string name="RegistrationActivity_you_will_receive_a_verification_code">Bude vám zaslán ověřovací kód. Zaslání může být zpoplatněno.</string>
   <string name="RegistrationActivity_enter_the_code_we_sent_to_s">Zadejte kód, který jsme vám zaslali %s</string>
   <string name="RegistrationActivity_make_sure_your_phone_has_a_cellular_signal">Pro příjem SMS a hovorů se ujistěte, že váš telefon má mobilní signál </string>
@@ -2468,6 +2474,29 @@ Obdržen požadavek na výměnu klíčů pro neplatnou verzi protokolu.
   <string name="prompt_passphrase_activity__signal_is_locked">Signal je zamčen</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">KLEPNUTÍM ODEMKNĚTE</string>
   <string name="Recipient_unknown">Neznámý</string>
+  <!--TransferOrRestoreFragment-->
+  <!--NewDeviceTransferInstructionsFragment-->
+  <string name="NewDeviceTransferInstructions__continue">Pokračovat</string>
+  <!--NewDeviceTransferSetupFragment-->
+  <!--OldDeviceTransferSetupFragment-->
+  <!--DeviceTransferSetupFragment-->
+  <string name="DeviceTransferSetup__retry">Zkusit znovu</string>
+  <string name="DeviceTransferSetup__continue">Pokračovat</string>
+  <string name="DeviceTransferSetup__wifi">WiFi</string>
+  <string name="DeviceTransferSetup__try_again">Zkusit znovu</string>
+  <!--NewDeviceTransferFragment-->
+  <!--DeviceTransferFragment-->
+  <string name="DeviceTransfer__cancel">Zrušit</string>
+  <string name="DeviceTransfer__try_again">Zkusit znovu</string>
+  <!--OldDeviceTransferInstructionsFragment-->
+  <string name="OldDeviceTransferInstructions__transfer_account">Přenést účet</string>
+  <string name="OldDeviceTransferInstructions__continue">Pokračovat</string>
+  <!--OldDeviceTransferComplete-->
+  <string name="OldDeviceTransferComplete__close">Zavřít</string>
+  <!--NewDeviceTransferComplete-->
+  <!--DeviceToDeviceTransferService-->
+  <!--OldDeviceTransferLockedDialog-->
+  <string name="OldDeviceTransferLockedDialog__done">Hotovo</string>
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Zablokovat</string>
   <string name="RecipientBottomSheet_unblock">Odblokovat</string>
@@ -2498,6 +2527,8 @@ Obdržen požadavek na výměnu klíčů pro neplatnou verzi protokolu.
   <string name="GroupsLearnMore_paragraph_2">Starší skupiny zatím nelze aktualizovat na nové skupiny, ale můžete vytvořit novou skupinu se stejnými členy, pokud používají poslední verzi Signal.</string>
   <string name="GroupsLearnMore_paragraph_3">Signal nabídne možnost aktualizovat starší skupiny v budoucnosti.</string>
   <!--GroupLinkBottomSheetDialogFragment-->
+  <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Kdokoli, kdo má tento odkaz, může vidět jméno skupiny a fotografii a může požádat o připojení ke skupině. Sdílejte pouze s lidmi, kterým důvěřujete.</string>
+  <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Kdokoli, kdo má tento odkaz, může vidět jméno skupiny a fotografii a může se připojit ke skupině. Sdílejte pouze s lidmi, kterým důvěřujete.</string>
   <string name="GroupLinkBottomSheet_share_via_signal">Sdílet přes Signal</string>
   <string name="GroupLinkBottomSheet_copy">Kopírovat</string>
   <string name="GroupLinkBottomSheet_qr_code">QR kód</string>

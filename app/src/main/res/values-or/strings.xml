@@ -234,6 +234,7 @@
   <string name="ConversationActivity__more_options_now_in_group_settings"> ଅଧିକ ବିକଳ୍ପ ବର୍ତ୍ତମାନ \"ଗୋଷ୍ଠୀ ସେଟିଂସମୂହ\" ରେ </string>
   <string name="ConversationActivity_join">ଯୋଗ ଦିଅନ୍ତୁ</string>
   <string name="ConversationActivity_full">ପୂର୍ଣ୍ଣ</string>
+  <string name="ConversationActivity_error_sending_media">ମିଡ଼ିଆ ପଠାଇବାରେ ତ୍ରୁଟି</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%dଟାଏ ଅପଠିତ ବାର୍ତ୍ତା </item>
@@ -836,6 +837,11 @@
   <string name="NotificationBarManager__answer_call">ଉତ୍ତର ଦିଅନ୍ତୁ</string>
   <string name="NotificationBarManager__end_call">ସମାପ୍ତ କରନ୍ତୁ</string>
   <string name="NotificationBarManager__cancel_call">ବାତିଲ୍ କରନ୍ତୁ</string>
+  <!--NotificationsMegaphone-->
+  <string name="NotificationsMegaphone_turn_on_notifications">ବିଜ୍ଞପ୍ତି ଚାଲୁ କରନ୍ତୁ?</string>
+  <string name="NotificationsMegaphone_never_miss_a_message">ଆପଣଙ୍କର ଯୋଗାଯୋଗ ଏବଂ ଗୋଷ୍ଠୀରୁ କୌଣସି ସନ୍ଦେଶକୁ କେବେବି ଭୁଲନ୍ତୁ ନାହିଁ |</string>
+  <string name="NotificationsMegaphone_turn_on">ଚାଲୁ କରନ୍ତୁ</string>
+  <string name="NotificationsMegaphone_not_now">ଏବେ ନୁହେଁ</string>
   <!--NotificationMmsMessageRecord-->
   <string name="NotificationMmsMessageRecord_multimedia_message">ମଲ୍ଟିମିଡ଼ିଆ ବାର୍ତ୍ତା</string>
   <string name="NotificationMmsMessageRecord_downloading_mms_message">ଏମ୍ଏମ୍ଏସ୍ ବାର୍ତ୍ତା ଡାଉନଲୋଡ଼୍ କରାଯାଉଛି</string>
@@ -1145,7 +1151,6 @@
   <string name="RatingManager_rate_now">ଏବେ ମୂଲ୍ୟାଙ୍କନ କର!</string>
   <string name="RatingManager_no_thanks">ନା ଧନ୍ୟବାଦ</string>
   <string name="RatingManager_later">ପରେ</string>
-  <string name="RatingManager_whoops_the_play_store_app_does_not_appear_to_be_installed">ଓହୋ,ପ୍ଲେ-ଷ୍ଟୋର୍ ଆପ୍ ଆପଣଙ୍କ ଉପକରଣ ରେ ସଂସ୍ଥାପିତ ହୋଇଥିବା ପରି ଦେଖାଯାଉ ନାହିଁ</string>
   <!--ReactionsBottomSheetDialogFragment-->
   <string name="ReactionsBottomSheetDialogFragment_all">ସମସ୍ତ%1$d</string>
   <!--ReactionsConversationView-->
@@ -1242,6 +1247,7 @@
   <string name="RegistrationActivity_continue">ଜାରି ରଖନ୍ତୁ</string>
   <string name="RegistrationActivity_take_privacy_with_you_be_yourself_in_every_message">ଆପଣଙ୍କ ସହିତ ଗୋପନୀୟତା ନିଅନ୍ତୁ। \n ପ୍ରତ୍ୟେକ ବାର୍ତ୍ତାରେ ନିଜକୁ ରଖନ୍ତୁ</string>
   <string name="RegistrationActivity_enter_your_phone_number_to_get_started">ଆରମ୍ଭ କରିବାକୁ ଆପଣଙ୍କର ଫୋନ୍ ନମ୍ବର ପ୍ରବେଶ କରନ୍ତୁ</string>
+  <string name="RegistrationActivity_enter_your_phone_number">ଆପଣଙ୍କର ଫୋନ୍ ନମ୍ବର ପ୍ରବେଶ କରନ୍ତୁ</string>
   <string name="RegistrationActivity_you_will_receive_a_verification_code">ଆପଣ ଏକ ଯାଞ୍ଚ କୋଡ୍ ପାଇବେ | ବାହକ ହାର ଲାଗୁ ହୋଇପାରେ</string>
   <string name="RegistrationActivity_enter_the_code_we_sent_to_s">ଆମେ %s କୁ ପଠାଇଥିବା କୋଡ୍ ପ୍ରବେଶ କର</string>
   <string name="RegistrationActivity_make_sure_your_phone_has_a_cellular_signal">ନିଶ୍ଚିତ କରନ୍ତୁ ଯେ ଆପଣଙ୍କର ଫୋନରେ ଆପଣଙ୍କର SMS କିମ୍ବା କଲ୍ ଗ୍ରହଣ କରିବାକୁ ଏକ ଫୋନ୍ ସିଗ୍ନାଲ୍ ଅଛି</string>
@@ -2304,6 +2310,25 @@
   <string name="prompt_passphrase_activity__signal_is_locked">Signal ରେ ତାଲା ପଡ଼ିଛି</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">ତାଲା ଖୋଲିବାକୁ ଟ୍ୟାପ୍ କରନ୍ତୁ</string>
   <string name="Recipient_unknown">ଅଜଣା</string>
+  <!--TransferOrRestoreFragment-->
+  <!--NewDeviceTransferInstructionsFragment-->
+  <string name="NewDeviceTransferInstructions__continue">ଜାରି ରଖନ୍ତୁ</string>
+  <!--NewDeviceTransferSetupFragment-->
+  <!--OldDeviceTransferSetupFragment-->
+  <!--DeviceTransferSetupFragment-->
+  <string name="DeviceTransferSetup__continue">ଜାରି ରଖନ୍ତୁ</string>
+  <string name="DeviceTransferSetup__try_again">ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ</string>
+  <!--NewDeviceTransferFragment-->
+  <!--DeviceTransferFragment-->
+  <string name="DeviceTransfer__cancel">ବାତିଲ କରନ୍ତୁ</string>
+  <string name="DeviceTransfer__try_again">ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ</string>
+  <!--OldDeviceTransferInstructionsFragment-->
+  <string name="OldDeviceTransferInstructions__continue">ଜାରି ରଖନ୍ତୁ</string>
+  <!--OldDeviceTransferComplete-->
+  <!--NewDeviceTransferComplete-->
+  <!--DeviceToDeviceTransferService-->
+  <!--OldDeviceTransferLockedDialog-->
+  <string name="OldDeviceTransferLockedDialog__done">ହେଇଗଲା</string>
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">ବ୍ଲକ୍ କରନ୍ତୁ</string>
   <string name="RecipientBottomSheet_unblock">ଅଣବ୍ଲକ୍ କରନ୍ତୁ</string>
@@ -2334,6 +2359,8 @@
   <string name="GroupsLearnMore_paragraph_2">ଉତ୍ତରାଧିକାରୀ ଗୋଷ୍ଠୀଗୁଡିକ ଏପର୍ଯ୍ୟନ୍ତ ନୂତନ ଗୋଷ୍ଠୀକୁ ନବୀକରଣ ହୋଇପାରିବ ନାହିଁ, କିନ୍ତୁ ଯଦି ସେମାନେ Signal ର ସର୍ବଶେଷ ସଂସ୍କରଣରେ ଅଛନ୍ତି ତେବେ ସମାନ ସଦସ୍ୟଙ୍କ ସହିତ ଆପଣ ଏକ ନୂତନ ଗୋଷ୍ଠୀ ସୃଷ୍ଟି କରିପାରିବେ</string>
   <string name="GroupsLearnMore_paragraph_3">ଭବିଷ୍ୟତରେ ଉତ୍ତରାଧିକାରୀ ଗୋଷ୍ଠୀ ଅଦ୍ୟତନ କରିବାକୁ Signal ଏକ ଉପାୟ ପ୍ରଦାନ କରିବ</string>
   <!--GroupLinkBottomSheetDialogFragment-->
+  <string name="GroupLinkBottomSheet_share_hint_requiring_approval">ଏହି ଲିଙ୍କ୍ ଥିବା ଯେକେହି ଲୋକ ଗୋଷ୍ଠୀର ନାମ ଏବଂ ଛବି ଦେଖିପାରିବେ ଏବଂ ଯୋଗଦେବାକୁ ଅନୁରୋଧ କରିପାରିବେ | ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଲୋକଙ୍କ ସହିତ ଏହାକୁ ଅଂଶୀଦାର କରନ୍ତୁ |</string>
+  <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">ଏହି ଲିଙ୍କ୍ ଥିବା ଯେକେହି ଲୋକ ଗୋଷ୍ଠୀର ନାମ ଏବଂ ଛବି ଦେଖିପାରିବେ ଏବଂ ଏଥିରେ ଯୋଗଦେଇ କରିପାରିବେ | ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଲୋକଙ୍କ ସହିତ ଏହାକୁ ଅଂଶୀଦାର କରନ୍ତୁ |</string>
   <string name="GroupLinkBottomSheet_share_via_signal">Signal ମାଧ୍ୟମରେ ଅଂଶୀଦାର କରନ୍ତୁ</string>
   <string name="GroupLinkBottomSheet_copy">ନକଲ ବନାନ୍ତୁ</string>
   <string name="GroupLinkBottomSheet_qr_code">କ୍ୟୁ.ଆର. କୋଡ୍</string>

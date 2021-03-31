@@ -790,6 +790,9 @@
   <string name="NotificationBarManager__answer_call">Bibersivîne</string>
   <string name="NotificationBarManager__end_call">Gerînê bi dawî bike</string>
   <string name="NotificationBarManager__cancel_call">Gerînê betal bike</string>
+  <!--NotificationsMegaphone-->
+  <string name="NotificationsMegaphone_turn_on">Veke</string>
+  <string name="NotificationsMegaphone_not_now">Ne niha</string>
   <!--NotificationMmsMessageRecord-->
   <string name="NotificationMmsMessageRecord_multimedia_message">Peyama multîmedyayê</string>
   <string name="NotificationMmsMessageRecord_downloading_mms_message">Peyama MMS\'ê tê daxistin</string>
@@ -1062,7 +1065,6 @@
   <string name="RatingManager_rate_now">Aniha puan bide!</string>
   <string name="RatingManager_no_thanks">Na, spas</string>
   <string name="RatingManager_later">Piştre</string>
-  <string name="RatingManager_whoops_the_play_store_app_does_not_appear_to_be_installed">Weylaw! Ka sepana Play Storeê li ku ye, xuya ye li cîhaza te nesazkirî ye.</string>
   <!--ReactionsBottomSheetDialogFragment-->
   <string name="ReactionsBottomSheetDialogFragment_all">Hemû . %1$d</string>
   <!--ReactionsConversationView-->
@@ -1157,6 +1159,7 @@
   <string name="RegistrationActivity_continue">Bidomîne</string>
   <string name="RegistrationActivity_take_privacy_with_you_be_yourself_in_every_message">Nihêniya xwe biparêze.\nDi her peyamê de bi xwe be.</string>
   <string name="RegistrationActivity_enter_your_phone_number_to_get_started">Ji bo destpêkirinê, nimreya telefona xwe bikevê</string>
+  <string name="RegistrationActivity_enter_your_phone_number">Nimreya telefona xwe bikevê</string>
   <string name="RegistrationActivity_you_will_receive_a_verification_code">Tu yê koda piştrastkirinê bistînî. Dibe ku pereyê ekstra ji te bê kuştin.</string>
   <string name="RegistrationActivity_enter_the_code_we_sent_to_s">Koda ku me ji %s re şandiye, bikevê</string>
   <string name="RegistrationActivity_phone_number_description">Nimreya telefonê</string>
@@ -2173,6 +2176,28 @@
   <string name="prompt_passphrase_activity__signal_is_locked">Signal kilîdkirî ye</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">JI BO VEKIRINÊ LÊ BITEPÎNE</string>
   <string name="Recipient_unknown">Nenas</string>
+  <!--TransferOrRestoreFragment-->
+  <!--NewDeviceTransferInstructionsFragment-->
+  <string name="NewDeviceTransferInstructions__continue">Bidomîne</string>
+  <!--NewDeviceTransferSetupFragment-->
+  <!--OldDeviceTransferSetupFragment-->
+  <!--DeviceTransferSetupFragment-->
+  <string name="DeviceTransferSetup__retry">Dîsa biceribîne</string>
+  <string name="DeviceTransferSetup__continue">Bidomîne</string>
+  <string name="DeviceTransferSetup__wifi">Wi-Fi</string>
+  <string name="DeviceTransferSetup__try_again">Dîsa biceribîne</string>
+  <!--NewDeviceTransferFragment-->
+  <!--DeviceTransferFragment-->
+  <string name="DeviceTransfer__cancel">Betal bike</string>
+  <string name="DeviceTransfer__try_again">Dîsa biceribîne</string>
+  <!--OldDeviceTransferInstructionsFragment-->
+  <string name="OldDeviceTransferInstructions__continue">Bidomîne</string>
+  <!--OldDeviceTransferComplete-->
+  <string name="OldDeviceTransferComplete__close">Bigire</string>
+  <!--NewDeviceTransferComplete-->
+  <!--DeviceToDeviceTransferService-->
+  <!--OldDeviceTransferLockedDialog-->
+  <string name="OldDeviceTransferLockedDialog__done">Qediya</string>
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Asteng bike</string>
   <string name="RecipientBottomSheet_unblock">Astengê rake</string>

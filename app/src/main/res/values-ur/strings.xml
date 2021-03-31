@@ -837,6 +837,11 @@
   <string name="NotificationBarManager__answer_call">کال کا جواب دیں</string>
   <string name="NotificationBarManager__end_call">کال ختم کریں</string>
   <string name="NotificationBarManager__cancel_call">کال منسوخ کریں</string>
+  <!--NotificationsMegaphone-->
+  <string name="NotificationsMegaphone_turn_on_notifications">اطلاعات آن کریں؟</string>
+  <string name="NotificationsMegaphone_never_miss_a_message">اپنے رابطوں اور گروپس کا پیغام کبھی بھی مت چھوڑیں۔</string>
+  <string name="NotificationsMegaphone_turn_on">آن کر دو</string>
+  <string name="NotificationsMegaphone_not_now">ابھی نہیں</string>
   <!--NotificationMmsMessageRecord-->
   <string name="NotificationMmsMessageRecord_multimedia_message">ملٹی میڈیا پیغامات</string>
   <string name="NotificationMmsMessageRecord_downloading_mms_message">ایم ایم ایس پیغام ڈاؤن لوڈ کریں</string>
@@ -1145,7 +1150,6 @@
   <string name="RatingManager_rate_now">اب درجہ بندی کریں!</string>
   <string name="RatingManager_no_thanks">نہیں شکریہ</string>
   <string name="RatingManager_later">بعد میں</string>
-  <string name="RatingManager_whoops_the_play_store_app_does_not_appear_to_be_installed">اوپس ، پلے سٹور ایپ آپ کی ڈیوائس پر انسٹال ہوتے دکھائی نہیں دیتی ہے۔</string>
   <!--ReactionsBottomSheetDialogFragment-->
   <string name="ReactionsBottomSheetDialogFragment_all">سب. %1$d</string>
   <!--ReactionsConversationView-->
@@ -1239,6 +1243,7 @@
   <string name="RegistrationActivity_continue">جاری رکھیں</string>
   <string name="RegistrationActivity_take_privacy_with_you_be_yourself_in_every_message">اپنے ساتھ رازداری اختیار کریں۔/n ہر پیغام میں اپنے آپ کو سمجھیں۔</string>
   <string name="RegistrationActivity_enter_your_phone_number_to_get_started">شروع کرنے کے لیے اپنا فون نمبر داخل کریں</string>
+  <string name="RegistrationActivity_enter_your_phone_number">اپنا فون نمبر درج کریں</string>
   <string name="RegistrationActivity_you_will_receive_a_verification_code">آپ کو تصدیقی کوڈ وصول ہوگا۔ کیریئر کی درجہ بندی لاگو ہو گی۔</string>
   <string name="RegistrationActivity_enter_the_code_we_sent_to_s">ہم نے جو کوڈ بھیجا ہے%sداخل کریں</string>
   <string name="RegistrationActivity_make_sure_your_phone_has_a_cellular_signal">اس بات کو یقینی بنائیں کہ آپ کے فون میں آپ کے ایس ایم ایس یا کال موصول کرنے کے لئے سیلولر Signal موجود ہے</string>
@@ -2300,6 +2305,29 @@
   <string name="prompt_passphrase_activity__signal_is_locked">Signal لاک ہے</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">لاک کھولنے کے لیے ٹیپ کریں</string>
   <string name="Recipient_unknown">نامعلوم</string>
+  <!--TransferOrRestoreFragment-->
+  <!--NewDeviceTransferInstructionsFragment-->
+  <string name="NewDeviceTransferInstructions__continue">جاری رکھیں</string>
+  <!--NewDeviceTransferSetupFragment-->
+  <!--OldDeviceTransferSetupFragment-->
+  <!--DeviceTransferSetupFragment-->
+  <string name="DeviceTransferSetup__retry">دوبارہ کوشش کریں</string>
+  <string name="DeviceTransferSetup__continue">جاری رکھیں</string>
+  <string name="DeviceTransferSetup__wifi">Wi-Fi</string>
+  <string name="DeviceTransferSetup__try_again">دوبارہ کوشش کریں</string>
+  <!--NewDeviceTransferFragment-->
+  <!--DeviceTransferFragment-->
+  <string name="DeviceTransfer__cancel">منسوخ کریں</string>
+  <string name="DeviceTransfer__try_again">دوبارہ کوشش کریں</string>
+  <!--OldDeviceTransferInstructionsFragment-->
+  <string name="OldDeviceTransferInstructions__transfer_account">اکاؤنٹ کی منتقلی</string>
+  <string name="OldDeviceTransferInstructions__continue">جاری رکھیں</string>
+  <!--OldDeviceTransferComplete-->
+  <string name="OldDeviceTransferComplete__close">بند کریں</string>
+  <!--NewDeviceTransferComplete-->
+  <!--DeviceToDeviceTransferService-->
+  <!--OldDeviceTransferLockedDialog-->
+  <string name="OldDeviceTransferLockedDialog__done">ہو گیا</string>
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">بلاک</string>
   <string name="RecipientBottomSheet_unblock">ان بلاک</string>

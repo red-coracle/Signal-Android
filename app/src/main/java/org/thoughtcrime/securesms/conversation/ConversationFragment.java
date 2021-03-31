@@ -137,6 +137,7 @@ import org.thoughtcrime.securesms.util.SetUtil;
 import org.thoughtcrime.securesms.util.SignalProxyUtil;
 import org.thoughtcrime.securesms.util.SnapToTopDataObserver;
 import org.thoughtcrime.securesms.util.StickyHeaderDecoration;
+import org.thoughtcrime.securesms.util.Stopwatch;
 import org.thoughtcrime.securesms.util.StorageUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.ThemeUtil;
@@ -200,6 +201,7 @@ public class ConversationFragment extends LoggingFragment {
   private int                         pulsePosition = -1;
   private VoiceNoteMediaController    voiceNoteMediaController;
   private View                        toolbarShadow;
+  private Stopwatch                   startupStopwatch;
 
   public static void prepare(@NonNull Context context) {
     FrameLayout parent = new FrameLayout(context);
@@ -217,6 +219,7 @@ public class ConversationFragment extends LoggingFragment {
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
     this.locale = (Locale) getArguments().getSerializable(PassphraseRequiredActivity.LOCALE_EXTRA);
+    startupStopwatch = new Stopwatch("conversation-open");
   }
 
   @Override
@@ -260,16 +263,16 @@ public class ConversationFragment extends LoggingFragment {
     this.messageCountsViewModel = ViewModelProviders.of(requireActivity()).get(MessageCountsViewModel.class);
     this.conversationViewModel  = ViewModelProviders.of(requireActivity(), new ConversationViewModel.Factory()).get(ConversationViewModel.class);
 
-    conversationViewModel.getMessages().observe(this, messages -> {
+    conversationViewModel.getMessages().observe(getViewLifecycleOwner(), messages -> {
       ConversationAdapter adapter = getListAdapter();
       if (adapter != null) {
         getListAdapter().submitList(messages);
       }
     });
 
-    conversationViewModel.getConversationMetadata().observe(this, this::presentConversationMetadata);
+    conversationViewModel.getConversationMetadata().observe(getViewLifecycleOwner(), this::presentConversationMetadata);
 
-    conversationViewModel.getShowMentionsButton().observe(this, shouldShow -> {
+    conversationViewModel.getShowMentionsButton().observe(getViewLifecycleOwner(), shouldShow -> {
       if (shouldShow) {
         ViewUtil.animateIn(scrollToMentionButton, mentionButtonInAnimation);
       } else {
@@ -277,7 +280,7 @@ public class ConversationFragment extends LoggingFragment {
       }
     });
 
-    conversationViewModel.getShowScrollToBottom().observe(this, shouldShow -> {
+    conversationViewModel.getShowScrollToBottom().observe(getViewLifecycleOwner(), shouldShow -> {
       if (shouldShow) {
         ViewUtil.animateIn(scrollToBottomButton, scrollButtonInAnimation);
       } else {
@@ -327,6 +330,8 @@ public class ConversationFragment extends LoggingFragment {
   public void onActivityCreated(Bundle bundle) {
     super.onActivityCreated(bundle);
 
+    Log.d(TAG, "[onActivityCreated]");
+
     initializeScrollButtonAnimations();
     initializeResources();
     initializeMessageRequestViewModel();
@@ -367,7 +372,7 @@ public class ConversationFragment extends LoggingFragment {
   @Override
   public void onStop() {
     super.onStop();
-    ApplicationDependencies.getTypingStatusRepository().getTypists(threadId).removeObservers(this);
+    ApplicationDependencies.getTypingStatusRepository().getTypists(threadId).removeObservers(getViewLifecycleOwner());
   }
 
   @Override
@@ -377,6 +382,8 @@ public class ConversationFragment extends LoggingFragment {
   }
 
   public void onNewIntent() {
+    Log.d(TAG, "[onNewIntent]");
+
     if (actionMode != null) {
       actionMode.finish();
     }
@@ -542,7 +549,7 @@ public class ConversationFragment extends LoggingFragment {
     list.addOnScrollListener(new ShadowScrollListener());
 
     if (oldThreadId != threadId) {
-      ApplicationDependencies.getTypingStatusRepository().getTypists(oldThreadId).removeObservers(this);
+      ApplicationDependencies.getTypingStatusRepository().getTypists(oldThreadId).removeObservers(getViewLifecycleOwner());
     }
   }
 
@@ -560,6 +567,18 @@ public class ConversationFragment extends LoggingFragment {
       setLastSeen(conversationViewModel.getLastSeen());
 
       emptyConversationBanner.setVisibility(View.GONE);
+
+      adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+          startupStopwatch.split("data-set");
+          adapter.unregisterAdapterDataObserver(this);
+          list.post(() -> {
+            startupStopwatch.split("first-render");
+            startupStopwatch.stop(TAG);
+          });
+        }
+      });
     } else if (threadId == -1) {
       emptyConversationBanner.setVisibility(View.VISIBLE);
       toolbarShadow.setVisibility(View.GONE);
@@ -580,8 +599,8 @@ public class ConversationFragment extends LoggingFragment {
 
     LiveData<TypingStatusRepository.TypingState> typists = ApplicationDependencies.getTypingStatusRepository().getTypists(threadId);
 
-    typists.removeObservers(this);
-    typists.observe(this, typingState ->  {
+    typists.removeObservers(getViewLifecycleOwner());
+    typists.observe(getViewLifecycleOwner(), typingState ->  {
       List<Recipient> recipients;
       boolean         replacedByIncomingMessage;
 
@@ -673,9 +692,12 @@ public class ConversationFragment extends LoggingFragment {
   }
 
   public void reload(Recipient recipient, long threadId) {
+    Log.d(TAG, "[reload] Recipient: " + recipient.getId() + ", ThreadId: " + threadId);
     this.recipient = recipient.live();
 
     if (this.threadId != threadId) {
+      Log.i(TAG, "ThreadId changed from " + this.threadId + " to " + threadId + ". Recipient was " + this.recipient.getId() + " and is now " + recipient.getId());
+
       this.threadId = threadId;
       messageRequestViewModel.setConversationInfo(recipient.getId(), threadId);
 

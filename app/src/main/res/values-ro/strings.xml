@@ -235,6 +235,7 @@
   <string name="ConversationActivity__more_options_now_in_group_settings">Acum mai multe opțiuni în \"Setări grup\"</string>
   <string name="ConversationActivity_join">Alăturați-vă</string>
   <string name="ConversationActivity_full">Plină</string>
+  <string name="ConversationActivity_error_sending_media">Eroare la trimiterea conținutului media</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d mesaj necitit</item>
@@ -879,6 +880,11 @@
   <string name="NotificationBarManager__answer_call">Răspundeți apelului</string>
   <string name="NotificationBarManager__end_call">Închideți apelul</string>
   <string name="NotificationBarManager__cancel_call">Anulați apelul</string>
+  <!--NotificationsMegaphone-->
+  <string name="NotificationsMegaphone_turn_on_notifications">Activaţi notificările?</string>
+  <string name="NotificationsMegaphone_never_miss_a_message">Nu rata niciodată un mesaj de la contactele și grupurile tale.</string>
+  <string name="NotificationsMegaphone_turn_on">Activare</string>
+  <string name="NotificationsMegaphone_not_now">Nu acum</string>
   <!--NotificationMmsMessageRecord-->
   <string name="NotificationMmsMessageRecord_multimedia_message">Mesaj multimedia</string>
   <string name="NotificationMmsMessageRecord_downloading_mms_message">Se descarcă mesajul MMS</string>
@@ -1203,7 +1209,6 @@
   <string name="RatingManager_rate_now">Evaluați acum!</string>
   <string name="RatingManager_no_thanks">Nu, mulţumesc</string>
   <string name="RatingManager_later">Mai târziu</string>
-  <string name="RatingManager_whoops_the_play_store_app_does_not_appear_to_be_installed">Uuups, se pare că aplicația Magazinul Play nu este instalată pe dispozitivul tău.</string>
   <!--ReactionsBottomSheetDialogFragment-->
   <string name="ReactionsBottomSheetDialogFragment_all">Toate · %1$d</string>
   <!--ReactionsConversationView-->
@@ -1303,6 +1308,7 @@ furnizat (%s) este invalid.</string>
   <string name="RegistrationActivity_continue">Continuați</string>
   <string name="RegistrationActivity_take_privacy_with_you_be_yourself_in_every_message">Ia-ți intimitatea cu tine.\nFii tu însuți în fiecare mesaj.</string>
   <string name="RegistrationActivity_enter_your_phone_number_to_get_started">Introduceți numărul dvs. de telefon pentru a putea începe</string>
+  <string name="RegistrationActivity_enter_your_phone_number">Introduceți numărul dvs. de telefon</string>
   <string name="RegistrationActivity_you_will_receive_a_verification_code">Veți primi un cod de verificare. Se pot aplica tarife de operator.</string>
   <string name="RegistrationActivity_enter_the_code_we_sent_to_s">Introduceți codul trimis la %s</string>
   <string name="RegistrationActivity_make_sure_your_phone_has_a_cellular_signal">Asigurați-vă că telefonul dvs. are semnal celular pentru a putea primi SMS-ul sau apelul</string>
@@ -2310,9 +2316,12 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="backup_enable_dialog__folder">Dosar</string>
   <string name="backup_enable_dialog__i_have_written_down_this_passphrase">Am scris parola. Fără ea nu voi putea restaura un backup.</string>
   <string name="registration_activity__restore_backup">Restaurare backup</string>
+  <string name="registration_activity__transfer_or_restore_account">Transfer sau restabilire cont</string>
+  <string name="registration_activity__transfer_account">Transfer cont</string>
   <string name="registration_activity__skip">Omiteți</string>
   <string name="preferences_chats__chat_backups">Backup-uri pt. conversații</string>
   <string name="preferences_chats__backup_chats_to_external_storage">Salvează conversațiile pe stocarea externă</string>
+  <string name="preferences_chats__transfer_account">Transfer cont</string>
   <string name="RegistrationActivity_enter_backup_passphrase">Introduceți parola pentru backup</string>
   <string name="RegistrationActivity_restore">Restaurează</string>
   <string name="RegistrationActivity_backup_failure_downgrade">Nu se pot importa backup-uri din versiuni mai noi de Signal</string>
@@ -2386,6 +2395,48 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="prompt_passphrase_activity__signal_is_locked">Signal este blocat</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">ATINGEȚI PENTRU DEBLOCARE</string>
   <string name="Recipient_unknown">Necunoscut</string>
+  <!--TransferOrRestoreFragment-->
+  <string name="TransferOrRestoreFragment__transfer_or_restore_account">Transfer sau restabilire cont</string>
+  <!--NewDeviceTransferInstructionsFragment-->
+  <string name="NewDeviceTransferInstructions__continue">Continuă</string>
+  <string name="NewDeviceTransferInstructions__first_bullet">1.</string>
+  <string name="NewDeviceTransferInstructions__second_bullet">2.</string>
+  <string name="NewDeviceTransferInstructions__third_bullet">3.</string>
+  <!--NewDeviceTransferSetupFragment-->
+  <!--OldDeviceTransferSetupFragment-->
+  <!--DeviceTransferSetupFragment-->
+  <string name="DeviceTransferSetup__turn_on_wifi">Activare Wi-Fi</string>
+  <string name="DeviceTransferSetup__retry">Încearcă din nou</string>
+  <string name="DeviceTransferSetup__submit_debug_logs">Trimiteți jurnalul de depanare</string>
+  <string name="DeviceTransferSetup__verify_code">Verificare cod</string>
+  <string name="DeviceTransferSetup__the_numbers_do_not_match">Numerele nu se potrivesc</string>
+  <string name="DeviceTransferSetup__continue">Continuă</string>
+  <string name="DeviceTransferSetup__stop_transfer">Oprire transfer</string>
+  <string name="DeviceTransferSetup__wifi">Wi-Fi</string>
+  <string name="DeviceTransferSetup__try_again">Încercați din nou</string>
+  <!--NewDeviceTransferFragment-->
+  <!--DeviceTransferFragment-->
+  <string name="DeviceTransfer__transferring_data">Se transmit datele</string>
+  <string name="DeviceTransfer__cancel">Anulare</string>
+  <string name="DeviceTransfer__try_again">Încercați din nou</string>
+  <string name="DeviceTransfer__stop_transfer">Oprire transfer</string>
+  <string name="DeviceTransfer__transfer_failed">Transfer eșuat</string>
+  <!--OldDeviceTransferInstructionsFragment-->
+  <string name="OldDeviceTransferInstructions__transfer_account">Transfer cont</string>
+  <string name="OldDeviceTransferInstructions__first_bullet">1.</string>
+  <string name="OldDeviceTransferInstructions__second_bullet">2.</string>
+  <string name="OldDeviceTransferInstructions__third_bullet">3.</string>
+  <string name="OldDeviceTransferInstructions__continue">Continuă</string>
+  <!--OldDeviceTransferComplete-->
+  <string name="OldDeviceTransferComplete__transfer_complete">Transfer finalizat</string>
+  <string name="OldDeviceTransferComplete__close">Închide</string>
+  <!--NewDeviceTransferComplete-->
+  <string name="NewDeviceTransferComplete__transfer_successful">Transferul a fost făcut cu succes</string>
+  <string name="NewDeviceTransferComplete__transfer_complete">Transfer finalizat</string>
+  <!--DeviceToDeviceTransferService-->
+  <string name="DeviceToDeviceTransferService_status_verification_required">Este necesară o verificare</string>
+  <!--OldDeviceTransferLockedDialog-->
+  <string name="OldDeviceTransferLockedDialog__done">Gata</string>
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Blochează</string>
   <string name="RecipientBottomSheet_unblock">Deblochează</string>
@@ -2416,6 +2467,8 @@ Am primit mesajul conform căruia schimbul de chei a avut loc pentru o versiune 
   <string name="GroupsLearnMore_paragraph_2">Grupurile vechi nu pot fi încă migrate la cele noi, dar poți crea un Grup Nou cu aceeași membri dacă aceștia folosesc toți ultima versiune de Signal.</string>
   <string name="GroupsLearnMore_paragraph_3">Signal va oferi în viitor o modalitate de actualizare a grupurilor vechi.</string>
   <!--GroupLinkBottomSheetDialogFragment-->
+  <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Oricine cu această adresă poate vedea numele și fotografia grupului și poate solicita o cerere de alăturare la grup. Distribuiți adresa cu persoanele de încredere.</string>
+  <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Oricine cu această adresă poate vedea numele grupului și membrii săi și se poate alătura grupului. Distribuiți adresa cu persoanele de încredere.</string>
   <string name="GroupLinkBottomSheet_share_via_signal">Partajează prin Signal</string>
   <string name="GroupLinkBottomSheet_copy">Copy</string>
   <string name="GroupLinkBottomSheet_qr_code">Cod QR</string>

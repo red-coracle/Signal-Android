@@ -221,8 +221,8 @@
   <string name="ConversationActivity_no">No</string>
   <string name="ConversationActivity_search_position">%1$d de %2$d</string>
   <string name="ConversationActivity_no_results">Sin resultados</string>
-  <string name="ConversationActivity_sticker_pack_installed">Paquete de cromos instalado</string>
-  <string name="ConversationActivity_new_say_it_with_stickers">¡Novedad!: Dilo con cromos (stickers)</string>
+  <string name="ConversationActivity_sticker_pack_installed">Paquete de stickers instalado</string>
+  <string name="ConversationActivity_new_say_it_with_stickers">¡Novedad!: Dilo con stickers</string>
   <string name="ConversationActivity_cancel">Cancelar</string>
   <string name="ConversationActivity_delete_conversation">¿Eliminar el chat?</string>
   <string name="ConversationActivity_delete_and_leave_group">¿Eliminar y abandonar grupo?</string>
@@ -234,6 +234,7 @@
   <string name="ConversationActivity__more_options_now_in_group_settings">Ahora con más opciones en «Ajustes del grupo»</string>
   <string name="ConversationActivity_join">Unirse</string>
   <string name="ConversationActivity_full">Completa</string>
+  <string name="ConversationActivity_error_sending_media">Fallo al enviar adjunto</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d mensaje no leído</item>
@@ -413,7 +414,7 @@
   <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">Fallo al obtener el GIF a resolución completa</string>
   <!--GiphyFragmentPageAdapter-->
   <string name="GiphyFragmentPagerAdapter_gifs">GIFs</string>
-  <string name="GiphyFragmentPagerAdapter_stickers">Cromos</string>
+  <string name="GiphyFragmentPagerAdapter_stickers">Stickers</string>
   <!--AddToGroupActivity-->
   <string name="AddToGroupActivity_add_member">¿Añadir participante?</string>
   <string name="AddToGroupActivity_add_s_to_s">¿Añadir a %1$s a «%2$s»?</string>
@@ -527,11 +528,11 @@
   <string name="PendingMembersActivity_pending_group_invites">Invitaciones pendientes</string>
   <string name="PendingMembersActivity_requests">Solicitudes</string>
   <string name="PendingMembersActivity_invites">Invitaciones</string>
-  <string name="PendingMembersActivity_people_you_invited">Personas que has invitado</string>
+  <string name="PendingMembersActivity_people_you_invited">Personas que has invitado tú</string>
   <string name="PendingMembersActivity_you_have_no_pending_invites">No tienes invitaciones pendientes.</string>
-  <string name="PendingMembersActivity_invites_by_other_group_members">Invitaciones de otr@s participantes</string>
+  <string name="PendingMembersActivity_invites_by_other_group_members">Otras personas que han sido invitadas</string>
   <string name="PendingMembersActivity_no_pending_invites_by_other_group_members">No hay invitaciones pendientes de otr@s participantes.</string>
-  <string name="PendingMembersActivity_missing_detail_explanation">No se pueden mostrar los detalles de personas invitadas por otr@s participantes del grupo. Sólo compartirán sus detalles con el grupo y verán los mensajes que se envíen a partir del momento en que decidan participar.</string>
+  <string name="PendingMembersActivity_missing_detail_explanation">No se pueden mostrar los detalles de personas invitadas por otr@s participantes del grupo. Las personas invitadas sólo compartirán sus detalles con el grupo y verán los mensajes que se envíen a partir del momento en que decidan participar en el grupo.</string>
   <string name="PendingMembersActivity_revoke_invite">Retirar invitación</string>
   <string name="PendingMembersActivity_revoke_invites">Retirar invitaciones</string>
   <plurals name="PendingMembersActivity_revoke_d_invites">
@@ -713,7 +714,7 @@
   <string name="GroupJoinBottomSheetDialogFragment_encountered_a_network_error">Fallo en la conexión de red.</string>
   <string name="GroupJoinBottomSheetDialogFragment_this_group_link_is_not_active">Este enlace al grupo no está disponible</string>
   <string name="GroupJoinBottomSheetDialogFragment_unable_to_get_group_information_please_try_again_later">No ha sido posible recuperar los detalles del grupo, por favor inténtalo más tarde</string>
-  <string name="GroupJoinBottomSheetDialogFragment_direct_join">¿Deseas unirte a este grupo y así compartir tu nombre y foto con sus participantes?</string>
+  <string name="GroupJoinBottomSheetDialogFragment_direct_join">¿Deseas unirte a este grupo y compartir tu nombre y foto con sus participantes?</string>
   <string name="GroupJoinBottomSheetDialogFragment_admin_approval_needed">Un(a) admin de este grupo debe aprobar tu solicitud de acceso para unirte al grupo. Al solicitar unirte, tu nombre y foto se compartirán con sus participantes.</string>
   <plurals name="GroupJoinBottomSheetDialogFragment_group_dot_d_members">
     <item quantity="one">Grupo · %1$d participante</item>
@@ -822,7 +823,7 @@
   <string name="Megaphones_tap_and_hold_any_message_to_quicky_share_how_you_feel">Mantén pulsado un mensaje para mostrar cómo te sientes.</string>
   <string name="Megaphones_remind_me_later">Recordar más tarde</string>
   <string name="Megaphones_verify_your_signal_pin">Verifica tu PIN de Signal</string>
-  <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">Te preguntaremos ocasionalmente para verificar tu PIN y que así lo puedas recordar.</string>
+  <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">Te preguntaremos ocasionalmente verificar tu PIN para que así lo puedas recordar.</string>
   <string name="Megaphones_verify_pin">Verificar PIN</string>
   <string name="Megaphones_get_started">Comenzar</string>
   <string name="Megaphones_new_group">Nuevo grupo</string>
@@ -836,6 +837,11 @@
   <string name="NotificationBarManager__answer_call">Atender llamada</string>
   <string name="NotificationBarManager__end_call">Finalizar llamada</string>
   <string name="NotificationBarManager__cancel_call">Cancelar llamada</string>
+  <!--NotificationsMegaphone-->
+  <string name="NotificationsMegaphone_turn_on_notifications">¿Activar notificaciones?</string>
+  <string name="NotificationsMegaphone_never_miss_a_message">No te pierdas ni un mensaje de tus contactos o grupos.</string>
+  <string name="NotificationsMegaphone_turn_on">Activar</string>
+  <string name="NotificationsMegaphone_not_now">Ahora no</string>
   <!--NotificationMmsMessageRecord-->
   <string name="NotificationMmsMessageRecord_multimedia_message">Mensaje multimedia</string>
   <string name="NotificationMmsMessageRecord_downloading_mms_message">Descargando mensaje MMS</string>
@@ -1042,13 +1048,13 @@
   <string name="MessageRequestBottomView_delete">Eliminar</string>
   <string name="MessageRequestBottomView_block">Bloquear</string>
   <string name="MessageRequestBottomView_unblock">Desbloquear</string>
-  <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_they_wont_know_youve_seen_their_messages_until_you_accept">¿Deseas que %1$s te envíe mensajes y así compartir tu nombre y foto? Esta persona no sabrá que has visto sus mensajes hasta que aceptes.</string>
-  <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_wont_receive_any_messages_until_you_unblock_them">¿Deseas que %1$s te envíe mensajes y así compartir tu nombre y foto? Esta persona no sabrá que has visto sus mensajes hasta que aceptes.</string>
-  <string name="MessageRequestBottomView_continue_your_conversation_with_this_group_and_share_your_name_and_photo">¿Deseas chatear con este grupo y así compartir tu nombre y foto con sus participantes?</string>
+  <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_they_wont_know_youve_seen_their_messages_until_you_accept">¿Deseas que %1$s te envíe mensajes y compartir tu nombre y foto? Esta persona no sabrá que has visto sus mensajes hasta que aceptes.</string>
+  <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_wont_receive_any_messages_until_you_unblock_them">¿Deseas que %1$s te envíe mensajes y compartir tu nombre y foto? Esta persona no sabrá que has visto sus mensajes hasta que aceptes.</string>
+  <string name="MessageRequestBottomView_continue_your_conversation_with_this_group_and_share_your_name_and_photo">¿Deseas chatear con este grupo y compartir tu nombre y foto con sus participantes?</string>
   <string name="MessageRequestBottomView_upgrade_this_group_to_activate_new_features">Actualiza este grupo para activar funciones como @menciones y admins. L@s participantes que no comparten su nombre o foto de perfil con este grupo recibirán una invitación para unirse.</string>
   <string name="MessageRequestBottomView_this_legacy_group_can_no_longer_be_used">Este grupo antiguo no es válido porque es demasiado grande. El tamaño máximo de grupo es de %1$d participantes.</string>
-  <string name="MessageRequestBottomView_continue_your_conversation_with_s_and_share_your_name_and_photo">¿Deseas chatear con %1$s y así compartir tu nombre y foto con esta persona?</string>
-  <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">¿Deseas unirte a este grupo y así compartir tu nombre y foto con sus participantes? No sabrán que has visto sus mensajes hasta que aceptes.</string>
+  <string name="MessageRequestBottomView_continue_your_conversation_with_s_and_share_your_name_and_photo">¿Deseas chatear con %1$s y compartir tu nombre y foto con esta persona?</string>
+  <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">¿Deseas unirte a este grupo y compartir tu nombre y foto con sus participantes? No sabrán que has visto sus mensajes hasta que aceptes.</string>
   <string name="MessageRequestBottomView_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">¿Deseas unirte a este grupo? Sus participantes no sabrán que has visto sus mensajes hasta que aceptes.</string>
   <string name="MessageRequestBottomView_unblock_this_group_and_share_your_name_and_photo_with_its_members">¿Desbloquear este grupo y compartir tu nombre y foto con sus participantes? No recibirás ningún mensaje del grupo hasta que lo desbloquees.</string>
   <string name="MessageRequestProfileView_member_of_one_group">Participa en %1$s</string>
@@ -1145,7 +1151,6 @@
   <string name="RatingManager_rate_now">¡Valorar ahora!</string>
   <string name="RatingManager_no_thanks">No, gracias</string>
   <string name="RatingManager_later">Más tarde</string>
-  <string name="RatingManager_whoops_the_play_store_app_does_not_appear_to_be_installed">Vaya, la aplicación de la Play Store no parece estar instalada.</string>
   <!--ReactionsBottomSheetDialogFragment-->
   <string name="ReactionsBottomSheetDialogFragment_all">Todas · %1$d</string>
   <!--ReactionsConversationView-->
@@ -1245,6 +1250,7 @@ número de teléfono
   <string name="RegistrationActivity_continue">Adelante</string>
   <string name="RegistrationActivity_take_privacy_with_you_be_yourself_in_every_message">Lleva la privacidad contigo.\nSé tú mism@ en todos tus mensajes.</string>
   <string name="RegistrationActivity_enter_your_phone_number_to_get_started">Introduce tu número de teléfono para comenzar</string>
+  <string name="RegistrationActivity_enter_your_phone_number">Introduce tu número de teléfono</string>
   <string name="RegistrationActivity_you_will_receive_a_verification_code">Recibirás un código de verificación SMS. Se aplican las tarifas de tu operador.</string>
   <string name="RegistrationActivity_enter_the_code_we_sent_to_s">Introduce el código que hemos enviado a %s</string>
   <string name="RegistrationActivity_make_sure_your_phone_has_a_cellular_signal">Asegúrate que tu teléfono tiene cobertura para recibir SMS o llamadas</string>
@@ -1286,7 +1292,7 @@ número de teléfono
   <string name="SignalPinReminders_well_remind_you_again_in_a_month">Te lo recordaremos de nuevo en un mes.</string>
   <!--Slide-->
   <string name="Slide_image">Imagen</string>
-  <string name="Slide_sticker">Cromo</string>
+  <string name="Slide_sticker">Sticker</string>
   <string name="Slide_audio">Audio</string>
   <string name="Slide_video">Vídeo</string>
   <!--SmsMessageRecord-->
@@ -1303,13 +1309,13 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="SmsMessageRecord_this_message_could_not_be_processed_because_it_was_sent_from_a_newer_version">Fallo al procesar el mensaje, ya que ha sido enviado con una versión más actual de Signal. Puedes pedir a la persona que vuelva a enviar el mensaje tras haber actualizado tu versión de Signal.</string>
   <string name="SmsMessageRecord_error_handling_incoming_message">Fallo al procesar el mensaje recibido.</string>
   <!--StickerManagementActivity-->
-  <string name="StickerManagementActivity_stickers">Cromos</string>
+  <string name="StickerManagementActivity_stickers">Stickers</string>
   <!--StickerManagementAdapter-->
-  <string name="StickerManagementAdapter_installed_stickers">Cromos instalados </string>
-  <string name="StickerManagementAdapter_stickers_you_received">Cromos recibidos</string>
+  <string name="StickerManagementAdapter_installed_stickers">Stickers instalados </string>
+  <string name="StickerManagementAdapter_stickers_you_received">Stickers recibidos</string>
   <string name="StickerManagementAdapter_signal_artist_series">Paquetes de Artistas de Signal</string>
-  <string name="StickerManagementAdapter_no_stickers_installed">No hay ningún cromo instalado </string>
-  <string name="StickerManagementAdapter_stickers_from_incoming_messages_will_appear_here">Los cromos recibidos en mensajes aparecerán aquí</string>
+  <string name="StickerManagementAdapter_no_stickers_installed">No hay ningún sticker instalado </string>
+  <string name="StickerManagementAdapter_stickers_from_incoming_messages_will_appear_here">Los stickers recibidos en mensajes aparecerán aquí</string>
   <string name="StickerManagementAdapter_untitled">Sin nombre</string>
   <string name="StickerManagementAdapter_unknown">Desconocido</string>
   <!--StickerPackPreviewActivity-->
@@ -1317,8 +1323,8 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="StickerPackPreviewActivity_unknown">Desconocido</string>
   <string name="StickerPackPreviewActivity_install">Instalar</string>
   <string name="StickerPackPreviewActivity_remove">Eliminar</string>
-  <string name="StickerPackPreviewActivity_stickers">Cromos (stickers)</string>
-  <string name="StickerPackPreviewActivity_failed_to_load_sticker_pack">Fallo al cargar el paquete de cromos</string>
+  <string name="StickerPackPreviewActivity_stickers">Stickers</string>
+  <string name="StickerPackPreviewActivity_failed_to_load_sticker_pack">Fallo al cargar el paquete de stickers</string>
   <!--SubmitDebugLogActivity-->
   <string name="SubmitDebugLogActivity_edit">Editar</string>
   <string name="SubmitDebugLogActivity_done">Hecho</string>
@@ -1346,7 +1352,7 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="ThreadRecord_missed_audio_call">Llamada perdida</string>
   <string name="ThreadRecord_missed_video_call">Vídeollamada perdida</string>
   <string name="ThreadRecord_media_message">Mensaje multimedia</string>
-  <string name="ThreadRecord_sticker">Cromo</string>
+  <string name="ThreadRecord_sticker">Sticker</string>
   <string name="ThreadRecord_view_once_photo">Foto para ver una vez</string>
   <string name="ThreadRecord_view_once_video">Vídeo para ver una vez</string>
   <string name="ThreadRecord_view_once_media">Adjunto para ver una vez</string>
@@ -1458,7 +1464,7 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="MessageNotifier_reacted_s_to_your_file">Reacción a tu fichero: %1$s.</string>
   <string name="MessageNotifier_reacted_s_to_your_audio">Reacción a tu audio: %1$s.</string>
   <string name="MessageNotifier_reacted_s_to_your_view_once_media">Reacción a tu adjunto para ver una vez: %1$s.</string>
-  <string name="MessageNotifier_reacted_s_to_your_sticker">Reacción a tu cromo: %1$s.</string>
+  <string name="MessageNotifier_reacted_s_to_your_sticker">Reacción a tu sticker: %1$s.</string>
   <string name="MessageNotifier_this_message_was_deleted">Mensaje eliminado.</string>
   <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">¿Desactivar las notificaciones cuando una persona comience a usar Signal? Puedes volver a activarlas en los ajustes de Signal &gt; Notificaciones.</string>
   <!--Notification Channels-->
@@ -1600,7 +1606,7 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="QuoteView_video">Vídeo</string>
   <string name="QuoteView_photo">Foto</string>
   <string name="QuoteView_view_once_media">Adjunto para ver una vez</string>
-  <string name="QuoteView_sticker">Cromo</string>
+  <string name="QuoteView_sticker">Sticker</string>
   <string name="QuoteView_you">Tú</string>
   <string name="QuoteView_original_missing">No se encuentra el mensaje original </string>
   <!--conversation_fragment-->
@@ -1669,7 +1675,7 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
     <item quantity="other">%d otros</item>
   </plurals>
   <!--giphy_activity-->
-  <string name="giphy_activity_toolbar__search_gifs_and_stickers">Buscar GIFs y cromos</string>
+  <string name="giphy_activity_toolbar__search_gifs_and_stickers">Buscar GIFs y stickers</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">No se encontró nada</string>
   <!--log_submit_activity-->
@@ -1781,11 +1787,19 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="HelpFragment__include_debug_log">Incluir registro de depuración</string>
   <string name="HelpFragment__whats_this">¿Qué es esto?</string>
   <string name="HelpFragment__how_do_you_feel">¿Cómo te sientes? (Opcional)</string>
+  <string name="HelpFragment__tell_us_why_youre_reaching_out">Cuéntanos qué pasa.</string>
   <string name="HelpFragment__support_info">Información de soporte</string>
   <string name="HelpFragment__signal_android_support_request">Petición de soporte Signal Android</string>
   <string name="HelpFragment__debug_log">Registro de depuración:</string>
   <string name="HelpFragment__could_not_upload_logs">Imposible transmitir logs</string>
   <string name="HelpFragment__please_be_as_descriptive_as_possible">Por favor, sé lo más descriptivo posible para ayudarnos a entender la incidencia.</string>
+  <string-array name="HelpFragment__categories">
+    <item>Algo no funciona</item>
+    <item>Solicitar una nueva función</item>
+    <item>Pregunta</item>
+    <item>Información</item>
+    <item>Otras</item>
+  </string-array>
   <!--ReactWithAnyEmojiBottomSheetDialogFragment-->
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__this_message">Este mensaje</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__recently_used">Usados recientemente</string>
@@ -1974,7 +1988,7 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="preferences_notifications__priority">Prioridad</string>
   <string name="preferences_communication__category_sealed_sender">Remitente confidencial</string>
   <string name="preferences_communication__sealed_sender_display_indicators">Mostrar indicadores</string>
-  <string name="preferences_communication__sealed_sender_display_indicators_description">Muestra el icono de estado al tocar sobre «Detalles del mensaje» en mensajes entregados con «remitente confidencial». «Remitente confidencial» es una función del protocolo de Signal que impide saber a nuestro servidor quién envía el mensaje. La persona que lo recibe sí lo sabrá.</string>
+  <string name="preferences_communication__sealed_sender_display_indicators_description">Muestra el icono de estado al tocar sobre «Detalles del mensaje» en mensajes entregados con «remitente confidencial». «Remitente confidencial» es una función por defecto del protocolo de Signal que impide saber al servidor quién envía mensajes. Sólo la persona que los reciba sabrá quién los envía.</string>
   <string name="preferences_communication__sealed_sender_allow_from_anyone">Permitir de cualquiera</string>
   <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Activar la opción permite usar la función de «remitente confidencial» con personas que no están entre tus contactos y con las que no has compartido tu perfil.</string>
   <string name="preferences_communication__sealed_sender_learn_more">Saber más</string>
@@ -2026,12 +2040,12 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">Invitar</string>
   <!--conversation_list_batch-->
-  <string name="conversation_list_batch__menu_delete_selected">Eliminar seleccionado</string>
+  <string name="conversation_list_batch__menu_delete_selected">Eliminar selección</string>
   <string name="conversation_list_batch__menu_pin_selected">Fijar chat(s)</string>
   <string name="conversation_list_batch__menu_unpin_selected">No fijar chat(s)</string>
   <string name="conversation_list_batch__menu_select_all">Seleccionar todo</string>
-  <string name="conversation_list_batch_archive__menu_archive_selected">Archivo seleccionado</string>
-  <string name="conversation_list_batch_unarchive__menu_unarchive_selected">Archivo deseleccionado</string>
+  <string name="conversation_list_batch_archive__menu_archive_selected">Archivar selección</string>
+  <string name="conversation_list_batch_unarchive__menu_unarchive_selected">Desarchivar selección</string>
   <string name="conversation_list_batch__menu_mark_as_read">Marcar como leídos</string>
   <string name="conversation_list_batch__menu_mark_as_unread">Marcar como no leídos</string>
   <!--conversation_list-->
@@ -2164,7 +2178,7 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="KbsReminderDialog__incorrect_pin_try_again">PIN incorrecto. Inténtalo de nuevo.</string>
   <!--AccountLockedFragment-->
   <string name="AccountLockedFragment__account_locked">Cuenta bloqueada</string>
-  <string name="AccountLockedFragment__your_account_has_been_locked_to_protect_your_privacy">Tu cuenta ha sido bloqueada para proteger tu privacidad y seguridad. Después de %1$d días con tu cuenta inactiva, podrás volver a registrar tu cuenta sin necesidad de tu PIN. Previamente se eliminará tu perfil, contactos, grupos y personas bloqueadas.</string>
+  <string name="AccountLockedFragment__your_account_has_been_locked_to_protect_your_privacy">Tu cuenta ha sido bloqueada para proteger tu privacidad y seguridad. Después de %1$d días con tu cuenta inactiva, podrás volver a registrar tu cuenta con un nuevo PIN. Previamente se eliminará tu perfil, contactos, grupos y personas bloqueadas.</string>
   <string name="AccountLockedFragment__next">Siguiente</string>
   <string name="AccountLockedFragment__learn_more">Saber más</string>
   <!--KbsLockFragment-->
@@ -2188,8 +2202,8 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
     <item quantity="other">PIN incorrecto. Te quedan %1$d intentos.</item>
   </plurals>
   <plurals name="RegistrationLockFragment__if_you_run_out_of_attempts_your_account_will_be_locked_for_d_days">
-    <item quantity="one">Si superas el número de intentos, tu cuenta quedará bloqueada por %1$d día. Después de %1$d día con tu cuenta inactiva, podrás volver a registrarte sin tu PIN. Previamente, tu cuenta se eliminará junto con tu perfil, alias, grupos y personas bloqueadas.</item>
-    <item quantity="other">Si superas el número de intentos, tu cuenta quedará bloqueada por %1$d días. Después de %1$d días con tu cuenta inactiva, podrás volver a registrarte sin tu PIN. Previamente, tu cuenta se eliminará junto con tu perfil, contactos, grupos y personas bloqueadas.</item>
+    <item quantity="one">Si superas el número de intentos, tu cuenta quedará bloqueada por %1$d día. Después de %1$d día con tu cuenta inactiva, podrás volver a registrarte con un nuevo PIN. Previamente, tu cuenta se eliminará junto con tu perfil, alias, grupos y personas bloqueadas.</item>
+    <item quantity="other">Si superas el número de intentos, tu cuenta quedará bloqueada por %1$d días. Después de %1$d días con tu cuenta inactiva, podrás volver a registrarte con un nuevo PIN. Previamente, tu cuenta se eliminará junto con tu perfil, contactos, grupos y personas bloqueadas.</item>
   </plurals>
   <plurals name="RegistrationLockFragment__you_have_d_attempts_remaining">
     <item quantity="one">Te queda %1$d intento.</item>
@@ -2233,9 +2247,13 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="backup_enable_dialog__folder">Carpeta</string>
   <string name="backup_enable_dialog__i_have_written_down_this_passphrase">He anotado esta clave. Sé que sin ella no podré restaurar la copia de seguridad.</string>
   <string name="registration_activity__restore_backup">Restaurar copia</string>
+  <string name="registration_activity__transfer_or_restore_account">Transferir o restaurar cuenta</string>
+  <string name="registration_activity__transfer_account">Transferir cuenta</string>
   <string name="registration_activity__skip">Omitir</string>
   <string name="preferences_chats__chat_backups">Copias de seguridad de los chats</string>
   <string name="preferences_chats__backup_chats_to_external_storage">Hacer copia de seguridad de los chats en una unidad de almacenamiento externo</string>
+  <string name="preferences_chats__transfer_account">Transferir cuenta</string>
+  <string name="preferences_chats__transfer_account_to_a_new_android_device">Transferir cuenta a un dispositivo Android nuevo</string>
   <string name="RegistrationActivity_enter_backup_passphrase">Introduce la clave de la copia de seguridad</string>
   <string name="RegistrationActivity_restore">Restaurar</string>
   <string name="RegistrationActivity_backup_failure_downgrade">No se pueden importar copias de seguridad de versiones más recientes de Signal</string>
@@ -2309,6 +2327,118 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="prompt_passphrase_activity__signal_is_locked">Signal está bloqueado</string>
   <string name="prompt_passphrase_activity__tap_to_unlock">TOCA PARA DESBLOQUEAR</string>
   <string name="Recipient_unknown">Desconocido</string>
+  <!--TransferOrRestoreFragment-->
+  <string name="TransferOrRestoreFragment__transfer_or_restore_account">Transferir o restaurar cuenta</string>
+  <string name="TransferOrRestoreFragment__if_you_have_previously_registered_a_signal_account">Si ya tienes una cuenta en Signal, podrás transferir o restaurar de forma segura tu cuenta y mensajes.</string>
+  <string name="TransferOrRestoreFragment__transfer_from_android_device">Transferir desde dispositivo Android</string>
+  <string name="TransferOrRestoreFragment__transfer_your_account_and_messages_from_your_old_android_device">Transfiere tu cuenta y mensajes desde tu dispositivo de Android antiguo. Necesitas acceso a tu dispositivo antiguo. </string>
+  <string name="TransferOrRestoreFragment__you_need_access_to_your_old_device">Debes tener acceso a tu dispositivo antiguo.</string>
+  <string name="TransferOrRestoreFragment__restore_from_backup">Restaurar desde copia de seguridad</string>
+  <string name="TransferOrRestoreFragment__restore_your_messages_from_a_local_backup">Restaura tus mensajes y adjuntos desde una copia de seguridad local. Si no lo haces ahora, no podrás restaurar más tarde.</string>
+  <!--NewDeviceTransferInstructionsFragment-->
+  <string name="NewDeviceTransferInstructions__open_signal_on_your_old_android_phone">Abre Signal en tu dispositivo Android antiguo</string>
+  <string name="NewDeviceTransferInstructions__continue">Adelante</string>
+  <string name="NewDeviceTransferInstructions__first_bullet">1.</string>
+  <string name="NewDeviceTransferInstructions__tap_on_your_profile_photo_in_the_top_left_to_open_settings">Toca sobre tu foto de perfil en la parte superior izquierda para abrir los ajustes</string>
+  <string name="NewDeviceTransferInstructions__second_bullet">2.</string>
+  <string name="NewDeviceTransferInstructions__tap_on_chats">Toca en «Chats»</string>
+  <string name="NewDeviceTransferInstructions__third_bullet">3.</string>
+  <string name="NewDeviceTransferInstructions__tap_transfer_account_and_then_continue_on_both_devices">Toca en «Transferir cuenta» y en «Adelante» en ambos dispositivos</string>
+  <!--NewDeviceTransferSetupFragment-->
+  <string name="NewDeviceTransferSetup__preparing_to_connect_to_old_android_device">Preparando la conexión con tu dispositivo Android antiguo …</string>
+  <string name="NewDeviceTransferSetup__take_a_moment_should_be_ready_soon">Sólo necesita un momento, debería estar listo pronto</string>
+  <string name="NewDeviceTransferSetup__waiting_for_old_device_to_connect">Esperando a la conexión del dispositivo Android antiguo …</string>
+  <string name="NewDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_old_device">Signal necesita acceso a la ubicación para encontrar y conectarse a tu dispositivo Android antiguo.</string>
+  <string name="NewDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_old_device">Signal necesita acceso a los servicios de localización para encontrar y conectarse con tu dispositivo Android antiguo.</string>
+  <string name="NewDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_old_device">Signal necesita la Wi-Fi activa para encontrar y conectarse con tu dispositivo Android antiguo. La Wi-Fi debe estar activa pero el dispositivo no necesita estar conectado a una red Wi-Fi concreta.</string>
+  <string name="NewDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Lo sentimos. Parece que tu dispositivo no soporta una conexión Wi-Fi Direct. Signal usa una conexión directa para buscar y encontrar tu dispositivo Android antiguo. Todavía puedes restaurar tu cuenta con una copia de seguridad de Signal de tu dispositivo antiguo. </string>
+  <string name="NewDeviceTransferSetup__restore_a_backup">Restaurar copia de seguridad</string>
+  <string name="NewDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Fallo al conectar con tu dispositivo Android antiguo.</string>
+  <!--OldDeviceTransferSetupFragment-->
+  <string name="OldDeviceTransferSetup__searching_for_new_android_device">Buscando dispositivo Android nuevo …</string>
+  <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Signal necesita acceso a la ubicación para encontrar y conectarse a tu dispositivo Android nuevo.</string>
+  <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Signal necesita acceso a los servicios de localización para encontrar y conectarse con tu dispositivo Android nuevo.</string>
+  <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Signal necesita la Wi-Fi activa para encontrar y conectarse con tu dispositivo Android nuevo. La Wi-Fi debe estar activa pero el dispositivo no necesita estar conectado a una red Wi-Fi concreta.</string>
+  <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Lo sentimos. Parece que tu dispositivo no soporta una conexión Wi-Fi Direct. Signal usa una conexión directa para buscar y encontrar tu dispositivo Android nuevo. Todavía puedes restaurar tu cuenta con una copia de seguridad de Signal en tu dispositivo nuevo. </string>
+  <string name="OldDeviceTransferSetup__create_a_backup">Crear copia de seguridad</string>
+  <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Fallo al conectar con tu dispositivo Android nuevo.</string>
+  <!--DeviceTransferSetupFragment-->
+  <string name="DeviceTransferSetup__unable_to_open_wifi_settings">Fallo al abrir los ajustes del Wi-Fi. Activa manualmente el Wi-Fi.</string>
+  <string name="DeviceTransferSetup__grant_location_permission">Permite el acceso a la ubicación</string>
+  <string name="DeviceTransferSetup__turn_on_location_services">Activa los servicios de localización</string>
+  <string name="DeviceTransferSetup__unable_to_open_location_settings">Fallo al abrir los ajustes de ubicación.</string>
+  <string name="DeviceTransferSetup__turn_on_wifi">Activar Wi-Fi</string>
+  <string name="DeviceTransferSetup__error_connecting">Fallo al conectar</string>
+  <string name="DeviceTransferSetup__retry">Reintentar</string>
+  <string name="DeviceTransferSetup__submit_debug_logs">Enviar registro de depuración</string>
+  <string name="DeviceTransferSetup__verify_code">Verificar código</string>
+  <string name="DeviceTransferSetup__verify_that_the_code_below_matches_on_both_of_your_devices">Verifica que el código de debajo coincide en ambos dispositivos. Si es así, toca «Adelante».</string>
+  <string name="DeviceTransferSetup__the_numbers_do_not_match">Las cifras no coinciden</string>
+  <string name="DeviceTransferSetup__continue">Adelante</string>
+  <string name="DeviceTransferSetup__number_is_not_the_same">El número no coincide</string>
+  <string name="DeviceTransferSetup__if_the_numbers_on_your_devices_do_not_match_its_possible_you_connected_to_the_wrong_device">Si las cifras en ambos dispositivos no coinciden, es posible que no hayas conectado los dispositivos correctos. Para arreglarlo, detén la transferencia e inténtalo de nuevo. Mantén ambos dispositivos cerca.</string>
+  <string name="DeviceTransferSetup__stop_transfer">Detener transferencia</string>
+  <string name="DeviceTransferSetup__unable_to_discover_old_device">Imposible encontrar dispositivo antiguo</string>
+  <string name="DeviceTransferSetup__unable_to_discover_new_device">Imposible encontrar dispositivo nuevo</string>
+  <string name="DeviceTransferSetup__make_sure_the_following_permissions_are_enabled">Asegúrate de tener activos estos servicios y acessos:</string>
+  <string name="DeviceTransferSetup__location_permission">Acesso a la ubicación</string>
+  <string name="DeviceTransferSetup__location_services">Servicios de posición</string>
+  <string name="DeviceTransferSetup__wifi">Wi-Fi</string>
+  <string name="DeviceTransferSetup__on_the_wifi_direct_screen_remove_all_remembered_groups_and_unlink_any_invited_or_connected_devices">En la pantalla de Wi-Fi Direct, elimina todos los grupos guardados y desenlaza todo dispositivo invitado o conectado.</string>
+  <string name="DeviceTransferSetup__wifi_direct_screen">Pantalla Wi-Fi Direct</string>
+  <string name="DeviceTransferSetup__try_turning_wifi_off_and_on_on_both_devices">Desactiva y vuelve a activar la Wi-Fi en ambos dispositivos.</string>
+  <string name="DeviceTransferSetup__make_sure_both_devices_are_in_transfer_mode">Asegúrate que ambos dispositivos están en modo de transferencia.</string>
+  <string name="DeviceTransferSetup__go_to_support_page">Ve a la página de soporte</string>
+  <string name="DeviceTransferSetup__try_again">Inténtalo de nuevo</string>
+  <string name="DeviceTransferSetup__waiting_for_other_device">Esperando por el otro dispositivo</string>
+  <string name="DeviceTransferSetup__tap_continue_on_your_other_device_to_start_the_transfer">Toca «Adelante» en tu otro dispositivo para comenzar con la transferencia.</string>
+  <string name="DeviceTransferSetup__tap_continue_on_your_other_device">Toca «Adelante» en tu otro dispositivo …</string>
+  <!--NewDeviceTransferFragment-->
+  <string name="NewDeviceTransfer__cannot_transfer_from_a_newer_version_of_signal">No se puede transferir desde una versión más nueva de Signal</string>
+  <!--DeviceTransferFragment-->
+  <string name="DeviceTransfer__transferring_data">Transfiriendo datos</string>
+  <string name="DeviceTransfer__keep_both_devices_near_each_other">Mantén próximos ambos dispositivos. Conéctalos a su cargador y mantén Signal abierto. La transferencia entre ambos dispositivos está cifrada de extremo a extremo.</string>
+  <string name="DeviceTransfer__d_messages_so_far">%1$d mensajes de momento …</string>
+  <string name="DeviceTransfer__cancel">Cancelar</string>
+  <string name="DeviceTransfer__try_again">Inténtalo de nuevo</string>
+  <string name="DeviceTransfer__stop_transfer_question">¿Detener transferencia?</string>
+  <string name="DeviceTransfer__stop_transfer">Detener transferencia</string>
+  <string name="DeviceTransfer__all_transfer_progress_will_be_lost">Todos los datos transferidos se perderán.</string>
+  <string name="DeviceTransfer__transfer_failed">Fallo al transferir</string>
+  <string name="DeviceTransfer__unable_to_transfer">Imposible transferir</string>
+  <!--OldDeviceTransferInstructionsFragment-->
+  <string name="OldDeviceTransferInstructions__transfer_account">Transferir cuenta</string>
+  <string name="OldDeviceTransferInstructions__you_can_transfer_your_signal_account_when_setting_up_signal_on_a_new_android_device">Puedes transferir tu cuenta de Signal al configurar la aplicación en un dispositivo Android nuevo. Antes de continuar:</string>
+  <string name="OldDeviceTransferInstructions__first_bullet">1.</string>
+  <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Descarga Signal en tu dispositivo Android nuevo</string>
+  <string name="OldDeviceTransferInstructions__second_bullet">2.</string>
+  <string name="OldDeviceTransferInstructions__tap_on_transfer_or_restore_account">Toca en «Transferir o restaurar cuenta»</string>
+  <string name="OldDeviceTransferInstructions__third_bullet">3.</string>
+  <string name="OldDeviceTransferInstructions__select_transfer_from_android_device_when_prompted_and_then_continue">Selecciona «Transferir desde dispositivo Android» y después en «Adelante». Mantén ambos dispositivos cerca.</string>
+  <string name="OldDeviceTransferInstructions__continue">Adelante</string>
+  <!--OldDeviceTransferComplete-->
+  <string name="OldDeviceTransferComplete__transfer_complete">Transferencia completada</string>
+  <string name="OldDeviceTransferComplete__go_to_your_new_device">Comprueba tu dispositivo nuevo</string>
+  <string name="OldDeviceTransferComplete__your_signal_data_has_Been_transferred_to_your_new_device">Tus datos de Signal se han transferido a tu dispositivo nuevo. Para completar el proceso de transferencia, debes continuar con el registro en tu dispositivo nuevo.</string>
+  <string name="OldDeviceTransferComplete__close">Cerrar</string>
+  <!--NewDeviceTransferComplete-->
+  <string name="NewDeviceTransferComplete__transfer_successful">Transferencia realizada con éxito</string>
+  <string name="NewDeviceTransferComplete__transfer_complete">Transferencia completada</string>
+  <string name="NewDeviceTransferComplete__to_complete_the_transfer_process_you_must_continue_registration">Para completar la transferencia, debes continuar con el proceso de registro.</string>
+  <string name="NewDeviceTransferComplete__continue_registration">Continuar con el registro</string>
+  <!--DeviceToDeviceTransferService-->
+  <string name="DeviceToDeviceTransferService_content_title">Transferir cuenta</string>
+  <string name="DeviceToDeviceTransferService_status_ready">Preparando a conectarse con tu otro dispositivo Android …</string>
+  <string name="DeviceToDeviceTransferService_status_starting_up">Preparando a conectarse con tu otro dispositivo Android …</string>
+  <string name="DeviceToDeviceTransferService_status_discovery">Buscando tu otro dispositivo Android …</string>
+  <string name="DeviceToDeviceTransferService_status_network_connected">Conectándose a tu otro dispositivo Android …</string>
+  <string name="DeviceToDeviceTransferService_status_verification_required">Verificación necesaria</string>
+  <string name="DeviceToDeviceTransferService_status_service_connected">Transfiriendo cuenta …</string>
+  <!--OldDeviceTransferLockedDialog-->
+  <string name="OldDeviceTransferLockedDialog__complete_registration_on_your_new_device">Completa el proceso de registro en el nuevo dispositivo</string>
+  <string name="OldDeviceTransferLockedDialog__your_signal_account_has_been_transferred_to_your_new_device">Tu cuenta de Signal se ha transferido a tu dispositivo nuevo pero debes completar el proceso de registro de Signal en el dispositivo nuevo. Signal se inactivará en este dispositivo.</string>
+  <string name="OldDeviceTransferLockedDialog__done">Hecho</string>
+  <string name="OldDeviceTransferLockedDialog__cancel_and_activate_this_device">Cancelar y activar este dispositivo</string>
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Bloquear</string>
   <string name="RecipientBottomSheet_unblock">Desbloquear</string>
@@ -2339,6 +2469,8 @@ Se recibió un mensaje de intercambio de claves para una versión no válida del
   <string name="GroupsLearnMore_paragraph_2">Los grupos antiguos todavía no pueden convertirse en grupos nuevos, pero puedes crear un grupo nuevo con la misma gente, si tod@s usan la versión más reciente de Signal.</string>
   <string name="GroupsLearnMore_paragraph_3">Signal ofrecerá la manera de actualizar un grupo antiguo en el futuro.</string>
   <!--GroupLinkBottomSheetDialogFragment-->
+  <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Quienquiera que reciba este enlace puede ver el nombre del grupo, su avatar y solicitar unirse. Compártelo con gente en quien confíes.</string>
+  <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Quienquiera que reciba este enlace puede ver el nombre del grupo, su avatar y unirse al grupo. Compártelo con gente en quien confíes.</string>
   <string name="GroupLinkBottomSheet_share_via_signal">Compartir vía Signal</string>
   <string name="GroupLinkBottomSheet_copy">Copiar</string>
   <string name="GroupLinkBottomSheet_qr_code">Código QR</string>
