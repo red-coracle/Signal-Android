@@ -607,6 +607,7 @@
   <string name="ManageGroupActivity_mentions">Mencións</string>
   <string name="ManageGroupActivity_chat_wallpaper">Fondo de pantalla do chat</string>
   <string name="ManageGroupActivity_until_s">Ata %1$s</string>
+  <string name="ManageGroupActivity_always">Sempre</string>
   <string name="ManageGroupActivity_off">Off</string>
   <string name="ManageGroupActivity_on">On</string>
   <string name="ManageGroupActivity_view_all_members">Ver todos os membros</string>
@@ -657,6 +658,7 @@
   <string name="ManageRecipientActivity_mute_notifications">Silenciar notificacións</string>
   <string name="ManageRecipientActivity_custom_notifications">Personalizar notificacións</string>
   <string name="ManageRecipientActivity_until_s">Ata %1$s</string>
+  <string name="ManageRecipientActivity_always">Sempre</string>
   <string name="ManageRecipientActivity_off">Off</string>
   <string name="ManageRecipientActivity_on">On</string>
   <string name="ManageRecipientActivity_add_to_a_group">Engadir ao grupo</string>
@@ -1598,6 +1600,7 @@
   <string name="ConversationUpdateItem_return_to_call">Volver chamar</string>
   <string name="ConversationUpdateItem_call_is_full">A chamada está completa</string>
   <string name="ConversationUpdateItem_invite_friends">Convidar amizades</string>
+  <string name="ConversationUpdateItem_enable_call_notifications">Activar notificacións de chamadas</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">Reproducir … Deter</string>
   <string name="audio_view__download_accessibility_description">Descargar</string>
@@ -1621,6 +1624,13 @@
   <string name="safety_number_change_dialog__the_following_people_may_have_reinstalled_or_changed_devices">As seguintes persoas pode que reinstalasen ou cambiasen de dispositivo. Comproba o número de seguranza con elas para garantir a privacidade.</string>
   <string name="safety_number_change_dialog__view">Ver</string>
   <string name="safety_number_change_dialog__previous_verified">Verificado previamente</string>
+  <!--EnableCallNotificationSettingsDialog__call_notifications_checklist-->
+  <string name="EnableCallNotificationSettingsDialog__call_notifications_enabled">Notificacións de chamada activadas.</string>
+  <string name="EnableCallNotificationSettingsDialog__enable_call_notifications">Activar notificacións de chamada</string>
+  <string name="EnableCallNotificationSettingsDialog__enable_background_activity">Activar actividade en segundo plano</string>
+  <string name="EnableCallNotificationSettingsDialog__everything_looks_good_now">Semella que todo está ben!</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_show_notifications">Para recibir notificacións de chamada, toca aquí e activa \"Mostrar notificacións.\"</string>
+  <string name="EnableCallNotificationSettingsDialog__settings">Configuración</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Cargando países…</string>
   <string name="country_selection_fragment__search">Procurar</string>
@@ -1793,13 +1803,6 @@
   <string name="HelpFragment__debug_log">Rexistro de depuración:</string>
   <string name="HelpFragment__could_not_upload_logs">Non se puideron cargar os logs.</string>
   <string name="HelpFragment__please_be_as_descriptive_as_possible">Procura ser o máis descritivo posible para axudarnos a entender o problema.</string>
-  <string-array name="HelpFragment__categories">
-    <item>Hai algo que non funciona</item>
-    <item>Solicitar nova función</item>
-    <item>Pregunta</item>
-    <item>Comentario</item>
-    <item>Outra razón</item>
-  </string-array>
   <!--ReactWithAnyEmojiBottomSheetDialogFragment-->
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__this_message">Esta mensaxe</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__recently_used">Usados recentemente</string>
@@ -1816,10 +1819,10 @@
   <string name="arrays__use_default">Utilizar o predeterminado</string>
   <string name="arrays__use_custom">Utilizar o personalizado</string>
   <string name="arrays__mute_for_one_hour">Silenciar durante 1 hora</string>
-  <string name="arrays__mute_for_two_hours">Silenciar durante 2 horas</string>
+  <string name="arrays__mute_for_eight_hours">Acalar durante 8 horas</string>
   <string name="arrays__mute_for_one_day">Silenciar durante 1 día</string>
   <string name="arrays__mute_for_seven_days">Silenciar durante 7 días</string>
-  <string name="arrays__mute_for_one_year">Silenciar durante 1 ano</string>
+  <string name="arrays__always">Sempre</string>
   <string name="arrays__settings_default">Configuración predefinida</string>
   <string name="arrays__enabled">Activado</string>
   <string name="arrays__disabled">Desactivado</string>
@@ -1871,6 +1874,7 @@
   <string name="preferences__pref_led_blink_title">Intermitencia do LED</string>
   <string name="preferences__sound">Son</string>
   <string name="preferences__silent">En silencio</string>
+  <string name="preferences__default">Por defecto</string>
   <string name="preferences__repeat_alerts">Repetir alertas</string>
   <string name="preferences__never">Nunca</string>
   <string name="preferences__one_time">Unha vez</string>
@@ -2011,6 +2015,35 @@
   <string name="preferences_enter_proxy_address">Escribe o enderezo do proxy</string>
   <string name="configurable_single_select__customize_option">Personalizar opción</string>
   <!--Internal only preferences-->
+  <!--Payments-->
+  <string name="PaymentsAllActivityFragment__all">Todo</string>
+  <string name="PaymentsAllActivityFragment__sent">Enviada</string>
+  <string name="PaymentsAllActivityFragment__received">Recibida</string>
+  <string name="PaymentsHomeFragment__see_all">Ver todo</string>
+  <string name="PaymentsHomeFragment__send">Enviar</string>
+  <string name="PaymentsHomeFragment__help">Axuda</string>
+  <string name="PaymentsHomeFragment__continue">Continuar</string>
+  <string name="PaymentsHomeFragment__details">Detalles</string>
+  <!--PaymentsAddMoneyFragment-->
+  <string name="PaymentsAddMoneyFragment__copy">Copiar</string>
+  <string name="PaymentsAddMoneyFragment__copied_to_clipboard">Copiado ao portapapeis</string>
+  <!--PaymentsDetailsFragment-->
+  <string name="PaymentsDetailsFragment__details">Detalles</string>
+  <string name="PaymentsDetailsFragment__status">Estado</string>
+  <string name="PaymentsDetailsFragment__to">Para</string>
+  <string name="PaymentsDetailsFragment__from">De</string>
+  <!--PaymentsTransferFragment-->
+  <string name="PaymentsTransferFragment__scan_qr_code">Escanear código QR</string>
+  <string name="PaymentsTransferFragment__next">Seguinte</string>
+  <string name="PaymentsTransferFragment__settings">Configuración</string>
+  <!--PaymentsTransferQrScanFragment-->
+  <!--CreatePaymentFragment-->
+  <string name="CreatePaymentFragment__request">Solicitude</string>
+  <!--EditNoteFragment-->
+  <!--ConfirmPaymentFragment-->
+  <string name="ConfirmPayment__to">Para</string>
+  <!--CurrencyAmountFormatter_s_at_s-->
+  <!--SetCurrencyFragment-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -2439,6 +2472,7 @@
   <string name="OldDeviceTransferLockedDialog__your_signal_account_has_been_transferred_to_your_new_device">A túa conta Signal foi transferida ao novo dispositivo, pero debes completar o rexistro nel para continuar. Signal quedará inactiva neste dispositivo.</string>
   <string name="OldDeviceTransferLockedDialog__done">Feito</string>
   <string name="OldDeviceTransferLockedDialog__cancel_and_activate_this_device">Cancelar e activar neste dispositivo</string>
+  <!--AdvancedPreferenceFragment-->
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Bloquear</string>
   <string name="RecipientBottomSheet_unblock">Desbloquear</string>
@@ -2585,5 +2619,26 @@
   <string name="WallpaperCropActivity__set_wallpaper_for_s">Estabelecer fondo de pantalla para %s.</string>
   <string name="WallpaperCropActivity__error_setting_wallpaper">Produciuse un erro ao estabelecer o fondo de pantalla</string>
   <string name="WallpaperCropActivity__blur_photo">Esvaer foto</string>
+  <!--InfoCard-->
+  <string name="payment_info_card_hide">Agochar</string>
+  <string name="payment_info_card_update_pin">Actualizar PIN</string>
+  <!--DeactivateWalletFragment-->
+  <!--PaymentsRecoveryStartFragment-->
+  <!--PaymentsRecoveryPasteFragment-->
+  <string name="PaymentsRecoveryPasteFragment__next">Seguinte</string>
+  <!--PaymentsRecoveryPhraseFragment-->
+  <string name="PaymentsRecoveryPhraseFragment__next">Seguinte</string>
+  <string name="PaymentsRecoveryPhraseFragment__edit">Editar</string>
+  <string name="PaymentsRecoveryPhraseFragment__copy">Copiar</string>
+  <!--PaymentsRecoveryPhraseConfirmFragment-->
+  <string name="PaymentRecoveryPhraseConfirmFragment__done">Feito</string>
+  <!--PaymentsRecoveryEntryFragment-->
+  <string name="PaymentsRecoveryEntryFragment__next">Seguinte</string>
+  <!--ClearClipboardAlarmReceiver-->
+  <!--PaymentNotificationsView-->
+  <string name="PaymentNotificationsView__view">Ver</string>
+  <!--UnreadPayments-->
+  <!--CanNotSendPaymentDialog-->
+  <string name="CanNotSendPaymentDialog__send_a_message">Enviar unha mensaxe</string>
   <!--EOF-->
 </resources>

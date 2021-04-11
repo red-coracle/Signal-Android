@@ -22,18 +22,23 @@ import androidx.lifecycle.ViewModelProviders;
 import com.annimon.stream.Stream;
 import com.dd.CircularProgressButton;
 
+import org.signal.core.util.ResourceUtil;
 import org.thoughtcrime.securesms.ApplicationPreferencesActivity;
 import org.thoughtcrime.securesms.LoggingFragment;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.emoji.EmojiImageView;
 import org.thoughtcrime.securesms.util.CommunicationActions;
 import org.thoughtcrime.securesms.util.SupportEmailUtil;
+import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.text.AfterTextChanged;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HelpFragment extends LoggingFragment {
+
+  public static final String START_CATEGORY_INDEX = "start.category.index";
+  public static final int    PAYMENT_INDEX        = 5;
 
   private EditText                   problem;
   private CheckBox                   includeDebugLogs;
@@ -92,6 +97,11 @@ public class HelpFragment extends LoggingFragment {
     categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
     categorySpinner.setAdapter(categoryAdapter);
+
+    Bundle args = getArguments();
+    if (args != null) {
+      categorySpinner.setSelection(Util.clamp(args.getInt(START_CATEGORY_INDEX, 0), 0, categorySpinner.getCount() - 1));
+    }
   }
 
   private void initializeListeners() {
@@ -193,7 +203,9 @@ public class HelpFragment extends LoggingFragment {
       suffix.append(getString(feeling.getStringId()));
     }
 
-    String category = categoryAdapter.getItem(helpViewModel.getCategoryIndex()).toString();
+    String[] englishCategories = ResourceUtil.getEnglishResources(getContext()).getStringArray(R.array.HelpFragment__categories);
+    String   category          = (helpViewModel.getCategoryIndex() >= 0 && helpViewModel.getCategoryIndex() < englishCategories.length) ? englishCategories[helpViewModel.getCategoryIndex()]
+                                                                                                                                        : categoryAdapter.getItem(helpViewModel.getCategoryIndex()).toString();
 
     return SupportEmailUtil.generateSupportEmailBody(requireContext(),
                                                      R.string.HelpFragment__signal_android_support_request,

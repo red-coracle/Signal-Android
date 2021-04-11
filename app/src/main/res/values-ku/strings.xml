@@ -1517,6 +1517,8 @@
   <string name="safety_number_change_dialog__leave_call">Ji gerînê derkeve</string>
   <string name="safety_number_change_dialog__view">Nîşan bide</string>
   <string name="safety_number_change_dialog__previous_verified">Ji berê ve hatiye piştrastkirin</string>
+  <!--EnableCallNotificationSettingsDialog__call_notifications_checklist-->
+  <string name="EnableCallNotificationSettingsDialog__settings">Sazkarî</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Welat tên barkirin…</string>
   <string name="country_selection_fragment__search">Legerîn</string>
@@ -1701,10 +1703,8 @@
   <string name="arrays__use_default">Ya jixweber bi kar bîne</string>
   <string name="arrays__use_custom">Ya taybet bi kar bîne</string>
   <string name="arrays__mute_for_one_hour">Ji bo saetekê bêdeng bike</string>
-  <string name="arrays__mute_for_two_hours">Ji bo 2 saetan bêdeng bike</string>
   <string name="arrays__mute_for_one_day">Ji bo rojekê bêdeng bike</string>
   <string name="arrays__mute_for_seven_days">Ji bo 7 rojan bêdeng bike</string>
-  <string name="arrays__mute_for_one_year">Ji bo salekê bêdeng bike</string>
   <string name="arrays__settings_default">Sazkariyên jixweber</string>
   <string name="arrays__enabled">Çalak</string>
   <string name="arrays__disabled">Neçalak</string>
@@ -1755,6 +1755,7 @@
   <string name="preferences__pref_led_blink_title">Şêweya vêketin û vemirîna LEDê</string>
   <string name="preferences__sound">Dengê zengilê</string>
   <string name="preferences__silent">Bêdeng</string>
+  <string name="preferences__default">Jixweber</string>
   <string name="preferences__repeat_alerts">Hişyariyan dubare bike</string>
   <string name="preferences__never">Qet</string>
   <string name="preferences__one_time">Carekê</string>
@@ -1891,6 +1892,34 @@
   <string name="preferences_enter_proxy_address">Navnîşana proxy bikevê</string>
   <string name="configurable_single_select__customize_option">Vebijarkê sererast bike</string>
   <!--Internal only preferences-->
+  <!--Payments-->
+  <string name="PaymentsAllActivityFragment__all">Hemû</string>
+  <string name="PaymentsAllActivityFragment__sent">Dema şandinê:</string>
+  <string name="PaymentsAllActivityFragment__received">Dema stendinê:</string>
+  <string name="PaymentsHomeFragment__see_all">Gişî bibîne</string>
+  <string name="PaymentsHomeFragment__send">Bişîne</string>
+  <string name="PaymentsHomeFragment__help">Alîkarî</string>
+  <string name="PaymentsHomeFragment__continue">Bidomîne</string>
+  <string name="PaymentsHomeFragment__details">Hûrgilî</string>
+  <!--PaymentsAddMoneyFragment-->
+  <string name="PaymentsAddMoneyFragment__copy">Kopî bike</string>
+  <string name="PaymentsAddMoneyFragment__copied_to_clipboard">Li panoyê hat kopîkirin</string>
+  <!--PaymentsDetailsFragment-->
+  <string name="PaymentsDetailsFragment__details">Hûrgilî</string>
+  <string name="PaymentsDetailsFragment__status">Rewş</string>
+  <string name="PaymentsDetailsFragment__to">Wergir</string>
+  <string name="PaymentsDetailsFragment__from">Şander</string>
+  <!--PaymentsTransferFragment-->
+  <string name="PaymentsTransferFragment__next">Pêşve</string>
+  <string name="PaymentsTransferFragment__settings">Sazkarî</string>
+  <!--PaymentsTransferQrScanFragment-->
+  <!--CreatePaymentFragment-->
+  <string name="CreatePaymentFragment__request">Daxwaz</string>
+  <!--EditNoteFragment-->
+  <!--ConfirmPaymentFragment-->
+  <string name="ConfirmPayment__to">Wergir</string>
+  <!--CurrencyAmountFormatter_s_at_s-->
+  <!--SetCurrencyFragment-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -2198,6 +2227,7 @@
   <!--DeviceToDeviceTransferService-->
   <!--OldDeviceTransferLockedDialog-->
   <string name="OldDeviceTransferLockedDialog__done">Qediya</string>
+  <!--AdvancedPreferenceFragment-->
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Asteng bike</string>
   <string name="RecipientBottomSheet_unblock">Astengê rake</string>
@@ -2341,5 +2371,26 @@
   <string name="WallpaperCropActivity__set_wallpaper_for_s">Ji bo %s\'ê paşrûyê saz bike.</string>
   <string name="WallpaperCropActivity__error_setting_wallpaper">Di sazkirina paşrûyê de çewtî derket.</string>
   <string name="WallpaperCropActivity__blur_photo">Wêne şêlî bikin</string>
+  <!--InfoCard-->
+  <string name="payment_info_card_hide">Veşêre</string>
+  <string name="payment_info_card_update_pin">PIN\'ê nû bike</string>
+  <!--DeactivateWalletFragment-->
+  <!--PaymentsRecoveryStartFragment-->
+  <!--PaymentsRecoveryPasteFragment-->
+  <string name="PaymentsRecoveryPasteFragment__next">Pêşve</string>
+  <!--PaymentsRecoveryPhraseFragment-->
+  <string name="PaymentsRecoveryPhraseFragment__next">Pêşve</string>
+  <string name="PaymentsRecoveryPhraseFragment__edit">Sererast bike</string>
+  <string name="PaymentsRecoveryPhraseFragment__copy">Kopî bike</string>
+  <!--PaymentsRecoveryPhraseConfirmFragment-->
+  <string name="PaymentRecoveryPhraseConfirmFragment__done">Qediya</string>
+  <!--PaymentsRecoveryEntryFragment-->
+  <string name="PaymentsRecoveryEntryFragment__next">Pêşve</string>
+  <!--ClearClipboardAlarmReceiver-->
+  <!--PaymentNotificationsView-->
+  <string name="PaymentNotificationsView__view">Nîşan bide</string>
+  <!--UnreadPayments-->
+  <!--CanNotSendPaymentDialog-->
+  <string name="CanNotSendPaymentDialog__send_a_message">Peyamekê bişîne</string>
   <!--EOF-->
 </resources>

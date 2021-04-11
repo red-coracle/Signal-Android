@@ -57,13 +57,14 @@
   <string name="AttachmentKeyboard_location">مکان</string>
   <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">سیگنال به دسترسی برای نشان دادن عکس‌ها و ویدئوهای شما احتیاج دارد.</string>
   <string name="AttachmentKeyboard_give_access">دسترسی داده شود</string>
+  <string name="AttachmentKeyboard_payment">پرداخت</string>
   <!--AttachmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">برنامه‌ای برای انتخاب رسانه پیدا نشد.</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">سیگنال برای پیوست کردن فایل‌های صوتی و تصویری نیاز به دسترسی به حافظه دارد، اما این اجازه داده نشده است. لطفاً به بخش مدیریت برنامه‌ها در تنظیمات تلفن همراه خود رفته، در بخش «مجوزها» گزینهٔ «ذخیره‌سازی» را فعال کنید.</string>
   <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">سیگنال برای پیوست کردن اطلاعات مخاطب نیاز به دسترسی مخاطبین دارد، اما این دسترسی به سیگنال داده نشده است. لطفاً به بخش مدیریت برنامه‌ها در تنظیمات تلفن همراه خود رفته، در بخش «مجوزها» گزینهٔ «مخاطبین» را فعال کنید.</string>
   <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">سیگنال برای پیوست کردن موقعیت مکانی نیاز به دسترسی به موقعیت مکانی شما دارد، ولی این دسترسی داده نشده است. لطفاً لطفاً به بخش مدیریت برنامه‌ها در تنظیمات تلفن همراه خود رفته، در بخش «مجوزها» گزینهٔ «مکان» را فعال کنید. </string>
   <!--AttachmentUploadJob-->
-  <string name="AttachmentUploadJob_uploading_media">بارگزاری رسانه…</string>
+  <string name="AttachmentUploadJob_uploading_media">بارگذاری رسانه…</string>
   <string name="AttachmentUploadJob_compressing_video_start">فشرده‌سازی ویدئو…</string>
   <!--BackgroundMessageRetriever-->
   <string name="BackgroundMessageRetriever_checking_for_messages">در حال بررسی پیام‌ها…</string>
@@ -607,6 +608,7 @@
   <string name="ManageGroupActivity_mentions">اشاره‌ها</string>
   <string name="ManageGroupActivity_chat_wallpaper">کاغذدیواری گفتگو</string>
   <string name="ManageGroupActivity_until_s">تا %1$s</string>
+  <string name="ManageGroupActivity_always">همیشه</string>
   <string name="ManageGroupActivity_off">خاموش</string>
   <string name="ManageGroupActivity_on">روشن</string>
   <string name="ManageGroupActivity_view_all_members">نمایش همهٔ اعضا</string>
@@ -657,6 +659,7 @@
   <string name="ManageRecipientActivity_mute_notifications">صامت کردن اعلان‌ها</string>
   <string name="ManageRecipientActivity_custom_notifications">اعلان‌‌های سفارشی</string>
   <string name="ManageRecipientActivity_until_s">تا %1$s</string>
+  <string name="ManageRecipientActivity_always">همیشه</string>
   <string name="ManageRecipientActivity_off">خاموش</string>
   <string name="ManageRecipientActivity_on">روشن</string>
   <string name="ManageRecipientActivity_add_to_a_group">اضافه کردن به گروه</string>
@@ -833,6 +836,7 @@
   <string name="NotificationBarManager_signal_call_in_progress">تماس سیگنال در جریان است</string>
   <string name="NotificationBarManager__establishing_signal_call">در حال برقراری تماس سیگنال</string>
   <string name="NotificationBarManager__incoming_signal_call">تماس ورودی سیگنال</string>
+  <string name="NotificationBarManager__stopping_signal_call_service">در حال متوقف کردن سرویس تماس سیگنال</string>
   <string name="NotificationBarManager__deny_call">رد تماس</string>
   <string name="NotificationBarManager__answer_call">پاسخ به تماس</string>
   <string name="NotificationBarManager__end_call">پایان تماس</string>
@@ -1476,6 +1480,7 @@
   <string name="NotificationChannel_group_messages">پیام‌ها</string>
   <string name="NotificationChannel_missing_display_name">ناشناخته</string>
   <string name="NotificationChannel_voice_notes">یادداشت‌های صوتی</string>
+  <string name="NotificationChannels__no_activity_available_to_open_notification_channel_settings">هیچ فعالیتی برای باز کردن تنظیمات کانال اعلان‌ها در دسترس نیست.</string>
   <!--ProfileEditNameFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">پاسخ سریع هنگام قفل بودن سیگنال در دسترس نیست!</string>
@@ -1596,6 +1601,7 @@
   <string name="ConversationUpdateItem_return_to_call">بازگشت به تماس</string>
   <string name="ConversationUpdateItem_call_is_full">ظرفیت تماس تکمیل است</string>
   <string name="ConversationUpdateItem_invite_friends">دعوت دوستان</string>
+  <string name="ConversationUpdateItem_enable_call_notifications">فعال‌سازی اعلان‌ها‌ی تماس</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">پخش … وقفه</string>
   <string name="audio_view__download_accessibility_description">بارگیری</string>
@@ -1619,6 +1625,18 @@
   <string name="safety_number_change_dialog__the_following_people_may_have_reinstalled_or_changed_devices">افراد زیر ممکن است دستگاه خود را تغییر داده یا نصب مجدد انجام داده باشند. برای اطمینان از حفظ حریم خصوصی شمارهٔ امنیتی خود را با آنان تأیید کنید.</string>
   <string name="safety_number_change_dialog__view">نمایش</string>
   <string name="safety_number_change_dialog__previous_verified">قبلاً تأیید شد</string>
+  <!--EnableCallNotificationSettingsDialog__call_notifications_checklist-->
+  <string name="EnableCallNotificationSettingsDialog__call_notifications_enabled">اعلان‌ها‌ی تماس فعال شد.</string>
+  <string name="EnableCallNotificationSettingsDialog__enable_call_notifications">فعال‌سازی اعلان‌ها‌ی تماس</string>
+  <string name="EnableCallNotificationSettingsDialog__enable_background_activity">فعال‌سازی فعالیت پس‌زمینه</string>
+  <string name="EnableCallNotificationSettingsDialog__everything_looks_good_now">همه چیز حالا خوب بنظر می‌رسد!</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_show_notifications">برای دریافت اعلان‌ها‌ی تماس، اینجا ضربه بزنید و «نمایش اعلان‌ها‌» را روشن کنید.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_notifications">برای دریافت اعلان‌ها‌ی تماس، اینجا ضربه بزنید و اعلان‌ها را روشن کنید و مطمئن شوید صدا و پاپ‌آپ فعال شده‌ اند.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_enable_background_activity_in_battery_settings">برای دریافت اعلان‌ها‌ی تماس، اینجا ضربه بزنید و فعالیت پس‌زمینه را در تنظیمات «باتری» فعال کنید.</string>
+  <string name="EnableCallNotificationSettingsDialog__settings">تنظیمات</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_turn_on_show_notifications">برای دریافت اعلان‌ها‌ی تماس، روی تنظیمات ضربه بزنید و «نمایش اعلان‌ها» را روشن کنید.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_turn_on_notifications">برای دریافت اعلان‌ها‌ی تماس، روی تنظیمات ضربه بزنید و اعلان‌ها را روشن کنید و مطمئن شوید صدا و پاپ‌آپ فعال شده اند.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_enable_background_activity_in_battery_settings">برای دریافت اعلان‌ها‌‌‌ی تماس، روی تنظیمات ضربه بزنید و فعالیت پس‌زمینه را در تنظیمات «باتری» فعال کنید.</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">در حال بارگذاری کشورها…</string>
   <string name="country_selection_fragment__search">جستجو</string>
@@ -1721,7 +1739,7 @@
   <string name="EditAboutFragment_coffee_lover">عاشق قهوه</string>
   <string name="EditAboutFragment_free_to_chat">آمادهٔ گفتگو</string>
   <string name="EditAboutFragment_taking_a_break">در حال استراحت</string>
-  <string name="EditAboutFragment_working_on_something_new">مشغول کار روی یک چیز جدید</string>
+  <string name="EditAboutFragment_working_on_something_new">در حال کار روی یک چیز جدید</string>
   <!--EditProfileFragment-->
   <string name="EditProfileFragment__edit_group_name_and_photo">نام و عکس گروه را ویرایش کنید</string>
   <string name="EditProfileFragment__group_name">نام گروه</string>
@@ -1791,13 +1809,6 @@
   <string name="HelpFragment__debug_log">گزارش اشکال‌زدایی:</string>
   <string name="HelpFragment__could_not_upload_logs">بارگذاری گزارش‌ها موفق نبود</string>
   <string name="HelpFragment__please_be_as_descriptive_as_possible">توضیح هر چه بهتر شما، به ما در فهم اشکال کمک خواهد کرد.</string>
-  <string-array name="HelpFragment__categories">
-    <item>یک چیز کار نمی‌کند</item>
-    <item>درخواست قابلیت</item>
-    <item>پرسش</item>
-    <item>بازخورد</item>
-    <item>سایر</item>
-  </string-array>
   <!--ReactWithAnyEmojiBottomSheetDialogFragment-->
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__this_message">این پیام</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__recently_used">اخیراً استفاده شده</string>
@@ -1813,11 +1824,11 @@
   <!--arrays.xml-->
   <string name="arrays__use_default">استفاده از پیش‌فرض سیستم</string>
   <string name="arrays__use_custom">استفاده از سفارشی</string>
-  <string name="arrays__mute_for_one_hour">صامت به مدت ۱ ساعت</string>
-  <string name="arrays__mute_for_two_hours">صامت به مدت ۲ ساعت</string>
-  <string name="arrays__mute_for_one_day">صامت به مدت ۱ روز</string>
-  <string name="arrays__mute_for_seven_days">صامت به مدت ۷ روز</string>
-  <string name="arrays__mute_for_one_year">صامت به مدت ۱ سال</string>
+  <string name="arrays__mute_for_one_hour">صامت برای ۱ ساعت</string>
+  <string name="arrays__mute_for_eight_hours">صامت برای ۸ ساعت</string>
+  <string name="arrays__mute_for_one_day">صامت برای ۱ روز</string>
+  <string name="arrays__mute_for_seven_days">صامت برای ۷ روز</string>
+  <string name="arrays__always">همیشه</string>
   <string name="arrays__settings_default">تنظیمات پیش‌فرض سیستم</string>
   <string name="arrays__enabled">فعال</string>
   <string name="arrays__disabled">غیرفعال</string>
@@ -1869,6 +1880,7 @@
   <string name="preferences__pref_led_blink_title">الگوی چشمک زدن LED</string>
   <string name="preferences__sound">زنگ</string>
   <string name="preferences__silent">خاموش</string>
+  <string name="preferences__default">پیش‌فرض</string>
   <string name="preferences__repeat_alerts">تکرار هشدارها</string>
   <string name="preferences__never">هرگز</string>
   <string name="preferences__one_time">یک بار</string>
@@ -1903,6 +1915,7 @@
   <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">درخواست گزارش تحویل برای هر پیامکی که ارسال می‌کنید</string>
   <string name="preferences__data_and_storage">داده‌ها و حافظه</string>
   <string name="preferences__storage">حافظه</string>
+  <string name="preferences__payments">پرداخت‌ها</string>
   <string name="preferences__conversation_length_limit">محدودیت طول مکالمه</string>
   <string name="preferences__keep_messages">نگاه داشتن پیام‌ها</string>
   <string name="preferences__clear_message_history">پاک کردن تاریخچهٔ پیام</string>
@@ -1979,7 +1992,7 @@
   <string name="preferences_notifications__show">نمایش</string>
   <string name="preferences_notifications__calls">تماس‌ها</string>
   <string name="preferences_notifications__ringtone">صدای زنگ</string>
-  <string name="preferences_chats__show_invitation_prompts">نمایش دعوت‌نامه‌ها</string>
+  <string name="preferences_chats__show_invitation_prompts">نمایش گزینه‌ٔ دعوت‌نامه</string>
   <string name="preferences_chats__display_invitation_prompts_for_contacts_without_signal">نمایش گزینهٔ ارسال دعوت‌نامه برای مخاطبینی که عضو سیگنال نیستند</string>
   <string name="preferences_chats__message_text_size">ابعاد قلم پیام</string>
   <string name="preferences_events__contact_joined_signal">مخاطب به سیگنال پیوست</string>
@@ -2009,6 +2022,45 @@
   <string name="preferences_enter_proxy_address">نشانی پروکسی را وارد کنید</string>
   <string name="configurable_single_select__customize_option">سفارشی‌سازی</string>
   <!--Internal only preferences-->
+  <!--Payments-->
+  <string name="PaymentsAllActivityFragment__all">همه</string>
+  <string name="PaymentsAllActivityFragment__sent">ارسال شد</string>
+  <string name="PaymentsAllActivityFragment__received">دریافت شد</string>
+  <string name="PaymentsHomeFragment__see_all">مشاهدهٔ همه</string>
+  <string name="PaymentsHomeFragment__send">ارسال</string>
+  <string name="PaymentsHomeFragment__help">راهنمایی</string>
+  <string name="PaymentsHomeFragment__continue">ادامه</string>
+  <string name="PaymentsHomeFragment__details">جزئیات</string>
+  <!--PaymentsAddMoneyFragment-->
+  <string name="PaymentsAddMoneyFragment__copy">کپی</string>
+  <string name="PaymentsAddMoneyFragment__copied_to_clipboard">روی کلیپ‌بورد کپی شد</string>
+  <!--PaymentsDetailsFragment-->
+  <string name="PaymentsDetailsFragment__details">جزئیات</string>
+  <string name="PaymentsDetailsFragment__status">وضعیت</string>
+  <string name="PaymentsDetailsFragment__to">به</string>
+  <string name="PaymentsDetailsFragment__from">از</string>
+  <!--PaymentsTransferFragment-->
+  <string name="PaymentsTransferFragment__scan_qr_code">کد QR را اسکن کنید</string>
+  <string name="PaymentsTransferFragment__next">بعدی</string>
+  <string name="PaymentsTransferFragment__settings">تنظیمات</string>
+  <!--PaymentsTransferQrScanFragment-->
+  <!--CreatePaymentFragment-->
+  <string name="CreatePaymentFragment__request">درخواست</string>
+  <string name="CreatePaymentFragment__1">۱</string>
+  <string name="CreatePaymentFragment__2">۲</string>
+  <string name="CreatePaymentFragment__3">۳</string>
+  <string name="CreatePaymentFragment__4">۴</string>
+  <string name="CreatePaymentFragment__5">۵</string>
+  <string name="CreatePaymentFragment__6">۶</string>
+  <string name="CreatePaymentFragment__7">۷</string>
+  <string name="CreatePaymentFragment__8">۸</string>
+  <string name="CreatePaymentFragment__9">۹</string>
+  <string name="CreatePaymentFragment__0">۰</string>
+  <!--EditNoteFragment-->
+  <!--ConfirmPaymentFragment-->
+  <string name="ConfirmPayment__to">به</string>
+  <!--CurrencyAmountFormatter_s_at_s-->
+  <!--SetCurrencyFragment-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -2437,6 +2489,7 @@
   <string name="OldDeviceTransferLockedDialog__your_signal_account_has_been_transferred_to_your_new_device">حساب کاربری سیگنال شما به دستگاه جدید شما انتقال یافت، اما برای ادامه باید ثبت‌نام را در آن کامل کنید. سیگنال روی این دستگاه غیرفعال خواهد بود.</string>
   <string name="OldDeviceTransferLockedDialog__done">انجام شد</string>
   <string name="OldDeviceTransferLockedDialog__cancel_and_activate_this_device">لغو و فعال‌سازی این دستگاه</string>
+  <!--AdvancedPreferenceFragment-->
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">مسدود کردن</string>
   <string name="RecipientBottomSheet_unblock">رفع مسدودیت</string>
@@ -2583,5 +2636,28 @@
   <string name="WallpaperCropActivity__set_wallpaper_for_s">تنظیم کاغذدیواری برای %s.</string>
   <string name="WallpaperCropActivity__error_setting_wallpaper">خطا در تنظیم کاغذدیواری.</string>
   <string name="WallpaperCropActivity__blur_photo">مات کردن عکس</string>
+  <!--InfoCard-->
+  <string name="payment_info_card_hide">مخفی‌سازی</string>
+  <string name="payment_info_card_update_pin">به‌روزرسانی پین</string>
+  <!--DeactivateWalletFragment-->
+  <!--PaymentsRecoveryStartFragment-->
+  <string name="PaymentsRecoveryStartFragment__start">شروع</string>
+  <!--PaymentsRecoveryPasteFragment-->
+  <string name="PaymentsRecoveryPasteFragment__next">بعدی</string>
+  <!--PaymentsRecoveryPhraseFragment-->
+  <string name="PaymentsRecoveryPhraseFragment__next">بعدی</string>
+  <string name="PaymentsRecoveryPhraseFragment__edit">ویرایش</string>
+  <string name="PaymentsRecoveryPhraseFragment__previous">قبلی</string>
+  <string name="PaymentsRecoveryPhraseFragment__copy">کپی</string>
+  <!--PaymentsRecoveryPhraseConfirmFragment-->
+  <string name="PaymentRecoveryPhraseConfirmFragment__done">انجام شد</string>
+  <!--PaymentsRecoveryEntryFragment-->
+  <string name="PaymentsRecoveryEntryFragment__next">بعدی</string>
+  <!--ClearClipboardAlarmReceiver-->
+  <!--PaymentNotificationsView-->
+  <string name="PaymentNotificationsView__view">نمایش</string>
+  <!--UnreadPayments-->
+  <!--CanNotSendPaymentDialog-->
+  <string name="CanNotSendPaymentDialog__send_a_message">ارسال پیام</string>
   <!--EOF-->
 </resources>

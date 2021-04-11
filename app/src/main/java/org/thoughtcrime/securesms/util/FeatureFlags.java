@@ -1,6 +1,5 @@
 package org.thoughtcrime.securesms.util;
 
-import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -50,6 +49,7 @@ public final class FeatureFlags {
 
   private static final long FETCH_INTERVAL = TimeUnit.HOURS.toMillis(2);
 
+  private static final String PAYMENTS_KILL_SWITCH              = "android.payments.kill";
   private static final String USERNAMES                         = "android.usernames";
   private static final String GROUPS_V2_RECOMMENDED_LIMIT       = "global.groupsv2.maxGroupSize";
   private static final String GROUPS_V2_HARD_LIMIT              = "global.groupsv2.groupSizeHardLimit";
@@ -60,8 +60,7 @@ public final class FeatureFlags {
   private static final String CLIENT_EXPIRATION                 = "android.clientExpiration";
   public  static final String DONATE_MEGAPHONE                  = "android.donate";
   private static final String VIEWED_RECEIPTS                   = "android.viewed.receipts";
-  private static final String GROUP_CALLING                     = "android.groupsv2.calling.2";
-  private static final String GV1_FORCED_MIGRATE                = "android.groupsV1Migration.forced";
+  private static final String GV1_FORCED_MIGRATE                = "android.groupsV1Migration.forced.2";
   private static final String SEND_VIEWED_RECEIPTS              = "android.sendViewedReceipts";
   private static final String CUSTOM_VIDEO_MUXER                = "android.customVideoMuxer";
   private static final String CDS_REFRESH_INTERVAL              = "cds.syncInterval.seconds";
@@ -82,6 +81,7 @@ public final class FeatureFlags {
    */
   @VisibleForTesting
   static final Set<String> REMOTE_CAPABLE = SetUtil.newHashSet(
+      PAYMENTS_KILL_SWITCH,
       GROUPS_V2_RECOMMENDED_LIMIT,
       GROUPS_V2_HARD_LIMIT,
       INTERNAL_USER,
@@ -91,7 +91,6 @@ public final class FeatureFlags {
       DONATE_MEGAPHONE,
       VIEWED_RECEIPTS,
       GV1_FORCED_MIGRATE,
-      GROUP_CALLING,
       SEND_VIEWED_RECEIPTS,
       CUSTOM_VIDEO_MUXER,
       CDS_REFRESH_INTERVAL,
@@ -135,7 +134,6 @@ public final class FeatureFlags {
   static final Set<String> HOT_SWAPPABLE = SetUtil.newHashSet(
       VERIFY_V2,
       CLIENT_EXPIRATION,
-      GROUP_CALLING,
       CUSTOM_VIDEO_MUXER,
       CDS_REFRESH_INTERVAL,
       GROUP_NAME_MAX_LENGTH,
@@ -148,7 +146,8 @@ public final class FeatureFlags {
       ANIMATED_STICKER_MIN_MEMORY,
       ANIMATED_STICKER_MIN_TOTAL_MEMORY,
       MESSAGE_PROCESSOR_ALARM_INTERVAL,
-      MESSAGE_PROCESSOR_DELAY
+      MESSAGE_PROCESSOR_DELAY,
+      GV1_FORCED_MIGRATE
   );
 
   /**
@@ -232,6 +231,11 @@ public final class FeatureFlags {
                                getInteger(GROUPS_V2_HARD_LIMIT, 1001));
   }
 
+  /** Payments Support */
+  public static boolean payments() {
+    return !getBoolean(PAYMENTS_KILL_SWITCH, false);
+  }
+
   /** Internal testing extensions. */
   public static boolean internalUser() {
     return getBoolean(INTERNAL_USER, false);
@@ -263,11 +267,6 @@ public final class FeatureFlags {
   /** Whether the user should display the content revealed dot in voice notes. */
   public static boolean viewedReceipts() {
     return getBoolean(VIEWED_RECEIPTS, false);
-  }
-
-  /** Whether or not group calling is enabled. */
-  public static boolean groupCalling() {
-    return Build.VERSION.SDK_INT > 19 && getBoolean(GROUP_CALLING, false);
   }
 
   /** Whether or not forced migration from GV1->GV2 is enabled. */

@@ -10,8 +10,8 @@ import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.components.TypingStatusRepository;
 import org.thoughtcrime.securesms.components.TypingStatusSender;
-import org.thoughtcrime.securesms.crypto.storage.SignalProtocolStoreImpl;
 import org.thoughtcrime.securesms.crypto.DatabaseSessionLock;
+import org.thoughtcrime.securesms.crypto.storage.SignalProtocolStoreImpl;
 import org.thoughtcrime.securesms.database.DatabaseObserver;
 import org.thoughtcrime.securesms.database.JobDatabase;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
@@ -37,10 +37,13 @@ import org.thoughtcrime.securesms.net.PipeConnectivityListener;
 import org.thoughtcrime.securesms.notifications.DefaultMessageNotifier;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.notifications.OptimizedMessageNotifier;
+import org.thoughtcrime.securesms.payments.MobileCoinConfig;
+import org.thoughtcrime.securesms.payments.Payments;
 import org.thoughtcrime.securesms.push.SecurityEventListener;
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
 import org.thoughtcrime.securesms.recipients.LiveRecipientCache;
 import org.thoughtcrime.securesms.service.TrimThreadsByDateManager;
+import org.thoughtcrime.securesms.service.webrtc.SignalCallManager;
 import org.thoughtcrime.securesms.shakereport.ShakeToReport;
 import org.thoughtcrime.securesms.util.AlarmSleepTimer;
 import org.thoughtcrime.securesms.util.AppForegroundObserver;
@@ -208,6 +211,18 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
     return new DatabaseObserver(context);
   }
 
+  @SuppressWarnings("ConstantConditions")
+  @Override
+  public @NonNull Payments providePayments(@NonNull SignalServiceAccountManager signalServiceAccountManager) {
+    MobileCoinConfig network;
+
+    if      (BuildConfig.MOBILE_COIN_ENVIRONMENT.equals("mainnet")) network = MobileCoinConfig.getMainNet(signalServiceAccountManager);
+    else if (BuildConfig.MOBILE_COIN_ENVIRONMENT.equals("testnet")) network = MobileCoinConfig.getTestNet(signalServiceAccountManager);
+    else throw new AssertionError("Unknown network " + BuildConfig.MOBILE_COIN_ENVIRONMENT);
+
+    return new Payments(network);
+  }
+
   @Override
   public @NonNull ShakeToReport provideShakeToReport() {
     return new ShakeToReport(context);
@@ -216,6 +231,11 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
   @Override
   public @NonNull AppForegroundObserver provideAppForegroundObserver() {
     return new AppForegroundObserver();
+  }
+
+  @Override
+  public @NonNull SignalCallManager provideSignalCallManager() {
+    return new SignalCallManager(context);
   }
 
   private static class DynamicCredentialsProvider implements CredentialsProvider {

@@ -607,6 +607,7 @@
   <string name="ManageGroupActivity_mentions">Mencions</string>
   <string name="ManageGroupActivity_chat_wallpaper">Fons de la conversa</string>
   <string name="ManageGroupActivity_until_s">Fins a %1$s</string>
+  <string name="ManageGroupActivity_always">Sempre</string>
   <string name="ManageGroupActivity_off">Inactiu</string>
   <string name="ManageGroupActivity_on">Actiu</string>
   <string name="ManageGroupActivity_view_all_members">Mostra\'n tots els membres</string>
@@ -657,6 +658,7 @@
   <string name="ManageRecipientActivity_mute_notifications">Silencia les notificacions</string>
   <string name="ManageRecipientActivity_custom_notifications">Notificacions personalitzades</string>
   <string name="ManageRecipientActivity_until_s">Fins a %1$s</string>
+  <string name="ManageRecipientActivity_always">Sempre</string>
   <string name="ManageRecipientActivity_off">Inactiu</string>
   <string name="ManageRecipientActivity_on">Actiu</string>
   <string name="ManageRecipientActivity_add_to_a_group">Afegeix-lo a un grup</string>
@@ -833,6 +835,7 @@
   <string name="NotificationBarManager_signal_call_in_progress">Trucada del Signal en curs</string>
   <string name="NotificationBarManager__establishing_signal_call">S\'estableix la trucada del Signal</string>
   <string name="NotificationBarManager__incoming_signal_call">Trucada del Signal rebuda</string>
+  <string name="NotificationBarManager__stopping_signal_call_service">S\'atura el servei de trucades del Signal</string>
   <string name="NotificationBarManager__deny_call">Rebutja la trucada</string>
   <string name="NotificationBarManager__answer_call">Respon la trucada</string>
   <string name="NotificationBarManager__end_call">Acaba la trucada</string>
@@ -1472,6 +1475,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="NotificationChannel_group_messages">Missatges</string>
   <string name="NotificationChannel_missing_display_name">Desconegut</string>
   <string name="NotificationChannel_voice_notes">Notes de veu</string>
+  <string name="NotificationChannels__no_activity_available_to_open_notification_channel_settings">No hi ha activitat disponible per obrir la configuració del canal de notificacions.</string>
   <!--ProfileEditNameFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">La resposta ràpida no és disponible si el Signal està blocat!</string>
@@ -1592,6 +1596,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="ConversationUpdateItem_return_to_call">Torna a la trucada</string>
   <string name="ConversationUpdateItem_call_is_full">La trucada és plena</string>
   <string name="ConversationUpdateItem_invite_friends">Convideu-hi amistats</string>
+  <string name="ConversationUpdateItem_enable_call_notifications">Activa les notificacions de trucada</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">Reprodueix… Pausa</string>
   <string name="audio_view__download_accessibility_description">Baixa</string>
@@ -1615,6 +1620,18 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="safety_number_change_dialog__the_following_people_may_have_reinstalled_or_changed_devices">Aquesta gent podria haver reinstallar o dispositius canviats. Comproveu vostre número de seguretat amb ells, per assegurar la privadesa.</string>
   <string name="safety_number_change_dialog__view">Mostra</string>
   <string name="safety_number_change_dialog__previous_verified">Verificat prèviament</string>
+  <!--EnableCallNotificationSettingsDialog__call_notifications_checklist-->
+  <string name="EnableCallNotificationSettingsDialog__call_notifications_enabled">Les notificacions de trucades estan activades.</string>
+  <string name="EnableCallNotificationSettingsDialog__enable_call_notifications">Activa les notificacions de trucada</string>
+  <string name="EnableCallNotificationSettingsDialog__enable_background_activity">Activa l\'activitat en segon pla</string>
+  <string name="EnableCallNotificationSettingsDialog__everything_looks_good_now">Ara tot està bé!</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_show_notifications">Per rebre notificacions de trucades, toqueu aquí i activeu Mostra notificacions.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_notifications">Per rebre notificacions de trucades, toqueu aquí i activeu les notificacions i assegureu-vos que el so i les finestres emergents estiguin activades.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_enable_background_activity_in_battery_settings">Per rebre notificacions de trucades, toqueu aquí i activeu l\'activitat en segon pla a la configuració Bateria.</string>
+  <string name="EnableCallNotificationSettingsDialog__settings">Configuració</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_turn_on_show_notifications">Per rebre notificacions de trucades, toqueu Configuració i activeu Mostra notificacions.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_turn_on_notifications">Per rebre notificacions de trucades, toqueu Configuració i activeu les notificacions i assegureu-vos que el so i les finestres emergents estiguin activades.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_enable_background_activity_in_battery_settings">Per rebre notificacions de trucades, toqueu Configuració i activeu l\'activitat en segon pla a la configuració Bateria.</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Es carreguen els països…</string>
   <string name="country_selection_fragment__search">Cerca</string>
@@ -1803,10 +1820,10 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="arrays__use_default">Per defecte</string>
   <string name="arrays__use_custom">Personalitzat</string>
   <string name="arrays__mute_for_one_hour">Silencia-ho durant 1 hora</string>
-  <string name="arrays__mute_for_two_hours">Silencia-ho durant 2 hores</string>
+  <string name="arrays__mute_for_eight_hours">Silencia-ho durant 8 hores</string>
   <string name="arrays__mute_for_one_day">Silencia-ho durant 1 dia</string>
   <string name="arrays__mute_for_seven_days">Silencia-ho durant 7 dies</string>
-  <string name="arrays__mute_for_one_year">Silencia-ho durant 1 any</string>
+  <string name="arrays__always">Sempre</string>
   <string name="arrays__settings_default">Configuració predeterminada</string>
   <string name="arrays__enabled">Activat</string>
   <string name="arrays__disabled">Desactivat</string>
@@ -1858,6 +1875,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="preferences__pref_led_blink_title">Patró lluminós per al LED</string>
   <string name="preferences__sound">So</string>
   <string name="preferences__silent">Silenciós</string>
+  <string name="preferences__default">Per defecte</string>
   <string name="preferences__repeat_alerts">Repeteix les alertes</string>
   <string name="preferences__never">Mai</string>
   <string name="preferences__one_time">1 vegada</string>
@@ -1998,6 +2016,45 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="preferences_enter_proxy_address">Introduïu l\'adreça del servidor intermediari</string>
   <string name="configurable_single_select__customize_option">Opció de personalització</string>
   <!--Internal only preferences-->
+  <!--Payments-->
+  <string name="PaymentsAllActivityFragment__all">Tot</string>
+  <string name="PaymentsAllActivityFragment__sent">Enviament</string>
+  <string name="PaymentsAllActivityFragment__received">Rebut</string>
+  <string name="PaymentsHomeFragment__see_all">Mostra-ho tot</string>
+  <string name="PaymentsHomeFragment__send">Envia</string>
+  <string name="PaymentsHomeFragment__help">Ajuda</string>
+  <string name="PaymentsHomeFragment__continue">Continua</string>
+  <string name="PaymentsHomeFragment__details">Detalls</string>
+  <!--PaymentsAddMoneyFragment-->
+  <string name="PaymentsAddMoneyFragment__copy">Copia</string>
+  <string name="PaymentsAddMoneyFragment__copied_to_clipboard">Copiat al porta-retalls</string>
+  <!--PaymentsDetailsFragment-->
+  <string name="PaymentsDetailsFragment__details">Detalls</string>
+  <string name="PaymentsDetailsFragment__status">Estat</string>
+  <string name="PaymentsDetailsFragment__to">A</string>
+  <string name="PaymentsDetailsFragment__from">De</string>
+  <!--PaymentsTransferFragment-->
+  <string name="PaymentsTransferFragment__scan_qr_code">Escaneja el codi QR</string>
+  <string name="PaymentsTransferFragment__next">Següent</string>
+  <string name="PaymentsTransferFragment__settings">Configuració</string>
+  <!--PaymentsTransferQrScanFragment-->
+  <!--CreatePaymentFragment-->
+  <string name="CreatePaymentFragment__request">Sol·licitud</string>
+  <string name="CreatePaymentFragment__1">1</string>
+  <string name="CreatePaymentFragment__2">2</string>
+  <string name="CreatePaymentFragment__3">3</string>
+  <string name="CreatePaymentFragment__4">4</string>
+  <string name="CreatePaymentFragment__5">5</string>
+  <string name="CreatePaymentFragment__6">6</string>
+  <string name="CreatePaymentFragment__7">7</string>
+  <string name="CreatePaymentFragment__8">8</string>
+  <string name="CreatePaymentFragment__9">9</string>
+  <string name="CreatePaymentFragment__0">0</string>
+  <!--EditNoteFragment-->
+  <!--ConfirmPaymentFragment-->
+  <string name="ConfirmPayment__to">A</string>
+  <!--CurrencyAmountFormatter_s_at_s-->
+  <!--SetCurrencyFragment-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -2426,6 +2483,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="OldDeviceTransferLockedDialog__your_signal_account_has_been_transferred_to_your_new_device">El compte de Signal s\'ha transferit al dispositiu nou, però heu de completar el registre per continuar. El Signal estarà inactiu en aquest dispositiu.</string>
   <string name="OldDeviceTransferLockedDialog__done">Fet</string>
   <string name="OldDeviceTransferLockedDialog__cancel_and_activate_this_device">Cancel·la-ho i activa aquest dispositiu</string>
+  <!--AdvancedPreferenceFragment-->
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Bloca</string>
   <string name="RecipientBottomSheet_unblock">Desbloca</string>
@@ -2572,5 +2630,26 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="WallpaperCropActivity__set_wallpaper_for_s">Estableix el fons per a %s.</string>
   <string name="WallpaperCropActivity__error_setting_wallpaper">Error en establir el fons.</string>
   <string name="WallpaperCropActivity__blur_photo">Difumina la fotografia</string>
+  <!--InfoCard-->
+  <string name="payment_info_card_hide">Amaga</string>
+  <string name="payment_info_card_update_pin">Actualitza el PIN</string>
+  <!--DeactivateWalletFragment-->
+  <!--PaymentsRecoveryStartFragment-->
+  <!--PaymentsRecoveryPasteFragment-->
+  <string name="PaymentsRecoveryPasteFragment__next">Següent</string>
+  <!--PaymentsRecoveryPhraseFragment-->
+  <string name="PaymentsRecoveryPhraseFragment__next">Següent</string>
+  <string name="PaymentsRecoveryPhraseFragment__edit">Edita</string>
+  <string name="PaymentsRecoveryPhraseFragment__copy">Copia</string>
+  <!--PaymentsRecoveryPhraseConfirmFragment-->
+  <string name="PaymentRecoveryPhraseConfirmFragment__done">Fet</string>
+  <!--PaymentsRecoveryEntryFragment-->
+  <string name="PaymentsRecoveryEntryFragment__next">Següent</string>
+  <!--ClearClipboardAlarmReceiver-->
+  <!--PaymentNotificationsView-->
+  <string name="PaymentNotificationsView__view">Mostra</string>
+  <!--UnreadPayments-->
+  <!--CanNotSendPaymentDialog-->
+  <string name="CanNotSendPaymentDialog__send_a_message">Envia un missatge</string>
   <!--EOF-->
 </resources>

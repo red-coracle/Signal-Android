@@ -1753,6 +1753,8 @@ Send neges heb ei ddiogelu?</string>
   <string name="safety_number_change_dialog__the_following_people_may_have_reinstalled_or_changed_devices">Gall fod y bobl ganlynol fod wedi ailosod neu newid dyfeisiau. Gwiriwch eich rhif diogelwch gyda nhw i sicrhau preifatrwydd.</string>
   <string name="safety_number_change_dialog__view">Golwg</string>
   <string name="safety_number_change_dialog__previous_verified">Wedi\'u dilysu\'n flaenorol</string>
+  <!--EnableCallNotificationSettingsDialog__call_notifications_checklist-->
+  <string name="EnableCallNotificationSettingsDialog__settings">Gosodiadau</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Yn llwytho gwledydd…</string>
   <string name="country_selection_fragment__search">Chwilio</string>
@@ -1939,13 +1941,6 @@ Send neges heb ei ddiogelu?</string>
   <string name="HelpFragment__debug_log">Cofnod Dadfygio:</string>
   <string name="HelpFragment__could_not_upload_logs">Methu llwytho\'r cofnod</string>
   <string name="HelpFragment__please_be_as_descriptive_as_possible">Byddwch mor ddisgrifiadol â phosibl i\'n helpu i ddeall y mater yma.</string>
-  <string-array name="HelpFragment__categories">
-    <item>Mae Rhywbeth Wedi Torri</item>
-    <item>Cais am Nodwedd</item>
-    <item>Cwestiwn</item>
-    <item>Adborth</item>
-    <item>Arall</item>
-  </string-array>
   <!--ReactWithAnyEmojiBottomSheetDialogFragment-->
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__this_message">Y Neges hon</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__recently_used">Defnyddiwyd yn ddiweddar</string>
@@ -1962,10 +1957,8 @@ Send neges heb ei ddiogelu?</string>
   <string name="arrays__use_default">Defnyddio\'r rhagosodedig</string>
   <string name="arrays__use_custom">Defnyddio cyfaddas</string>
   <string name="arrays__mute_for_one_hour">Tewi am 1 awr</string>
-  <string name="arrays__mute_for_two_hours">Tewi am 2 awr</string>
   <string name="arrays__mute_for_one_day">Tewi am 1 diwrnod</string>
   <string name="arrays__mute_for_seven_days">Tewi am 7 diwrnod</string>
-  <string name="arrays__mute_for_one_year">Tewi am 1 blwyddyn</string>
   <string name="arrays__settings_default">Rhagosodiadau\'r gosodiadau</string>
   <string name="arrays__enabled">Galluogwyd</string>
   <string name="arrays__disabled">Analluogwyd</string>
@@ -2019,6 +2012,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="preferences__pref_led_blink_title">Patrwm fflachio\'r LED</string>
   <string name="preferences__sound">Sain</string>
   <string name="preferences__silent">Tawel</string>
+  <string name="preferences__default">Rhagosodedig</string>
   <string name="preferences__repeat_alerts">Ailadrodd rhybuddion</string>
   <string name="preferences__never">Byth</string>
   <string name="preferences__one_time">Unwaith</string>
@@ -2159,6 +2153,35 @@ Send neges heb ei ddiogelu?</string>
   <string name="preferences_enter_proxy_address">Rhowch gyfeiriad dirprwy</string>
   <string name="configurable_single_select__customize_option">Cyfaddasu opsiwn</string>
   <!--Internal only preferences-->
+  <!--Payments-->
+  <string name="PaymentsAllActivityFragment__all">Y Cyfan</string>
+  <string name="PaymentsAllActivityFragment__sent">Anfonwyd</string>
+  <string name="PaymentsAllActivityFragment__received">Derbyniwyd</string>
+  <string name="PaymentsHomeFragment__see_all">Gweld y cyfan</string>
+  <string name="PaymentsHomeFragment__send">Anfon</string>
+  <string name="PaymentsHomeFragment__help">Cymorth</string>
+  <string name="PaymentsHomeFragment__continue">Parhau</string>
+  <string name="PaymentsHomeFragment__details">Manylion</string>
+  <!--PaymentsAddMoneyFragment-->
+  <string name="PaymentsAddMoneyFragment__copy">Copïo</string>
+  <string name="PaymentsAddMoneyFragment__copied_to_clipboard">Wedi\'i gopïo i\'r clipfwrdd</string>
+  <!--PaymentsDetailsFragment-->
+  <string name="PaymentsDetailsFragment__details">Manylion</string>
+  <string name="PaymentsDetailsFragment__status">Statws</string>
+  <string name="PaymentsDetailsFragment__to">At</string>
+  <string name="PaymentsDetailsFragment__from">Oddi wrth</string>
+  <!--PaymentsTransferFragment-->
+  <string name="PaymentsTransferFragment__scan_qr_code">Sganio côd QR</string>
+  <string name="PaymentsTransferFragment__next">Nesaf</string>
+  <string name="PaymentsTransferFragment__settings">Gosodiadau</string>
+  <!--PaymentsTransferQrScanFragment-->
+  <!--CreatePaymentFragment-->
+  <string name="CreatePaymentFragment__request">Gofyn</string>
+  <!--EditNoteFragment-->
+  <!--ConfirmPaymentFragment-->
+  <string name="ConfirmPayment__to">At</string>
+  <!--CurrencyAmountFormatter_s_at_s-->
+  <!--SetCurrencyFragment-->
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -2493,7 +2516,10 @@ Send neges heb ei ddiogelu?</string>
   <string name="TransferOrRestoreFragment__transfer_or_restore_account">Trosglwyddo neu adfer cyfrif</string>
   <string name="TransferOrRestoreFragment__if_you_have_previously_registered_a_signal_account">Os ydych wedi cofrestru cyfrif Signal o\'r blaen, gallwch drosglwyddo neu adfer eich cyfrif a\'ch negeseuon</string>
   <string name="TransferOrRestoreFragment__transfer_from_android_device">Trosglwyddo o ddyfais Android</string>
+  <string name="TransferOrRestoreFragment__transfer_your_account_and_messages_from_your_old_android_device">Trosglwyddwch eich cyfrif a\'ch negeseuon o\'ch hen ddyfais Android. Rhaid bod gennych fynediad i\'ch hen ddyfais.</string>
+  <string name="TransferOrRestoreFragment__you_need_access_to_your_old_device">Rhaid bod gennych fynediad i\'ch hen ddyfais.</string>
   <string name="TransferOrRestoreFragment__restore_from_backup">Adfer o\'r copi wrth gefn</string>
+  <string name="TransferOrRestoreFragment__restore_your_messages_from_a_local_backup">Adferwch eich negeseuon o gronfa wrth gefn lleol. Os na fyddwch yn adfer nawr, fydd dim modd adfer yn nes ymlaen.</string>
   <!--NewDeviceTransferInstructionsFragment-->
   <string name="NewDeviceTransferInstructions__open_signal_on_your_old_android_phone">Arwydd Signal ar eich hen ffôn Android</string>
   <string name="NewDeviceTransferInstructions__continue">Parhau</string>
@@ -2514,6 +2540,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="NewDeviceTransferSetup__restore_a_backup">Adfer y copi wrth gefn</string>
   <string name="NewDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Digwyddodd gwall annisgwyl wrth geisio cysylltu â\'ch hen ddyfais Android.</string>
   <!--OldDeviceTransferSetupFragment-->
+  <string name="OldDeviceTransferSetup__searching_for_new_android_device">Yn chwilio am ddyfais Android newydd…</string>
   <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Mae angen caniatâd lleoliad ar Signal i ddarganfod a chysylltu â\'ch dyfais Android newydd.</string>
   <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Mae angen gwasanaethau lleoliad ar Signal sydd wedi\'u galluogi i ddarganfod a chysylltu â\'ch dyfais Android newydd.</string>
   <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Mae angen diwifr ar Signal i ddarganfod a chysylltu â\'ch dyfais Android newydd. Mae angen i ddiwifr fod ymlaen ond nid oes rhaid ei gysylltu â rhwydwaith diwifr.</string>
@@ -2548,6 +2575,9 @@ Send neges heb ei ddiogelu?</string>
   <string name="DeviceTransferSetup__make_sure_both_devices_are_in_transfer_mode">Sicrhewch fod y ddwy ddyfais yn y modd trosglwyddo.</string>
   <string name="DeviceTransferSetup__go_to_support_page">Mynd i\'r dudalen cymorth</string>
   <string name="DeviceTransferSetup__try_again">Ceisio eto</string>
+  <string name="DeviceTransferSetup__waiting_for_other_device">Yn aros am ddyfais arall</string>
+  <string name="DeviceTransferSetup__tap_continue_on_your_other_device_to_start_the_transfer">Tapiwch Parhau ar eich dyfais arall i ddechrau\'r trosglwyddiad.</string>
+  <string name="DeviceTransferSetup__tap_continue_on_your_other_device">Tapiwch Parhau ar eich dyfais arall..,</string>
   <!--NewDeviceTransferFragment-->
   <string name="NewDeviceTransfer__cannot_transfer_from_a_newer_version_of_signal">Nid oes modd trosglwyddo o fersiynau mwy newydd o Signal</string>
   <!--DeviceTransferFragment-->
@@ -2590,7 +2620,11 @@ Send neges heb ei ddiogelu?</string>
   <string name="DeviceToDeviceTransferService_status_verification_required">Mae angen dilysu</string>
   <string name="DeviceToDeviceTransferService_status_service_connected">Yn trosglwyddo cyfrif…</string>
   <!--OldDeviceTransferLockedDialog-->
+  <string name="OldDeviceTransferLockedDialog__complete_registration_on_your_new_device">Cwblhewch y cofrestriad ar eich dyfais newydd</string>
+  <string name="OldDeviceTransferLockedDialog__your_signal_account_has_been_transferred_to_your_new_device">Mae eich cyfrif Signal wedi\'i drosglwyddo i\'ch dyfais newydd, ond mae\'n rhaid i chi gwblhau cofrestriad arno i barhau. Ni fydd y Signal yn weithredol ar y ddyfais hon.</string>
   <string name="OldDeviceTransferLockedDialog__done">Wedi Gorffen</string>
+  <string name="OldDeviceTransferLockedDialog__cancel_and_activate_this_device">Diddymu a gweithredu\'r ddyfais hon</string>
+  <!--AdvancedPreferenceFragment-->
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Rhwystro</string>
   <string name="RecipientBottomSheet_unblock">Dadrwystro</string>
@@ -2741,5 +2775,26 @@ Send neges heb ei ddiogelu?</string>
   <string name="WallpaperCropActivity__set_wallpaper_for_s">Gosod papur wal ar gyfer %s.</string>
   <string name="WallpaperCropActivity__error_setting_wallpaper">Gwall wrth osod papur wal.</string>
   <string name="WallpaperCropActivity__blur_photo">Pylu llun</string>
+  <!--InfoCard-->
+  <string name="payment_info_card_hide">Cuddio</string>
+  <string name="payment_info_card_update_pin">Diweddaru PIN</string>
+  <!--DeactivateWalletFragment-->
+  <!--PaymentsRecoveryStartFragment-->
+  <!--PaymentsRecoveryPasteFragment-->
+  <string name="PaymentsRecoveryPasteFragment__next">Nesaf</string>
+  <!--PaymentsRecoveryPhraseFragment-->
+  <string name="PaymentsRecoveryPhraseFragment__next">Nesaf</string>
+  <string name="PaymentsRecoveryPhraseFragment__edit">Golygu</string>
+  <string name="PaymentsRecoveryPhraseFragment__copy">Copïo</string>
+  <!--PaymentsRecoveryPhraseConfirmFragment-->
+  <string name="PaymentRecoveryPhraseConfirmFragment__done">Wedi Gorffen</string>
+  <!--PaymentsRecoveryEntryFragment-->
+  <string name="PaymentsRecoveryEntryFragment__next">Nesaf</string>
+  <!--ClearClipboardAlarmReceiver-->
+  <!--PaymentNotificationsView-->
+  <string name="PaymentNotificationsView__view">Golwg</string>
+  <!--UnreadPayments-->
+  <!--CanNotSendPaymentDialog-->
+  <string name="CanNotSendPaymentDialog__send_a_message">Anfon neges</string>
   <!--EOF-->
 </resources>
