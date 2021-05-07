@@ -7,6 +7,7 @@ RUN dpkg --add-architecture i386
 
 RUN apt-get update -y && apt-get install -y apt-utils
 
+#RUN apt-get update -y && apt-get -o Acquire::http::Dl-Limit=256 install -y $(cat docker/dependencies.txt)
 RUN apt-get update -y && apt-get install -y $(cat docker/dependencies.txt)
 RUN docker/print-versions.sh docker/dependencies.txt
 
@@ -27,5 +28,4 @@ RUN yes | sdkmanager --sdk_root="${ANDROID_HOME}" "platforms;${ANDROID_API_LEVEL
 RUN yes | ${ANDROID_HOME}/tools/bin/sdkmanager --licenses --sdk_root="${ANDROID_HOME}"
 
 RUN rm -rf ${ANDROID_HOME}/tools
-
 RUN docker/gradlewarmer/gradlew --version
