@@ -193,7 +193,7 @@ public class PushServiceSocket {
   private static final String ATTACHMENT_V2_PATH        = "/v2/attachments/form/upload";
   private static final String ATTACHMENT_V3_PATH        = "/v3/attachments/form/upload";
 
-  private static final String PAYMENTS_AUTH_PATH        = "/v1/payments/auth";
+  private static final String PAYMENTS_AUTH_PATH        = "/v1/payments/auth/disable";
 
   private static final String PROFILE_PATH              = "/v1/profile/%s";
   private static final String PROFILE_USERNAME_PATH     = "/v1/profile/username/%s";
@@ -219,7 +219,7 @@ public class PushServiceSocket {
   private static final String GROUPSV2_GROUP_JOIN       = "/v1/groups/join/%s";
   private static final String GROUPSV2_TOKEN            = "/v1/groups/token";
 
-  private static final String PAYMENTS_CONVERSIONS      = "/v1/payments/conversions";
+  private static final String PAYMENTS_CONVERSIONS      = "/v1/payments/conversions/disable";
 
   private static final String SERVER_DELIVERED_TIMESTAMP_HEADER = "X-Signal-Timestamp";
 

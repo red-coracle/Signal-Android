@@ -314,7 +314,7 @@ public final class MessageContentProcessor {
   }
 
   private void handlePayment(@NonNull SignalServiceContent content, @NonNull SignalServiceDataMessage message) {
-    if (!message.getPayment().isPresent()) {
+    /*if (!message.getPayment().isPresent()) {
       throw new AssertionError();
     }
 
@@ -345,7 +345,8 @@ public final class MessageContentProcessor {
     ApplicationDependencies.getJobManager()
                            .startChain(new PaymentTransactionCheckJob(uuid, queue))
                            .then(PaymentLedgerUpdateJob.updateLedger())
-                           .enqueue();
+                           .enqueue();*/
+    return;
   }
 
   private static @Nullable
@@ -840,7 +841,7 @@ public final class MessageContentProcessor {
   }
 
   private void handleSynchronizeOutgoingPayment(@NonNull OutgoingPaymentMessage outgoingPaymentMessage) {
-    RecipientId recipientId = outgoingPaymentMessage.getRecipient()
+    /*RecipientId recipientId = outgoingPaymentMessage.getRecipient()
                                                     .transform(uuid -> RecipientId.from(uuid, null))
                                                     .orNull();
     long timestamp = outgoingPaymentMessage.getBlockTimestamp();
@@ -868,7 +869,7 @@ public final class MessageContentProcessor {
                                             outgoingPaymentMessage.getReceipt().toByteArray(),
                                             PaymentMetaDataUtil.fromKeysAndImages(outgoingPaymentMessage.getPublicKeys(), outgoingPaymentMessage.getKeyImages()));
 
-    log("Inserted synchronized payment " + uuid);
+    log("Inserted synchronized payment " + uuid);*/
   }
 
   private void handleSynchronizeSentMessage(@NonNull SignalServiceContent content,

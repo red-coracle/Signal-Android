@@ -94,7 +94,7 @@ public final class JobManagerFactories {
       put(MultiDeviceGroupUpdateJob.KEY,             new MultiDeviceGroupUpdateJob.Factory());
       put(MultiDeviceKeysUpdateJob.KEY,              new MultiDeviceKeysUpdateJob.Factory());
       put(MultiDeviceMessageRequestResponseJob.KEY,  new MultiDeviceMessageRequestResponseJob.Factory());
-      put(MultiDeviceOutgoingPaymentSyncJob.KEY,     new MultiDeviceOutgoingPaymentSyncJob.Factory());
+      //put(MultiDeviceOutgoingPaymentSyncJob.KEY,     new MultiDeviceOutgoingPaymentSyncJob.Factory());
       put(MultiDeviceProfileContentUpdateJob.KEY,    new MultiDeviceProfileContentUpdateJob.Factory());
       put(MultiDeviceProfileKeyUpdateJob.KEY,        new MultiDeviceProfileKeyUpdateJob.Factory());
       put(MultiDeviceReadUpdateJob.KEY,              new MultiDeviceReadUpdateJob.Factory());
@@ -145,10 +145,10 @@ public final class JobManagerFactories {
       put(TypingSendJob.KEY,                         new TypingSendJob.Factory());
       put(UpdateApkJob.KEY,                          new UpdateApkJob.Factory());
       put(MarkerJob.KEY,                             new MarkerJob.Factory());
-      put(PaymentLedgerUpdateJob.KEY,                new PaymentLedgerUpdateJob.Factory());
-      put(PaymentNotificationSendJob.KEY,            new PaymentNotificationSendJob.Factory());
-      put(PaymentSendJob.KEY,                        new PaymentSendJob.Factory());
-      put(PaymentTransactionCheckJob.KEY,            new PaymentTransactionCheckJob.Factory());
+      //put(PaymentLedgerUpdateJob.KEY,                new PaymentLedgerUpdateJob.Factory());
+      //put(PaymentNotificationSendJob.KEY,            new PaymentNotificationSendJob.Factory());
+      //put(PaymentSendJob.KEY,                        new PaymentSendJob.Factory());
+      //put(PaymentTransactionCheckJob.KEY,            new PaymentTransactionCheckJob.Factory());
       put(ProfileUploadJob.KEY,                      new ProfileUploadJob.Factory());
 
       // Migrations

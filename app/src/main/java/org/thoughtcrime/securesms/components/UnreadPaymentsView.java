@@ -41,7 +41,7 @@ public class UnreadPaymentsView extends ConstraintLayout {
   protected void onFinishInflate() {
     super.onFinishInflate();
 
-    title  = findViewById(R.id.payment_notification_title);
+    /*title  = findViewById(R.id.payment_notification_title);
     avatar = findViewById(R.id.payment_notification_avatar);
 
     View open  = findViewById(R.id.payment_notification_touch_target);
@@ -53,7 +53,7 @@ public class UnreadPaymentsView extends ConstraintLayout {
 
     close.setOnClickListener(v -> {
       if (listener != null) listener.onClosePaymentsNotificationClicked();
-    });
+    });*/
   }
 
   public void setListener(@NonNull Listener listener) {
@@ -61,14 +61,14 @@ public class UnreadPaymentsView extends ConstraintLayout {
   }
 
   public void setUnreadPayments(@NonNull UnreadPayments unreadPayments) {
-    title.setText(unreadPayments.getDescription(getContext()));
+    /*title.setText(unreadPayments.getDescription(getContext()));
     avatar.setAvatar(unreadPayments.getRecipient());
-    avatar.setVisibility(unreadPayments.getRecipient() == null ? GONE : VISIBLE);
+    avatar.setVisibility(unreadPayments.getRecipient() == null ? GONE : VISIBLE);*/
   }
 
   public interface Listener {
-    void onOpenPaymentsNotificationClicked();
+    //void onOpenPaymentsNotificationClicked();
 
-    void onClosePaymentsNotificationClicked();
+    //void onClosePaymentsNotificationClicked();
   }
 }

@@ -139,12 +139,13 @@ public class DeleteAccountViewModel extends ViewModel {
   }
 
   private static @NonNull Optional<String> getFormattedWalletBalance(@NonNull Balance balance) {
-    Money amount = balance.getFullAmount();
+    /*Money amount = balance.getFullAmount();
     if (amount.isPositive()) {
       return Optional.of(amount.toString(FormatterOptions.defaults()));
     } else {
       return Optional.absent();
-    }
+    }*/
+    return Optional.absent();
   }
 
   private static boolean isMatch(@NonNull String query, @NonNull Country country) {

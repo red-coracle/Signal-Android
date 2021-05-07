@@ -580,13 +580,13 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   }
 
   private void onUnreadPaymentsChanged(@NonNull Optional<UnreadPayments> unreadPayments) {
-    if (unreadPayments.isPresent()) {
+    /*if (unreadPayments.isPresent()) {
       paymentNotificationView.get().setListener(new PaymentNotificationListener(unreadPayments.get()));
       paymentNotificationView.get().setUnreadPayments(unreadPayments.get());
       animatePaymentUnreadStatusIn();
     } else {
       animatePaymentUnreadStatusOut();
-    }
+    }*/
   }
 
   private void animatePaymentUnreadStatusIn() {
@@ -1157,7 +1157,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
       this.unreadPayments = unreadPayments;
     }
 
-    @Override
+    //@Override
     public void onOpenPaymentsNotificationClicked() {
       UUID paymentId = unreadPayments.getPaymentUuid();
 
@@ -1168,7 +1168,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
       }
     }
 
-    @Override
+    //@Override
     public void onClosePaymentsNotificationClicked() {
       viewModel.onUnreadPaymentsClosed();
     }
@@ -1178,12 +1178,12 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     }
 
     private void goToSinglePayment(@NonNull UUID paymentId) {
-      Intent intent = new Intent(requireContext(), PaymentsActivity.class);
+      /*Intent intent = new Intent(requireContext(), PaymentsActivity.class);
 
       intent.putExtra(PaymentsActivity.EXTRA_PAYMENTS_STARTING_ACTION, R.id.action_directly_to_paymentDetails);
       intent.putExtra(PaymentsActivity.EXTRA_STARTING_ARGUMENTS, new PaymentDetailsFragmentArgs.Builder(PaymentDetailsParcelable.forUuid(paymentId)).build().toBundle());
 
-      startActivity(intent);
+      startActivity(intent);*/
     }
   }
 

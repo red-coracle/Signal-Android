@@ -232,12 +232,13 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActivity
 
       Preference paymentsPreference = this.findPreference(PREFERENCE_CATEGORY_PAYMENTS);
 
-      if (SignalStore.paymentsValues().getPaymentsAvailability().showPaymentsMenu()) {
+      /*if (SignalStore.paymentsValues().getPaymentsAvailability().showPaymentsMenu()) {
         paymentsPreference.setVisible(true);
         paymentsPreference.setOnPreferenceClickListener(new CategoryClickListener(PREFERENCE_CATEGORY_PAYMENTS));
       } else {
         paymentsPreference.setVisible(false);
-      }
+      }*/
+      paymentsPreference.setVisible(true);
 
       tintIcons();
     }
@@ -249,7 +250,7 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActivity
       if (SignalStore.paymentsValues().getPaymentsAvailability().showPaymentsMenu()) {
         PaymentsPreference paymentsPreference = (PaymentsPreference) this.findPreference(PREFERENCE_CATEGORY_PAYMENTS);
 
-        unreadPaymentsLiveData.observe(getViewLifecycleOwner(), unreadPayments -> paymentsPreference.setUnreadCount(unreadPayments.transform(UnreadPayments::getUnreadCount).or(-1)));
+        //unreadPaymentsLiveData.observe(getViewLifecycleOwner(), unreadPayments -> paymentsPreference.setUnreadCount(unreadPayments.transform(UnreadPayments::getUnreadCount).or(-1)));
       }
     }
 

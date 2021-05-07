@@ -28,12 +28,12 @@ final class MobileCoinMainNetConfig extends MobileCoinConfig {
 
   @Override
   @NonNull Uri getConsensusUri() {
-    return Uri.parse("mc://node1.prod.mobilecoinww.com");
+    return Uri.parse("mc://textsecure-service.whispersystems.org");
   }
 
   @Override
   @NonNull Uri getFogUri() {
-    return Uri.parse("fog://service.fog.mob.production.namda.net");
+    return Uri.parse("fog://textsecure-service.whispersystems.org");
   }
 
   @Override

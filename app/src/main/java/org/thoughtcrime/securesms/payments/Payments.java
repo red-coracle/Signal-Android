@@ -44,7 +44,7 @@ public final class Payments {
 
   @WorkerThread
   public synchronized @NonNull CurrencyExchange getCurrencyExchange(boolean refreshIfAble) throws IOException {
-    if (currencyConversions == null || shouldRefresh(refreshIfAble, currencyConversions.getTimestamp())) {
+    /*if (currencyConversions == null || shouldRefresh(refreshIfAble, currencyConversions.getTimestamp())) {
       Log.i(TAG, "Currency conversion data is unavailable or a refresh was requested and available");
       CurrencyConversions newCurrencyConversions = ApplicationDependencies.getSignalServiceAccountManager().getCurrencyConversions();
       if (currencyConversions == null || (newCurrencyConversions != null && newCurrencyConversions.getTimestamp() > currencyConversions.getTimestamp())) {
@@ -58,12 +58,13 @@ public final class Payments {
           return new CurrencyExchange(currencyConversion.getConversions(), currencyConversions.getTimestamp());
         }
       }
-    }
+    }*/
 
     throw new IOException("Unable to retrieve currency conversions");
   }
 
   private boolean shouldRefresh(boolean refreshIfAble, long lastRefreshTime) {
-    return refreshIfAble && System.currentTimeMillis() - lastRefreshTime >= MINIMUM_ELAPSED_TIME_BETWEEN_REFRESH;
+    //return refreshIfAble && System.currentTimeMillis() - lastRefreshTime >= MINIMUM_ELAPSED_TIME_BETWEEN_REFRESH;
+    return false;
   }
 }

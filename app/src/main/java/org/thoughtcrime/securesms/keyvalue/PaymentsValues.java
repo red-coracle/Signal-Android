@@ -86,7 +86,8 @@ public final class PaymentsValues extends SignalStoreValues {
   }
 
   public boolean userConfirmedMnemonic() {
-    return getStore().getBoolean(USER_CONFIRMED_MNEMONIC, false);
+    //return getStore().getBoolean(USER_CONFIRMED_MNEMONIC, false);
+    return false;
   }
 
   public void setUserConfirmedMnemonic(boolean userConfirmedMnemonic) {
@@ -97,16 +98,17 @@ public final class PaymentsValues extends SignalStoreValues {
    * Consider using {@link #getPaymentsAvailability} which includes feature flag and region status.
    */
   public boolean mobileCoinPaymentsEnabled() {
-    KeyValueReader reader = getStore().beginRead();
+    //KeyValueReader reader = getStore().beginRead();
 
-    return reader.getBoolean(MOB_PAYMENTS_ENABLED, false);
+    //return reader.getBoolean(MOB_PAYMENTS_ENABLED, false);
+    return false;
   }
 
   /**
    * Applies feature flags and region restrictions to return an enum which describes the available feature set for the user.
    */
   public PaymentsAvailability getPaymentsAvailability() {
-    Context context = ApplicationDependencies.getApplication();
+    /*Context context = ApplicationDependencies.getApplication();
 
     if (!TextSecurePreferences.isPushRegistered(context) ||
         !GeographicalRestrictions.e164Allowed(TextSecurePreferences.getLocalNumber(context)))
@@ -126,12 +128,13 @@ public final class PaymentsValues extends SignalStoreValues {
       } else {
         return PaymentsAvailability.DISABLED_REMOTELY;
       }
-    }
+    }*/
+    return PaymentsAvailability.DISABLED_REMOTELY;
   }
 
   @WorkerThread
   public void setMobileCoinPaymentsEnabled(boolean isMobileCoinPaymentsEnabled) {
-    if (mobileCoinPaymentsEnabled() == isMobileCoinPaymentsEnabled) {
+    /*if (mobileCoinPaymentsEnabled() == isMobileCoinPaymentsEnabled) {
       return;
     }
 
@@ -155,7 +158,8 @@ public final class PaymentsValues extends SignalStoreValues {
     }
 
     DatabaseFactory.getRecipientDatabase(ApplicationDependencies.getApplication()).markNeedsSync(Recipient.self().getId());
-    StorageSyncHelper.scheduleSyncForDataChange();
+    StorageSyncHelper.scheduleSyncForDataChange();*/
+    return;
   }
 
   public @NonNull Mnemonic getPaymentsMnemonic() {

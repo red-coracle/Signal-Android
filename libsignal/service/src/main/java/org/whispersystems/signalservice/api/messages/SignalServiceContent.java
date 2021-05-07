@@ -608,7 +608,7 @@ public final class SignalServiceContent {
     }
 
     if (content.hasOutgoingPayment()) {
-      SignalServiceProtos.SyncMessage.OutgoingPayment outgoingPayment = content.getOutgoingPayment();
+      /*SignalServiceProtos.SyncMessage.OutgoingPayment outgoingPayment = content.getOutgoingPayment();
       switch (outgoingPayment.getPaymentDetailCase()) {
         case MOBILECOIN: {
           SignalServiceProtos.SyncMessage.OutgoingPayment.MobileCoin mobileCoin = outgoingPayment.getMobileCoin();
@@ -630,7 +630,7 @@ public final class SignalServiceContent {
         }
         default:
           return SignalServiceSyncMessage.empty();
-      }
+      }*/
     }
 
     return SignalServiceSyncMessage.empty();
@@ -845,7 +845,7 @@ public final class SignalServiceContent {
   }
 
   private static SignalServiceDataMessage.Payment createPayment(SignalServiceProtos.DataMessage content) throws InvalidMessageException {
-    if (!content.hasPayment()) {
+    /*if (!content.hasPayment()) {
       return null;
     }
 
@@ -854,7 +854,8 @@ public final class SignalServiceContent {
     switch (payment.getItemCase()) {
       case NOTIFICATION: return new SignalServiceDataMessage.Payment(createPaymentNotification(payment));
       default          : throw new InvalidMessageException("Unknown payment item");
-    }
+    }*/
+    return null;
   }
 
   private static SignalServiceDataMessage.PaymentNotification createPaymentNotification(SignalServiceProtos.DataMessage.Payment content)

@@ -367,9 +367,9 @@ public class SignalServiceMessageSender {
       content = createMultiDeviceFetchTypeContent(message.getFetchType().get());
     } else if (message.getMessageRequestResponse().isPresent()) {
       content = createMultiDeviceMessageRequestResponseContent(message.getMessageRequestResponse().get());
-    } else if (message.getOutgoingPaymentMessage().isPresent()) {
+    } /* else if (message.getOutgoingPaymentMessage().isPresent()) {
       content = createMultiDeviceOutgoingPaymentContent(message.getOutgoingPaymentMessage().get());
-    } else if (message.getKeys().isPresent()) {
+    } */ else if (message.getKeys().isPresent()) {
       content = createMultiDeviceSyncKeysContent(message.getKeys().get());
     } else if (message.getVerified().isPresent()) {
       sendMessage(message.getVerified().get(), unidentifiedAccess);
@@ -753,7 +753,7 @@ public class SignalServiceMessageSender {
       builder.setGroupCallUpdate(DataMessage.GroupCallUpdate.newBuilder().setEraId(message.getGroupCallUpdate().get().getEraId()));
     }
 
-    if (message.getPayment().isPresent()) {
+    if (message.getPayment().isPresent()) {/*
       SignalServiceDataMessage.Payment payment = message.getPayment().get();
 
       if (payment.getPaymentNotification().isPresent()) {
@@ -765,7 +765,7 @@ public class SignalServiceMessageSender {
 
         builder.setPayment(DataMessage.Payment.newBuilder().setNotification(paymentBuilder));
         builder.setRequiredProtocolVersion(Math.max(DataMessage.ProtocolVersion.PAYMENTS_VALUE, builder.getRequiredProtocolVersion()));
-      }
+      }*/
     }
 
     builder.setTimestamp(message.getTimestamp());
@@ -1117,7 +1117,7 @@ public class SignalServiceMessageSender {
 
   private byte[] createMultiDeviceOutgoingPaymentContent(OutgoingPaymentMessage message) {
     Content.Builder                     container      = Content.newBuilder();
-    SyncMessage.Builder                 syncMessage    = createSyncMessageBuilder();
+    /*SyncMessage.Builder                 syncMessage    = createSyncMessageBuilder();
     SyncMessage.OutgoingPayment.Builder paymentMessage = SyncMessage.OutgoingPayment.newBuilder();
 
     if (message.getRecipient().isPresent()) {
@@ -1147,9 +1147,10 @@ public class SignalServiceMessageSender {
       throw new AssertionError(e);
     }
 
-    syncMessage.setOutgoingPayment(paymentMessage);
+    syncMessage.setOutgoingPayment(paymentMessage);*/
 
-    return container.setSyncMessage(syncMessage).build().toByteArray();
+    //return container.setSyncMessage(syncMessage).build().toByteArray();
+    return container.build().toByteArray();
   }
 
   private byte[] createMultiDeviceSyncKeysContent(KeysMessage keysMessage) {

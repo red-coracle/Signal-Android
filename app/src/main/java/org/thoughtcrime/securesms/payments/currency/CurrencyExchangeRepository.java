@@ -22,13 +22,13 @@ public final class CurrencyExchangeRepository {
 
   @AnyThread
   public void getCurrencyExchange(@NonNull AsynchronousCallback.WorkerThread<CurrencyExchange, Throwable> callback, boolean refreshIfAble) {
-    SignalExecutors.BOUNDED.execute(() -> {
+    /*SignalExecutors.BOUNDED.execute(() -> {
       try {
         callback.onComplete(payments.getCurrencyExchange(refreshIfAble));
       } catch (IOException e) {
         Log.w(TAG, e);
         callback.onError(e);
       }
-    });
+    });*/
   }
 }

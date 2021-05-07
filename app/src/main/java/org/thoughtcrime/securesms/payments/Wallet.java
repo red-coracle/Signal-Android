@@ -98,7 +98,7 @@ public final class Wallet {
   @WorkerThread
   private @NonNull MobileCoinLedgerWrapper getFullLedger(boolean retryOnAuthFailure) {
     PaymentsValues paymentsValues = SignalStore.paymentsValues();
-    try {
+    /*try {
       MobileCoinLedgerWrapper ledger = tryGetFullLedger(null);
 
       paymentsValues.setMobileCoinFullLedger(Objects.requireNonNull(ledger));
@@ -110,14 +110,14 @@ public final class Wallet {
       } else {
         Log.w(TAG, "Failed to get up to date ledger", e);
       }
-    }
+    }*/
 
     return getCachedLedger();
   }
 
   @WorkerThread
   public @Nullable MobileCoinLedgerWrapper tryGetFullLedger(@Nullable Long minimumBlockIndex) throws IOException {
-    try {
+    /*try {
       MobileCoinLedger.Builder builder               = MobileCoinLedger.newBuilder();
       BigInteger               totalUnspent          = BigInteger.ZERO;
       long                     highestBlockTimeStamp = 0;
@@ -189,7 +189,8 @@ public final class Wallet {
       throw new IOException(e);
     } catch (Uint64RangeException e) {
       throw new AssertionError(e);
-    }
+    }*/
+    throw new IOException();
   }
 
   private static @Nullable MobileCoinLedger.Block getBlock(@NonNull UnsignedLong blockIndex, @Nullable Date timeStamp) throws Uint64RangeException {
@@ -203,7 +204,7 @@ public final class Wallet {
 
   @WorkerThread
   public @NonNull Money.MobileCoin getFee(@NonNull Money.MobileCoin amount) throws IOException {
-    try {
+    /*try {
       BigInteger picoMob = amount.requireMobileCoin().toPicoMobBigInteger();
       return Money.picoMobileCoin(mobileCoinClient.estimateTotalFee(picoMob));
     } catch (InvalidFogResponse | AttestationException | InsufficientFundsException e) {
@@ -212,7 +213,8 @@ public final class Wallet {
     } catch (NetworkException e) {
       Log.w(TAG, "Failed to get fee", e);
       throw new IOException(e);
-    }
+    }*/
+    return Money.MobileCoin.ZERO;
   }
 
   @WorkerThread
@@ -227,7 +229,7 @@ public final class Wallet {
 
   @WorkerThread
   public @NonNull TransactionStatusResult getSentTransactionStatus(@NonNull PaymentTransactionId transactionId) throws IOException {
-    try {
+    /*try {
       PaymentTransactionId.MobileCoin mobcoinTransaction = (PaymentTransactionId.MobileCoin) transactionId;
       Transaction                     transaction        = Transaction.fromBytes(mobcoinTransaction.getTransaction());
       Transaction.Status              status             = mobileCoinClient.getAccountSnapshot()
@@ -250,7 +252,8 @@ public final class Wallet {
     } catch (NetworkException | AttestationException e) {
       Log.w(TAG, e);
       throw new IOException(e);
-    }
+    }*/
+    throw new IOException();
   }
 
   @WorkerThread
@@ -393,7 +396,7 @@ public final class Wallet {
   }
 
   public void refresh() {
-    getFullLedger();
+    //getFullLedger();
   }
 
   public enum TransactionStatus {

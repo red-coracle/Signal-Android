@@ -1105,11 +1105,11 @@ public class ConversationActivity extends PassphraseRequiredActivity
         AttachmentManager.selectLocation(this, PICK_LOCATION);
         break;
       case PAYMENT:
-        if (recipient.get().hasProfileKeyCredential()) {
+        /*if (recipient.get().hasProfileKeyCredential()) {
           AttachmentManager.selectPayment(this, recipient.getId());
         } else {
           CanNotSendPaymentDialog.show(this);
-        }
+        }*/
         break;
 
     }
@@ -1439,7 +1439,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
         attachmentKeyboardStub.get().setCallback(this);
         attachmentKeyboardStub.get().setWallpaperEnabled(recipient.get().hasWallpaper());
 
-        updatePaymentsAvailable();
+        //updatePaymentsAvailable();
 
         container.show(composeText, attachmentKeyboardStub.get());
 
@@ -2381,7 +2381,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
     setBlockedUserState(recipient, isSecureText, isDefaultSms);
     updateReminders();
     updateDefaultSubscriptionId(recipient.getDefaultSubscriptionId());
-    updatePaymentsAvailable();
+    //updatePaymentsAvailable();
     initializeSecurity(isSecureText, isDefaultSms);
 
     if (searchViewItem == null || !searchViewItem.isActionViewExpanded()) {

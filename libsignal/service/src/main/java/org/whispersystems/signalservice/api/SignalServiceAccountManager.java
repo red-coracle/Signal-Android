@@ -638,7 +638,8 @@ public class SignalServiceAccountManager {
   }
 
   public CurrencyConversions getCurrencyConversions() throws IOException {
-    return this.pushServiceSocket.getCurrencyConversions();
+    //return this.pushServiceSocket.getCurrencyConversions();
+    throw new IOException();
   }
 
   /**
@@ -747,7 +748,8 @@ public class SignalServiceAccountManager {
   }
 
   public AuthCredentials getPaymentsAuthorization() throws IOException {
-    return pushServiceSocket.getPaymentsAuthorization();
+    //return pushServiceSocket.getPaymentsAuthorization();
+    throw new IOException();
   }
 
 }
