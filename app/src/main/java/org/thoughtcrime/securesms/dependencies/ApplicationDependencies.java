@@ -18,11 +18,15 @@ import org.thoughtcrime.securesms.megaphone.MegaphoneRepository;
 import org.thoughtcrime.securesms.messages.BackgroundMessageRetriever;
 import org.thoughtcrime.securesms.messages.IncomingMessageObserver;
 import org.thoughtcrime.securesms.messages.IncomingMessageProcessor;
+import org.thoughtcrime.securesms.net.ContentProxySelector;
 import org.thoughtcrime.securesms.net.PipeConnectivityListener;
+import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.payments.Payments;
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
 import org.thoughtcrime.securesms.recipients.LiveRecipientCache;
+import org.thoughtcrime.securesms.revealable.ViewOnceMessageManager;
+import org.thoughtcrime.securesms.service.ExpiringMessageManager;
 import org.thoughtcrime.securesms.service.TrimThreadsByDateManager;
 import org.thoughtcrime.securesms.service.webrtc.SignalCallManager;
 import org.thoughtcrime.securesms.shakereport.ShakeToReport;
@@ -37,6 +41,8 @@ import org.whispersystems.signalservice.api.SignalServiceAccountManager;
 import org.whispersystems.signalservice.api.SignalServiceMessageReceiver;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2Operations;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Location for storing and retrieving application-scoped singletons. Users must call
@@ -75,9 +81,12 @@ public class ApplicationDependencies {
   private static volatile TypingStatusSender           typingStatusSender;
   private static volatile DatabaseObserver             databaseObserver;
   private static volatile TrimThreadsByDateManager     trimThreadsByDateManager;
+  private static volatile ViewOnceMessageManager       viewOnceMessageManager;
+  private static volatile ExpiringMessageManager       expiringMessageManager;
   private static volatile Payments                     payments;
-  private static volatile ShakeToReport                shakeToReport;
   private static volatile SignalCallManager            signalCallManager;
+  private static volatile ShakeToReport                shakeToReport;
+  private static volatile OkHttpClient                 okHttpClient;
 
   @MainThread
   public static void init(@NonNull Application application, @NonNull Provider provider) {
@@ -184,12 +193,6 @@ public class ApplicationDependencies {
   }
 
   public static @NonNull SignalServiceMessageReceiver getSignalServiceMessageReceiver() {
-    SignalServiceMessageReceiver local = messageReceiver;
-
-    if (local != null) {
-      return local;
-    }
-
     synchronized (LOCK) {
       if (messageReceiver == null) {
         messageReceiver = provider.provideSignalServiceMessageReceiver();
@@ -347,9 +350,37 @@ public class ApplicationDependencies {
     return trimThreadsByDateManager;
   }
 
+  public static @NonNull ViewOnceMessageManager getViewOnceMessageManager() {
+    if (viewOnceMessageManager == null) {
+      synchronized (LOCK) {
+        if (viewOnceMessageManager == null) {
+          viewOnceMessageManager = provider.provideViewOnceMessageManager();
+        }
+      }
+    }
+
+    return viewOnceMessageManager;
+  }
+
+  public static @NonNull ExpiringMessageManager getExpiringMessageManager() {
+    if (expiringMessageManager == null) {
+      synchronized (LOCK) {
+        if (expiringMessageManager == null) {
+          expiringMessageManager = provider.provideExpiringMessageManager();
+        }
+      }
+    }
+
+    return expiringMessageManager;
+  }
+
   public static TypingStatusRepository getTypingStatusRepository() {
     if (typingStatusRepository == null) {
-      typingStatusRepository = provider.provideTypingStatusRepository();
+      synchronized (LOCK) {
+        if (typingStatusRepository == null) {
+          typingStatusRepository = provider.provideTypingStatusRepository();
+        }
+      }
     }
 
     return typingStatusRepository;
@@ -357,7 +388,11 @@ public class ApplicationDependencies {
 
   public static TypingStatusSender getTypingStatusSender() {
     if (typingStatusSender == null) {
-      typingStatusSender = provider.provideTypingStatusSender();
+      synchronized (LOCK) {
+        if (typingStatusSender == null) {
+          typingStatusSender = provider.provideTypingStatusSender();
+        }
+      }
     }
 
     return typingStatusSender;
@@ -411,6 +446,21 @@ public class ApplicationDependencies {
     return signalCallManager;
   }
 
+  public static @NonNull OkHttpClient getOkHttpClient() {
+    if (okHttpClient == null) {
+      synchronized (LOCK) {
+        if (okHttpClient == null) {
+          okHttpClient = new OkHttpClient.Builder()
+              .addInterceptor(new StandardUserAgentInterceptor())
+              .dns(SignalServiceNetworkAccess.DNS)
+              .build();
+        }
+      }
+    }
+
+    return okHttpClient;
+  }
+
   public static @NonNull AppForegroundObserver getAppForegroundObserver() {
     return appForegroundObserver;
   }
@@ -433,6 +483,8 @@ public class ApplicationDependencies {
     @NonNull MessageNotifier provideMessageNotifier();
     @NonNull IncomingMessageObserver provideIncomingMessageObserver();
     @NonNull TrimThreadsByDateManager provideTrimThreadsByDateManager();
+    @NonNull ViewOnceMessageManager provideViewOnceMessageManager();
+    @NonNull ExpiringMessageManager provideExpiringMessageManager();
     @NonNull TypingStatusRepository provideTypingStatusRepository();
     @NonNull TypingStatusSender provideTypingStatusSender();
     @NonNull DatabaseObserver provideDatabaseObserver();

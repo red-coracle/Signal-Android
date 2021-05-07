@@ -1059,6 +1059,7 @@
   <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Unirse a este grupo e compartir cos seus membros o teu nome e fotografía? Non saberán quen viu as súas mensaxes ata que aceptes. </string>
   <string name="MessageRequestBottomView_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Unirse a este grupo? Non saberán quen viu as súas mensaxes ata que aceptes.</string>
   <string name="MessageRequestBottomView_unblock_this_group_and_share_your_name_and_photo_with_its_members">Desbloquear este grupo e compartir cos seus membros o teu nome e fotografía? Non recibirás ningunha mensaxe ata que desbloquees.</string>
+  <string name="MessageRequestProfileView_view">Ver</string>
   <string name="MessageRequestProfileView_member_of_one_group">Membro de %1$s</string>
   <string name="MessageRequestProfileView_member_of_two_groups">Membro de %1$s e %2$s</string>
   <string name="MessageRequestProfileView_member_of_many_groups">Membro de %1$s, %2$s e %3$s</string>
@@ -1159,6 +1160,7 @@
   <string name="ReactionsConversationView_plus">+%1$d</string>
   <!--ReactionsRecipientAdapter-->
   <string name="ReactionsRecipientAdapter_you">Ti</string>
+  <!--RecaptchaRequiredBottomSheetFragment-->
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">Bloquear</string>
   <string name="RecipientPreferenceActivity_unblock">Desbloquear</string>
@@ -1217,6 +1219,7 @@
   <string name="ProxyBottomSheetFragment_do_you_want_to_use_this_proxy_address">Queres utilizar este enderezo do proxy?</string>
   <string name="ProxyBottomSheetFragment_use_proxy">Usar proxy</string>
   <string name="ProxyBottomSheetFragment_successfully_connected_to_proxy">Conexión correcta ao proxy.</string>
+  <!--RecaptchaProofActivity-->
   <!--RegistrationActivity-->
   <string name="RegistrationActivity_select_your_country">Elixe o teu país</string>
   <string name="RegistrationActivity_you_must_specify_your_country_code">Debes especificar o teu
@@ -1470,16 +1473,17 @@
   <string name="MessageNotifier_this_message_was_deleted">Eliminouse a mensaxe.</string>
   <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Desactivar as notificacións de quen se une a Signal? Poderás volver activalas en Signal&gt; Axustes &gt; Notificacións.</string>
   <!--Notification Channels-->
-  <string name="NotificationChannel_messages">Por defecto</string>
+  <string name="NotificationChannel_channel_messages">Mensaxes</string>
   <string name="NotificationChannel_calls">Chamadas</string>
   <string name="NotificationChannel_failures">Erros</string>
   <string name="NotificationChannel_backups">Copias de seguranza</string>
   <string name="NotificationChannel_locked_status">Bloquear estado</string>
   <string name="NotificationChannel_app_updates">Actualizacións da app</string>
   <string name="NotificationChannel_other">Outra</string>
-  <string name="NotificationChannel_group_messages">Mensaxes</string>
+  <string name="NotificationChannel_group_chats">Conversas</string>
   <string name="NotificationChannel_missing_display_name">Descoñecido</string>
   <string name="NotificationChannel_voice_notes">Notas de voz</string>
+  <string name="NotificationChannel_contact_joined_signal">Un contacto únese a Signal</string>
   <!--ProfileEditNameFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">A resposta rápida non está dispoñible cando Signal está bloqueado!</string>
@@ -1495,6 +1499,7 @@
   <!--SingleRecipientNotificationBuilder-->
   <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
   <string name="SingleRecipientNotificationBuilder_new_message">Nova mensaxe</string>
+  <string name="SingleRecipientNotificationBuilder_you">Ti</string>
   <!--ThumbnailView-->
   <string name="ThumbnailView_Play_video_description">Reproducir vídeo</string>
   <string name="ThumbnailView_Has_a_caption_description">Ten un título</string>
@@ -1685,7 +1690,6 @@
     <item quantity="other">%dmáis</item>
   </plurals>
   <!--giphy_activity-->
-  <string name="giphy_activity_toolbar__search_gifs_and_stickers">Buscar GIF e adhesivos</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">Non se atopou nada</string>
   <!--log_submit_activity-->
@@ -2640,5 +2644,7 @@
   <!--UnreadPayments-->
   <!--CanNotSendPaymentDialog-->
   <string name="CanNotSendPaymentDialog__send_a_message">Enviar unha mensaxe</string>
+  <!--GroupsInCommonMessageRequest-->
+  <string name="GroupsInCommonMessageRequest__okay">De acordo</string>
   <!--EOF-->
 </resources>

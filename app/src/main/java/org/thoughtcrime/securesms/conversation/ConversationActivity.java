@@ -112,6 +112,7 @@ import org.thoughtcrime.securesms.components.HidingLinearLayout;
 import org.thoughtcrime.securesms.components.InputAwareLayout;
 import org.thoughtcrime.securesms.components.InputPanel;
 import org.thoughtcrime.securesms.components.KeyboardAwareLinearLayout.OnKeyboardShownListener;
+import org.thoughtcrime.securesms.components.MaskView;
 import org.thoughtcrime.securesms.components.SendButton;
 import org.thoughtcrime.securesms.components.TooltipPopup;
 import org.thoughtcrime.securesms.components.TypingStatusSender;
@@ -227,6 +228,8 @@ import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.profiles.spoofing.ReviewBannerView;
 import org.thoughtcrime.securesms.profiles.spoofing.ReviewCardDialogFragment;
 import org.thoughtcrime.securesms.providers.BlobProvider;
+import org.thoughtcrime.securesms.ratelimit.RecaptchaProofActivity;
+import org.thoughtcrime.securesms.ratelimit.RecaptchaProofBottomSheetFragment;
 import org.thoughtcrime.securesms.reactions.ReactionsBottomSheetDialogFragment;
 import org.thoughtcrime.securesms.reactions.any.ReactWithAnyEmojiBottomSheetDialogFragment;
 import org.thoughtcrime.securesms.recipients.LiveRecipient;
@@ -578,6 +581,10 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
     setVisibleThread(threadId);
     ConversationUtil.refreshRecipientShortcuts();
+
+    if (SignalStore.rateLimit().needsRecaptcha()) {
+      RecaptchaProofBottomSheetFragment.show(getSupportFragmentManager());
+    }
   }
 
   @Override
@@ -685,10 +692,11 @@ public class ConversationActivity extends PassphraseRequiredActivity
       break;
     case PICK_GIF:
       setMedia(data.getData(),
-               SlideFactory.MediaType.GIF,
+               Objects.requireNonNull(MediaType.from(BlobProvider.getMimeType(data.getData()))),
                data.getIntExtra(GiphyActivity.EXTRA_WIDTH, 0),
                data.getIntExtra(GiphyActivity.EXTRA_HEIGHT, 0),
-               data.getBooleanExtra(GiphyActivity.EXTRA_BORDERLESS, false));
+               false,
+               true);
       break;
     case SMS_DEFAULT:
       initializeSecurity(isSecureText, isDefaultSms);
@@ -718,7 +726,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
       for (Media mediaItem : result.getNonUploadedMedia()) {
         if (MediaUtil.isVideoType(mediaItem.getMimeType())) {
-          slideDeck.addSlide(new VideoSlide(this, mediaItem.getUri(), mediaItem.getSize(), mediaItem.getWidth(), mediaItem.getHeight(), mediaItem.getCaption().orNull(), mediaItem.getTransformProperties().orNull()));
+          slideDeck.addSlide(new VideoSlide(this, mediaItem.getUri(), mediaItem.getSize(), mediaItem.isVideoGif(), mediaItem.getWidth(), mediaItem.getHeight(), mediaItem.getCaption().orNull(), mediaItem.getTransformProperties().orNull()));
         } else if (MediaUtil.isGif(mediaItem.getMimeType())) {
           slideDeck.addSlide(new GifSlide(this, mediaItem.getUri(), mediaItem.getSize(), mediaItem.getWidth(), mediaItem.getHeight(), mediaItem.isBorderless(), mediaItem.getCaption().orNull()));
         } else if (MediaUtil.isImageType(mediaItem.getMimeType())) {
@@ -1516,7 +1524,9 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
     sendButton.resetAvailableTransports(isMediaMessage);
 
-    if (!isSecureText && !isPushGroupConversation()) sendButton.disableTransport(Type.TEXTSECURE);
+    if (!isSecureText && !isPushGroupConversation() && !recipient.get().isUuidOnly()) {
+      sendButton.disableTransport(Type.TEXTSECURE);
+    }
 
     if (recipient.get().isPushGroup() || (!recipient.get().isMmsGroup() && !recipient.get().hasSmsAddress())) {
       sendButton.disableTransport(Type.SMS);
@@ -1525,8 +1535,11 @@ public class ConversationActivity extends PassphraseRequiredActivity
     if (!recipient.get().isPushGroup() && recipient.get().isForceSmsSelection()) {
       sendButton.setDefaultTransport(Type.SMS);
     } else {
-      if (isSecureText || isPushGroupConversation()) sendButton.setDefaultTransport(Type.TEXTSECURE);
-      else                                           sendButton.setDefaultTransport(Type.SMS);
+      if (isSecureText || isPushGroupConversation() || recipient.get().isUuidOnly()) {
+        sendButton.setDefaultTransport(Type.TEXTSECURE);
+      } else {
+        sendButton.setDefaultTransport(Type.SMS);
+      }
     }
 
     calculateCharactersRemaining();
@@ -1661,7 +1674,6 @@ public class ConversationActivity extends PassphraseRequiredActivity
     groupViewModel.getShowGroupsV1MigrationBanner()
                   .observe(this, b -> updateReminders());
   }
-
 
   private ListenableFuture<Boolean> initializeDraftFromDatabase() {
     SettableFuture<Boolean> future = new SettableFuture<>();
@@ -2194,6 +2206,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
     this.viewModel.setArgs(args);
     this.viewModel.getWallpaper().observe(this, this::updateWallpaper);
+    this.viewModel.getEvents().observe(this, this::onViewModelEvent);
   }
 
   private void initializeGroupViewModel() {
@@ -2444,10 +2457,10 @@ public class ConversationActivity extends PassphraseRequiredActivity
   //////// Helper Methods
 
   private ListenableFuture<Boolean> setMedia(@Nullable Uri uri, @NonNull MediaType mediaType) {
-    return setMedia(uri, mediaType, 0, 0, false);
+    return setMedia(uri, mediaType, 0, 0, false, false);
   }
 
-  private ListenableFuture<Boolean> setMedia(@Nullable Uri uri, @NonNull MediaType mediaType, int width, int height, boolean borderless) {
+  private ListenableFuture<Boolean> setMedia(@Nullable Uri uri, @NonNull MediaType mediaType, int width, int height, boolean borderless, boolean videoGif) {
     if (uri == null) {
       return new SettableFuture<>(false);
     }
@@ -2461,7 +2474,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
         mimeType = mediaType.toFallbackMimeType();
       }
 
-      Media media = new Media(uri, mimeType, 0, width, height, 0, 0, borderless, Optional.absent(), Optional.absent(), Optional.absent());
+      Media media = new Media(uri, mimeType, 0, width, height, 0, 0, borderless, videoGif, Optional.absent(), Optional.absent(), Optional.absent());
       startActivityForResult(MediaSendActivity.buildEditorIntent(ConversationActivity.this, Collections.singletonList(media), recipient.get(), composeText.getTextTrimmed(), sendButton.getSelectedTransport()), MEDIA_SENDER);
       return new SettableFuture<>(false);
     } else {
@@ -2587,7 +2600,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
       inputPanel.setVisibility(View.GONE);
       makeDefaultSmsButton.setVisibility(View.GONE);
       registerButton.setVisibility(View.VISIBLE);
-    } else if (!isSecureText && !isDefaultSms) {
+    } else if (!isSecureText && !isDefaultSms && recipient.hasSmsAddress()) {
       unblockButton.setVisibility(View.GONE);
       inputPanel.setVisibility(View.GONE);
       makeDefaultSmsButton.setVisibility(View.VISIBLE);
@@ -2841,14 +2854,15 @@ public class ConversationActivity extends PassphraseRequiredActivity
                                                   final boolean initiating,
                                                   final boolean clearComposeBox)
   {
-    if (!isDefaultSms && (!isSecureText || forceSms)) {
+    if (!isDefaultSms && (!isSecureText || forceSms) && recipient.get().hasSmsAddress()) {
       showDefaultSmsPrompt();
       return new SettableFuture<>(null);
     }
 
-    final long thread = this.threadId;
+    final boolean sendPush = (isSecureText && !forceSms) || recipient.get().isUuidOnly();
+    final long    thread   = this.threadId;
 
-    if (isSecureText && !forceSms) {
+    if (sendPush) {
       MessageUtil.SplitResult splitMessage = MessageUtil.getSplitMessage(this, body, sendButton.getSelectedTransport().calculateCharacters(body).maxPrimaryMessageSize);
       body = splitMessage.getBody();
 
@@ -2864,7 +2878,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
     final OutgoingMediaMessage outgoingMessage;
 
-    if (isSecureText && !forceSms) {
+    if (sendPush) {
       outgoingMessage = new OutgoingSecureMediaMessage(outgoingMessageCandidate);
       ApplicationDependencies.getTypingStatusSender().onTypingStopped(thread);
     } else {
@@ -2873,7 +2887,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
     Permissions.with(this)
                .request(Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS)
-               .ifNecessary(!isSecureText || forceSms)
+               .ifNecessary(!sendPush)
                .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_sms_permission_in_order_to_send_an_sms))
                .onAllGranted(() -> {
                  if (clearComposeBox) {
@@ -2900,7 +2914,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
   private void sendTextMessage(final boolean forceSms, final long expiresIn, final int subscriptionId, final boolean initiating)
       throws InvalidMessageException
   {
-    if (!isDefaultSms && (!isSecureText || forceSms)) {
+    if (!isDefaultSms && (!isSecureText || forceSms) && recipient.get().hasSmsAddress()) {
       showDefaultSmsPrompt();
       return;
     }
@@ -2908,10 +2922,11 @@ public class ConversationActivity extends PassphraseRequiredActivity
     final long    thread      = this.threadId;
     final Context context     = getApplicationContext();
     final String  messageBody = getMessage();
+    final boolean sendPush    = (isSecureText && !forceSms) || recipient.get().isUuidOnly();
 
     OutgoingTextMessage message;
 
-    if (isSecureText && !forceSms) {
+    if (sendPush) {
       message = new OutgoingEncryptedMessage(recipient.get(), messageBody, expiresIn);
       ApplicationDependencies.getTypingStatusSender().onTypingStopped(thread);
     } else {
@@ -2920,7 +2935,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
     Permissions.with(this)
                .request(Manifest.permission.SEND_SMS)
-               .ifNecessary(forceSms || !isSecureText)
+               .ifNecessary(!sendPush)
                .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_sms_permission_in_order_to_send_an_sms))
                .onAllGranted(() -> {
                  silentlySetComposeText("");
@@ -2962,6 +2977,14 @@ public class ConversationActivity extends PassphraseRequiredActivity
       } else {
         inlineAttachmentToggle.hide();
       }
+    }
+  }
+
+  private void onViewModelEvent(@NonNull ConversationViewModel.Event event) {
+    if (event == ConversationViewModel.Event.SHOW_RECAPTCHA) {
+      RecaptchaProofBottomSheetFragment.show(getSupportFragmentManager());
+    } else {
+      throw new AssertionError("Unexpected event!");
     }
   }
 
@@ -3168,7 +3191,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
   private void sendSticker(@NonNull StickerLocator stickerLocator, @NonNull String contentType, @NonNull Uri uri, long size, boolean clearCompose) {
     if (sendButton.getSelectedTransport().isSms()) {
-      Media  media  = new Media(uri, contentType, System.currentTimeMillis(), StickerSlide.WIDTH, StickerSlide.HEIGHT, size, 0, false, Optional.absent(), Optional.absent(), Optional.absent());
+      Media  media  = new Media(uri, contentType, System.currentTimeMillis(), StickerSlide.WIDTH, StickerSlide.HEIGHT, size, 0, false, false, Optional.absent(), Optional.absent(), Optional.absent());
       Intent intent = MediaSendActivity.buildEditorIntent(this, Collections.singletonList(media), recipient.get(), composeText.getTextTrimmed(), sendButton.getSelectedTransport());
       startActivityForResult(intent, MEDIA_SENDER);
       return;
@@ -3420,7 +3443,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
   }
 
   @Override
-  public void handleReaction(@NonNull View maskTarget,
+  public void handleReaction(@NonNull MaskView.MaskTarget maskTarget,
                              @NonNull MessageRecord messageRecord,
                              @NonNull Toolbar.OnMenuItemClickListener toolbarListener,
                              @NonNull ConversationReactionOverlay.OnHideListener onHideListener)
@@ -3451,7 +3474,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
   }
 
   @Override
-  public void handleReactionDetails(@NonNull View maskTarget) {
+  public void handleReactionDetails(@NonNull MaskView.MaskTarget maskTarget) {
     reactionDelegate.showMask(maskTarget, titleView.getMeasuredHeight(), inputAreaHeight());
   }
 

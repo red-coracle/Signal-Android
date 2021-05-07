@@ -38,6 +38,9 @@
   <string name="ApplicationPreferencesActivity_pin_disabled">PIN wedi\'i analluogi</string>
   <string name="ApplicationPreferencesActivity_hide">Cuddio</string>
   <string name="ApplicationPreferencesActivity_hide_reminder">Cuddio nodyn atgoffa?</string>
+  <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">Cofnodi ymadrodd adfer taliadau</string>
+  <string name="ApplicationPreferencesActivity_record_phrase">Recordio ymadrodd</string>
+  <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">Cyn y gallwch analluogi eich PIN, rhaid i chi gofnodi eich ymadrodd adfer taliadau i sicrhau y gallwch adfer eich cyfrif taliadau.</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">%d munud</item>
@@ -59,11 +62,12 @@
   <string name="AttachmentKeyboard_location">Lleoliad</string>
   <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Mae Signal angen caniatâd i ddangos eich lluniau a\'ch fideos diweddar.</string>
   <string name="AttachmentKeyboard_give_access">Caniatáu Mynediad</string>
+  <string name="AttachmentKeyboard_payment">Taliad</string>
   <!--AttachmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">Methu canfod rhaglen i ddewis cyfryngau.</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Mae ar Signal angen caniatâd Storio er mwyn atodi lluniau, fideos neu sain, ond mae wedi\'i wrthod yn barhaol. Ewch i ddewislen gosodiadau\'r ap, dewis "Caniatâd", a galluogi "Storio".</string>
-  <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Mae ar Signal angen caniatâd Cysylltiadau er mwyn atodi gwybodaeth gyswllt, ond fe\'i rwystrwyd yn barhaol. Ewch i ddewislen gosodiadau\'r ap, dewis "Caniatâd", a galluogi "Cysylltiadau".</string>
-  <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Mae ar Signal angen caniatâd Lleoliad er mwyn atodi gwybodaeth lleoliad, ond fe\'i rwystrwyd yn barhaol. Ewch i ddewislen gosodiadau\'r ap, dewis "Caniatâd", a galluogi "Lleoliadau".</string>
+  <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Mae ar Signal angen caniatâd Cysylltiadau er mwyn atodi manylion cyswllt, ond fe\'i rwystrwyd yn barhaol. Ewch i ddewislen gosodiadau\'r ap, dewis "Caniatâd", a galluogi "Cysylltiadau".</string>
+  <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Mae ar Signal angen caniatâd Lleoliad er mwyn atodi manylion lleoliad, ond fe\'i rwystrwyd yn barhaol. Ewch i ddewislen gosodiadau\'r ap, dewis "Caniatâd", a galluogi "Lleoliadau".</string>
   <!--AttachmentUploadJob-->
   <string name="AttachmentUploadJob_uploading_media">Llwytho cyfrwng…</string>
   <string name="AttachmentUploadJob_compressing_video_start">Cywasgu fideo…</string>
@@ -72,7 +76,7 @@
   <!--BlockedUsersActivity-->
   <string name="BlockedUsersActivity__blocked_users">Defnyddwyr wedi\'u rhwystro</string>
   <string name="BlockedUsersActivity__add_blocked_user">Ychwanegu defnyddiwr sydd wedi\'i rwystro</string>
-  <string name="BlockedUsersActivity__blocked_users_will">Ni fydd defnyddwyr wedi\'u rhwystro yn gallu eich galw nac anfon negeseuon atoch.</string>
+  <string name="BlockedUsersActivity__blocked_users_will">Ni fydd defnyddwyr wedi’u rhwystro yn gallu eich galw nac anfon negeseuon atoch.</string>
   <string name="BlockedUsersActivity__no_blocked_users">Dim defnyddwyr wedi\'u rhwystro</string>
   <string name="BlockedUsersActivity__block_user">Rhwystro defnyddiwr?</string>
   <string name="BlockedUserActivity__s_will_not_be_able_to">Fydd \"%1$s\" ddim yn gallu eich ffonio nac anfon negeseuon atoch.</string>
@@ -85,7 +89,7 @@
   <string name="BlockUnblockDialog_block_s">Rhwystro %1$s?</string>
   <string name="BlockUnblockDialog_you_will_no_longer_receive_messages_or_updates">Fyddwch chi ddim yn derbyn negeseuon na diweddariadau gan y grŵp hwn mwyach, ac ni fydd aelodau\'n gallu eich ychwanegu at y grŵp hwn eto.</string>
   <string name="BlockUnblockDialog_group_members_wont_be_able_to_add_you">Ni fydd aelodau\'r grŵp yn gallu eich ychwanegu at y grŵp hwn eto.</string>
-  <string name="BlockUnblockDialog_group_members_will_be_able_to_add_you">Bydd aelodau\'r grŵp yn gallu eich ychwanegu at y grŵp hwn eto.</string>
+  <string name="BlockUnblockDialog_group_members_will_be_able_to_add_you">Bydd aelodau’r grŵp yn gallu eich ychwanegu at y grŵp hwn eto.</string>
   <string name="BlockUnblockDialog_you_will_be_able_to_call_and_message_each_other">Bydd modd i chi negesu a galw\'ch gilydd a bydd eich enw a\'ch llun yn cael eu rhannu gyda nhw.</string>
   <string name="BlockUnblockDialog_blocked_people_wont_be_able_to_call_you_or_send_you_messages">Ni fydd pobl sydd wedi\'u rhwystro\'n gallu eich ffonio nac anfon negeseuon atoch.</string>
   <string name="BlockUnblockDialog_unblock_s">Dadrwystro %1$s?</string>
@@ -135,7 +139,7 @@
   <string name="CommunicationActions_cancel">Diddymu</string>
   <string name="CommunicationActions_call">Galw</string>
   <string name="CommunicationActions_insecure_call">Galwad anniogel</string>
-  <string name="CommunicationActions_carrier_charges_may_apply">Gall taliadau darparwr fod yn berthnasol. Nid yw\'r rhif rydych chi\'n ei alw wedi\'i gofrestru gyda Signal. Bydd yr alwad hon yn cael ei hanfon trwy eich darparwr symudol, nid dros y rhyngrwyd.</string>
+  <string name="CommunicationActions_carrier_charges_may_apply">Gall taliadau darparwr fod yn berthnasol. Nid yw’r rhif rydych chi\'n ei alw wedi’i gofrestru gyda Signal. Bydd yr alwad hon yn cael ei hanfon trwy eich darparwr symudol, nid dros y rhyngrwyd.</string>
   <!--ConfirmIdentityDialog-->
   <string name="ConfirmIdentityDialog_your_safety_number_with_s_has_changed">Mae\'ch rhif diogelwch gyda %1$s wedi newid. Gall hyn olygu bod rhywun yn ceisio ymyrryd a\'ch cyfathrebu, neu bod %2$s wedi ail-osod Signal.</string>
   <string name="ConfirmIdentityDialog_you_may_wish_to_verify_your_safety_number_with_this_contact">Efallai yr hoffech wirio\'ch rhif diogelwch gyda\'r cyswllt hwn.</string>
@@ -183,8 +187,8 @@ Send neges heb ei ddiogelu?</string>
   <string name="ConversationItem_this_message_was_deleted">Cafodd y neges hon ei dileu.</string>
   <string name="ConversationItem_you_deleted_this_message">Chi wnaeth ddileu\'r neges hon.</string>
   <!--ConversationActivity-->
-  <string name="ConversationActivity_reset_secure_session_question">Ailosod sesiwn ddiogel?</string>
-  <string name="ConversationActivity_this_may_help_if_youre_having_encryption_problems">Gall hyn helpu os ydych chi\'n cael problemau amgryptio yn y sgwrs hon. Bydd eich negeseuon yn cael eu cadw.</string>
+  <string name="ConversationActivity_reset_secure_session_question">Ail-osod sesiwn ddiogel?</string>
+  <string name="ConversationActivity_this_may_help_if_youre_having_encryption_problems">Gall hyn helpu os ydych chi’n cael problemau amgryptio yn y sgwrs hon. Bydd eich negeseuon yn cael eu cadw.</string>
   <string name="ConversationActivity_reset">Ailosod</string>
   <string name="ConversationActivity_add_attachment">Ychwanegu atodiad</string>
   <string name="ConversationActivity_select_contact_info">Dewis manylion cyswllt</string>
@@ -206,7 +210,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="ConversationActivity_unblock">Dadrwystro</string>
   <string name="ConversationActivity_attachment_exceeds_size_limits">Mae atodiad yn fwy na therfynau maint y math o neges rydych chi\'n ei hanfon.</string>
   <string name="ConversationActivity_unable_to_record_audio">Methu recordio sain!</string>
-  <string name="ConversationActivity_you_cant_send_messages_to_this_group">Nid oes moddi chi anfon negeseuon i\'r grŵp hwn oherwydd nid ydych yn aelod mwyach.</string>
+  <string name="ConversationActivity_you_cant_send_messages_to_this_group">Nid oes modd i chi anfon negeseuon i\'r grŵp hwn oherwydd nid ydych yn aelod mwyach.</string>
   <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">Nid oes ap ar gael i drin y ddolen hon ar eich dyfais.</string>
   <string name="ConversationActivity_your_request_to_join_has_been_sent_to_the_group_admin">Mae eich cais i ymuno wedi\'i anfon at weinyddiaeth y grŵp. Fe gewch hysbysiad pan fyddan nhw\'n gweithredu.</string>
   <string name="ConversationActivity_cancel_request">Diddymu\'r Cais</string>
@@ -228,13 +232,13 @@ Send neges heb ei ddiogelu?</string>
   <string name="ConversationActivity_sticker_pack_installed">Pac sticeri wedi ei osod</string>
   <string name="ConversationActivity_new_say_it_with_stickers">Newydd! Dweud gyda sticeri</string>
   <string name="ConversationActivity_cancel">Diddymu</string>
-  <string name="ConversationActivity_delete_conversation">Dileu\'r sgwrs?</string>
+  <string name="ConversationActivity_delete_conversation">Dileu’r sgwrs?</string>
   <string name="ConversationActivity_delete_and_leave_group">Dileu a gadael grŵp?</string>
   <string name="ConversationActivity_this_conversation_will_be_deleted_from_all_of_your_devices">Bydd y sgwrs hon yn cael ei dileu o\'ch holl ddyfeisiau.</string>
   <string name="ConversationActivity_you_will_leave_this_group_and_it_will_be_deleted_from_all_of_your_devices">Byddwch yn gadael y grŵp hwn, a bydd yn cael ei ddileu o\'ch holl ddyfeisiau.</string>
   <string name="ConversationActivity_delete">Dileu</string>
   <string name="ConversationActivity_delete_and_leave">Dileu a gadael</string>
-  <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone">I alw %1$s mae angen i Signal gael mynediad i\'ch meicroffon.</string>
+  <string name="ConversationActivity__to_call_s_signal_needs_access_to_your_microphone">I alw %1$s mae angen i Signal gael mynediad i’ch meicroffon.</string>
   <string name="ConversationActivity__more_options_now_in_group_settings">Rhagor o ddewisiadau yn \"Gosodiadau Grŵp\"</string>
   <string name="ConversationActivity_join">Ymuno</string>
   <string name="ConversationActivity_full">Llawn</string>
@@ -304,7 +308,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="ConversationFragment_verify">Dilysu</string>
   <string name="ConversationFragment_not_now">Nid nawr</string>
   <string name="ConversationFragment_your_safety_number_with_s_changed">Newidiodd eich rhif diogelwch gyda %s</string>
-  <string name="ConversationFragment_your_safety_number_with_s_changed_likey_because_they_reinstalled_signal">Newidiodd eich rhif diogelwch gyda %s, yn debygol oherwydd eu bod wedi ailosod Signal neu newid dyfeisiau. Tapiwch Dilysu i gadarnhau\'r rhif diogelwch newydd. Mae hyn yn ddewisol.</string>
+  <string name="ConversationFragment_your_safety_number_with_s_changed_likey_because_they_reinstalled_signal">Newidiodd eich rhif diogelwch gyda %s, yn debygol oherwydd eu bod wedi ailosod Signal neu newid dyfeisiau. Tapiwch Dilysu i gadarnhau’r rhif diogelwch newydd. Mae hyn yn ddewisol.</string>
   <plurals name="ConversationListFragment_delete_selected_conversations">
     <item quantity="one">Dileu\'r sgwrs hon?</item>
     <item quantity="two">Dileu\'r sgyrsiau hyn?</item>
@@ -346,11 +350,11 @@ Send neges heb ei ddiogelu?</string>
   <string name="CreateProfileActivity_error_setting_profile_photo">Gwall gosod llun proffil</string>
   <string name="CreateProfileActivity_problem_setting_profile">Anhawster gosod proffil</string>
   <string name="CreateProfileActivity_set_up_your_profile">Creu eich proffil</string>
-  <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Mae eich proffil wedi\'i amgryptio o ben-i-ben. Bydd eich proffil a\'ch newidiadau iddo yn weladwy i\'ch cysylltiadau, pan fyddwch chi\'n cychwyn neu\'n derbyn sgyrsiau newydd, a phan fyddwch yn ymuno â grwpiau newydd.</string>
+  <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Mae eich proffil wedi\'i amgryptio o ben-i-ben. Bydd eich proffil a’ch newidiadau iddo yn weladwy i\'ch cysylltiadau, pan fyddwch chi’n cychwyn neu\'n derbyn sgyrsiau newydd, a phan fyddwch yn ymuno â grwpiau newydd.</string>
   <string name="CreateProfileActivity_set_avatar_description">Gosod rhithffurf</string>
   <!--ChooseBackupFragment-->
-  <string name="ChooseBackupFragment__restore_from_backup">Adfer o\'r wrth gefn?</string>
-  <string name="ChooseBackupFragment__restore_your_messages_and_media">Adfer eich negeseuon a\'ch cyfryngau o gefn wrth gefn lleol. Os na fyddwch yn adfer nawr, ni fyddwch yn gallu adfer yn ddiweddarach.</string>
+  <string name="ChooseBackupFragment__restore_from_backup">Adfer o’r wrth gefn?</string>
+  <string name="ChooseBackupFragment__restore_your_messages_and_media">Adfer eich negeseuon a’ch cyfryngau o gefn wrth gefn lleol. Os na fyddwch yn adfer nawr, ni fyddwch yn gallu adfer yn ddiweddarach.</string>
   <string name="ChooseBackupFragment__icon_content_description">Adfer o\'r eicon wrth gefn</string>
   <string name="ChooseBackupFragment__choose_backup">Dewiswch y copi wrth gefn</string>
   <string name="ChooseBackupFragment__learn_more">Dysgu rhagor</string>
@@ -373,7 +377,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="BackupsPreferenceFragment__learn_more">Dysgu rhagor</string>
   <string name="BackupsPreferenceFragment__in_progress">Cynnydd…</string>
   <string name="BackupsPreferenceFragment__d_so_far">%1$d hyd yn hyn…</string>
-  <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Mae ar Signal angen caniatâd storio allanol er mwyn creu copïau wrth gefn, ond fe\'i rwystrwyd yn barhaol. Ewch i ddewislen gosodiadau\'r ap, dewis "Caniatâd", a galluogi "Storio".</string>
+  <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Mae ar Signal angen caniatâd storio allanol er mwyn creu copïau wrth gefn, ond fe’i rwystrwyd yn barhaol. Ewch i ddewislen gosodiadau’r ap, dewis "Caniatâd", a galluogi "Storio".</string>
   <!--CustomDefaultPreference-->
   <string name="CustomDefaultPreference_using_custom">Defnyddio\'r cyfaddas: %s</string>
   <string name="CustomDefaultPreference_using_default">Defnyddio rhagosodedig: %s</string>
@@ -392,7 +396,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="DateUtils_yesterday">Ddoe</string>
   <!--DecryptionFailedDialog-->
   <string name="DecryptionFailedDialog_chat_session_refreshed">Adnewyddwyd Sesiwn Sgwrsio</string>
-  <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Mae Signal yn defnyddio amgryptio o\'r dechrau i\'r diwedd ac weithiau efallai y bydd angen iddo adnewyddu eich sesiwn sgwrsio. Nid yw hyn yn effeithio ar ddiogelwch eich sgwrs, ond efallai eich bod wedi methu neges o\'r cyswllt hwn, a gallwch ofyn iddyn nhw ei hail-gyflwyno.</string>
+  <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Mae Signal yn defnyddio amgryptio o’r dechrau i’r diwedd ac weithiau efallai y bydd angen iddo adnewyddu eich sesiwn sgwrsio. Nid yw hyn yn effeithio ar ddiogelwch eich sgwrs, ond efallai eich bod wedi methu neges o’r cyswllt hwn, a gallwch ofyn iddyn nhw ei hail-gyflwyno.</string>
   <!--DeviceListActivity-->
   <string name="DeviceListActivity_unlink_s">Datgysylltu \'%s\'?</string>
   <string name="DeviceListActivity_by_unlinking_this_device_it_will_no_longer_be_able_to_send_or_receive">Drwy ddatgysylltu\'r ddyfais hon, ni fydd yn gallu anfon neu dderbyn negeseuon.</string>
@@ -673,6 +677,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="ManageGroupActivity_mentions">Crybwylliadau</string>
   <string name="ManageGroupActivity_chat_wallpaper">Papur wal sgwrsio</string>
   <string name="ManageGroupActivity_until_s">Tan %1$s</string>
+  <string name="ManageGroupActivity_always">Bob tro</string>
   <string name="ManageGroupActivity_off">I ffwrdd</string>
   <string name="ManageGroupActivity_on">Ymlaen</string>
   <string name="ManageGroupActivity_view_all_members">Gweld pob aelod</string>
@@ -704,7 +709,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="GroupMentionSettingDialog_notify_me_for_mentions">Rhowch wybod i mi am Grybwylliadau</string>
   <string name="GroupMentionSettingDialog_receive_notifications_when_youre_mentioned_in_muted_chats">Derbyn hysbysiadau pan soniwyd amdanoch mewn sgyrsiau tawel?</string>
   <string name="GroupMentionSettingDialog_always_notify_me">Rhoi gwybod i mi bob tro</string>
-  <string name="GroupMentionSettingDialog_dont_notify_me">Peidio rhoi gwybod</string>
+  <string name="GroupMentionSettingDialog_dont_notify_me">Peidio a rhoi gwybod</string>
   <!--ManageProfileFragment-->
   <string name="ManageProfileFragment_profile_name">Enw proffilEnw proffil</string>
   <string name="ManageProfileFragment_username">Enw defnyddiwr</string>
@@ -725,6 +730,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="ManageRecipientActivity_mute_notifications">Tewi hysbysiadau</string>
   <string name="ManageRecipientActivity_custom_notifications">Hysbysiadau cyfaddas</string>
   <string name="ManageRecipientActivity_until_s">Tan %1$s</string>
+  <string name="ManageRecipientActivity_always">Bob tro</string>
   <string name="ManageRecipientActivity_off">I ffwrdd</string>
   <string name="ManageRecipientActivity_on">Ymlaen</string>
   <string name="ManageRecipientActivity_add_to_a_group">Ychwanegu i grŵp</string>
@@ -921,6 +927,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="NotificationBarManager_signal_call_in_progress">Ar ganol galwad Signal</string>
   <string name="NotificationBarManager__establishing_signal_call">Sicrhau galwad Signal</string>
   <string name="NotificationBarManager__incoming_signal_call">Galwad Signal wedi cyrraedd</string>
+  <string name="NotificationBarManager__stopping_signal_call_service">Atal gwasanaeth galw Signal</string>
   <string name="NotificationBarManager__deny_call">Gwrthod galwad</string>
   <string name="NotificationBarManager__answer_call">Ateb galwad</string>
   <string name="NotificationBarManager__end_call">Gorffen galwad</string>
@@ -976,7 +983,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="MessageRecord_disappearing_message_time_set_to_s">Mae\'r amserydd neges sy\'n diflannu wedi\'i osod i %1$s.</string>
   <string name="MessageRecord_this_group_was_updated_to_a_new_group">Diweddarwyd y grŵp hwn i Grŵp Newydd.</string>
   <string name="MessageRecord_you_couldnt_be_added_to_the_new_group_and_have_been_invited_to_join">Nid oedd modd eich ychwanegu at y Grŵp Newydd ac rydych wedi cael gwahoddiad i ymuno.</string>
-  <string name="MessageRecord_chat_session_refreshed">Adnewyddwyd Sesiwn Sgwrsio</string>
+  <string name="MessageRecord_chat_session_refreshed">Adnewyddwyd y sesiwn sgwrsio</string>
   <plurals name="MessageRecord_members_couldnt_be_added_to_the_new_group_and_have_been_invited">
     <item quantity="one">Nid oedd modd ychwanegu aelod at y Grŵp Newydd ac mae wedi cael gwahoddiad i ymuno.</item>
     <item quantity="two">Nid oedd modd ychwanegu %1$s aelod at y Grŵp Newydd ac mae nhw wedi cael gwahoddiad i ymuno.</item>
@@ -1165,6 +1172,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Ymuno â\'r grŵp hwn a rhannu eich enw a llun gyda\'i aelodau? Byddan nhw ddim yn gwybod eich bod wedi gweld eu negeseuon nes eich bod wedi derbyn.</string>
   <string name="MessageRequestBottomView_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Ymuno â\'r grŵp hwn? Ni fyddant yn gwybod eich bod wedi gweld eu negeseuon nes i chi dderbyn.</string>
   <string name="MessageRequestBottomView_unblock_this_group_and_share_your_name_and_photo_with_its_members">Dadrwystro\'r grŵp a rhannu eich enw a llun gyda\'i aelodau? Fyddwch chi ddim yn derbyn unrhyw negeseuon nes i chi eu dadrwystro.</string>
+  <string name="MessageRequestProfileView_view">Golwg</string>
   <string name="MessageRequestProfileView_member_of_one_group">Aelod o %1$s</string>
   <string name="MessageRequestProfileView_member_of_two_groups">Aeolod o %1$s a %2$s</string>
   <string name="MessageRequestProfileView_member_of_many_groups">Aelod o %1$s, %2$s a %3$s</string>
@@ -1275,6 +1283,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="ReactionsConversationView_plus">+%1$d</string>
   <!--ReactionsRecipientAdapter-->
   <string name="ReactionsRecipientAdapter_you">Chi</string>
+  <!--RecaptchaRequiredBottomSheetFragment-->
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">Rhwystro</string>
   <string name="RecipientPreferenceActivity_unblock">Dadrwystro</string>
@@ -1337,6 +1346,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="ProxyBottomSheetFragment_do_you_want_to_use_this_proxy_address">Ydych chi am ddefnyddio\'r cyfeiriad dirprwyol hwn?</string>
   <string name="ProxyBottomSheetFragment_use_proxy">Defnyddiwch ddirprwy</string>
   <string name="ProxyBottomSheetFragment_successfully_connected_to_proxy">Wedi\'i gysylltu\'n llwyddiannus â dirprwy.</string>
+  <!--RecaptchaProofActivity-->
   <!--RegistrationActivity-->
   <string name="RegistrationActivity_select_your_country">Dewiswch eich gwlad</string>
   <string name="RegistrationActivity_you_must_specify_your_country_code">Rhaid i chi roi
@@ -1496,7 +1506,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="ThreadRecord_voice_message">Neges Llais</string>
   <string name="ThreadRecord_file">Ffeil</string>
   <string name="ThreadRecord_video">Fideo</string>
-  <string name="ThreadRecord_chat_session_refreshed">Adnewyddwyd Sesiwn Sgwrsio</string>
+  <string name="ThreadRecord_chat_session_refreshed">Adnewyddwyd y sesiwn sgwrsio</string>
   <!--UpdateApkReadyListener-->
   <string name="UpdateApkReadyListener_Signal_update">Diweddariad Signal</string>
   <string name="UpdateApkReadyListener_a_new_version_of_signal_is_available_tap_to_update">Mae fersiwn newydd o Signal ar gael. Tapiwch i ddiweddaru</string>
@@ -1594,16 +1604,18 @@ Send neges heb ei ddiogelu?</string>
   <string name="MessageNotifier_this_message_was_deleted">Cafodd y neges hon ei dileu.</string>
   <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Diffodd hysbysiadau cysylltiadau Signal? Gallwch eu galluogi eto yn Signal Hysbysiadau &gt; Gosodiadau &gt;.</string>
   <!--Notification Channels-->
-  <string name="NotificationChannel_messages">Rhagosodiad</string>
+  <string name="NotificationChannel_channel_messages">Negeseuon</string>
   <string name="NotificationChannel_calls">Galwadau</string>
   <string name="NotificationChannel_failures">Methiannau</string>
   <string name="NotificationChannel_backups">Copïau wrth gefn</string>
   <string name="NotificationChannel_locked_status">Statws y clo</string>
   <string name="NotificationChannel_app_updates">Diweddariadau ap</string>
   <string name="NotificationChannel_other">Arall</string>
-  <string name="NotificationChannel_group_messages">Negeseuon</string>
+  <string name="NotificationChannel_group_chats">Sgyrsiau</string>
   <string name="NotificationChannel_missing_display_name">Anhysbys</string>
   <string name="NotificationChannel_voice_notes">Nodiadau Llais</string>
+  <string name="NotificationChannel_contact_joined_signal">Cysylltiad wedi ymuno â Signal</string>
+  <string name="NotificationChannels__no_activity_available_to_open_notification_channel_settings">Dim gweithgaredd ar gael i agor gosodiadau sianel hysbysu.</string>
   <!--ProfileEditNameFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Nid yw ymateb cyflym ar gael pan fydd Signal wedi\'i gloi!</string>
@@ -1619,6 +1631,8 @@ Send neges heb ei ddiogelu?</string>
   <!--SingleRecipientNotificationBuilder-->
   <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
   <string name="SingleRecipientNotificationBuilder_new_message">Neges newydd</string>
+  <string name="SingleRecipientNotificationBuilder_message_request">Cais am neges</string>
+  <string name="SingleRecipientNotificationBuilder_you">Chi</string>
   <!--ThumbnailView-->
   <string name="ThumbnailView_Play_video_description">Chwarae fideo</string>
   <string name="ThumbnailView_Has_a_caption_description">Mae ganddo bennawd</string>
@@ -1730,6 +1744,9 @@ Send neges heb ei ddiogelu?</string>
   <string name="ConversationUpdateItem_return_to_call">Dychwelwch i\'r alwad</string>
   <string name="ConversationUpdateItem_call_is_full">Mae\'r alwad yn llawn</string>
   <string name="ConversationUpdateItem_invite_friends">Gwahodd ffrindiau</string>
+  <string name="ConversationUpdateItem_enable_call_notifications">Galluogi Hysbysiadau Galwadau</string>
+  <string name="ConversationUpdateItem_no_groups_in_common_review_requests_carefully">Dim grwpiau\'n gyffredin. Ystyriwch y ceisiadau\'n ofalus</string>
+  <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">Dim cysylltiadau\'n y grŵp hwn. Ystyriwch y ceisiadau\'n ofalus</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">Chwarae … Oedi</string>
   <string name="audio_view__download_accessibility_description">Llwytho i lawr</string>
@@ -1754,7 +1771,17 @@ Send neges heb ei ddiogelu?</string>
   <string name="safety_number_change_dialog__view">Golwg</string>
   <string name="safety_number_change_dialog__previous_verified">Wedi\'u dilysu\'n flaenorol</string>
   <!--EnableCallNotificationSettingsDialog__call_notifications_checklist-->
+  <string name="EnableCallNotificationSettingsDialog__call_notifications_enabled">Hysbysiadau galwadau wedi\'u galluogi.</string>
+  <string name="EnableCallNotificationSettingsDialog__enable_call_notifications">Galluogi hysbysiadau galwadau</string>
+  <string name="EnableCallNotificationSettingsDialog__enable_background_activity">Galluogi gweithgaredd cefndir</string>
+  <string name="EnableCallNotificationSettingsDialog__everything_looks_good_now">Mae popeth yn edrych yn dda nawr!</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_show_notifications">I dderbyn hysbysiadau galwadau, tapiwch yma a throi \"Dangos hysbysiadau\" ymlaen.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_notifications">I dderbyn hysbysiadau galwadau, tapiwch yma a throwch hysbysiadau ymlaen a gwneud yn siŵr bod Sain a Llamlenni wedi\'u galluogi.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_enable_background_activity_in_battery_settings">I dderbyn hysbysiadau galwadau, tapiwch yma a galluogi gweithgaredd cefndir yng ngosodiadau \"Batri\".</string>
   <string name="EnableCallNotificationSettingsDialog__settings">Gosodiadau</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_turn_on_show_notifications">I dderbyn hysbysiadau galwadau, tapiwch Gosodiadau a throwch \"Dangos hysbysiadau\" ymlaen.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_turn_on_notifications">I dderbyn hysbysiadau galwadau, tapiwch Gosodiadau a throwch hysbysiadau ymlaen a gwnewch yn siŵr bod Sain a Llamlenni wedi\'u galluogi.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_enable_background_activity_in_battery_settings">I dderbyn hysbysiadau galwadau, tapiwch Gosodiadau a galluogi gweithgaredd cefndir yng ngosodiadau \"Batri\".</string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Yn llwytho gwledydd…</string>
   <string name="country_selection_fragment__search">Chwilio</string>
@@ -1821,7 +1848,7 @@ Send neges heb ei ddiogelu?</string>
     <item quantity="other">%d arall</item>
   </plurals>
   <!--giphy_activity-->
-  <string name="giphy_activity_toolbar__search_gifs_and_stickers">Chwilio GIFau a sticeri</string>
+  <string name="giphy_activity_toolbar__search_gifs">Chwilio drwy\'r GIFau</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">Heb ganfod dim</string>
   <!--log_submit_activity-->
@@ -1941,6 +1968,14 @@ Send neges heb ei ddiogelu?</string>
   <string name="HelpFragment__debug_log">Cofnod Dadfygio:</string>
   <string name="HelpFragment__could_not_upload_logs">Methu llwytho\'r cofnod</string>
   <string name="HelpFragment__please_be_as_descriptive_as_possible">Byddwch mor ddisgrifiadol â phosibl i\'n helpu i ddeall y mater yma.</string>
+  <string-array name="HelpFragment__categories">
+    <item>Mae Rhywbeth Wedi Torri</item>
+    <item>Cais Nodwedd</item>
+    <item>Cwestiwn</item>
+    <item>Adborth</item>
+    <item>Arall</item>
+    <item>Taliadau</item>
+  </string-array>
   <!--ReactWithAnyEmojiBottomSheetDialogFragment-->
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__this_message">Y Neges hon</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__recently_used">Defnyddiwyd yn ddiweddar</string>
@@ -1957,8 +1992,10 @@ Send neges heb ei ddiogelu?</string>
   <string name="arrays__use_default">Defnyddio\'r rhagosodedig</string>
   <string name="arrays__use_custom">Defnyddio cyfaddas</string>
   <string name="arrays__mute_for_one_hour">Tewi am 1 awr</string>
+  <string name="arrays__mute_for_eight_hours">Tewi am 8 awr</string>
   <string name="arrays__mute_for_one_day">Tewi am 1 diwrnod</string>
   <string name="arrays__mute_for_seven_days">Tewi am 7 diwrnod</string>
+  <string name="arrays__always">Bob tro</string>
   <string name="arrays__settings_default">Rhagosodiadau\'r gosodiadau</string>
   <string name="arrays__enabled">Galluogwyd</string>
   <string name="arrays__disabled">Analluogwyd</string>
@@ -1984,6 +2021,7 @@ Send neges heb ei ddiogelu?</string>
     <item quantity="other">%da</item>
   </plurals>
   <!--preferences.xml-->
+  <string name="preferences_beta">Beta</string>
   <string name="preferences__sms_mms">SMS ac MMS</string>
   <string name="preferences__pref_all_sms_title">Derbyn yr holl SMS</string>
   <string name="preferences__pref_all_mms_title">Derbyn yr holl MMS</string>
@@ -2047,6 +2085,8 @@ Send neges heb ei ddiogelu?</string>
   <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">Gofyn am adroddiad trosglwyddo pob neges SMS rydych chi\'n ei anfon</string>
   <string name="preferences__data_and_storage">Data a storio</string>
   <string name="preferences__storage">Storfa</string>
+  <string name="preferences__payments">Taliadau</string>
+  <string name="preferences__payments_beta">Taliadau (Beta)</string>
   <string name="preferences__conversation_length_limit">Maint uchaf sgyrsiau</string>
   <string name="preferences__keep_messages">Cadw negeseuon</string>
   <string name="preferences__clear_message_history">Clirio hanes negeseuon</string>
@@ -2154,34 +2194,136 @@ Send neges heb ei ddiogelu?</string>
   <string name="configurable_single_select__customize_option">Cyfaddasu opsiwn</string>
   <!--Internal only preferences-->
   <!--Payments-->
+  <string name="PaymentsActivityFragment__all_activity">Pob gweithgaredd</string>
   <string name="PaymentsAllActivityFragment__all">Y Cyfan</string>
   <string name="PaymentsAllActivityFragment__sent">Anfonwyd</string>
   <string name="PaymentsAllActivityFragment__received">Derbyniwyd</string>
+  <string name="PaymentsHomeFragment__introducing_payments">Yn cyflwyno taliadau (Beta)</string>
+  <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Defnyddiwch Signal i anfon a derbyn MobileCoin, arian cyfred digidol newydd sy\'n canolbwyntio ar breifatrwydd. Gweithredwch i ddechrau.</string>
+  <string name="PaymentsHomeFragment__activate_payments">Cychwyn Taliadau</string>
+  <string name="PaymentsHomeFragment__activating_payments">Yn cychwyn taliadau…</string>
+  <string name="PaymentsHomeFragment__restore_payments_account">Adfer cyfrif taliadau</string>
+  <string name="PaymentsHomeFragment__no_recent_activity_yet">Dim gweithgaredd diweddar eto</string>
+  <string name="PaymentsHomeFragment__pending_requests">Ceisiadau o dan ystyriaeth</string>
+  <string name="PaymentsHomeFragment__recent_activity">Gweithgaredd diweddar</string>
   <string name="PaymentsHomeFragment__see_all">Gweld y cyfan</string>
+  <string name="PaymentsHomeFragment__add_funds">Ychwanegwch arian</string>
   <string name="PaymentsHomeFragment__send">Anfon</string>
+  <string name="PaymentsHomeFragment__sent_s">Anfonwyd %1$s</string>
+  <string name="PaymentsHomeFragment__received_s">Derbyniwyd %1$s</string>
+  <string name="PaymentsHomeFragment__transfer_to_exchange">Trosglwyddo i gyfnewid</string>
+  <string name="PaymentsHomeFragment__currency_conversion">Trosi arian cyfred</string>
+  <string name="PaymentsHomeFragment__deactivate_payments">Dadweithredu taliadau</string>
+  <string name="PaymentsHomeFragment__recovery_phrase">Ymadrodd adfer</string>
   <string name="PaymentsHomeFragment__help">Cymorth</string>
+  <string name="PaymentsHomeFragment__coin_cleanup_fee">Ffi glanhau darnau arian</string>
+  <string name="PaymentsHomeFragment__sent_payment">Taliad wedi\'i anfon</string>
+  <string name="PaymentsHomeFragment__received_payment">Taliad wedi\'i dderbyn</string>
+  <string name="PaymentsHomeFragment__processing_payment">Yn prosesu taliad</string>
+  <string name="PaymentsHomeFragment__unknown_amount">---</string>
+  <string name="PaymentsHomeFragment__currency_conversion_not_available">Nid yw trosi arian cyfred ar gael</string>
+  <string name="PaymentsHomeFragment__cant_display_currency_conversion">Methu dangos trosi arian cyfred. Gwiriwch gysylltiad eich ffôn a cheisiwch eto.</string>
+  <string name="PaymentsHomeFragment__payments_is_not_available_in_your_region">Nid oes taliadau ar gael yn eich rhanbarth.</string>
+  <string name="PaymentsHomeFragment__could_not_enable_payments">Methu galluogi taliadau. Rhowch gynnig arall arni yn nes ymlaen.</string>
+  <string name="PaymentsHomeFragment__deactivate_payments_question">Dadweithredu Taliadau?</string>
+  <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">Ni fydd modd i chi anfon na derbyn MobileCoin in Signal os byddwch yn dadwethredu taliadau.</string>
+  <string name="PaymentsHomeFragment__deactivate">Dadweithredu</string>
   <string name="PaymentsHomeFragment__continue">Parhau</string>
+  <string name="PaymentsHomeFragment__balance_is_not_currently_available">Nid oes balans ar gael ar hyn o bryd.</string>
+  <string name="PaymentsHomeFragment__payments_deactivated">Taliadau wedi\'u ddadweithredu.</string>
+  <string name="PaymentsHomeFragment__payment_failed">Methodd y taliad</string>
   <string name="PaymentsHomeFragment__details">Manylion</string>
+  <string name="PaymentsHomeFragment__you_can_use_signal_to_send">Gallwch ddefnyddio Signal i anfon a derbyn MobileCoin. Mae\'r holl daliadau yn ddarostyngedig i\'r Telerau Defnyddio ar gyfer MobileCoins a\'r Waled MobileCoin. Mae hon yn nodwedd beta felly efallai profwch anawsterau ac nad oes modd adennill taliadau neu falansau y gallech eu colli. </string>
+  <string name="PaymentsHomeFragment__activate">Cychwyn</string>
+  <string name="PaymentsHomeFragment__view_mobile_coin_terms">Gweld telerau MobileCoin</string>
+  <string name="PaymentsHomeFragment__payments_not_available">Nid yw taliadau yn Signal ar gael bellach. Gallwch barhau i drosglwyddo arian i gyfnewidfa ond ni allwch anfon a derbyn taliadau mwyach nac ychwanegu arian.</string>
   <!--PaymentsAddMoneyFragment-->
+  <string name="PaymentsAddMoneyFragment__add_funds">Ychwanegu arian</string>
+  <string name="PaymentsAddMoneyFragment__your_wallet_address">Cyfeiriad Eich Waled</string>
   <string name="PaymentsAddMoneyFragment__copy">Copïo</string>
   <string name="PaymentsAddMoneyFragment__copied_to_clipboard">Wedi\'i gopïo i\'r clipfwrdd</string>
+  <string name="PaymentsAddMoneyFragment__to_add_funds">I ychwanegu arian, anfonwch MobileCoin i\'ch cyfeiriad waled. Dechreuwch drafodyn o\'ch cyfrif ar gyfnewidfa sy\'n cefnogi MobileCoin, yna sganiwch y cod QR neu gopïwch eich cyfeiriad waled.</string>
   <!--PaymentsDetailsFragment-->
   <string name="PaymentsDetailsFragment__details">Manylion</string>
   <string name="PaymentsDetailsFragment__status">Statws</string>
+  <string name="PaymentsDetailsFragment__submitting_payment">Cyflwyno taliad…</string>
+  <string name="PaymentsDetailsFragment__processing_payment">Yn prosesu taliad</string>
+  <string name="PaymentsDetailsFragment__payment_complete">Taliad wedi\'i gwblhau</string>
+  <string name="PaymentsDetailsFragment__payment_failed">Methodd y taliad</string>
+  <string name="PaymentsDetailsFragment__network_fee">Ffi rhwydwaith</string>
+  <string name="PaymentsDetailsFragment__sent_by">Anfonwyd gan</string>
+  <string name="PaymentsDetailsFragment__sent_to_s">Anfonwyd at %1$s</string>
+  <string name="PaymentsDetailsFragment__you_on_s_at_s">Chi ar %1$s at %2$s.</string>
+  <string name="PaymentsDetailsFragment__s_on_s_at_s">%1$s ar %2$s at %3$s</string>
   <string name="PaymentsDetailsFragment__to">At</string>
   <string name="PaymentsDetailsFragment__from">Oddi wrth</string>
+  <string name="PaymentsDetailsFragment__information">Mae manylion trafodion gan gynnwys swm y taliad ac amser y trafodyn yn rhan o\'r Cyfriflyfr MobileCoin.</string>
+  <string name="PaymentsDetailsFragment__coin_cleanup_fee">Ffi glanhau darnau arian</string>
+  <string name="PaymentsDetailsFragment__coin_cleanup_information">Mae “ffi glanhau darnau arian” yn cael ei godi pan nad oes modd cyfuno\'r darnau arian yn eich meddiant i gwblhau trafodyn. Bydd glanhau yn caniatáu ichi barhau i anfon taliadau.</string>
+  <string name="PaymentsDetailsFragment__no_details_available">Nid oes unrhyw fanylion pellach ar gael ar gyfer y trafodyn hwn</string>
+  <string name="PaymentsDetailsFragment__sent_payment">Taliad wedi\'i anfon</string>
+  <string name="PaymentsDetailsFragment__received_payment">Taliad wedi\'i dderbyn</string>
+  <string name="PaymentsDeatilsFragment__payment_completed_s">Taliad wedi\'i gwblhau %1$s</string>
+  <string name="PaymentsDetailsFragment__block_number">Rhif bloc</string>
   <!--PaymentsTransferFragment-->
+  <string name="PaymentsTransferFragment__transfer">Trosglwyddo</string>
   <string name="PaymentsTransferFragment__scan_qr_code">Sganio côd QR</string>
+  <string name="PaymentsTransferFragment__to_scan_or_enter_wallet_address">At: Sganio neu roi cyfeiriad waled</string>
+  <string name="PaymentsTransferFragment__you_can_transfer">Gallwch drosglwyddo MobileCoin trwy gwblhau trosglwyddiad i\'r cyfeiriad waled sy\'n cael ei ddarparu gan y gyfnewidfa. Cyfeiriad y waled yw\'r llinyn rhifau a llythrennau sydd fel arfer o dan y cod QR.</string>
   <string name="PaymentsTransferFragment__next">Nesaf</string>
+  <string name="PaymentsTransferFragment__invalid_address">Cyfeiriad annilys</string>
+  <string name="PaymentsTransferFragment__check_the_wallet_address">Gwiriwch y cyfeiriad waled rydych chi\'n ceisio ei drosglwyddo iddo a rhoi cynnig arall arno.</string>
+  <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Nid oes modd i chi drosglwyddo i\'ch cyfeiriad waled Signal eich hun. Rhowch gyfeiriad y waled o\'ch cyfrif mewn cyfnewidfa sy\'n cael ei gefnogi.</string>
+  <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">I sganio cod QR, mae Signal angen mynediad i\'r camera.</string>
+  <string name="PaymentsTransferFragment__signal_needs_the_camera_permission_to_capture_qr_code_go_to_settings">Mae Signal angen caniatâd y Camera i gipio\'r cod QR. Ewch i osodiadau, dewiswch \"Caniatâd\", a galluogi \"Camera\".</string>
+  <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">I sganio cod QR, mae Signal angen mynediad i\'r camera.</string>
   <string name="PaymentsTransferFragment__settings">Gosodiadau</string>
   <!--PaymentsTransferQrScanFragment-->
+  <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Sganio Cod QR Cyfeiriad</string>
+  <string name="PaymentsTransferQrScanFragment__scan_the_address_qr_code_of_the_payee">Sganio cod QR cyfeiriad y talai</string>
   <!--CreatePaymentFragment-->
   <string name="CreatePaymentFragment__request">Gofyn</string>
+  <string name="CreatePaymentFragment__pay">Talu</string>
+  <string name="CreatePaymentFragment__available_balance_s">Balans ar gael: %1$s</string>
+  <string name="CreatePaymentFragment__toggle_content_description">Toglo</string>
+  <string name="CreatePaymentFragment__1">1</string>
+  <string name="CreatePaymentFragment__2">2</string>
+  <string name="CreatePaymentFragment__3">3</string>
+  <string name="CreatePaymentFragment__4">4</string>
+  <string name="CreatePaymentFragment__5">5</string>
+  <string name="CreatePaymentFragment__6">6</string>
+  <string name="CreatePaymentFragment__7">7</string>
+  <string name="CreatePaymentFragment__8">8</string>
+  <string name="CreatePaymentFragment__9">9</string>
+  <string name="CreatePaymentFragment__decimal">.</string>
+  <string name="CreatePaymentFragment__0">0</string>
+  <string name="CreatePaymentFragment__lt">&lt;</string>
+  <string name="CreatePaymentFragment__backspace">Backspace</string>
+  <string name="CreatePaymentFragment__add_note">Ychwanegu nodyn</string>
+  <string name="CreatePaymentFragment__conversions_are_just_estimates">Amcangyfrifon yn unig yw trosiadau ac efallai na fyddan nhw\'n gywir.</string>
   <!--EditNoteFragment-->
+  <string name="EditNoteFragment_note">Nodyn</string>
   <!--ConfirmPaymentFragment-->
+  <string name="ConfirmPayment__confirm_payment">Cadarnhau taliad</string>
+  <string name="ConfirmPayment__network_fee">Ffi rhwydwaith</string>
+  <string name="ConfirmPayment__error_getting_fee">Gwall wrth gael ffi</string>
+  <string name="ConfirmPayment__estimated_s">Amcangyfrif %1$s</string>
   <string name="ConfirmPayment__to">At</string>
+  <string name="ConfirmPayment__total_amount">Cyfanswm</string>
+  <string name="ConfirmPayment__balance_s">Balans: %1$s</string>
+  <string name="ConfirmPayment__submitting_payment">Yn cyflwyno taliad…</string>
+  <string name="ConfirmPayment__processing_payment">Yn prosesu taliad…</string>
+  <string name="ConfirmPayment__payment_complete">Taliad wedi\'i gwblhau</string>
+  <string name="ConfirmPayment__payment_failed">Methodd y taliad</string>
+  <string name="ConfirmPayment__payment_will_continue_processing">Bydd y taliad yn parhau i brosesu</string>
+  <string name="ConfirmPaymentFragment__invalid_recipient">Derbynnydd annilys</string>
+  <string name="ConfirmPaymentFragment__this_person_has_not_activated_payments">Nid yw\'r person hwn wedi gweithredu taliadau</string>
+  <string name="ConfirmPaymentFragment__unable_to_request_a_network_fee">Methu gofyn am ffi rhwydwaith. I barhau â\'r taliad hwn, tapiwch Iawn i geisio eto.</string>
   <!--CurrencyAmountFormatter_s_at_s-->
+  <string name="CurrencyAmountFormatter_s_at_s">%1$s yn %2$s</string>
   <!--SetCurrencyFragment-->
+  <string name="SetCurrencyFragment__set_currency">Gosod Arian Cyfred</string>
+  <string name="SetCurrencyFragment__all_currencies">Pob Arian Cyfred</string>
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -2526,7 +2668,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="NewDeviceTransferInstructions__first_bullet">1.</string>
   <string name="NewDeviceTransferInstructions__tap_on_your_profile_photo_in_the_top_left_to_open_settings">Tapiwch eich llun proffil yn y chwith uchaf i agor y Gosodiadau</string>
   <string name="NewDeviceTransferInstructions__second_bullet">2.</string>
-  <string name="NewDeviceTransferInstructions__tap_on_chats">Tapiwch ar \"Sgwrs\"</string>
+  <string name="NewDeviceTransferInstructions__tap_on_chats">Tapiwch ar \"Sgyrsiau\"</string>
   <string name="NewDeviceTransferInstructions__third_bullet">3.</string>
   <string name="NewDeviceTransferInstructions__tap_transfer_account_and_then_continue_on_both_devices">Tapiwch \"Trosglwyddo Cyfrif\" ac yna \"Parhau\" ar y ddau ddyfais</string>
   <!--NewDeviceTransferSetupFragment-->
@@ -2625,6 +2767,10 @@ Send neges heb ei ddiogelu?</string>
   <string name="OldDeviceTransferLockedDialog__done">Wedi Gorffen</string>
   <string name="OldDeviceTransferLockedDialog__cancel_and_activate_this_device">Diddymu a gweithredu\'r ddyfais hon</string>
   <!--AdvancedPreferenceFragment-->
+  <string name="AdvancedPreferenceFragment__transfer_mob_balance">Trosglwyddo balans MOB?</string>
+  <string name="AdvancedPreferenceFragment__you_have_a_balance_of_s">Mae gennych falans o %1$s. Os na fyddwch yn trosglwyddo\'ch arian i gyfeiriad waled arall cyn dileu eich cyfrif, byddwch yn ei golli am byth.</string>
+  <string name="AdvancedPreferenceFragment__dont_transfer">Peidio â throsglwyddo</string>
+  <string name="AdvancedPreferenceFragment__transfer">Trosglwyddo</string>
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Rhwystro</string>
   <string name="RecipientBottomSheet_unblock">Dadrwystro</string>
@@ -2656,7 +2802,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="GroupsLearnMore_paragraph_3">Bydd Signal yn cynnig ffordd i uwchraddio Hen Etifeddiaeth yn y dyfodol.</string>
   <!--GroupLinkBottomSheetDialogFragment-->
   <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Gall unrhyw un sydd â\'r ddolen hon weld enw a llun o\'r grŵp a gofyn i ymuno. Rhannwch hi gyda phobl rydych yn ymddiried ynddyn nhw.</string>
-  <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Gall unrhyw un sydd â\'r ddolen hon weld enw a llun o\'r grŵp a gofyn i ymuno. Rhannwch hi gyda phobl rydych yn ymddiried ynddyn nhw.</string>
+  <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Gall unrhyw un sydd â\'r ddolen hon weld enw a llun o\'r grŵp a gofyn i gael ymuno. Rhannwch hi gyda phobl rydych yn ymddiried ynddyn nhw.</string>
   <string name="GroupLinkBottomSheet_share_via_signal">Rhannu trwy Signal</string>
   <string name="GroupLinkBottomSheet_copy">Copïo</string>
   <string name="GroupLinkBottomSheet_qr_code">Cod QR</string>
@@ -2721,6 +2867,7 @@ Send neges heb ei ddiogelu?</string>
   <string name="DeleteAccountFragment__delete_account">Dileu cyfrif</string>
   <string name="DeleteAccountFragment__delete_your_account_info_and_profile_photo">Dileu manylion eich cyfrif a\'ch llun proffil</string>
   <string name="DeleteAccountFragment__delete_all_your_messages">Dileu eich holl negeseuon</string>
+  <string name="DeleteAccountFragment__delete_s_in_your_payments_account">Dileu %1$s yn eich cyfrif taliadau</string>
   <string name="DeleteAccountFragment__no_country_code">Dim cod gwlad wedi\'i nodi</string>
   <string name="DeleteAccountFragment__no_number">Dim rhif wedi\'i nodi</string>
   <string name="DeleteAccountFragment__the_phone_number">Nid yw\'r rhif ffôn a nodoch yn cyfateb i\'ch rhif cyfrif.</string>
@@ -2776,25 +2923,87 @@ Send neges heb ei ddiogelu?</string>
   <string name="WallpaperCropActivity__error_setting_wallpaper">Gwall wrth osod papur wal.</string>
   <string name="WallpaperCropActivity__blur_photo">Pylu llun</string>
   <!--InfoCard-->
+  <string name="payment_info_card_about_mobilecoin">Ynghylch MobileCoin</string>
+  <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">Mae MobileCoin yn arian digidol newydd sy\'n canolbwyntio ar breifatrwydd.</string>
+  <string name="payment_info_card_adding_funds">Ychwanegu arian</string>
+  <string name="payment_info_card_you_can_add_funds_for_use_in">Gallwch ychwanegu arian i\'w ddefnyddio yn Signal trwy anfon MobileCoin i\'ch cyfeiriad waled.</string>
+  <string name="payment_info_card_cashing_out">Tynnu arian allan</string>
+  <string name="payment_info_card_you_can_cash_out_mobilecoin">Gallwch dynnu allan o MobileCoin ar unrhyw bryd ar gyfnewidfa sy\'n cefnogi MobileCoin. Dim ond trosglwyddo i\'ch cyfrif yn y gyfnewidfa honno.</string>
+  <string name="payment_info_card_hide_this_card">Cuddio\'r cerdyn hwn?</string>
   <string name="payment_info_card_hide">Cuddio</string>
+  <string name="payment_info_card_record_recovery_phrase">Cofnodi ymadrodd adfer</string>
+  <string name="payment_info_card_your_recovery_phrase_gives_you">Mae eich ymadrodd adfer yn rhoi ffordd arall i chi adfer eich cyfrif taliadau.</string>
+  <string name="payment_info_card_record_your_phrase">Cofnodwch eich ymadrodd</string>
+  <string name="payment_info_card_update_your_pin">Diweddarwch eich PIN</string>
+  <string name="payment_info_card_with_a_high_balance">Gyda balans uchel, efallai yr hoffech chi ddiweddaru i PIN alffaniwmerig i ychwanegu mwy o ddiogelwch i\'ch cyfrif.</string>
   <string name="payment_info_card_update_pin">Diweddaru PIN</string>
   <!--DeactivateWalletFragment-->
+  <string name="DeactivateWalletFragment__deactivate_wallet">Dadweithredu\'r Waled</string>
+  <string name="DeactivateWalletFragment__your_balance">Eich balans</string>
+  <string name="DeactivateWalletFragment__its_recommended_that_you">Rydym yn argymell eich bod yn trosglwyddo\'ch arian i gyfeiriad waled arall cyn dadweithredu taliadau. Os dewiswch beidio â throsglwyddo\'ch arian nawr, byddant yn aros yn eich waled sy\'n gysylltiedig â Signal os byddwch yn ail weithredu taliadau.</string>
+  <string name="DeactivateWalletFragment__transfer_remaining_balance">Trosglwyddo\'r balans sy\'n weddill</string>
+  <string name="DeactivateWalletFragment__deactivate_without_transferring">Dadweithredu heb drosglwyddo</string>
+  <string name="DeactivateWalletFragment__deactivate">Dadweithredu</string>
+  <string name="DeactivateWalletFragment__deactivate_without_transferring_question">Dadweithredu heb drosglwyddo?</string>
+  <string name="DeactivateWalletFragment__your_balance_will_remain">Bydd eich balans yn aros yn eich waled sy\'n gysylltiedig â Signal os byddwch chi\'n dewis ail weithredu eich taliadau.</string>
+  <string name="DeactivateWalletFragment__error_deactivating_wallet">Gwall wrth ddadweithredu\'r waled.</string>
   <!--PaymentsRecoveryStartFragment-->
+  <string name="PaymentsRecoveryStartFragment__recovery_phrase">Ymadrodd adfer</string>
+  <string name="PaymentsRecoveryStartFragment__view_recovery_phrase">Gweld ymadrodd adfer</string>
+  <string name="PaymentsRecoveryStartFragment__enter_recovery_phrase">Rhowch ymadrodd adfer</string>
+  <string name="PaymentsRecoveryStartFragment__your_balance_will_automatically_restore">Bydd eich balans yn adfer yn awtomatig pan fyddwch yn ailosod Signal os byddwch yn cadarnhau eich PIN Signal. Gallwch hefyd adfer eich balans gan ddefnyddio ymadrodd adfer, sy\'n ymadrodd %1$d-word sy\'n unigryw i chi. Ysgrifennwch ef i lawr a\'i storio mewn man diogel.</string>
+  <string name="PaymentsRecoveryStartFragment__your_recovery_phrase_is_a">Mae eich ymadrodd adfer yn ymadrodd %1$d-word sy\'n unigryw i chi. Defnyddiwch yr ymadrodd hwn i adfer eich balans.</string>
+  <string name="PaymentsRecoveryStartFragment__start">Cychwyn</string>
+  <string name="PaymentsRecoveryStartFragment__enter_manually">Mewnosod â llaw</string>
+  <string name="PaymentsRecoveryStartFragment__paste_from_clipboard">Gludo o\'r clipfwrdd</string>
   <!--PaymentsRecoveryPasteFragment-->
+  <string name="PaymentsRecoveryPasteFragment__paste_recovery_phrase">Gludo\'r ymadrodd adfer</string>
+  <string name="PaymentsRecoveryPasteFragment__recovery_phrase">Ymadrodd adfer</string>
   <string name="PaymentsRecoveryPasteFragment__next">Nesaf</string>
+  <string name="PaymentsRecoveryPasteFragment__invalid_recovery_phrase">Ymadrodd adfer annilys</string>
+  <string name="PaymentsRecoveryPasteFragment__make_sure">Sicrhewch eich bod wedi rhoi %1$d gair a cheisio eto.</string>
   <!--PaymentsRecoveryPhraseFragment-->
   <string name="PaymentsRecoveryPhraseFragment__next">Nesaf</string>
   <string name="PaymentsRecoveryPhraseFragment__edit">Golygu</string>
+  <string name="PaymentsRecoveryPhraseFragment__previous">Blaenorol</string>
+  <string name="PaymentsRecoveryPhraseFragment__your_recovery_phrase">Eich ymadrodd adfer</string>
+  <string name="PaymentsRecoveryPhraseFragment__write_down_the_following_d_words">Ysgrifennwch y %1$d gair canlynol mewn trefn. Cadwch eich rhestr mewn man diogel.</string>
+  <string name="PaymentsRecoveryPhraseFragment__make_sure_youve_entered">Sicrhewch eich bod wedi nodi\'ch ymadrodd yn gywir.</string>
+  <string name="PaymentsRecoveryPhraseFragment__do_not_screenshot_or_send_by_email">Peidiwch â thynnu llun sgrin nac anfon trwy e-bost.</string>
+  <string name="PaymentsRecoveryPhraseFragment__payments_account_restored">Cyfrif taliadau wedi\'i adfer.</string>
+  <string name="PaymentsRecoveryPhraseFragment__invalid_recovery_phrase">Ymadrodd adfer annilys</string>
+  <string name="PaymentsRecoveryPhraseFragment__make_sure_youve_entered_your_phrase_correctly_and_try_again">Gwnewch yn siŵr eich bod wedi nodi\'ch ymadrodd yn gywir a rhoi cynnig arall arni.</string>
+  <string name="PaymentsRecoveryPhraseFragment__copy_to_clipboard">Copïo i\'r clipfwrdd?</string>
+  <string name="PaymentsRecoveryPhraseFragment__if_you_choose_to_store">Os dewiswch gadw\'ch ymadrodd adfer yn ddigidol, gwnewch yn siŵr ei fod yn cael ei storio\'n ddiogel mewn man rydych yn ymddiried ynddo.</string>
   <string name="PaymentsRecoveryPhraseFragment__copy">Copïo</string>
   <!--PaymentsRecoveryPhraseConfirmFragment-->
+  <string name="PaymentRecoveryPhraseConfirmFragment__confirm_recovery_phrase">Cadarnhau\'r ymadrodd adfer</string>
+  <string name="PaymentRecoveryPhraseConfirmFragment__enter_the_following_words">Rhowch y geiriau canlynol o\'ch ymadrodd adfer.</string>
+  <string name="PaymentRecoveryPhraseConfirmFragment__word_d">Gair %1$d</string>
+  <string name="PaymentRecoveryPhraseConfirmFragment__see_phrase_again">Gweld yr ymadrodd eto</string>
   <string name="PaymentRecoveryPhraseConfirmFragment__done">Wedi Gorffen</string>
+  <string name="PaymentRecoveryPhraseConfirmFragment__recovery_phrase_confirmed">Cadarnhawyd yr ymadrodd adfer</string>
   <!--PaymentsRecoveryEntryFragment-->
+  <string name="PaymentsRecoveryEntryFragment__enter_recovery_phrase">Rhowch yr ymadrodd adfer</string>
+  <string name="PaymentsRecoveryEntryFragment__enter_word_d">Rhowch air %1$d</string>
+  <string name="PaymentsRecoveryEntryFragment__word_d">Gair %1$d</string>
   <string name="PaymentsRecoveryEntryFragment__next">Nesaf</string>
+  <string name="PaymentsRecoveryEntryFragment__invalid_word">Gair annilys</string>
   <!--ClearClipboardAlarmReceiver-->
+  <string name="ClearClipboardAlarmReceiver__clipboard_cleared">Clipfwrdd wedi\'i glirio.</string>
   <!--PaymentNotificationsView-->
   <string name="PaymentNotificationsView__view">Golwg</string>
   <!--UnreadPayments-->
+  <string name="UnreadPayments__s_sent_you_s">Anfonodd %1$s %2$s atoch chi</string>
+  <string name="UnreadPayments__d_new_payment_notifications">%1$d hysbysiadau talu newydd</string>
   <!--CanNotSendPaymentDialog-->
+  <string name="CanNotSendPaymentDialog__cant_send_payment">Methu anfon taliad</string>
+  <string name="CanNotSendPaymentDialog__to_send_a_payment_to_this_user">I anfon taliad at y defnyddiwr hwn mae angen iddo dderbyn cais neges gennych chi. Anfonwch neges atyn nhw i greu cais am neges.</string>
   <string name="CanNotSendPaymentDialog__send_a_message">Anfon neges</string>
+  <!--GroupsInCommonMessageRequest-->
+  <string name="GroupsInCommonMessageRequest__you_have_no_groups_in_common_with_this_person">Does gennych ddim grwpiau\'n gyffredin â\'r person yma. Ystyriwch y ceisiadau\'n ofalus cyn derbyn negeseuon digroeso.</string>
+  <string name="GroupsInCommonMessageRequest__none_of_your_contacts_or_people_you_chat_with_are_in_this_group">Does dim o\'ch cysylltiadau na\'r bobl rydych yn sgwrsio gyda nhw yn y grŵp yma. . Ystyriwch y ceisiadau\'n ofalus cyn derbyn negeseuon digroeso.</string>
+  <string name="GroupsInCommonMessageRequest__about_message_requests">Ychylch ceisiadau i negesu</string>
+  <string name="GroupsInCommonMessageRequest__okay">Iawn</string>
   <!--EOF-->
 </resources>

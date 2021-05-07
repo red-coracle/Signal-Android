@@ -321,6 +321,27 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
+  public void markAsRateLimited(long id) {
+    updateTypeBitmask(id, 0, Types.MESSAGE_RATE_LIMITED_BIT);
+  }
+
+  @Override
+  public void clearRateLimitStatus(@NonNull Collection<Long> ids) {
+    SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+    db.beginTransaction();
+    try {
+      for (long id : ids) {
+        updateTypeBitmask(id, Types.MESSAGE_RATE_LIMITED_BIT, 0);
+      }
+
+      db.setTransactionSuccessful();
+    } finally {
+      db.endTransaction();
+    }
+  }
+
+  @Override
   public void markAsDecryptFailed(long id) {
     updateTypeBitmask(id, Types.ENCRYPTION_MASK, Types.ENCRYPTION_REMOTE_FAILED_BIT);
   }
@@ -464,6 +485,7 @@ public class SmsDatabase extends MessageDatabase {
     ContentValues  contentValues = new ContentValues();
 
     contentValues.put(NOTIFIED, 1);
+    contentValues.put(REACTIONS_LAST_SEEN, System.currentTimeMillis());
 
     database.update(TABLE_NAME, contentValues, ID_WHERE, new String[] {String.valueOf(id)});
   }
@@ -510,7 +532,7 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
-  public List<Pair<Long, Long>> setTimestampRead(SyncMessageId messageId, long proposedExpireStarted) {
+  public List<Pair<Long, Long>> setTimestampRead(SyncMessageId messageId, long proposedExpireStarted, @NonNull Map<Long, Long> threadToLatestRead) {
     SQLiteDatabase         database = databaseHelper.getWritableDatabase();
     List<Pair<Long, Long>> expiring = new LinkedList<>();
     Cursor                 cursor   = null;
@@ -547,6 +569,9 @@ public class SmsDatabase extends MessageDatabase {
           DatabaseFactory.getThreadDatabase(context).updateReadState(threadId);
           DatabaseFactory.getThreadDatabase(context).setLastSeen(threadId);
           notifyConversationListeners(threadId);
+
+          Long latest = threadToLatestRead.get(threadId);
+          threadToLatestRead.put(threadId, (latest != null) ? Math.max(latest, messageId.getTimetamp()) : messageId.getTimetamp());
         }
       }
     } finally {
@@ -628,6 +653,11 @@ public class SmsDatabase extends MessageDatabase {
   @Override
   public @Nullable MarkedMessageInfo setIncomingMessageViewed(long messageId) {
     return null;
+  }
+
+  @Override
+  public @NonNull List<MarkedMessageInfo> setIncomingMessagesViewed(@NonNull List<Long> messageIds) {
+    return Collections.emptyList();
   }
 
   private Pair<Long, Long> updateMessageBodyAndType(long messageId, String body, long maskOff, long maskOn) {
@@ -875,6 +905,22 @@ public class SmsDatabase extends MessageDatabase {
     ApplicationDependencies.getJobManager().add(new TrimThreadJob(threadId));
 
     return new Pair<>(messageId, threadId);
+  }
+
+  @Override
+  public Set<Long> getAllRateLimitedMessageIds() {
+    SQLiteDatabase db    = databaseHelper.getReadableDatabase();
+    String         where = "(" + TYPE + " & " + Types.TOTAL_MASK + " & " + Types.MESSAGE_RATE_LIMITED_BIT + ") > 0";
+
+    Set<Long> ids = new HashSet<>();
+
+    try (Cursor cursor = db.query(TABLE_NAME, new String[] { ID }, where, null, null, null, null)) {
+      while (cursor.moveToNext()) {
+        ids.add(CursorUtil.requireLong(cursor, ID));
+      }
+    }
+
+    return ids;
   }
 
   @Override

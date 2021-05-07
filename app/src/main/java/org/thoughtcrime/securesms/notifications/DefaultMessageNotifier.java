@@ -23,6 +23,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.Ringtone;
@@ -102,8 +103,8 @@ public class DefaultMessageNotifier implements MessageNotifier {
   public static final  String NOTIFICATION_GROUP = "messages";
 
   private static final String EMOJI_REPLACEMENT_STRING  = "__EMOJI__";
-  private static final long   MIN_AUDIBLE_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(2);
-  private static final long   DESKTOP_ACTIVITY_PERIOD   = TimeUnit.MINUTES.toMillis(1);
+  public  static final long   MIN_AUDIBLE_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(2);
+  public  static final long   DESKTOP_ACTIVITY_PERIOD   = TimeUnit.MINUTES.toMillis(1);
 
   private volatile long                     visibleThread                = -1;
   private volatile long                     lastDesktopActivityTimestamp = -1;
@@ -131,7 +132,7 @@ public class DefaultMessageNotifier implements MessageNotifier {
   }
 
   @Override
-  public void notifyMessageDeliveryFailed(Context context, Recipient recipient, long threadId) {
+  public void notifyMessageDeliveryFailed(@NonNull Context context, @NonNull Recipient recipient, long threadId) {
     if (visibleThread == threadId) {
       sendInThreadNotification(context, recipient);
     } else {
@@ -142,6 +143,15 @@ public class DefaultMessageNotifier implements MessageNotifier {
 
       ((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE))
         .notify((int)threadId, builder.build());
+    }
+  }
+
+  @Override
+  public void notifyProofRequired(@NonNull Context context, @NonNull Recipient recipient, long threadId) {
+    if (visibleThread == threadId) {
+      sendInThreadNotification(context, recipient);
+    } else {
+      Log.w(TAG, "[Proof Required] Not notifying on old notifier.");
     }
   }
 
@@ -583,7 +593,9 @@ public class DefaultMessageNotifier implements MessageNotifier {
       if (isUnreadMessage) {
         boolean canReply = false;
 
-        if (KeyCachingService.isLocked(context)) {
+        if (!RecipientUtil.isMessageRequestAccepted(context, threadId)) {
+          body = SpanUtil.italic(context.getString(R.string.SingleRecipientNotificationBuilder_message_request));
+        } else if (KeyCachingService.isLocked(context)) {
           body = SpanUtil.italic(context.getString(R.string.MessageNotifier_locked_message));
         } else if (record.isMms() && !((MmsMessageRecord) record).getSharedContacts().isEmpty()) {
           Contact contact = ((MmsMessageRecord) record).getSharedContacts().get(0);
@@ -746,6 +758,12 @@ public class DefaultMessageNotifier implements MessageNotifier {
 
     alarmManager.cancel(pendingIntent);
   }
+
+  @Override
+  public void addStickyThread(long threadId, long earliestTimestamp) {}
+
+  @Override
+  public void removeStickyThread(long threadId) {}
 
   private static class DelayedNotification implements Runnable {
 

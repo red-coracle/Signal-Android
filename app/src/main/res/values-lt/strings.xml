@@ -38,6 +38,9 @@
   <string name="ApplicationPreferencesActivity_pin_disabled">PIN kodas išjungtas.</string>
   <string name="ApplicationPreferencesActivity_hide">Slėpti</string>
   <string name="ApplicationPreferencesActivity_hide_reminder">Slėpti priminimą?</string>
+  <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">Užsirašykite mokėjimų atkūrimo frazę</string>
+  <string name="ApplicationPreferencesActivity_record_phrase">Atkūrimo frazė</string>
+  <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">Prieš tai, kai galėsite išjungti PIN kodą, privalote užsirašyti mokėjimų atkūrimo frazę, kad būtų užtikrinta, jog galėsite atkurti savo mokėjimų paskyrą.</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">%d minutė</item>
@@ -59,6 +62,7 @@
   <string name="AttachmentKeyboard_location">Vieta</string>
   <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Signal reikia leidimo rodyti jūsų nuotraukas ir vaizdo įrašus.</string>
   <string name="AttachmentKeyboard_give_access">Suteikti prieigą</string>
+  <string name="AttachmentKeyboard_payment">Mokėjimas</string>
   <!--AttachmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">Nerasta programėlė medijos pasirinkimui.</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Norint pridėti nuotraukas, vaizdo įrašus ar garsą, Signal reikia saugyklos leidimo, tačiau jis buvo visam laikui uždraustas. Pereikite į programėlės nustatymų meniu, pasirinkite „Leidimai“ ir įjunkite „Saugyklą“.</string>
@@ -200,7 +204,7 @@
   <string name="ConversationActivity_transport_insecure_mms">Nesaugi MMS</string>
   <string name="ConversationActivity_transport_signal">Signal</string>
   <string name="ConversationActivity_lets_switch_to_signal">Persijunkime į Signal %1$s</string>
-  <string name="ConversationActivity_specify_recipient">Prašome pasirinkti adresatą</string>
+  <string name="ConversationActivity_specify_recipient">Pasirinkite adresatą</string>
   <string name="ConversationActivity_unblock">Atblokuoti</string>
   <string name="ConversationActivity_attachment_exceeds_size_limits">Priedas viršija jūsų siunčiamos žinutės tipui leidžiamą dydį.</string>
   <string name="ConversationActivity_unable_to_record_audio">Nepavyksta įrašyti garso!</string>
@@ -671,6 +675,7 @@
   <string name="ManageGroupActivity_mentions">Paminėjimai</string>
   <string name="ManageGroupActivity_chat_wallpaper">Pokalbio fonas</string>
   <string name="ManageGroupActivity_until_s">Iki %1$s</string>
+  <string name="ManageGroupActivity_always">Visada</string>
   <string name="ManageGroupActivity_off">Išjungta</string>
   <string name="ManageGroupActivity_on">Įjungta</string>
   <string name="ManageGroupActivity_view_all_members">Rodyti visus narius</string>
@@ -723,6 +728,7 @@
   <string name="ManageRecipientActivity_mute_notifications">Išjungti pranešimus</string>
   <string name="ManageRecipientActivity_custom_notifications">Tinkinti pranešimai</string>
   <string name="ManageRecipientActivity_until_s">Iki %1$s</string>
+  <string name="ManageRecipientActivity_always">Visada</string>
   <string name="ManageRecipientActivity_off">Išjungta</string>
   <string name="ManageRecipientActivity_on">Įjungta</string>
   <string name="ManageRecipientActivity_add_to_a_group">Pridėti į grupę</string>
@@ -919,6 +925,7 @@
   <string name="NotificationBarManager_signal_call_in_progress">Signal skambutis yra eigoje</string>
   <string name="NotificationBarManager__establishing_signal_call">Užmezgiamas Signal skambutis</string>
   <string name="NotificationBarManager__incoming_signal_call">Gaunamasis Signal skambutis</string>
+  <string name="NotificationBarManager__stopping_signal_call_service">Stabdoma Signal skambučių paslauga</string>
   <string name="NotificationBarManager__deny_call">Atmesti skambutį</string>
   <string name="NotificationBarManager__answer_call">Atsiliepti į skambutį</string>
   <string name="NotificationBarManager__end_call">Baigti skambutį</string>
@@ -1163,6 +1170,7 @@
   <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Prisijungti prie šios grupės ir bendrinti jūsų vardą bei nuotrauką su grupės nariais? Jie nežinos, kad matėte jų žinutes tol, kol nesutiksite.</string>
   <string name="MessageRequestBottomView_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Prisijungti prie šios grupės? Kiti asmenys nežinos, kad matėte jų žinutes tol, kol nesutiksite.</string>
   <string name="MessageRequestBottomView_unblock_this_group_and_share_your_name_and_photo_with_its_members">Atblokuoti šią grupę ir bendrinti jūsų vardą bei nuotrauką su grupės nariais? Jūs negausite jokių žinučių tol, kol jų neatblokuosite.</string>
+  <string name="MessageRequestProfileView_view">Rodyti</string>
   <string name="MessageRequestProfileView_member_of_one_group">%1$s grupės narys</string>
   <string name="MessageRequestProfileView_member_of_two_groups"> %1$s ir %2$s grupių narys</string>
   <string name="MessageRequestProfileView_member_of_many_groups">%1$s, %2$s ir %3$s grupių narys</string>
@@ -1273,6 +1281,7 @@
   <string name="ReactionsConversationView_plus">+%1$d</string>
   <!--ReactionsRecipientAdapter-->
   <string name="ReactionsRecipientAdapter_you">Jūs</string>
+  <!--RecaptchaRequiredBottomSheetFragment-->
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">Užblokuoti</string>
   <string name="RecipientPreferenceActivity_unblock">Atblokuoti</string>
@@ -1335,6 +1344,7 @@
   <string name="ProxyBottomSheetFragment_do_you_want_to_use_this_proxy_address">Ar norite naudoti šį įgaliotojo serverio adresą?</string>
   <string name="ProxyBottomSheetFragment_use_proxy">Naudoti įgaliotąjį serverį</string>
   <string name="ProxyBottomSheetFragment_successfully_connected_to_proxy">Sėkmingai prisijungta prie įgaliotojo serverio.</string>
+  <!--RecaptchaProofActivity-->
   <!--RegistrationActivity-->
   <string name="RegistrationActivity_select_your_country">Pasirinkite savo šalį</string>
   <string name="RegistrationActivity_you_must_specify_your_country_code">Jūs privalote nurodyti savo
@@ -1592,16 +1602,18 @@
   <string name="MessageNotifier_this_message_was_deleted">Ši žinutė buvo ištrinta.</string>
   <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Išjungti pranešimus apie tai, kad adresatai prisijungė prie Signal? Galėsite ir vėl įjungti šiuos pranešimus, perėję į Signal &gt; Nustatymai &gt; Pranešimai.</string>
   <!--Notification Channels-->
-  <string name="NotificationChannel_messages">Numatytoji</string>
+  <string name="NotificationChannel_channel_messages">Žinutės</string>
   <string name="NotificationChannel_calls">Skambučiai</string>
   <string name="NotificationChannel_failures">Nesėkmės</string>
   <string name="NotificationChannel_backups">Atsarginės kopijos</string>
   <string name="NotificationChannel_locked_status">Užrakinimo būsena</string>
   <string name="NotificationChannel_app_updates">Programėlės atnaujinimai</string>
   <string name="NotificationChannel_other">Kitas</string>
-  <string name="NotificationChannel_group_messages">Žinutės</string>
+  <string name="NotificationChannel_group_chats">Pokalbiai</string>
   <string name="NotificationChannel_missing_display_name">Nežinoma</string>
   <string name="NotificationChannel_voice_notes">Balso pastabos</string>
+  <string name="NotificationChannel_contact_joined_signal">Adresatas prisijungė prie Signal</string>
+  <string name="NotificationChannels__no_activity_available_to_open_notification_channel_settings">Nėra prieinamos veiklos, kad būtų atverti pranešimų kanalo nustatymai.</string>
   <!--ProfileEditNameFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Spartusis atsakymas neprieinamas, kai Signal yra užrakinta!</string>
@@ -1617,6 +1629,8 @@
   <!--SingleRecipientNotificationBuilder-->
   <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
   <string name="SingleRecipientNotificationBuilder_new_message">Nauja žinutė</string>
+  <string name="SingleRecipientNotificationBuilder_message_request">Žinutės užklausa</string>
+  <string name="SingleRecipientNotificationBuilder_you">Jūs</string>
   <!--ThumbnailView-->
   <string name="ThumbnailView_Play_video_description">Atkurti vaizdo įrašą</string>
   <string name="ThumbnailView_Has_a_caption_description">Turi paaiškinimą</string>
@@ -1729,6 +1743,8 @@
   <string name="ConversationUpdateItem_call_is_full">Skambutis yra pilnas</string>
   <string name="ConversationUpdateItem_invite_friends">Pakviesti draugus</string>
   <string name="ConversationUpdateItem_enable_call_notifications">Įjungti pranešimus apie skambučius</string>
+  <string name="ConversationUpdateItem_no_groups_in_common_review_requests_carefully">Nėra jokių bendrų grupių. Atidžiai peržiūrėkite prašymus.</string>
+  <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">Šioje grupėje nėra jokių adresatų. Atidžiai peržiūrėkite prašymus.</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">Atkurti … Pristabdyti</string>
   <string name="audio_view__download_accessibility_description">Atsisiųsti</string>
@@ -1755,7 +1771,15 @@
   <!--EnableCallNotificationSettingsDialog__call_notifications_checklist-->
   <string name="EnableCallNotificationSettingsDialog__call_notifications_enabled">Pranešimai apie skambučius įjungti.</string>
   <string name="EnableCallNotificationSettingsDialog__enable_call_notifications">Įjungti pranešimus apie skambučius</string>
+  <string name="EnableCallNotificationSettingsDialog__enable_background_activity">Įjungti foninę veiklą</string>
+  <string name="EnableCallNotificationSettingsDialog__everything_looks_good_now">Dabar, viskas atrodo gerai!</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_show_notifications">Norėdami gauti pranešimus apie skambučius, bakstelėkite čia ir įjunkite „Rodyti pranešimus“.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_notifications">Norėdami gauti pranešimus apie skambučius, bakstelėkite čia, įjunkite pranešimus ir užtikrinkite, kad Garsas ir Iškylantieji langai yra įjungti.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_enable_background_activity_in_battery_settings">Norėdami gauti pranešimus apie skambučius, bakstelėkite čia ir „Akumuliatoriaus“ nustatymuose įjunkite foninę veiklą (išjunkite fono ribojimą). </string>
   <string name="EnableCallNotificationSettingsDialog__settings">Nustatymai</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_turn_on_show_notifications">Norėdami gauti pranešimus apie skambučius, bakstelėkite ant Nustatymų ir įjunkite „Rodyti pranešimus“.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_turn_on_notifications">Norėdami gauti pranešimus apie skambučius, bakstelėkite ant Nustatymų, įjunkite pranešimus ir užtikrinkite, kad Garsas ir Iškylantieji langai yra įjungti.</string>
+  <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_enable_background_activity_in_battery_settings">Norėdami gauti pranešimus apie skambučius, bakstelėkite ant Nustatymų ir „Akumuliatoriaus“ nustatymuose įjunkite foninę veiklą (išjunkite fono ribojimą). </string>
   <!--country_selection_fragment-->
   <string name="country_selection_fragment__loading_countries">Įkeliamos šalys…</string>
   <string name="country_selection_fragment__search">Ieškoti</string>
@@ -1822,7 +1846,7 @@
     <item quantity="other">dar %d</item>
   </plurals>
   <!--giphy_activity-->
-  <string name="giphy_activity_toolbar__search_gifs_and_stickers">Ieškoti GIF ir paveikslėlių</string>
+  <string name="giphy_activity_toolbar__search_gifs">Ieškoti GIF</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">Nieko nerasta</string>
   <!--log_submit_activity-->
@@ -1942,6 +1966,14 @@
   <string name="HelpFragment__debug_log">Derinimo žurnalas:</string>
   <string name="HelpFragment__could_not_upload_logs">Nepavyko atnaujinti žurnalų</string>
   <string name="HelpFragment__please_be_as_descriptive_as_possible">Kaip įmanoma išsamiau aprašykite problemą, kad lengviau ją suprastume.</string>
+  <string-array name="HelpFragment__categories">
+    <item>Kažkas neveikia</item>
+    <item>Prašymas pridėti naują ypatybę</item>
+    <item>Klausimas</item>
+    <item>Atsiliepimas</item>
+    <item>Kita</item>
+    <item>Mokėjimai</item>
+  </string-array>
   <!--ReactWithAnyEmojiBottomSheetDialogFragment-->
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__this_message">Ši žinutė</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__recently_used">Paskiausi</string>
@@ -1987,6 +2019,7 @@
     <item quantity="other">%d val.</item>
   </plurals>
   <!--preferences.xml-->
+  <string name="preferences_beta">Beta</string>
   <string name="preferences__sms_mms">SMS ir MMS</string>
   <string name="preferences__pref_all_sms_title">Gauti visas SMS</string>
   <string name="preferences__pref_all_mms_title">Gauti visas MMS</string>
@@ -2050,6 +2083,8 @@
   <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">Reikalauti pristatymo ataskaitos kiekvienai jūsų siunčiamai SMS žinutei</string>
   <string name="preferences__data_and_storage">Duomenys ir saugykla</string>
   <string name="preferences__storage">Saugykla</string>
+  <string name="preferences__payments">Mokėjimai</string>
+  <string name="preferences__payments_beta">Mokėjimai (Beta)</string>
   <string name="preferences__conversation_length_limit">Pokalbio ilgio riba</string>
   <string name="preferences__keep_messages">Saugoti žinutes</string>
   <string name="preferences__clear_message_history">Išvalyti žinučių istoriją</string>
@@ -2157,29 +2192,98 @@
   <string name="configurable_single_select__customize_option">Tinkinti parinktį</string>
   <!--Internal only preferences-->
   <!--Payments-->
+  <string name="PaymentsActivityFragment__all_activity">Visa veikla</string>
   <string name="PaymentsAllActivityFragment__all">Visi</string>
   <string name="PaymentsAllActivityFragment__sent">Išsiųsta</string>
   <string name="PaymentsAllActivityFragment__received">Gauta</string>
+  <string name="PaymentsHomeFragment__introducing_payments">Pristatome mokėjimus (Beta)</string>
+  <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Naudoti Signal „MobileCoin“, naujos į privatumą sutelktos skaitmeninės valiutos, siuntimui ir gavimui. Aktyvuokite, norėdami pradėti.</string>
+  <string name="PaymentsHomeFragment__activate_payments">Aktyvuoti mokėjimus</string>
+  <string name="PaymentsHomeFragment__activating_payments">Aktyvuojami mokėjimai…</string>
+  <string name="PaymentsHomeFragment__restore_payments_account">Atkurti mokėjimų paskyrą</string>
+  <string name="PaymentsHomeFragment__no_recent_activity_yet">Kol kas nėra paskiausios veiklos</string>
+  <string name="PaymentsHomeFragment__pending_requests">Laukiančios užklausos</string>
+  <string name="PaymentsHomeFragment__recent_activity">Paskiausia veikla</string>
   <string name="PaymentsHomeFragment__see_all">Rodyti visus</string>
+  <string name="PaymentsHomeFragment__add_funds">Pridėti lėšų</string>
   <string name="PaymentsHomeFragment__send">Siųsti</string>
+  <string name="PaymentsHomeFragment__sent_s">Išsiųsta %1$s</string>
+  <string name="PaymentsHomeFragment__received_s">Gauta %1$s</string>
+  <string name="PaymentsHomeFragment__transfer_to_exchange">Pervesti į valiutos keitimo punktą</string>
+  <string name="PaymentsHomeFragment__currency_conversion">Valiutos konvertavimas</string>
+  <string name="PaymentsHomeFragment__deactivate_payments">Pasyvinti mokėjimus</string>
+  <string name="PaymentsHomeFragment__recovery_phrase">Atkūrimo frazė</string>
   <string name="PaymentsHomeFragment__help">Pagalba</string>
+  <string name="PaymentsHomeFragment__coin_cleanup_fee">Monetų išvalymo mokestis</string>
+  <string name="PaymentsHomeFragment__sent_payment">Išsiųstas mokėjimas</string>
+  <string name="PaymentsHomeFragment__received_payment">Gautas mokėjimas</string>
+  <string name="PaymentsHomeFragment__processing_payment">Apdorojamas mokėjimas</string>
+  <string name="PaymentsHomeFragment__unknown_amount">---</string>
+  <string name="PaymentsHomeFragment__currency_conversion_not_available">Valiutos konvertavimas neprieinamas</string>
+  <string name="PaymentsHomeFragment__cant_display_currency_conversion">Nepavyksta rodyti valiutos konvertavimo. Patikrinkite savo telefono ryšį ir bandykite dar kartą.</string>
+  <string name="PaymentsHomeFragment__payments_is_not_available_in_your_region">Mokėjimai yra neprieinami jūsų regione.</string>
+  <string name="PaymentsHomeFragment__could_not_enable_payments">Nepavyko įjungti mokėjimų. Vėliau bandykite dar kartą.</string>
+  <string name="PaymentsHomeFragment__deactivate_payments_question">Pasyvinti mokėjimus?</string>
+  <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">Pasyvinę mokėjimus, negalėsite Signal programėlėje siųsti ar gauti „MobileCoin“ valiutą.</string>
+  <string name="PaymentsHomeFragment__deactivate">Pasyvinti</string>
   <string name="PaymentsHomeFragment__continue">Tęsti</string>
+  <string name="PaymentsHomeFragment__balance_is_not_currently_available">Šiuo metu likutis neprieinamas.</string>
+  <string name="PaymentsHomeFragment__payments_deactivated">Mokėjimai yra pasyvinti.</string>
+  <string name="PaymentsHomeFragment__payment_failed">Mokėjimas patyrė nesėkmę</string>
   <string name="PaymentsHomeFragment__details">Išsamesnė informacija</string>
+  <string name="PaymentsHomeFragment__you_can_use_signal_to_send">Galite naudoti Signal, kad siųstumėte ir gautumėte „MobileCoin“ valiutą. Visiems mokėjimams taikomos sąlygos, aprėpiančios naudojimąsi „MobileCoins“ valiuta ir „MobileCoin“ pinigine. Tai yra beta ypatybė, todėl galite susidurti su kai kuriomis problemomis, o jūsų prarastų mokėjimų ir likučių negalima bus atkurti. </string>
+  <string name="PaymentsHomeFragment__activate">Aktyvuoti</string>
+  <string name="PaymentsHomeFragment__view_mobile_coin_terms">Rodyti „MobileCoin“ sąlygas</string>
+  <string name="PaymentsHomeFragment__payments_not_available">Mokėjimai Signal programėlėje daugiau nebeprieinami. Jūs vis dar galite pervesti lėšas į valiutos keitimo punktą, bet nebegalite siųsti ir gauti mokėjimų ar pridėti lėšų.</string>
   <!--PaymentsAddMoneyFragment-->
+  <string name="PaymentsAddMoneyFragment__add_funds">Pridėti lėšų</string>
+  <string name="PaymentsAddMoneyFragment__your_wallet_address">Jūsų piniginės adresas</string>
   <string name="PaymentsAddMoneyFragment__copy">Kopijuoti</string>
   <string name="PaymentsAddMoneyFragment__copied_to_clipboard">Nukopijuota į iškarpinę</string>
+  <string name="PaymentsAddMoneyFragment__to_add_funds">Norėdami pridėti lėšas, siųskite „MobileCoin“ valiutą į savo piniginės adresą. Pradėkite operaciją savo paskyroje, „MobileCoin“ palaikančiame valiutos keitimo punkte, o tuomet nuskenuokite QR kodą arba nukopijuokite savo piniginės adresą.</string>
   <!--PaymentsDetailsFragment-->
   <string name="PaymentsDetailsFragment__details">Išsamesnė informacija</string>
   <string name="PaymentsDetailsFragment__status">Būsena</string>
-  <string name="PaymentsDetailsFragment__to">Kam</string>
+  <string name="PaymentsDetailsFragment__submitting_payment">Pateikiamas mokėjimas…</string>
+  <string name="PaymentsDetailsFragment__processing_payment">Apdorojamas mokėjimas…</string>
+  <string name="PaymentsDetailsFragment__payment_complete">Mokėjimas užbaigtas</string>
+  <string name="PaymentsDetailsFragment__payment_failed">Mokėjimas patyrė nesėkmę</string>
+  <string name="PaymentsDetailsFragment__network_fee">Tinklo mokestis</string>
+  <string name="PaymentsDetailsFragment__sent_by">Išsiuntė</string>
+  <string name="PaymentsDetailsFragment__sent_to_s">Kam išsiųsta: %1$s</string>
+  <string name="PaymentsDetailsFragment__you_on_s_at_s">Jūs ties %1$s, %2$s</string>
+  <string name="PaymentsDetailsFragment__s_on_s_at_s">%1$s ties %2$s, %3$s</string>
+  <string name="PaymentsDetailsFragment__to">Skirta</string>
   <string name="PaymentsDetailsFragment__from">Nuo</string>
+  <string name="PaymentsDetailsFragment__information">Išsamesnė operacijos informacija, įskaitant mokėjimo sumą ir operacijos laiką, yra „MobileCoin“ sąskaitų knygos dalis.</string>
+  <string name="PaymentsDetailsFragment__coin_cleanup_fee">Monetų išvalymo mokestis</string>
+  <string name="PaymentsDetailsFragment__coin_cleanup_information">„Monetų išvalymo mokesčiu“ yra apmokestinama tuomet, kai jūsų turimos monetos negali būti sujungtos operacijos užbaigimui. Išvalymas leis jums ir toliau siųsti mokėjimus.</string>
+  <string name="PaymentsDetailsFragment__no_details_available">Nėra išsamesnės informacijos apie šią operaciją</string>
+  <string name="PaymentsDetailsFragment__sent_payment">Išsiųstas mokėjimas</string>
+  <string name="PaymentsDetailsFragment__received_payment">Gautas mokėjimas</string>
+  <string name="PaymentsDeatilsFragment__payment_completed_s">Mokėjimas užbaigtas %1$s</string>
+  <string name="PaymentsDetailsFragment__block_number">Užblokuoti numerį</string>
   <!--PaymentsTransferFragment-->
+  <string name="PaymentsTransferFragment__transfer">Pervesti</string>
   <string name="PaymentsTransferFragment__scan_qr_code">Skenuoti QR kodą</string>
+  <string name="PaymentsTransferFragment__to_scan_or_enter_wallet_address">Kam: Nuskenuokite ar įveskite piniginės adresą</string>
+  <string name="PaymentsTransferFragment__you_can_transfer">Galite pervesti „MobileCoin“ valiutą, užbaigdami pervedimą į valiutos keitimo punkto pateiktą piniginės adresą. Piniginės adresas yra skaitmenų ir raidžių eilutė, kuri, įprastai, būna po QR kodu.</string>
   <string name="PaymentsTransferFragment__next">Kitas</string>
+  <string name="PaymentsTransferFragment__invalid_address">Neteisingas adresas</string>
+  <string name="PaymentsTransferFragment__check_the_wallet_address">Patikrinkite piniginės, į kurią bandote pervesti, adresą ir bandykite dar kartą.</string>
+  <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Negalite pervesti į savo asmeninės Signal piniginės adresą. Įveskite piniginės adresą iš paskyros, kuri yra palaikomame valiutos keitimo punkte.</string>
+  <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Norint nuskenuoti QR kodą, Signal reikia prieigos prie kameros.</string>
+  <string name="PaymentsTransferFragment__signal_needs_the_camera_permission_to_capture_qr_code_go_to_settings">Norint nuskenuoti QR kodą, Signal reikia kameros leidimo. Pereikite į Nustatymus, pasirinkite „Leidimai“ ir įjunkite „Kamerą“.</string>
+  <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Norint nuskenuoti QR kodą, Signal reikia prieigos prie kameros.</string>
   <string name="PaymentsTransferFragment__settings">Nustatymai</string>
   <!--PaymentsTransferQrScanFragment-->
+  <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Skenuoti adreso QR kodą</string>
+  <string name="PaymentsTransferQrScanFragment__scan_the_address_qr_code_of_the_payee">Skenuoti lėšų gavėjo adreso QR kodą</string>
   <!--CreatePaymentFragment-->
   <string name="CreatePaymentFragment__request">Prašyti</string>
+  <string name="CreatePaymentFragment__pay">Mokėti</string>
+  <string name="CreatePaymentFragment__available_balance_s">Prieinamas likutis: %1$s</string>
+  <string name="CreatePaymentFragment__toggle_content_description">Perjungti</string>
   <string name="CreatePaymentFragment__1">1</string>
   <string name="CreatePaymentFragment__2">2</string>
   <string name="CreatePaymentFragment__3">3</string>
@@ -2192,11 +2296,32 @@
   <string name="CreatePaymentFragment__decimal">.</string>
   <string name="CreatePaymentFragment__0">0</string>
   <string name="CreatePaymentFragment__lt">&lt;</string>
+  <string name="CreatePaymentFragment__backspace">Naikinimas</string>
+  <string name="CreatePaymentFragment__add_note">Pridėti pastabą</string>
+  <string name="CreatePaymentFragment__conversions_are_just_estimates">Konvertavimai yra apytiksliai ir gali būti netikslūs.</string>
   <!--EditNoteFragment-->
+  <string name="EditNoteFragment_note">Pastaba</string>
   <!--ConfirmPaymentFragment-->
+  <string name="ConfirmPayment__confirm_payment">Patvirtinti mokėjimą</string>
+  <string name="ConfirmPayment__network_fee">Tinklo mokestis</string>
+  <string name="ConfirmPayment__error_getting_fee">Klaida gaunant mokestį</string>
+  <string name="ConfirmPayment__estimated_s">Apskaičiuota %1$s suma</string>
   <string name="ConfirmPayment__to">Kam</string>
+  <string name="ConfirmPayment__total_amount">Iš viso</string>
+  <string name="ConfirmPayment__balance_s">Likutis: %1$s</string>
+  <string name="ConfirmPayment__submitting_payment">Pateikiamas mokėjimas…</string>
+  <string name="ConfirmPayment__processing_payment">Apdorojamas mokėjimas…</string>
+  <string name="ConfirmPayment__payment_complete">Mokėjimas užbaigtas</string>
+  <string name="ConfirmPayment__payment_failed">Mokėjimas patyrė nesėkmę</string>
+  <string name="ConfirmPayment__payment_will_continue_processing">Mokėjimas ir toliau bus apdorojamas</string>
+  <string name="ConfirmPaymentFragment__invalid_recipient">Neteisingas gavėjas</string>
+  <string name="ConfirmPaymentFragment__this_person_has_not_activated_payments">Šis žmogus nėra aktyvavęs mokėjimų</string>
+  <string name="ConfirmPaymentFragment__unable_to_request_a_network_fee">Nepavyko užklausti tinklo mokesčio. Norėdami tęsti šį mokėjimą, bakstelėkite „Gerai“, kad būtų bandoma dar kartą.</string>
   <!--CurrencyAmountFormatter_s_at_s-->
+  <string name="CurrencyAmountFormatter_s_at_s">%1$s ties %2$s</string>
   <!--SetCurrencyFragment-->
+  <string name="SetCurrencyFragment__set_currency">Nustatyti valiutą</string>
+  <string name="SetCurrencyFragment__all_currencies">Visos valiutos</string>
   <!--****************************************-->
   <!--menus-->
   <!--****************************************-->
@@ -2640,6 +2765,10 @@
   <string name="OldDeviceTransferLockedDialog__done">Atlikta</string>
   <string name="OldDeviceTransferLockedDialog__cancel_and_activate_this_device">Atsisakyti ir aktyvuoti šį įrenginį</string>
   <!--AdvancedPreferenceFragment-->
+  <string name="AdvancedPreferenceFragment__transfer_mob_balance">Pervesti MOB likutį?</string>
+  <string name="AdvancedPreferenceFragment__you_have_a_balance_of_s">Jūs turite %1$s likutį. Jei, prieš ištrindami paskyrą, nepervesite savo lėšų į kitos piniginės adresą, prarasite jas visiems laikams.</string>
+  <string name="AdvancedPreferenceFragment__dont_transfer">Nepervesti</string>
+  <string name="AdvancedPreferenceFragment__transfer">Pervesti</string>
   <!--RecipientBottomSheet-->
   <string name="RecipientBottomSheet_block">Užblokuoti</string>
   <string name="RecipientBottomSheet_unblock">Atblokuoti</string>
@@ -2736,6 +2865,7 @@
   <string name="DeleteAccountFragment__delete_account">Ištrinti paskyrą</string>
   <string name="DeleteAccountFragment__delete_your_account_info_and_profile_photo">Ištrinta jūsų paskyros informacija ir profilio nuotrauka</string>
   <string name="DeleteAccountFragment__delete_all_your_messages">Ištrintos visos jūsų žinutės</string>
+  <string name="DeleteAccountFragment__delete_s_in_your_payments_account">Ištrinti %1$s jūsų mokėjimų paskyroje</string>
   <string name="DeleteAccountFragment__no_country_code">Nenurodytas joks šalies kodas</string>
   <string name="DeleteAccountFragment__no_number">Nenurodytas joks numeris</string>
   <string name="DeleteAccountFragment__the_phone_number">Jūsų įvestas telefono numeris nesutampa su jūsų paskyros telefono numeriu.</string>
@@ -2791,26 +2921,87 @@
   <string name="WallpaperCropActivity__error_setting_wallpaper">Klaida nustatant foną.</string>
   <string name="WallpaperCropActivity__blur_photo">Sulieti nuotrauką</string>
   <!--InfoCard-->
+  <string name="payment_info_card_about_mobilecoin">Apie „MobileCoin“</string>
+  <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">„MobileCoin“ yra nauja į privatumą sutelkta skaitmeninė valiuta.</string>
+  <string name="payment_info_card_adding_funds">Lėšų pridėjimas</string>
+  <string name="payment_info_card_you_can_add_funds_for_use_in">Galite pridėti lėšas, skirtas naudoti Signal programėlėje, išsiųsdami „MobileCoin“ valiutą į savo piniginės adresą.</string>
+  <string name="payment_info_card_cashing_out">Pinigų išgryninimas</string>
+  <string name="payment_info_card_you_can_cash_out_mobilecoin">„MobileCoin“ valiutą bet kuriuo metu galite išgryninti valiutos keitimo punktuose, kurie palaiko „MobileCoin“. Tiesiog, atlikite pervedimą į savo sąskaitą tame valiutos keitimo punkte.</string>
+  <string name="payment_info_card_hide_this_card">Slėpti šią kortelę?</string>
   <string name="payment_info_card_hide">Slėpti</string>
+  <string name="payment_info_card_record_recovery_phrase">Užsirašykite atkūrimo frazę</string>
+  <string name="payment_info_card_your_recovery_phrase_gives_you">Atkūrimo frazė suteikia jums kitą būdą atkurti savo mokėjimų paskyrą.</string>
+  <string name="payment_info_card_record_your_phrase">Užsirašyti frazę</string>
+  <string name="payment_info_card_update_your_pin">Atnaujinti savo PIN kodą</string>
+  <string name="payment_info_card_with_a_high_balance">Turėdami didelį likutį, galite pageidauti atnaujinti savo PIN kodą į tekstinį, kad stipriau apsaugotumėte savo paskyrą.</string>
   <string name="payment_info_card_update_pin">Atnaujinti PIN kodą</string>
   <!--DeactivateWalletFragment-->
+  <string name="DeactivateWalletFragment__deactivate_wallet">Pasyvinti piniginę</string>
+  <string name="DeactivateWalletFragment__your_balance">Jūsų likutis</string>
+  <string name="DeactivateWalletFragment__its_recommended_that_you">Rekomenduojama, kad prieš pasyvindami mokėjimus, pervestumėte savo lėšas į kitos piniginės adresą. Jei dabar pasirinksite nepervesti lėšų, jos išliks jūsų piniginėje susietos su Signal tam atvejui, jei pasirinksite iš naujo aktyvuoti mokėjimus.</string>
+  <string name="DeactivateWalletFragment__transfer_remaining_balance">Pervesti likusį likutį</string>
+  <string name="DeactivateWalletFragment__deactivate_without_transferring">Pasyvinti be pervedimo</string>
+  <string name="DeactivateWalletFragment__deactivate">Pasyvinti</string>
+  <string name="DeactivateWalletFragment__deactivate_without_transferring_question">Pasyvinti be pervedimo?</string>
+  <string name="DeactivateWalletFragment__your_balance_will_remain">Jūsų likutis išliks jūsų piniginėje susietas su Signal tam atvejui, jei pasirinksite iš naujo aktyvuoti mokėjimus.</string>
+  <string name="DeactivateWalletFragment__error_deactivating_wallet">Klaida pasyvinant piniginę.</string>
   <!--PaymentsRecoveryStartFragment-->
+  <string name="PaymentsRecoveryStartFragment__recovery_phrase">Atkūrimo frazė</string>
+  <string name="PaymentsRecoveryStartFragment__view_recovery_phrase">Rodyti atkūrimo frazę</string>
+  <string name="PaymentsRecoveryStartFragment__enter_recovery_phrase">Įvesti atkūrimo frazę</string>
+  <string name="PaymentsRecoveryStartFragment__your_balance_will_automatically_restore">Kai įdiegsite Signal iš naujo, jūsų likutis bus automatiškai atkurtas tuo atveju, jei patvirtinsite savo Signal PIN kodą. Taip pat galite atkurti savo likutį naudodami atkūrimo frazę – savo unikalią %1$d žodžių frazę. Užsirašykite ją ir saugokite saugioje vietoje.</string>
+  <string name="PaymentsRecoveryStartFragment__your_recovery_phrase_is_a">Atkūrimo frazė yra jūsų unikali %1$d žodžių frazė. Naudokite šią frazę, norėdami atkurti savo likutį.</string>
+  <string name="PaymentsRecoveryStartFragment__start">Pradėti</string>
+  <string name="PaymentsRecoveryStartFragment__enter_manually">Įvesti rankiniu būdu</string>
+  <string name="PaymentsRecoveryStartFragment__paste_from_clipboard">Įdėti iš iškarpinės</string>
   <!--PaymentsRecoveryPasteFragment-->
+  <string name="PaymentsRecoveryPasteFragment__paste_recovery_phrase">Įdėti atkūrimo frazę</string>
+  <string name="PaymentsRecoveryPasteFragment__recovery_phrase">Atkūrimo frazė</string>
   <string name="PaymentsRecoveryPasteFragment__next">Kitas</string>
+  <string name="PaymentsRecoveryPasteFragment__invalid_recovery_phrase">Neteisinga atkūrimo frazė</string>
+  <string name="PaymentsRecoveryPasteFragment__make_sure">Įsitikinkite, kad įvedėte %1$d žodžius ir bandykite dar kartą.</string>
   <!--PaymentsRecoveryPhraseFragment-->
   <string name="PaymentsRecoveryPhraseFragment__next">Kitas</string>
   <string name="PaymentsRecoveryPhraseFragment__edit">Taisyti</string>
+  <string name="PaymentsRecoveryPhraseFragment__previous">Ankstesnis</string>
+  <string name="PaymentsRecoveryPhraseFragment__your_recovery_phrase">Jūsų atkūrimo frazė</string>
+  <string name="PaymentsRecoveryPhraseFragment__write_down_the_following_d_words">Užsirašykite šiuos %1$d žodžius eilės tvarka. Saugokite sąrašą saugioje vietoje.</string>
+  <string name="PaymentsRecoveryPhraseFragment__make_sure_youve_entered">Įsitikinkite, kad teisingai įvedėte frazę.</string>
+  <string name="PaymentsRecoveryPhraseFragment__do_not_screenshot_or_send_by_email">Nedarykite ekrano kopijų ir nesiųskite el. paštu.</string>
+  <string name="PaymentsRecoveryPhraseFragment__payments_account_restored">Mokėjimų paskyra atkurta.</string>
+  <string name="PaymentsRecoveryPhraseFragment__invalid_recovery_phrase">Neteisinga atkūrimo frazė</string>
+  <string name="PaymentsRecoveryPhraseFragment__make_sure_youve_entered_your_phrase_correctly_and_try_again">Įsitikinkite, kad teisingai įvedėte frazę ir bandykite dar kartą.</string>
   <string name="PaymentsRecoveryPhraseFragment__copy_to_clipboard">Kopijuoti į iškarpinę?</string>
+  <string name="PaymentsRecoveryPhraseFragment__if_you_choose_to_store">Jei pasirinksite saugoti savo atkūrimo frazę skaitmeniniu pavidalu, užtikrinkite, kad ji bus saugiai laikoma patikimoje vietoje.</string>
   <string name="PaymentsRecoveryPhraseFragment__copy">Kopijuoti</string>
   <!--PaymentsRecoveryPhraseConfirmFragment-->
+  <string name="PaymentRecoveryPhraseConfirmFragment__confirm_recovery_phrase">Patvirtinkite atkūrimo frazę</string>
+  <string name="PaymentRecoveryPhraseConfirmFragment__enter_the_following_words">Įveskite sekančius žodžius iš savo atkūrimo frazės.</string>
+  <string name="PaymentRecoveryPhraseConfirmFragment__word_d">%1$d žodis</string>
+  <string name="PaymentRecoveryPhraseConfirmFragment__see_phrase_again">Rodyti frazę dar kartą</string>
   <string name="PaymentRecoveryPhraseConfirmFragment__done">Atlikta</string>
+  <string name="PaymentRecoveryPhraseConfirmFragment__recovery_phrase_confirmed">Atkūrimo frazė patvirtinta</string>
   <!--PaymentsRecoveryEntryFragment-->
+  <string name="PaymentsRecoveryEntryFragment__enter_recovery_phrase">Įvesti atkūrimo frazę</string>
+  <string name="PaymentsRecoveryEntryFragment__enter_word_d">Įveskite %1$d žodį</string>
+  <string name="PaymentsRecoveryEntryFragment__word_d">%1$d žodis</string>
   <string name="PaymentsRecoveryEntryFragment__next">Kitas</string>
+  <string name="PaymentsRecoveryEntryFragment__invalid_word">Neteisingas žodis</string>
   <!--ClearClipboardAlarmReceiver-->
+  <string name="ClearClipboardAlarmReceiver__clipboard_cleared">Iškarpinė išvalyta.</string>
   <!--PaymentNotificationsView-->
   <string name="PaymentNotificationsView__view">Rodyti</string>
   <!--UnreadPayments-->
+  <string name="UnreadPayments__s_sent_you_s">%1$s išsiuntė jums %2$s</string>
+  <string name="UnreadPayments__d_new_payment_notifications">Naujų pranešimų apie mokėjimus: %1$d</string>
   <!--CanNotSendPaymentDialog-->
+  <string name="CanNotSendPaymentDialog__cant_send_payment">Nepavyksta siųsti mokėjimo</string>
+  <string name="CanNotSendPaymentDialog__to_send_a_payment_to_this_user">Norint siųsti mokėjimą šiam naudotojui, jis privalo priimti iš jūsų žinutės užklausą. Išsiųskite naudotojui žinutę, kad sukurtumėte žinutės užklausą.</string>
   <string name="CanNotSendPaymentDialog__send_a_message">Siųsti žinutę</string>
+  <!--GroupsInCommonMessageRequest-->
+  <string name="GroupsInCommonMessageRequest__you_have_no_groups_in_common_with_this_person">Jūs su šiuo žmogumi neturite jokių bendrų grupių. Prieš priimdami, atidžiai peržiūrėkite prašymus, kad išvengtumėte nepageidaujamų žinučių.</string>
+  <string name="GroupsInCommonMessageRequest__none_of_your_contacts_or_people_you_chat_with_are_in_this_group">Šioje grupėje nėra nei vieno jūsų adresato ar žmogaus, su kuriuo bendraujate. Prieš priimdami, atidžiai peržiūrėkite prašymus, kad išvengtumėte nepageidaujamų žinučių.</string>
+  <string name="GroupsInCommonMessageRequest__about_message_requests">Apie žinučių užklausas</string>
+  <string name="GroupsInCommonMessageRequest__okay">Gerai</string>
   <!--EOF-->
 </resources>

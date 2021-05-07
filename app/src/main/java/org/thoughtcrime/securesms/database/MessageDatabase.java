@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -88,6 +89,7 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
   public abstract @Nullable ViewOnceExpirationInfo getNearestExpiringViewOnceMessage();
   public abstract boolean isSent(long messageId);
   public abstract List<MessageRecord> getProfileChangeDetailsRecords(long threadId, long afterTimestamp);
+  public abstract Set<Long> getAllRateLimitedMessageIds();
 
   public abstract void markExpireStarted(long messageId);
   public abstract void markExpireStarted(long messageId, long startTime);
@@ -100,6 +102,8 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
   public abstract void markAsInsecure(long id);
   public abstract void markAsPush(long id);
   public abstract void markAsForcedSms(long id);
+  public abstract void markAsRateLimited(long id);
+  public abstract void clearRateLimitStatus(Collection<Long> ids);
   public abstract void markAsDecryptFailed(long id);
   public abstract void markAsDecryptDuplicate(long id);
   public abstract void markAsNoSession(long id);
@@ -120,13 +124,14 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
   public abstract void markIncomingNotificationReceived(long threadId);
 
   public abstract Set<ThreadUpdate> incrementReceiptCount(SyncMessageId messageId, long timestamp, @NonNull ReceiptType receiptType);
-  public abstract List<Pair<Long, Long>> setTimestampRead(SyncMessageId messageId, long proposedExpireStarted);
+  public abstract List<Pair<Long, Long>> setTimestampRead(SyncMessageId messageId, long proposedExpireStarted, @NonNull Map<Long, Long> threadToLatestRead);
   public abstract List<MarkedMessageInfo> setEntireThreadRead(long threadId);
   public abstract List<MarkedMessageInfo> setMessagesReadSince(long threadId, long timestamp);
   public abstract List<MarkedMessageInfo> setAllMessagesRead();
   public abstract Pair<Long, Long> updateBundleMessageBody(long messageId, String body);
   public abstract @NonNull List<MarkedMessageInfo> getViewedIncomingMessages(long threadId);
   public abstract @Nullable MarkedMessageInfo setIncomingMessageViewed(long messageId);
+  public abstract @NonNull List<MarkedMessageInfo> setIncomingMessagesViewed(@NonNull List<Long> messageIds);
 
   public abstract void addFailures(long messageId, List<NetworkFailure> failure);
   public abstract void removeFailure(long messageId, NetworkFailure failure);
@@ -318,6 +323,8 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
       setReactions(db, messageId, updatedList);
 
       db.setTransactionSuccessful();
+    } catch (NoSuchMessageException e) {
+      Log.w(TAG, "No message for provided id", e);
     } finally {
       db.endTransaction();
     }
@@ -337,6 +344,8 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
       setReactions(db, messageId, updatedList);
 
       db.setTransactionSuccessful();
+    } catch (NoSuchMessageException e) {
+      Log.w(TAG, "No message for provided id", e);
     } finally {
       db.endTransaction();
     }
@@ -542,14 +551,15 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
     return Optional.absent();
   }
 
-  private void setReactions(@NonNull SQLiteDatabase db, long messageId, @NonNull ReactionList reactionList) {
-    ContentValues values       = new ContentValues(1);
+  private void setReactions(@NonNull SQLiteDatabase db, long messageId, @NonNull ReactionList reactionList) throws NoSuchMessageException {
+    ContentValues values       = new ContentValues();
+    boolean       isOutgoing   = getMessageRecord(messageId).isOutgoing();
     boolean       hasReactions = reactionList.getReactionsCount() != 0;
 
     values.put(REACTIONS, reactionList.getReactionsList().isEmpty() ? null : reactionList.toByteArray());
     values.put(REACTIONS_UNREAD, hasReactions ? 1 : 0);
 
-    if (hasReactions) {
+    if (isOutgoing && hasReactions) {
       values.put(NOTIFIED, 0);
     }
 

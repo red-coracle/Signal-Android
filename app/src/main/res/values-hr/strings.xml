@@ -1113,6 +1113,7 @@
   <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Želite li se pridružiti ovoj grupi i podijeliti svoje ime i fotografiju sa članovima? Neće znati da ste vidjeli njihove poruke dok ne prihvatite.</string>
   <string name="MessageRequestBottomView_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Pridružiti se ovoj grupi? Neće znati da ste vidjeli njihove poruke dok ne prihvatite.</string>
   <string name="MessageRequestBottomView_unblock_this_group_and_share_your_name_and_photo_with_its_members">Želite li odblokirati ovu grupu i podijeliti svoje ime i fotografiju sa članovima? Nećete primati poruke dok ih ne odblokirate.</string>
+  <string name="MessageRequestProfileView_view">Pregledaj</string>
   <string name="MessageRequestProfileView_member_of_one_group">Član/ica %1$s</string>
   <string name="MessageRequestProfileView_member_of_two_groups">Član/ica %1$s i %2$s</string>
   <string name="MessageRequestProfileView_member_of_many_groups">Član/ica %1$s, %2$s i %3$s</string>
@@ -1218,6 +1219,7 @@
   <string name="ReactionsConversationView_plus">+%1$d</string>
   <!--ReactionsRecipientAdapter-->
   <string name="ReactionsRecipientAdapter_you">Vi</string>
+  <!--RecaptchaRequiredBottomSheetFragment-->
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">Blokiraj</string>
   <string name="RecipientPreferenceActivity_unblock">Odblokiraj</string>
@@ -1278,6 +1280,7 @@
   <string name="ProxyBottomSheetFragment_do_you_want_to_use_this_proxy_address">Želite li koristiti ovu proxy adresu?</string>
   <string name="ProxyBottomSheetFragment_use_proxy">Koristi proxy</string>
   <string name="ProxyBottomSheetFragment_successfully_connected_to_proxy">Uspješno spajanje na proxy.</string>
+  <!--RecaptchaProofActivity-->
   <!--RegistrationActivity-->
   <string name="RegistrationActivity_select_your_country">Odaberite svoju državu</string>
   <string name="RegistrationActivity_you_must_specify_your_country_code">Unesite pozivni broj
@@ -1530,16 +1533,17 @@ broj telefona</string>
   <string name="MessageNotifier_this_message_was_deleted">Ova poruka je izbrisana.</string>
   <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Isključiti obavijesti o novim kontaktima na Signalu? Možete ih ponovo omogućiti u Signal &amp;gt Postavke &amp;gt Obavijesti.</string>
   <!--Notification Channels-->
-  <string name="NotificationChannel_messages">Zadano</string>
+  <string name="NotificationChannel_channel_messages">Poruke</string>
   <string name="NotificationChannel_calls">Pozivi</string>
   <string name="NotificationChannel_failures">Neuspjesi</string>
   <string name="NotificationChannel_backups">Sigurnosne kopije</string>
   <string name="NotificationChannel_locked_status">Status zaključavanja</string>
   <string name="NotificationChannel_app_updates">Ažuriranja aplikacije</string>
   <string name="NotificationChannel_other">Ostalo</string>
-  <string name="NotificationChannel_group_messages">Poruke</string>
+  <string name="NotificationChannel_group_chats">Razgovori</string>
   <string name="NotificationChannel_missing_display_name">Nepoznato</string>
   <string name="NotificationChannel_voice_notes">Glasovne bilješke</string>
+  <string name="NotificationChannel_contact_joined_signal">Kontakt se pridružio/la Signalu</string>
   <string name="NotificationChannels__no_activity_available_to_open_notification_channel_settings">Nema dostupnih aktivnosti za otvaranje postavki kanala za obavijesti.</string>
   <!--ProfileEditNameFragment-->
   <!--QuickResponseService-->
@@ -1556,6 +1560,7 @@ broj telefona</string>
   <!--SingleRecipientNotificationBuilder-->
   <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
   <string name="SingleRecipientNotificationBuilder_new_message">Nova poruka</string>
+  <string name="SingleRecipientNotificationBuilder_you">Vi</string>
   <!--ThumbnailView-->
   <string name="ThumbnailView_Play_video_description">Reproduciraj video</string>
   <string name="ThumbnailView_Has_a_caption_description">Ima opis</string>
@@ -1760,7 +1765,6 @@ broj telefona</string>
     <item quantity="other">%d ostalih</item>
   </plurals>
   <!--giphy_activity-->
-  <string name="giphy_activity_toolbar__search_gifs_and_stickers">Pretražite GIF-ove i naljepnice</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">Nema rezultata</string>
   <!--log_submit_activity-->
@@ -2736,5 +2740,7 @@ broj telefona</string>
   <!--UnreadPayments-->
   <!--CanNotSendPaymentDialog-->
   <string name="CanNotSendPaymentDialog__send_a_message">Pošalji poruku</string>
+  <!--GroupsInCommonMessageRequest-->
+  <string name="GroupsInCommonMessageRequest__okay">U redu</string>
   <!--EOF-->
 </resources>

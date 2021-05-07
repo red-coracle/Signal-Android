@@ -612,6 +612,7 @@
   <string name="ManageGroupActivity_mentions">ప్రస్తావనలు</string>
   <string name="ManageGroupActivity_chat_wallpaper">సంభాషణ వాల్పేపర్</string>
   <string name="ManageGroupActivity_until_s">వరకు %1$s</string>
+  <string name="ManageGroupActivity_always">ఎల్లప్పుడూ</string>
   <string name="ManageGroupActivity_off">ఆఫ్</string>
   <string name="ManageGroupActivity_on">ఆన్</string>
   <string name="ManageGroupActivity_view_all_members">సభ్యులందరినీ చూడండి</string>
@@ -664,6 +665,7 @@
   <string name="ManageRecipientActivity_mute_notifications">  ప్రకటనలను మ్యూట్లో ఉంచు</string>
   <string name="ManageRecipientActivity_custom_notifications">అనుకూల ప్రకటనలను</string>
   <string name="ManageRecipientActivity_until_s">వరకు %1$s</string>
+  <string name="ManageRecipientActivity_always">ఎల్లప్పుడూ</string>
   <string name="ManageRecipientActivity_off">ఆఫ్</string>
   <string name="ManageRecipientActivity_on">ఆన్</string>
   <string name="ManageRecipientActivity_add_to_a_group">సమూహానికి జోడించండి</string>
@@ -1064,7 +1066,8 @@
   <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">ఈ గుంపులో చేరండి మరియు మీ పేరు మరియు ఫోటోను దాని సభ్యులతో పంచుకోవాలా? మీరు అంగీకరించే వరకు మీరు వారి సందేశాలను చూశారని వారికి తెలియదు.</string>
   <string name="MessageRequestBottomView_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">ఈ గుంపులో చేరాలా? మీరు అంగీకరించే వరకు మీరు వారి సందేశాలను చూశారని వారికి తెలియదు.</string>
   <string name="MessageRequestBottomView_unblock_this_group_and_share_your_name_and_photo_with_its_members">ఈ గుంపును అన్‌బ్లాక్ చేసి, మీ పేరు మరియు ఫోటోను దాని సభ్యులతో పంచుకోవాలా? మీరు వాటిని అన్‌బ్లాక్ చేసే వరకు మీకు సందేశాలు రావు.</string>
-  <string name="MessageRequestProfileView_member_of_one_group">సభ్యుడు %1$s</string>
+  <string name="MessageRequestProfileView_view">వీక్షణ</string>
+  <string name="MessageRequestProfileView_member_of_one_group">%1$s సభ్యుడు</string>
   <string name="MessageRequestProfileView_member_of_two_groups">%1$sమరియు %2$sసభ్యుడు</string>
   <string name="MessageRequestProfileView_member_of_many_groups">%1$s,%2$s, మరియు%3$s సభ్యుడు</string>
   <plurals name="MessageRequestProfileView_members">
@@ -1165,6 +1168,7 @@
   <string name="ReactionsConversationView_plus">+%1$d</string>
   <!--ReactionsRecipientAdapter-->
   <string name="ReactionsRecipientAdapter_you">మీరు</string>
+  <!--RecaptchaRequiredBottomSheetFragment-->
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">నిరోధించు</string>
   <string name="RecipientPreferenceActivity_unblock">అనుమతించు</string>
@@ -1223,6 +1227,7 @@
   <string name="ProxyBottomSheetFragment_do_you_want_to_use_this_proxy_address">మీరు ఈ ప్రాక్సీ చిరునామాను ఉపయోగించాలనుకుంటున్నారా?</string>
   <string name="ProxyBottomSheetFragment_use_proxy">ప్రాక్సీని ఉపయోగించండి</string>
   <string name="ProxyBottomSheetFragment_successfully_connected_to_proxy">ప్రాక్సీకి విజయవంతంగా కనెక్ట్ చేయబడింది.</string>
+  <!--RecaptchaProofActivity-->
   <!--RegistrationActivity-->
   <string name="RegistrationActivity_select_your_country">మీ దేశాన్ని ఎంచుకోండి</string>
   <string name="RegistrationActivity_you_must_specify_your_country_code">మీరు మీ దేశం కోడ్
@@ -1471,16 +1476,17 @@
   <string name="MessageNotifier_this_message_was_deleted">ఈ సందేశం తొలగించబడింది.</string>
   <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">చేరిన Signal నోటిఫికేషన్‌లను ఆపివేయాలా? మీరు వాటిని Signal &gt; సెట్టింగులు &gt; నోటిఫికేషన్‌లు.</string>
   <!--Notification Channels-->
-  <string name="NotificationChannel_messages">అప్రమేయం</string>
+  <string name="NotificationChannel_channel_messages">సందేశాలు</string>
   <string name="NotificationChannel_calls">కాల్స్</string>
   <string name="NotificationChannel_failures">వైఫల్యాలు</string>
   <string name="NotificationChannel_backups">ప్రత్యామ్నాయములు </string>
   <string name="NotificationChannel_locked_status">స్థితి లాక్</string>
   <string name="NotificationChannel_app_updates">అనువర్తన నవీకరణలు</string>
   <string name="NotificationChannel_other">ఇతర</string>
-  <string name="NotificationChannel_group_messages">సందేశాలు</string>
+  <string name="NotificationChannel_group_chats">మాటామంతి</string>
   <string name="NotificationChannel_missing_display_name">తెలియని</string>
   <string name="NotificationChannel_voice_notes">స్వర గమనికలు </string>
+  <string name="NotificationChannel_contact_joined_signal">పరిచయం Signal లొ చేరారు</string>
   <!--ProfileEditNameFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Signal బంధించినపుడు తక్షణ స్పందన అందుబాటులొ లేదు!</string>
@@ -1496,6 +1502,7 @@
   <!--SingleRecipientNotificationBuilder-->
   <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
   <string name="SingleRecipientNotificationBuilder_new_message">కొత్త సందేశం</string>
+  <string name="SingleRecipientNotificationBuilder_you">మీరు</string>
   <!--ThumbnailView-->
   <string name="ThumbnailView_Play_video_description">వీడియో ప్లే చేయండి</string>
   <string name="ThumbnailView_Has_a_caption_description">శీర్షిక ఉంది</string>
@@ -1680,7 +1687,6 @@
     <item quantity="other">%dఇతరులు </item>
   </plurals>
   <!--giphy_activity-->
-  <string name="giphy_activity_toolbar__search_gifs_and_stickers">జిఫ్‌లు మరియు స్టిక్కర్లు వెతుకు</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">ఏమీ దొరకలేదు</string>
   <!--log_submit_activity-->
@@ -1815,6 +1821,7 @@
   <string name="arrays__mute_for_one_hour">1 గంట నిశబ్దంగా ఉంచు</string>
   <string name="arrays__mute_for_one_day">1 రోజు నిశబ్దంగా ఉంచు</string>
   <string name="arrays__mute_for_seven_days">7 రోజులు నిశబ్దంగా ఉంచు</string>
+  <string name="arrays__always">ఎల్లప్పుడూ</string>
   <string name="arrays__settings_default">అప్రమేయ అమరికలు</string>
   <string name="arrays__enabled">చేతనం అయింది</string>
   <string name="arrays__disabled">అచేతనం అయింది</string>
@@ -1901,6 +1908,7 @@
   <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">మీరు పంపే ప్రతి SMS కోసం బట్వాడా నివేదికను అభ్యర్థించండి</string>
   <string name="preferences__data_and_storage">డేటా మరియు నిల్వ</string>
   <string name="preferences__storage">నిల్వ</string>
+  <string name="preferences__payments">చెల్లింపులు</string>
   <string name="preferences__conversation_length_limit">సంభాషణ విస్తృతికి పరిమితి</string>
   <string name="preferences__keep_messages">సందేశాలను ఉంచు</string>
   <string name="preferences__clear_message_history">సందేశ చరిత్రను తొలగించు</string>
@@ -2523,11 +2531,13 @@
   <string name="payment_info_card_update_pin">పిన్‌ను నవీకరించండి</string>
   <!--DeactivateWalletFragment-->
   <!--PaymentsRecoveryStartFragment-->
+  <string name="PaymentsRecoveryStartFragment__start">ప్రారంభించండి</string>
   <!--PaymentsRecoveryPasteFragment-->
   <string name="PaymentsRecoveryPasteFragment__next">తరువాత</string>
   <!--PaymentsRecoveryPhraseFragment-->
   <string name="PaymentsRecoveryPhraseFragment__next">తరువాత</string>
   <string name="PaymentsRecoveryPhraseFragment__edit">సరిచేయు</string>
+  <string name="PaymentsRecoveryPhraseFragment__previous">మునుపటి</string>
   <string name="PaymentsRecoveryPhraseFragment__copy">నకలు</string>
   <!--PaymentsRecoveryPhraseConfirmFragment-->
   <string name="PaymentRecoveryPhraseConfirmFragment__done">పూర్తి</string>
@@ -2539,5 +2549,7 @@
   <!--UnreadPayments-->
   <!--CanNotSendPaymentDialog-->
   <string name="CanNotSendPaymentDialog__send_a_message">సందేశం పంపండి</string>
+  <!--GroupsInCommonMessageRequest-->
+  <string name="GroupsInCommonMessageRequest__okay">సరే</string>
   <!--EOF-->
 </resources>

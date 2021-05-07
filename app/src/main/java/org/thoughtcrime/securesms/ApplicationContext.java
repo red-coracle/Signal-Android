@@ -40,8 +40,10 @@ import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.helpers.SQLCipherOpenHelper;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencyProvider;
+import org.thoughtcrime.securesms.emoji.EmojiSource;
 import org.thoughtcrime.securesms.gcm.FcmJobService;
 import org.thoughtcrime.securesms.jobs.CreateSignedPreKeyJob;
+import org.thoughtcrime.securesms.jobs.DownloadLatestEmojiDataJob;
 import org.thoughtcrime.securesms.jobs.FcmRefreshJob;
 import org.thoughtcrime.securesms.jobs.GroupV1MigrationJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob;
@@ -56,11 +58,10 @@ import org.thoughtcrime.securesms.migrations.ApplicationMigrations;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.providers.BlobProvider;
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
+import org.thoughtcrime.securesms.ratelimit.RateLimitUtil;
 import org.thoughtcrime.securesms.registration.RegistrationUtil;
-import org.thoughtcrime.securesms.revealable.ViewOnceMessageManager;
 import org.thoughtcrime.securesms.ringrtc.RingRtcLogger;
 import org.thoughtcrime.securesms.service.DirectoryRefreshListener;
-import org.thoughtcrime.securesms.service.ExpiringMessageManager;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.service.LocalBackupListener;
 import org.thoughtcrime.securesms.service.RotateSenderCertificateListener;
@@ -95,9 +96,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
 
   private static final String TAG = Log.tag(ApplicationContext.class);
 
-  private ExpiringMessageManager expiringMessageManager;
-  private ViewOnceMessageManager viewOnceMessageManager;
-  private PersistentLogger       persistentLogger;
+  private PersistentLogger persistentLogger;
 
   public static ApplicationContext getInstance(Context context) {
     return (ApplicationContext)context.getApplicationContext();
@@ -144,6 +143,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                               }
                             })
                             .addBlocking("blob-provider", this::initializeBlobProvider)
+                            .addBlocking("feature-flags", FeatureFlags::init)
                             .addNonBlocking(this::initializeRevealableMessageManager)
                             .addNonBlocking(this::initializeGcmCheck)
                             .addNonBlocking(this::initializeSignedPreKeyCheck)
@@ -152,10 +152,12 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                             .addNonBlocking(this::initializePendingMessages)
                             .addNonBlocking(this::initializeCleanup)
                             .addNonBlocking(this::initializeGlideCodecs)
-                            .addNonBlocking(FeatureFlags::init)
                             .addNonBlocking(RefreshPreKeysJob::scheduleIfNecessary)
                             .addNonBlocking(StorageSyncHelper::scheduleRoutineSync)
                             .addNonBlocking(() -> ApplicationDependencies.getJobManager().beginJobLoop())
+                            .addNonBlocking(EmojiSource::refresh)
+                            .addNonBlocking(() -> DownloadLatestEmojiDataJob.scheduleIfNecessary(this))
+                            .addPostRender(() -> RateLimitUtil.retryAllRateLimitedMessages(this))
                             .addPostRender(this::initializeExpiringMessageManager)
                             .execute();
 
@@ -192,17 +194,6 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
     ApplicationDependencies.getMessageNotifier().clearVisibleThread();
     ApplicationDependencies.getFrameRateTracker().end();
     ApplicationDependencies.getShakeToReport().disable();
-  }
-
-  public ExpiringMessageManager getExpiringMessageManager() {
-    if (expiringMessageManager == null) {
-      initializeExpiringMessageManager();
-    }
-    return expiringMessageManager;
-  }
-
-  public ViewOnceMessageManager getViewOnceMessageManager() {
-    return viewOnceMessageManager;
   }
 
   public PersistentLogger getPersistentLogger() {
@@ -242,7 +233,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
 
   private void initializeLogging() {
     persistentLogger = new PersistentLogger(this, LogSecretProvider.getOrCreateAttachmentSecret(this), BuildConfig.VERSION_NAME);
-    org.signal.core.util.logging.Log.initialize(new AndroidLogger(), persistentLogger);
+    org.signal.core.util.logging.Log.initialize(FeatureFlags::internalUser, new AndroidLogger(), persistentLogger);
 
     SignalProtocolLoggerProvider.setProvider(new CustomSignalProtocolLogger());
   }
@@ -299,11 +290,11 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
   }
 
   private void initializeExpiringMessageManager() {
-    this.expiringMessageManager = new ExpiringMessageManager(this);
+    ApplicationDependencies.getExpiringMessageManager().checkSchedule();
   }
 
   private void initializeRevealableMessageManager() {
-    this.viewOnceMessageManager = new ViewOnceMessageManager(this);
+    ApplicationDependencies.getViewOnceMessageManager().scheduleIfNecessary();
   }
 
   private void initializePeriodicTasks() {

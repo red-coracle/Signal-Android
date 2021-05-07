@@ -26,6 +26,7 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
+import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.service.ExpiringMessageManager;
 import org.thoughtcrime.securesms.util.DateUtils;
@@ -98,7 +99,7 @@ public class ConversationItemFooter extends LinearLayout {
     presentTimer(messageRecord);
     presentInsecureIndicator(messageRecord);
     presentDeliveryStatus(messageRecord);
-    hideAudioDurationViews();
+    presentAudioDuration(messageRecord);
   }
 
   public void setAudioDuration(long totalDurationMillis, long currentPostionMillis) {
@@ -160,6 +161,8 @@ public class ConversationItemFooter extends LinearLayout {
       dateView.setText(errorMsg);
     } else if (messageRecord.isPendingInsecureSmsFallback()) {
       dateView.setText(R.string.ConversationItem_click_to_approve_unencrypted);
+    } else if (messageRecord.isRateLimited()) {
+      dateView.setText(R.string.ConversationItem_send_paused);
     } else {
       dateView.setText(DateUtils.getExtendedRelativeTimeSpanString(getContext(), locale, messageRecord.getTimestamp()));
     }
@@ -197,11 +200,11 @@ public class ConversationItemFooter extends LinearLayout {
         this.timerView.startAnimation();
 
         if (messageRecord.getExpireStarted() + messageRecord.getExpiresIn() <= System.currentTimeMillis()) {
-          ApplicationContext.getInstance(getContext()).getExpiringMessageManager().checkSchedule();
+          ApplicationDependencies.getExpiringMessageManager().checkSchedule();
         }
       } else if (!messageRecord.isOutgoing() && !messageRecord.isMediaPending()) {
         SignalExecutors.BOUNDED.execute(() -> {
-          ExpiringMessageManager expirationManager = ApplicationContext.getInstance(getContext()).getExpiringMessageManager();
+          ExpiringMessageManager expirationManager = ApplicationDependencies.getExpiringMessageManager();
           long                   id                = messageRecord.getId();
           boolean                mms               = messageRecord.isMms();
 
@@ -258,6 +261,12 @@ public class ConversationItemFooter extends LinearLayout {
           moveAudioViewsForIncoming();
         }
         showAudioDurationViews();
+
+        if (messageRecord.getViewedReceiptCount() > 0) {
+          revealDot.setProgress(1f);
+        } else {
+          revealDot.setProgress(0f);
+        }
       } else {
         hideAudioDurationViews();
       }
@@ -294,7 +303,7 @@ public class ConversationItemFooter extends LinearLayout {
 
   private void showAudioDurationViews() {
     audioSpace.setVisibility(View.VISIBLE);
-    audioDuration.setVisibility(View.VISIBLE);
+    audioDuration.setVisibility(View.GONE);
 
     if (FeatureFlags.viewedReceipts()) {
       revealDot.setVisibility(View.VISIBLE);
