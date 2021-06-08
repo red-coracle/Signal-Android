@@ -136,9 +136,11 @@ public class SendReadReceiptJob extends BaseJob {
     SignalServiceAddress        remoteAddress  = RecipientUtil.toSignalServiceAddress(context, recipient);
     SignalServiceReceiptMessage receiptMessage = new SignalServiceReceiptMessage(SignalServiceReceiptMessage.Type.READ, messageIds, timestamp);
 
+    /*
     messageSender.sendReceipt(remoteAddress,
                               UnidentifiedAccessUtil.getAccessFor(context, Recipient.resolved(recipientId)),
                               receiptMessage);
+    */
   }
 
   @Override
