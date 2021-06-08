@@ -44,6 +44,7 @@ import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.ReactionRecord;
 import org.thoughtcrime.securesms.database.model.StickerRecord;
+import org.thoughtcrime.securesms.database.model.ThreadRecord;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.groups.BadGroupIdException;
 import org.thoughtcrime.securesms.groups.GroupChangeBusyException;
@@ -56,6 +57,7 @@ import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.jobs.AttachmentDownloadJob;
 import org.thoughtcrime.securesms.jobs.AutomaticSessionResetJob;
 import org.thoughtcrime.securesms.jobs.GroupCallPeekJob;
+import org.thoughtcrime.securesms.jobs.GroupV2UpdateSelfProfileKeyJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceBlockedUpdateJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceConfigurationUpdateJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob;
@@ -64,7 +66,9 @@ import org.thoughtcrime.securesms.jobs.MultiDeviceKeysUpdateJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceStickerPackSyncJob;
 import org.thoughtcrime.securesms.jobs.PaymentLedgerUpdateJob;
 import org.thoughtcrime.securesms.jobs.PaymentTransactionCheckJob;
+import org.thoughtcrime.securesms.jobs.ProfileKeySendJob;
 import org.thoughtcrime.securesms.jobs.PushProcessMessageJob;
+import org.thoughtcrime.securesms.jobs.RefreshAttributesJob;
 import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob;
 import org.thoughtcrime.securesms.jobs.RequestGroupInfoJob;
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
@@ -88,6 +92,7 @@ import org.thoughtcrime.securesms.payments.MobileCoinPublicAddress;
 import org.thoughtcrime.securesms.ratelimit.RateLimitUtil;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.ringrtc.RemotePeer;
 import org.thoughtcrime.securesms.service.webrtc.WebRtcData;
 import org.thoughtcrime.securesms.sms.IncomingEncryptedMessage;
@@ -102,7 +107,6 @@ import org.thoughtcrime.securesms.util.GroupUtil;
 import org.thoughtcrime.securesms.util.Hex;
 import org.thoughtcrime.securesms.util.IdentityUtil;
 import org.thoughtcrime.securesms.util.MediaUtil;
-import org.thoughtcrime.securesms.util.MessageRecordUtil;
 import org.thoughtcrime.securesms.util.RemoteDeleteUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
@@ -150,7 +154,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -263,6 +266,24 @@ public final class MessageContentProcessor {
 
         if (content.isNeedsReceipt()) {
           handleNeedsDeliveryReceipt(content, message);
+        } else {
+          Recipient sender = getMessageDestination(content, message);
+
+          if (RecipientUtil.shouldHaveProfileKey(context, sender)) {
+            Log.w(TAG, "Received an unsealed sender message from " + sender.getId() + ", but they should already have our profile key. Correcting.");
+
+            if (groupId.isPresent() && groupId.get().isV2()) {
+              Log.i(TAG, "Message was to a GV2 group. Ensuring our group profile keys are up to date.");
+              ApplicationDependencies.getJobManager().startChain(new RefreshAttributesJob(false))
+                                                     .then(GroupV2UpdateSelfProfileKeyJob.withQueueLimits(groupId.get().requireV2()))
+                                                     .enqueue();
+            } else if (!sender.isPushV2Group()) {
+              Log.i(TAG, "Message was to a 1:1 or GV1 chat. Ensuring this user has our profile key.");
+              ApplicationDependencies.getJobManager().startChain(new RefreshAttributesJob(false))
+                                     .then(ProfileKeySendJob.create(context, DatabaseFactory.getThreadDatabase(context).getThreadIdFor(sender), true))
+                                     .enqueue();
+            }
+          }
         }
       } else if (content.getSyncMessage().isPresent()) {
         TextSecurePreferences.setMultiDevice(context, true);
@@ -557,11 +578,14 @@ public final class MessageContentProcessor {
   {
     MessageDatabase     smsDatabase         = DatabaseFactory.getSmsDatabase(context);
     IncomingTextMessage incomingTextMessage = new IncomingTextMessage(Recipient.externalHighTrustPush(context, content.getSender()).getId(),
-        content.getSenderDevice(),
-        content.getTimestamp(),
-        content.getServerReceivedTimestamp(),
-        "", Optional.absent(), 0,
-        content.isNeedsReceipt());
+                                                                      content.getSenderDevice(),
+                                                                      content.getTimestamp(),
+                                                                      content.getServerReceivedTimestamp(),
+                                                                      "",
+                                                                      Optional.absent(),
+                                                                      0,
+                                                                      content.isNeedsReceipt(),
+                                                                      content.getServerUuid());
 
     Long threadId;
 
@@ -667,21 +691,22 @@ public final class MessageContentProcessor {
       MessageDatabase      database     = DatabaseFactory.getMmsDatabase(context);
       Recipient            sender       = Recipient.externalHighTrustPush(context, content.getSender());
       IncomingMediaMessage mediaMessage = new IncomingMediaMessage(sender.getId(),
-          content.getTimestamp(),
-          content.getServerReceivedTimestamp(),
-          -1,
-          expiresInSeconds * 1000L,
-          true,
-          false,
-          content.isNeedsReceipt(),
-          Optional.absent(),
-          groupContext,
-          Optional.absent(),
-          Optional.absent(),
-          Optional.absent(),
-          Optional.absent(),
-          Optional.absent(),
-          Optional.absent());
+                                                                   content.getTimestamp(),
+                                                                   content.getServerReceivedTimestamp(),
+                                                                   -1,
+                                                                   expiresInSeconds * 1000L,
+                                                                   true,
+                                                                   false,
+                                                                   content.isNeedsReceipt(),
+                                                                   Optional.absent(),
+                                                                   groupContext,
+                                                                   Optional.absent(),
+                                                                   Optional.absent(),
+                                                                   Optional.absent(),
+                                                                   Optional.absent(),
+                                                                   Optional.absent(),
+                                                                   Optional.absent(),
+                                                                   content.getServerUuid());
 
       database.insertSecureDecryptedMessageInbox(mediaMessage, -1);
 
@@ -698,31 +723,54 @@ public final class MessageContentProcessor {
   private void handleReaction(@NonNull SignalServiceContent content, @NonNull SignalServiceDataMessage message) {
     SignalServiceDataMessage.Reaction reaction = message.getReaction().get();
 
-    if (!EmojiUtil.isEmoji(context, reaction.getEmoji())) {
+    if (!EmojiUtil.isEmoji(reaction.getEmoji())) {
       Log.w(TAG, "Reaction text is not a valid emoji! Ignoring the message.");
       return;
     }
 
-    Recipient     targetAuthor  = Recipient.externalPush(context, reaction.getTargetAuthor());
-    MessageRecord targetMessage = DatabaseFactory.getMmsSmsDatabase(context).getMessageFor(reaction.getTargetSentTimestamp(), targetAuthor.getId());
+    Recipient     reactionAuthor = Recipient.externalHighTrustPush(context, content.getSender());
+    Recipient     targetAuthor   = Recipient.externalPush(context, reaction.getTargetAuthor());
+    MessageRecord targetMessage  = DatabaseFactory.getMmsSmsDatabase(context).getMessageFor(reaction.getTargetSentTimestamp(), targetAuthor.getId());
 
-    if (targetMessage != null && !targetMessage.isRemoteDelete()) {
-      Recipient       reactionAuthor = Recipient.externalHighTrustPush(context, content.getSender());
-      MessageDatabase db             = targetMessage.isMms() ? DatabaseFactory.getMmsDatabase(context) : DatabaseFactory.getSmsDatabase(context);
-
-      if (reaction.isRemove()) {
-        db.deleteReaction(targetMessage.getId(), reactionAuthor.getId());
-        ApplicationDependencies.getMessageNotifier().updateNotification(context);
-      } else {
-        ReactionRecord reactionRecord = new ReactionRecord(reaction.getEmoji(), reactionAuthor.getId(), message.getTimestamp(), System.currentTimeMillis());
-        db.addReaction(targetMessage.getId(), reactionRecord);
-        ApplicationDependencies.getMessageNotifier().updateNotification(context, targetMessage.getThreadId(), false);
-      }
-    } else if (targetMessage != null) {
-      warn(String.valueOf(content.getTimestamp()), "[handleReaction] Found a matching message, but it's flagged as remotely deleted. timestamp: " + reaction.getTargetSentTimestamp() + "  author: " + targetAuthor.getId());
-    } else {
-      warn(String.valueOf(content.getTimestamp()), "[handleReaction] Could not find matching message! timestamp: " + reaction.getTargetSentTimestamp() + "  author: " + targetAuthor.getId());
+    if (targetMessage == null) {
+      warn(String.valueOf(content.getTimestamp()), "[handleReaction] Could not find matching message! Putting it in the early message cache. timestamp: " + reaction.getTargetSentTimestamp() + "  author: " + targetAuthor.getId());
       ApplicationDependencies.getEarlyMessageCache().store(targetAuthor.getId(), reaction.getTargetSentTimestamp(), content);
+      return;
+    }
+
+    if (targetMessage.isRemoteDelete()) {
+      warn(String.valueOf(content.getTimestamp()), "[handleReaction] Found a matching message, but it's flagged as remotely deleted. timestamp: " + reaction.getTargetSentTimestamp() + "  author: " + targetAuthor.getId());
+      return;
+    }
+
+    ThreadRecord targetThread = DatabaseFactory.getThreadDatabase(context).getThreadRecord(targetMessage.getThreadId());
+
+    if (targetThread == null) {
+      warn(String.valueOf(content.getTimestamp()), "[handleReaction] Could not find a thread for the message! timestamp: " + reaction.getTargetSentTimestamp() + "  author: " + targetAuthor.getId());
+      return;
+    }
+
+    Recipient threadRecipient = targetThread.getRecipient().resolve();
+
+    if (threadRecipient.isGroup() && !threadRecipient.getParticipants().contains(reactionAuthor)) {
+      warn(String.valueOf(content.getTimestamp()), "[handleReaction] Reaction author is not in the group! timestamp: " + reaction.getTargetSentTimestamp() + "  author: " + targetAuthor.getId());
+      return;
+    }
+
+    if (!threadRecipient.isGroup() && !reactionAuthor.equals(threadRecipient) && !reactionAuthor.isSelf()) {
+      warn(String.valueOf(content.getTimestamp()), "[handleReaction] Reaction author is not a part of the 1:1 thread! timestamp: " + reaction.getTargetSentTimestamp() + "  author: " + targetAuthor.getId());
+      return;
+    }
+
+    MessageDatabase db = targetMessage.isMms() ? DatabaseFactory.getMmsDatabase(context) : DatabaseFactory.getSmsDatabase(context);
+
+    if (reaction.isRemove()) {
+      db.deleteReaction(targetMessage.getId(), reactionAuthor.getId());
+      ApplicationDependencies.getMessageNotifier().updateNotification(context);
+    } else {
+      ReactionRecord reactionRecord = new ReactionRecord(reaction.getEmoji(), reactionAuthor.getId(), message.getTimestamp(), System.currentTimeMillis());
+      db.addReaction(targetMessage.getId(), reactionRecord);
+      ApplicationDependencies.getMessageNotifier().updateNotification(context, targetMessage.getThreadId(), false);
     }
   }
 
@@ -1085,22 +1133,24 @@ public final class MessageContentProcessor {
       Optional<List<LinkPreview>> linkPreviews   = getLinkPreviews(message.getPreviews(), message.getBody().or(""));
       Optional<List<Mention>>     mentions       = getMentions(message.getMentions());
       Optional<Attachment>        sticker        = getStickerAttachment(message.getSticker());
-      IncomingMediaMessage        mediaMessage   = new IncomingMediaMessage(RecipientId.fromHighTrust(content.getSender()),
-          message.getTimestamp(),
-          content.getServerReceivedTimestamp(),
-          -1,
-          message.getExpiresInSeconds() * 1000L,
-          false,
-          message.isViewOnce(),
-          content.isNeedsReceipt(),
-          message.getBody(),
-          message.getGroupContext(),
-          message.getAttachments(),
-          quote,
-          sharedContacts,
-          linkPreviews,
-          mentions,
-          sticker);
+
+      IncomingMediaMessage mediaMessage = new IncomingMediaMessage(RecipientId.fromHighTrust(content.getSender()),
+                                                                   message.getTimestamp(),
+                                                                   content.getServerReceivedTimestamp(),
+                                                                   -1,
+                                                                   message.getExpiresInSeconds() * 1000L,
+                                                                   false,
+                                                                   message.isViewOnce(),
+                                                                   content.isNeedsReceipt(),
+                                                                   message.getBody(),
+                                                                   message.getGroupContext(),
+                                                                   message.getAttachments(),
+                                                                   quote,
+                                                                   sharedContacts,
+                                                                   linkPreviews,
+                                                                   mentions,
+                                                                   sticker,
+                                                                   content.getServerUuid());
 
       insertResult = database.insertSecureDecryptedMessageInbox(mediaMessage, -1);
 
@@ -1309,13 +1359,14 @@ public final class MessageContentProcessor {
       notifyTypingStoppedFromIncomingMessage(recipient, content.getSender(), content.getSenderDevice());
 
       IncomingTextMessage textMessage = new IncomingTextMessage(RecipientId.fromHighTrust(content.getSender()),
-          content.getSenderDevice(),
-          message.getTimestamp(),
-          content.getServerReceivedTimestamp(),
-          body,
-          groupId,
-          message.getExpiresInSeconds() * 1000L,
-          content.isNeedsReceipt());
+                                                                content.getSenderDevice(),
+                                                                message.getTimestamp(),
+                                                                content.getServerReceivedTimestamp(),
+                                                                body,
+                                                                groupId,
+                                                                message.getExpiresInSeconds() * 1000L,
+                                                                content.isNeedsReceipt(),
+                                                                content.getServerUuid());
 
       textMessage = new IncomingEncryptedMessage(textMessage, body);
       Optional<InsertResult> insertResult = database.insertMessageInbox(textMessage);
@@ -1784,8 +1835,8 @@ public final class MessageContentProcessor {
   private Optional<InsertResult> insertPlaceholder(@NonNull String sender, int senderDevice, long timestamp, Optional<GroupId> groupId) {
     MessageDatabase     database    = DatabaseFactory.getSmsDatabase(context);
     IncomingTextMessage textMessage = new IncomingTextMessage(Recipient.external(context, sender).getId(),
-        senderDevice, timestamp, -1, "",
-        groupId, 0, false);
+                                                              senderDevice, timestamp, -1, "",
+                                                              groupId, 0, false, null);
 
     textMessage = new IncomingEncryptedMessage(textMessage, "");
     return database.insertMessageInbox(textMessage);

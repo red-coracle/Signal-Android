@@ -24,6 +24,7 @@ import org.thoughtcrime.securesms.crypto.ClassicDecryptingPartInputStream;
 import org.thoughtcrime.securesms.crypto.IdentityKeyUtil;
 import org.thoughtcrime.securesms.crypto.ModernDecryptingPartInputStream;
 import org.thoughtcrime.securesms.database.AttachmentDatabase;
+import org.thoughtcrime.securesms.database.EmojiSearchDatabase;
 import org.thoughtcrime.securesms.database.GroupReceiptDatabase;
 import org.thoughtcrime.securesms.database.KeyValueDatabase;
 import org.thoughtcrime.securesms.database.MmsDatabase;
@@ -75,7 +76,8 @@ public class FullBackupExporter extends FullBackupBase {
     OneTimePreKeyDatabase.TABLE_NAME,
     SessionDatabase.TABLE_NAME,
     SearchDatabase.SMS_FTS_TABLE_NAME,
-    SearchDatabase.MMS_FTS_TABLE_NAME
+    SearchDatabase.MMS_FTS_TABLE_NAME,
+    EmojiSearchDatabase.TABLE_NAME
   );
 
   public static void export(@NonNull Context context,
@@ -210,11 +212,11 @@ public class FullBackupExporter extends FullBackupBase {
         String type = cursor.getString(2);
 
         if (sql != null) {
+          boolean isSmsFtsSecretTable   = name != null && !name.equals(SearchDatabase.SMS_FTS_TABLE_NAME) && name.startsWith(SearchDatabase.SMS_FTS_TABLE_NAME);
+          boolean isMmsFtsSecretTable   = name != null && !name.equals(SearchDatabase.MMS_FTS_TABLE_NAME) && name.startsWith(SearchDatabase.MMS_FTS_TABLE_NAME);
+          boolean isEmojiFtsSecretTable = name != null && !name.equals(EmojiSearchDatabase.TABLE_NAME) && name.startsWith(EmojiSearchDatabase.TABLE_NAME);
 
-          boolean isSmsFtsSecretTable = name != null && !name.equals(SearchDatabase.SMS_FTS_TABLE_NAME) && name.startsWith(SearchDatabase.SMS_FTS_TABLE_NAME);
-          boolean isMmsFtsSecretTable = name != null && !name.equals(SearchDatabase.MMS_FTS_TABLE_NAME) && name.startsWith(SearchDatabase.MMS_FTS_TABLE_NAME);
-
-          if (!isSmsFtsSecretTable && !isMmsFtsSecretTable) {
+          if (!isSmsFtsSecretTable && !isMmsFtsSecretTable && !isEmojiFtsSecretTable) {
             if ("table".equals(type)) {
               tables.add(name);
             }

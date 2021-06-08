@@ -89,7 +89,6 @@
   <string name="BlockUnblockDialog_unblock_s">Desbloquear a %1$s?</string>
   <string name="BlockUnblockDialog_block">Bloquear</string>
   <string name="BlockUnblockDialog_block_and_leave">Bloquear e saír</string>
-  <string name="BlockUnblockDialog_block_and_delete">Bloquear e eliminar</string>
   <!--BucketedThreadMedia-->
   <string name="BucketedThreadMedia_Today">Hoxe</string>
   <string name="BucketedThreadMedia_Yesterday">Onte</string>
@@ -605,7 +604,6 @@
   <string name="ManageGroupActivity_mute_notifications">Silenciar notificacións</string>
   <string name="ManageGroupActivity_custom_notifications">Personalizar notificacións</string>
   <string name="ManageGroupActivity_mentions">Mencións</string>
-  <string name="ManageGroupActivity_chat_wallpaper">Fondo de pantalla do chat</string>
   <string name="ManageGroupActivity_until_s">Ata %1$s</string>
   <string name="ManageGroupActivity_always">Sempre</string>
   <string name="ManageGroupActivity_off">Off</string>
@@ -831,6 +829,7 @@
   <string name="Megaphones_new_group">Novo grupo</string>
   <string name="Megaphones_invite_friends">Convidar amizades</string>
   <string name="Megaphones_use_sms">Utilizar SMS</string>
+  <string name="Megaphones_appearance">Aparencia</string>
   <!--NotificationBarManager-->
   <string name="NotificationBarManager_signal_call_in_progress">Chamada Signal en progreso</string>
   <string name="NotificationBarManager__establishing_signal_call">Establecendo chamada Signal</string>
@@ -968,6 +967,7 @@
   <string name="MessageRecord_you_changed_the_group_name_to_s">Cambiaches o nome do grupo a \"%1$s\".</string>
   <string name="MessageRecord_s_changed_the_group_name_to_s">%1$s cambiou o nome do grupo a \"%2$s\".</string>
   <string name="MessageRecord_the_group_name_has_changed_to_s">O nome do grupo cambiou a \"%1$s\".</string>
+  <!--GV2 description change-->
   <!--GV2 avatar change-->
   <string name="MessageRecord_you_changed_the_group_avatar">Cambiaches o avatar do grupo.</string>
   <string name="MessageRecord_s_changed_the_group_avatar">%1$s cambiou o avatar do grupo.</string>
@@ -1099,10 +1099,6 @@
   <string name="DeviceProvisioningActivity_it_looks_like_youre_trying_to_link_a_signal_device_using_a_3rd_party_scanner">Semella que estás tentando vincular un dispositivo a Signal usando un escáner de terceiros. Para a túa protección, escanea o código de novo desde Signal.</string>
   <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">Signal necesita permiso para acceder á cámara e poder escanear un código QR, pero foi denegado de forma permanente. Vai aos axustes da aplicación, selecciona \"Permisos\" e activa \"Cámara\".</string>
   <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">Non é posible escanear o código QR sen permiso para acceder á cámara</string>
-  <!--ExpirationDialog-->
-  <string name="ExpirationDialog_disappearing_messages">Desaparición das mensaxes</string>
-  <string name="ExpirationDialog_your_messages_will_not_expire">As mensaxes non desaparecerán.</string>
-  <string name="ExpirationDialog_your_messages_will_disappear_s_after_they_have_been_seen">As mensaxes que se envíen e reciban nesta conversa desaparecerán %s despois de seren vistas.</string>
   <!--OutdatedBuildReminder-->
   <string name="OutdatedBuildReminder_update_now">Actualiza</string>
   <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Esta versión de Signal caduca hoxe. Actualízate á versión máis recente.</string>
@@ -1213,6 +1209,7 @@
   <string name="CallParticipantView__cant_receive_audio_video_from_s">Non se pode recibir o audio e vídeo de %1$s</string>
   <string name="CallParticipantView__cant_receive_audio_and_video_from_s">Non se pode recibir o audio e vídeo de %1$s</string>
   <string name="CallParticipantView__this_may_be_Because_they_have_not_verified_your_safety_number_change">Esto podería ser debido a que non verificaron o cambio no teu número de seguridade, hai un problema co seu dispositivo ou a que te bloquearon.</string>
+  <!--CallToastPopupWindow-->
   <!--ProxyBottomSheetFragment-->
   <string name="ProxyBottomSheetFragment_proxy_server">Servidor proxy</string>
   <string name="ProxyBottomSheetFragment_proxy_address">Enderezo do proxy</string>
@@ -1606,6 +1603,7 @@
   <string name="ConversationUpdateItem_call_is_full">A chamada está completa</string>
   <string name="ConversationUpdateItem_invite_friends">Convidar amizades</string>
   <string name="ConversationUpdateItem_enable_call_notifications">Activar notificacións de chamadas</string>
+  <string name="ConversationUpdateItem_view">Ver</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">Reproducir … Deter</string>
   <string name="audio_view__download_accessibility_description">Descargar</string>
@@ -1739,7 +1737,7 @@
   <string name="EditAboutFragment_taking_a_break">Tomando un descanso</string>
   <string name="EditAboutFragment_working_on_something_new">Traballando en algo novo</string>
   <!--EditProfileFragment-->
-  <string name="EditProfileFragment__edit_group_name_and_photo">Editar nome do grupo e fotografía</string>
+  <string name="EditProfileFragment__edit_group">Editar grupo</string>
   <string name="EditProfileFragment__group_name">Nome do grupo</string>
   <!--EditProfileNameFragment-->
   <string name="EditProfileNameFragment_your_name">O teu nome</string>
@@ -1940,7 +1938,6 @@
   <string name="preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts">Se desactivas as confirmacións de lectura, non poderás ver as confirmacións dos demais.</string>
   <string name="preferences__typing_indicators">Indicador de escritura</string>
   <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">Se os indicadores de escritura están desactivados non verás cando outras persoas está a escribir.</string>
-  <string name="preferences__request_keyboard_to_disable_personalized_learning">Solicitar un teclado para desactivar a aprendizaxe personalizada. Este axuste non é unha garantía porque o seu teclado por ignoralo.</string>
   <string name="preferences_app_protection__blocked_users">Usuarios bloqueados</string>
   <string name="preferences_chats__when_using_mobile_data">Usando datos móbiles</string>
   <string name="preferences_chats__when_using_wifi">Usando conexión wifi</string>
@@ -2378,7 +2375,6 @@
   <string name="NewDeviceTransferInstructions__first_bullet">1.</string>
   <string name="NewDeviceTransferInstructions__tap_on_your_profile_photo_in_the_top_left_to_open_settings">Toca na foto de perfil arriba á esquerda para abrir os Axustes</string>
   <string name="NewDeviceTransferInstructions__second_bullet">2.</string>
-  <string name="NewDeviceTransferInstructions__tap_on_chats">Toca en \"Conversas\"</string>
   <string name="NewDeviceTransferInstructions__third_bullet">3.</string>
   <string name="NewDeviceTransferInstructions__tap_transfer_account_and_then_continue_on_both_devices">En ambos dispositivos, toca en \"Transferir Conta\" e após en \"Continuar\" </string>
   <!--NewDeviceTransferSetupFragment-->
@@ -2594,17 +2590,13 @@
   <!--ChatWallpaperActivity-->
   <string name="ChatWallpaperActivity__chat_wallpaper">Fondo de pantalla do chat</string>
   <!--ChatWallpaperFragment-->
+  <string name="ChatWallpaperFragment__chat_color">Cor do chat</string>
   <string name="ChatWallpaperFragment__set_wallpaper">Estabelecer o fondo de pantalla</string>
-  <string name="ChatWallpaperFragment__dark_theme_dims_wallpaper">O tema escuro atenúa o fondo de pantalla</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper">Despexar o fondo de pantalla</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper_for_this_chat">Despexar o fondo de pantalla deste chat?</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper_this_will_not">Despexar o fondo de pantalla? Non retira os fondos de pantalla personalizados que teña estabelecidos para os seus chats.</string>
-  <string name="ChatWallpaperFragment__reset_all_wallpapers">Reestabelecer todos os fondos de pantalla</string>
-  <string name="ChatWallpaperFragment__reset_all_wallpapers_including_custom">Reestabelecer todos os fondos de pantalla, incluíndo os personalizados que teña estabelecidos para os seus chats?</string>
   <string name="ChatWallpaperFragment__contact_name">Nome de contacto</string>
   <string name="ChatWallpaperFragment__reset">Restablecer</string>
   <string name="ChatWallpaperFragment__clear">Despexar</string>
   <string name="ChatWallpaperFragment__wallpaper_preview_description">Visualización do fondo de pantalla</string>
+  <string name="ChatWallpaperFragment__reset_all_wallpapers">Reestabelecer todos os fondos de pantalla</string>
   <!--ChatWallpaperSelectionFragment-->
   <string name="ChatWallpaperSelectionFragment__choose_from_photos">Escoller de entre as fotos</string>
   <string name="ChatWallpaperSelectionFragment__presets">Preestabelecidos</string>
@@ -2646,5 +2638,57 @@
   <string name="CanNotSendPaymentDialog__send_a_message">Enviar unha mensaxe</string>
   <!--GroupsInCommonMessageRequest-->
   <string name="GroupsInCommonMessageRequest__okay">De acordo</string>
+  <!--GroupDescriptionDialog-->
+  <!--QualitySelectorBottomSheetDialog-->
+  <string name="QualitySelectorBottomSheetDialog__high">Alta</string>
+  <!--AppSettingsFragment-->
+  <!--AccountSettingsFragment-->
+  <!--ChatsSettingsFragment-->
+  <string name="ChatsSettingsFragment__enter_key_sends">Tecla Intro para enviar</string>
+  <!--SmsSettingsFragment-->
+  <string name="SmsSettingsFragment__use_as_default_sms_app">Aplicación predefinida das SMS</string>
+  <!--NotificationsSettingsFragment-->
+  <string name="NotificationsSettingsFragment__messages">Mensaxes</string>
+  <string name="NotificationsSettingsFragment__calls">Chamadas</string>
+  <!--PrivacySettingsFragment-->
+  <string name="PrivacySettingsFragment__blocked">Bloqueado</string>
+  <string name="PrivacySettingsFragment__disappearing_messages">Desaparición das mensaxes</string>
+  <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Bloquea as capturas na listaxe de recentes e no interior da aplicación.</string>
+  <!--AdvancedPrivacySettingsFragment-->
+  <!--ExpireTimerSettingsFragment-->
+  <string name="ExpireTimerSettingsFragment__off">Off</string>
+  <string name="ExpireTimerSettingsFragment__1_week">1 semana</string>
+  <string name="ExpireTimerSettingsFragment__1_day">1 día</string>
+  <string name="ExpireTimerSettingsFragment__1_hour">1 hora</string>
+  <string name="ExpireTimerSettingsFragment__5_minutes">5 minutos</string>
+  <string name="ExpireTimerSettingsFragment__30_seconds">30 segundos</string>
+  <string name="ExpireTimerSettingsFragment__save">Gardar</string>
+  <string name="CustomExpireTimerSelectorView__minutes">minutos</string>
+  <string name="CustomExpireTimerSelectorView__hours">horas</string>
+  <!--HelpSettingsFragment-->
+  <string name="HelpSettingsFragment__contact_us">Contacto</string>
+  <string name="HelpSettingsFragment__version">Versión</string>
+  <string name="HelpSettingsFragment__debug_log">Rexistro de depuración</string>
+  <string name="HelpSettingsFragment__terms_amp_privacy_policy">Termos e política de privacidade</string>
+  <!--DataAndStorageSettingsFragment-->
+  <string name="DataAndStorageSettingsFragment__calls">Chamadas</string>
+  <!--ChatColorSelectionFragment-->
+  <string name="ChatColorSelectionFragment__chat_color">Cor do chat</string>
+  <string name="ChatColorSelectionFragment__edit">Editar</string>
+  <string name="ChatColorSelectionFragment__delete">Eliminar</string>
+  <!--CustomChatColorCreatorFragment-->
+  <!--CustomChatColorCreatorFragmentPage-->
+  <string name="CustomChatColorCreatorFragmentPage__save">Gardar</string>
+  <!--ChatColorGradientTool-->
+  <!--EditReactionsFragment-->
+  <string name="EditReactionsFragment__reset">Restablecer</string>
+  <string name="EditReactionsFragment_save">Gardar</string>
+  <!--ChatColorsMegaphone-->
+  <string name="ChatColorsMegaphone__appearance">Aparencia</string>
+  <string name="ChatColorsMegaphone__not_now">Agora non</string>
+  <!--KeyboardPagerFragment-->
+  <string name="KeyboardPagerFragment_emoji">Emoji</string>
+  <string name="KeyboardPagerFragment_stickers">Adhesivos</string>
+  <!--StickerSearchDialogFragment-->
   <!--EOF-->
 </resources>

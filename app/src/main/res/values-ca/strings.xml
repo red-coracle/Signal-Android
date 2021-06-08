@@ -93,7 +93,7 @@
   <string name="BlockUnblockDialog_unblock_s">Voleu desblocar %1$s?</string>
   <string name="BlockUnblockDialog_block">Bloca</string>
   <string name="BlockUnblockDialog_block_and_leave">Bloca i abandona</string>
-  <string name="BlockUnblockDialog_block_and_delete">Bloca\'l i suprimeix-lo</string>
+  <string name="BlockUnblockDialog_report_spam_and_block">Informa\'n com a brossa i bloca-ho</string>
   <!--BucketedThreadMedia-->
   <string name="BucketedThreadMedia_Today">Avui</string>
   <string name="BucketedThreadMedia_Yesterday">Ahir</string>
@@ -169,6 +169,7 @@
   <string name="ConversationItem_error_network_not_delivered">L\'enviament ha fallat</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">S\'ha rebut el missatge de l\'intercanvi de la clau, toqueu per processar-lo.</string>
   <string name="ConversationItem_group_action_left">%1$s ha abandonat el grup.</string>
+  <string name="ConversationItem_send_paused">Enviament interromput</string>
   <string name="ConversationItem_click_to_approve_unencrypted">Ha fallat l\'enviament. Toqueu per al mode no segur.</string>
   <string name="ConversationItem_click_to_approve_unencrypted_sms_dialog_title">Voleu canviar a SMS sense encriptar?</string>
   <string name="ConversationItem_click_to_approve_unencrypted_mms_dialog_title">Voleu canviar a MMS sense encriptar?</string>
@@ -239,6 +240,10 @@
   <string name="ConversationActivity_join">Afegeix-m\'hi</string>
   <string name="ConversationActivity_full">Ple</string>
   <string name="ConversationActivity_error_sending_media">Error en enviar contingut</string>
+  <string name="ConversationActivity__reported_as_spam_and_blocked">Se n\'ha informat com a brossa i s\'ha blocat.</string>
+  <string name="ConversationActivity_gifs_have_moved">S\'han mogut els GIF</string>
+  <string name="ConversationActivity_look_for_gifs_next_to_emoji_and_stickers">Cerqueu els GIF al costat d’emoticones i adhesius.</string>
+  <string name="ConversationActivity__gifs_are_now_here">Ara teniu aquí els GIF.</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d missatge sense llegir</item>
@@ -609,7 +614,7 @@
   <string name="ManageGroupActivity_mute_notifications">Silencia les notificacions</string>
   <string name="ManageGroupActivity_custom_notifications">Notificacions personalitzades</string>
   <string name="ManageGroupActivity_mentions">Mencions</string>
-  <string name="ManageGroupActivity_chat_wallpaper">Fons de la conversa</string>
+  <string name="ManageGroupActivity_chat_color_and_wallpaper">Color i fons de la conversa</string>
   <string name="ManageGroupActivity_until_s">Fins a %1$s</string>
   <string name="ManageGroupActivity_always">Sempre</string>
   <string name="ManageGroupActivity_off">Inactiu</string>
@@ -637,6 +642,8 @@
   <string name="ManageGroupActivity_upgrade_this_group">actualitzeu aquest grup.</string>
   <string name="ManageGroupActivity_this_is_an_insecure_mms_group">Aquest és un grup d\'MMS no segur. Per conversar privadament, convideu els contactes al Signal.</string>
   <string name="ManageGroupActivity_invite_now">Convida ara</string>
+  <string name="ManageGroupActivity_more">més</string>
+  <string name="ManageGroupActivity_add_group_description">Afegiu-hi una descripció del grup.</string>
   <!--GroupMentionSettingDialog-->
   <string name="GroupMentionSettingDialog_notify_me_for_mentions">Notifica\'m les mencions</string>
   <string name="GroupMentionSettingDialog_receive_notifications_when_youre_mentioned_in_muted_chats">Voleu rebre notificacions quan us mencionin en converses silenciades?</string>
@@ -835,6 +842,7 @@
   <string name="Megaphones_new_group">Grup nou</string>
   <string name="Megaphones_invite_friends">Convideu-hi amistats</string>
   <string name="Megaphones_use_sms">Usa SMS</string>
+  <string name="Megaphones_appearance">Aparença</string>
   <!--NotificationBarManager-->
   <string name="NotificationBarManager_signal_call_in_progress">Trucada del Signal en curs</string>
   <string name="NotificationBarManager__establishing_signal_call">S\'estableix la trucada del Signal</string>
@@ -973,6 +981,10 @@
   <string name="MessageRecord_you_changed_the_group_name_to_s">Heu canviat el nom del grup a \"%1$s\".</string>
   <string name="MessageRecord_s_changed_the_group_name_to_s">%1$s ha canviat el nom del grup a \"%2$s\".</string>
   <string name="MessageRecord_the_group_name_has_changed_to_s">S\'ha canviat el nom del grup a \"%1$s\".</string>
+  <!--GV2 description change-->
+  <string name="MessageRecord_you_changed_the_group_description">Heu canviat la descripció del grup.</string>
+  <string name="MessageRecord_s_changed_the_group_description">%1$s ha canviat la descripció del grup. </string>
+  <string name="MessageRecord_the_group_description_has_changed">S\'ha canviat la descripció del grup.</string>
   <!--GV2 avatar change-->
   <string name="MessageRecord_you_changed_the_group_avatar">Heu canviat l\'avatar del grup.</string>
   <string name="MessageRecord_s_changed_the_group_avatar">%1$s ha canviat l\'avatar del grup.</string>
@@ -1103,10 +1115,6 @@
   <string name="DeviceProvisioningActivity_it_looks_like_youre_trying_to_link_a_signal_device_using_a_3rd_party_scanner">Sembla que esteu provant d\'enllaçar un dispositiu de Signal amb un escàner extern. Per seguretat, torneu a escanejar el codi dins del Signal.</string>
   <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">El Signal necessita el permís de la càmera per tal d\'escanejar un codi QR, però s\'ha denegat permanentment. Si us plau, continueu cap al menú de configuració de l\'aplicació, seleccioneu Permisos i activeu-hi la càmera.</string>
   <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">No es pot escanejar un codi QR sense permís de la càmera.</string>
-  <!--ExpirationDialog-->
-  <string name="ExpirationDialog_disappearing_messages">Missatges efímers</string>
-  <string name="ExpirationDialog_your_messages_will_not_expire">El missatges no venceran.</string>
-  <string name="ExpirationDialog_your_messages_will_disappear_s_after_they_have_been_seen">Els missatges enviats i rebuts a aquesta conversa desapareixeran %s després que s\'hagin llegit.</string>
   <!--OutdatedBuildReminder-->
   <string name="OutdatedBuildReminder_update_now">Actualitza-la ara</string>
   <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">La vostra versió del Signal vencerà avui. Actualitzeu-la a la versió més recent.</string>
@@ -1165,6 +1173,9 @@
   <!--ReactionsRecipientAdapter-->
   <string name="ReactionsRecipientAdapter_you">Vós</string>
   <!--RecaptchaRequiredBottomSheetFragment-->
+  <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">Verifiqueu-ho per continuar la missatgeria</string>
+  <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Per ajudar a prevenir el correu brossa al Signal, completeu la verificació.</string>
+  <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">Després de verificar-ho, podeu continuar enviant missatges. Qualsevol missatge interromput s\'enviarà automàticament.</string>
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">Bloca</string>
   <string name="RecipientPreferenceActivity_unblock">Desbloca</string>
@@ -1201,6 +1212,7 @@
   <string name="WebRtcCallView__no_one_else_is_here">Aquí no hi ha ningú més.</string>
   <string name="WebRtcCallView__s_is_in_this_call">%1$s és en aquesta trucada.</string>
   <string name="WebRtcCallView__s_and_s_are_in_this_call">%1$s i %2$s són en aquesta trucada.</string>
+  <string name="WebRtcCallView__s_is_presenting">%1$s fa la presentació</string>
   <plurals name="WebRtcCallView__s_s_and_d_others_are_in_this_call">
     <item quantity="one">%1$s, %2$s i %3$d més són en aquesta trucada.</item>
     <item quantity="other">%1$s, %2$s i %3$d més són en aquesta trucada.</item>
@@ -1217,6 +1229,8 @@
   <string name="CallParticipantView__cant_receive_audio_video_from_s">No es pot rebre ni àudio ni vídeo de %1$s.</string>
   <string name="CallParticipantView__cant_receive_audio_and_video_from_s">No es pot rebre ni àudio ni vídeo de %1$s.</string>
   <string name="CallParticipantView__this_may_be_Because_they_have_not_verified_your_safety_number_change">Això pot ser degut al fet que no han verificat el canvi del vostre número de seguretat, hi ha un problema al seu dispositiu o us han blocat.</string>
+  <!--CallToastPopupWindow-->
+  <string name="CallToastPopupWindow__swipe_to_view_screen_share">Llisqueu per veure la compartició de pantalla</string>
   <!--ProxyBottomSheetFragment-->
   <string name="ProxyBottomSheetFragment_proxy_server">Servidor intermediari</string>
   <string name="ProxyBottomSheetFragment_proxy_address">Adreça intermediària</string>
@@ -1224,6 +1238,8 @@
   <string name="ProxyBottomSheetFragment_use_proxy">Usa un servidor intermediari</string>
   <string name="ProxyBottomSheetFragment_successfully_connected_to_proxy">Connexió correcta amb l\'intermediari</string>
   <!--RecaptchaProofActivity-->
+  <string name="RecaptchaProofActivity_failed_to_submit">Ha fallat l\'enviament.</string>
+  <string name="RecaptchaProofActivity_complete_verification">Verificació completa</string>
   <!--RegistrationActivity-->
   <string name="RegistrationActivity_select_your_country">Seleccioneu el país</string>
   <string name="RegistrationActivity_you_must_specify_your_country_code">Heu d\'especificar el
@@ -1338,6 +1354,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="SubmitDebugLogActivity_success">Acabat!</string>
   <string name="SubmitDebugLogActivity_copy_this_url_and_add_it_to_your_issue">Copieu aquest URL i afegiu-lo a l\'informe d\'error o al correu electrònic de suport:\n\n<b>%1$s</b></string>
   <string name="SubmitDebugLogActivity_share">Comparteix</string>
+  <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online">Aquest registre es publicarà públicament en línia perquè els col·laboradors el vegin. Podeu examinar-lo i editar-lo abans de penjar-lo.</string>
   <!--SupportEmailUtil-->
   <string name="SupportEmailUtil_filter">Filtre:</string>
   <string name="SupportEmailUtil_device_info">Informació del dispositiu:</string>
@@ -1450,6 +1467,8 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="MessageNotifier_message_delivery_failed">El missatge no s\'ha pogut entregar.</string>
   <string name="MessageNotifier_failed_to_deliver_message">No s\'ha pogut entregar el missatge.</string>
   <string name="MessageNotifier_error_delivering_message">S\'ha produït un error en entregar el missatge.</string>
+  <string name="MessageNotifier_message_delivery_paused">Lliurament de missatge interromput</string>
+  <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Verifiqueu-ho per continuar la missatgeria al Signal.</string>
   <string name="MessageNotifier_mark_all_as_read">Marca-ho tot com a llegit</string>
   <string name="MessageNotifier_mark_read">Marca\'l com a llegit</string>
   <string name="MessageNotifier_turn_off_these_notifications">Desactiva aquestes notificacions</string>
@@ -1609,6 +1628,8 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="ConversationUpdateItem_enable_call_notifications">Activa les notificacions de trucada</string>
   <string name="ConversationUpdateItem_no_groups_in_common_review_requests_carefully">Cap grup en comú. Reviseu les sol·licituds amb atenció.</string>
   <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">Cap contacte en aquest grup. Reviseu les sol·licituds amb atenció.</string>
+  <string name="ConversationUpdateItem_view">Vista</string>
+  <string name="ConversationUpdateItem_the_disappearing_message_time_will_be_set_to_s_when_you_message_them">El temps de desaparició del missatge s\'establirà a %1$s quan els n\'envieu un.</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">Reprodueix… Pausa</string>
   <string name="audio_view__download_accessibility_description">Baixa</string>
@@ -1736,6 +1757,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="CreateProfileActivity__username">Nom d\'usuari</string>
   <string name="CreateProfileActivity__create_a_username">Creeu un nom d\'usuari</string>
   <string name="CreateProfileActivity_custom_mms_group_names_and_photos_will_only_be_visible_to_you">Els noms i les fotos del grup MMS personalitzat només seran visibles per  a vós.</string>
+  <string name="CreateProfileActivity_group_descriptions_will_be_visible_to_members_of_this_group_and_people_who_have_been_invited">Les descripcions del grup seran visibles per als membres d’aquest grup i per a les persones que hi hagin estat convidades.</string>
   <!--EditAboutFragment-->
   <string name="EditAboutFragment_about">Quant a</string>
   <string name="EditAboutFragment_write_a_few_words_about_yourself">Escriviu alguna cosa sobre vosaltres…</string>
@@ -1748,8 +1770,9 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="EditAboutFragment_taking_a_break">Faig un descans.</string>
   <string name="EditAboutFragment_working_on_something_new">Treballo en una cosa nova.</string>
   <!--EditProfileFragment-->
-  <string name="EditProfileFragment__edit_group_name_and_photo">Editeu el nom i la foto del grup</string>
+  <string name="EditProfileFragment__edit_group">Edita el grup</string>
   <string name="EditProfileFragment__group_name">Nom del grup</string>
+  <string name="EditProfileFragment__group_description">Descripció del grup</string>
   <!--EditProfileNameFragment-->
   <string name="EditProfileNameFragment_your_name">El nom</string>
   <string name="EditProfileNameFragment_first_name">Nom</string>
@@ -1817,7 +1840,8 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="HelpFragment__could_not_upload_logs">No s\'han pogut carregar els registres.</string>
   <string name="HelpFragment__please_be_as_descriptive_as_possible">Si us plau, expliqueu-ho de la manera més descriptiva possible per ajudar-nos a entendre el problema.</string>
   <string-array name="HelpFragment__categories">
-    <item>Alguna cosa no va bé</item>
+    <item>-- Seleccioneu una opció --</item>
+    <item>Alguna cosa no funciona.</item>
     <item>Petició de funció</item>
     <item>Pregunta</item>
     <item>Retroacció</item>
@@ -1942,6 +1966,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="preferences__appearance">Aparença</string>
   <string name="preferences__theme">Tema</string>
   <string name="preferences__chat_wallpaper">Fons de la conversa</string>
+  <string name="preferences__chat_color_and_wallpaper">Color i fons de la conversa</string>
   <string name="preferences__disable_pin">Desactiva el PIN</string>
   <string name="preferences__enable_pin">Activa el PIN</string>
   <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">Si desactiveu el PIN, perdreu totes les dades quan torneu a registrar-vos al Signal, si no és que en feu una còpia de seguretat i una restauració manualment. No podeu activar el bloqueig de registre mentre el PIN estigui desactivat.</string>
@@ -1960,7 +1985,8 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts">Si les confirmacions de recepció estan desactivbades, no podreu veure les dels altres.</string>
   <string name="preferences__typing_indicators">Indicadors de tecleig</string>
   <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">Si els indicadors de tecleig estan desactivats, no podreu veure els indicadors de tecleig dels altres.</string>
-  <string name="preferences__request_keyboard_to_disable_personalized_learning">Sol·liciteu el teclat per desactivar l\'aprenentatge personalitzat. Aquesta opció de configuració no és una garantia i és possible que el teclat l’ignori.</string>
+  <string name="preferences__request_keyboard_to_disable">Sol·licita un teclat per desactivar l\'aprenentatge personalitzat.</string>
+  <string name="preferences__this_setting_is_not_a_guarantee">Aquesta opció de configuració no és una garantia i és possible que el teclat l’ignori.</string>
   <string name="preferences_app_protection__blocked_users">Usuaris blocats</string>
   <string name="preferences_chats__when_using_mobile_data">En usar dades mòbils</string>
   <string name="preferences_chats__when_using_wifi">En usar Wi-Fi</string>
@@ -2500,7 +2526,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="NewDeviceTransferInstructions__first_bullet">1.</string>
   <string name="NewDeviceTransferInstructions__tap_on_your_profile_photo_in_the_top_left_to_open_settings">Toqueu la foto del perfil a la part superior esquerra per obrir-ne la Configuració.</string>
   <string name="NewDeviceTransferInstructions__second_bullet">2.</string>
-  <string name="NewDeviceTransferInstructions__tap_on_chats">Toqueu Converses</string>
+  <string name="NewDeviceTransferInstructions__tap_on_account">Toqueu Compte</string>
   <string name="NewDeviceTransferInstructions__third_bullet">3.</string>
   <string name="NewDeviceTransferInstructions__tap_transfer_account_and_then_continue_on_both_devices">Toqueu Transfereix el compte i, a continuació, Continua, als dos dispositius.</string>
   <!--NewDeviceTransferSetupFragment-->
@@ -2721,17 +2747,25 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <!--ChatWallpaperActivity-->
   <string name="ChatWallpaperActivity__chat_wallpaper">Fons de la conversa</string>
   <!--ChatWallpaperFragment-->
+  <string name="ChatWallpaperFragment__chat_color">Color de la conversa</string>
+  <string name="ChatWallpaperFragment__reset_chat_colors">Restableix els colors de la conversa</string>
+  <string name="ChatWallpaperFragment__reset_chat_color">Restableix el color de la conversa</string>
+  <string name="ChatWallpaperFragment__reset_chat_color_question">Voleu restablir el color de la conversa?</string>
   <string name="ChatWallpaperFragment__set_wallpaper">Estableix el fons</string>
-  <string name="ChatWallpaperFragment__dark_theme_dims_wallpaper">El tema fosc enfosqueix el fons.</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper">Neteja el fons</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper_for_this_chat">Voleu netejar el fons per a aquesta conversa?</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper_this_will_not">Voleu netejar el fons? Això no netejarà els fons personalitzats que heu establert per a les converses.</string>
-  <string name="ChatWallpaperFragment__reset_all_wallpapers">Restableix tots els fons</string>
-  <string name="ChatWallpaperFragment__reset_all_wallpapers_including_custom">Voleu restablir tots els fons, inclosos els personalitzats que heu establert per a les converses?</string>
+  <string name="ChatWallpaperFragment__dark_mode_dims_wallpaper">El mode fosc enfosqueix el fons.</string>
   <string name="ChatWallpaperFragment__contact_name">Nom de contacte</string>
   <string name="ChatWallpaperFragment__reset">Restableix</string>
   <string name="ChatWallpaperFragment__clear">Neteja</string>
   <string name="ChatWallpaperFragment__wallpaper_preview_description">Previsualització del fons</string>
+  <string name="ChatWallpaperFragment__would_you_like_to_override_all_chat_colors">Voleu substituir tots els colors de la conversa?</string>
+  <string name="ChatWallpaperFragment__would_you_like_to_override_all_wallpapers">Voleu substituir tots els fons?</string>
+  <string name="ChatWallpaperFragment__reset_default_colors">Restableix els colors per defecte</string>
+  <string name="ChatWallpaperFragment__reset_all_colors">Restableix tots els colors</string>
+  <string name="ChatWallpaperFragment__reset_default_wallpaper">Restableix el fons per defecte</string>
+  <string name="ChatWallpaperFragment__reset_all_wallpapers">Restableix tots els fons</string>
+  <string name="ChatWallpaperFragment__reset_wallpapers">Restableix els fons</string>
+  <string name="ChatWallpaperFragment__reset_wallpaper">Restableix el fons</string>
+  <string name="ChatWallpaperFragment__reset_wallpaper_question">Voleu restablir el fons?</string>
   <!--ChatWallpaperSelectionFragment-->
   <string name="ChatWallpaperSelectionFragment__choose_from_photos">Trieu des de les fotografies</string>
   <string name="ChatWallpaperSelectionFragment__presets">Valors per defecte</string>
@@ -2833,5 +2867,128 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="GroupsInCommonMessageRequest__none_of_your_contacts_or_people_you_chat_with_are_in_this_group">Cap dels vostres contactes o persones amb qui converseu no forma part d\'aquest grup. Reviseu les sol·licituds amb atenció abans d’acceptar-les per evitar missatges no desitjats.</string>
   <string name="GroupsInCommonMessageRequest__about_message_requests">Quant a les sol·licituds de missatges</string>
   <string name="GroupsInCommonMessageRequest__okay">D\'acord</string>
+  <string name="ChatColorSelectionFragment__heres_a_preview_of_the_chat_color">Aquí teniu una previsualització del color de la conversa.</string>
+  <string name="ChatColorSelectionFragment__the_color_is_visible_to_only_you">El color només el veieu vós.</string>
+  <!--GroupDescriptionDialog-->
+  <string name="GroupDescriptionDialog__group_description">Descripció del grup</string>
+  <!--QualitySelectorBottomSheetDialog-->
+  <string name="QualitySelectorBottomSheetDialog__standard">Estàndard</string>
+  <string name="QualitySelectorBottomSheetDialog__faster_less_data">Més ràpid, menys dades</string>
+  <string name="QualitySelectorBottomSheetDialog__high">Alta</string>
+  <string name="QualitySelectorBottomSheetDialog__slower_more_data">Més lent, més dades</string>
+  <string name="QualitySelectorBottomSheetDialog__photo_quality">Qualitat de la fotografia</string>
+  <!--AppSettingsFragment-->
+  <string name="AppSettingsFragment__invite_your_friends">Convideu-hi amistats</string>
+  <!--AccountSettingsFragment-->
+  <string name="AccountSettingsFragment__account">Compte</string>
+  <string name="AccountSettingsFragment__youll_be_asked_less_frequently">Amb el temps se us demanarà amb menys freqüència</string>
+  <string name="AccountSettingsFragment__require_your_signal_pin">Sol·licita el PIN del Signal per tornar-hi a registrar el número de telèfon</string>
+  <!--ChatsSettingsFragment-->
+  <string name="ChatsSettingsFragment__keyboard">Teclat</string>
+  <string name="ChatsSettingsFragment__enter_key_sends">S\'envia amb la tecla de Retorn</string>
+  <!--SmsSettingsFragment-->
+  <string name="SmsSettingsFragment__use_as_default_sms_app">Usa-la com a aplicació d\'SMS predeterminada</string>
+  <!--NotificationsSettingsFragment-->
+  <string name="NotificationsSettingsFragment__messages">Missatges</string>
+  <string name="NotificationsSettingsFragment__calls">Trucades</string>
+  <string name="NotificationsSettingsFragment__notify_when">Notifica quan…</string>
+  <string name="NotificationsSettingsFragment__contact_joins_signal">El contacte s\'afegeix al Signal</string>
+  <!--PrivacySettingsFragment-->
+  <string name="PrivacySettingsFragment__blocked">Blocat</string>
+  <string name="PrivacySettingsFragment__d_contacts">%1$d contactes</string>
+  <string name="PrivacySettingsFragment__messaging">Missatges</string>
+  <string name="PrivacySettingsFragment__disappearing_messages">Missatges efímers</string>
+  <string name="PrivacySettingsFragment__app_security">Seguretat de l\'aplicació</string>
+  <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Bloca les captures de pantalla a les llistes de recents i dins de l\'aplicació</string>
+  <string name="PrivacySettingsFragment__signal_message_and_calls">Missatges i trucades del Signal: sempre retransmissió de trucades i remitent segellat</string>
+  <string name="PrivacySettingsFragment__default_timer_for_new_changes">Temporitzador per defecte per a les converses noves</string>
+  <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">Establiu un temporitzador per defecte de desaparició de missatges per a totes les converses noves que hàgiu iniciat.</string>
+  <!--AdvancedPrivacySettingsFragment-->
+  <string name="AdvancedPrivacySettingsFragment__show_status_icon">Mostra la icona d\'estat</string>
+  <string name="AdvancedPrivacySettingsFragment__show_an_icon">Mostra una icona als detalls del missatge quan es lliuri mitjançant un remitent segellat.</string>
+  <!--ExpireTimerSettingsFragment-->
+  <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_new_chats_started_by_you_will_disappear_after_they_have_been_seen">Quan s\'activa, els missatges enviats i rebuts nous en converses noves que hàgiu iniciat desapareixeran després de ser vistos.</string>
+  <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_this_chat_will_disappear_after_they_have_been_seen">Quan s\'activa, els missatges nous enviats i rebuts en aquesta conversa desapareixeran després de ser vistos.</string>
+  <string name="ExpireTimerSettingsFragment__off">Inactiu</string>
+  <string name="ExpireTimerSettingsFragment__4_weeks">4 setmanes</string>
+  <string name="ExpireTimerSettingsFragment__1_week">1 setmana</string>
+  <string name="ExpireTimerSettingsFragment__1_day">1 dia</string>
+  <string name="ExpireTimerSettingsFragment__8_hours">8 hores</string>
+  <string name="ExpireTimerSettingsFragment__1_hour">1 hora</string>
+  <string name="ExpireTimerSettingsFragment__5_minutes">5 minuts</string>
+  <string name="ExpireTimerSettingsFragment__30_seconds">30 segons</string>
+  <string name="ExpireTimerSettingsFragment__custom_time">Temps personalitzat</string>
+  <string name="ExpireTimerSettingsFragment__set">Estableix</string>
+  <string name="ExpireTimerSettingsFragment__save">Desa</string>
+  <string name="CustomExpireTimerSelectorView__seconds">segons</string>
+  <string name="CustomExpireTimerSelectorView__minutes">minuts</string>
+  <string name="CustomExpireTimerSelectorView__hours">hores</string>
+  <string name="CustomExpireTimerSelectorView__days">dies</string>
+  <string name="CustomExpireTimerSelectorView__weeks">setmanes</string>
+  <!--HelpSettingsFragment-->
+  <string name="HelpSettingsFragment__support_center">Centre d\'assistència</string>
+  <string name="HelpSettingsFragment__contact_us">Contacteu-nos</string>
+  <string name="HelpSettingsFragment__version">Versió</string>
+  <string name="HelpSettingsFragment__debug_log">Registre de depuració</string>
+  <string name="HelpSettingsFragment__terms_amp_privacy_policy">Termes i política de privadesa</string>
+  <string name="HelpFragment__copyright_signal_messenger">Copyright Signal Messenger</string>
+  <string name="HelpFragment__licenced_under_the_gplv3">Amb llicència de GPLv3</string>
+  <!--DataAndStorageSettingsFragment-->
+  <string name="DataAndStorageSettingsFragment__calls">Trucades</string>
+  <!--ChatColorSelectionFragment-->
+  <string name="ChatColorSelectionFragment__auto">Automàtic</string>
+  <string name="ChatColorSelectionFragment__use_custom_colors">Usa els colors personalitzats</string>
+  <string name="ChatColorSelectionFragment__chat_color">Color de la conversa</string>
+  <string name="ChatColorSelectionFragment__edit">Edita</string>
+  <string name="ChatColorSelectionFragment__duplicate">Duplica</string>
+  <string name="ChatColorSelectionFragment__delete">Suprimeix</string>
+  <string name="ChatColorSelectionFragment__delete_color">Suprimeix el color</string>
+  <plurals name="ChatColorSelectionFragment__this_custom_color_is_used">
+    <item quantity="one">Aquest color personalitzat s\'usa en %1$d conversa. Voleu suprimir-lo per a totes?</item>
+    <item quantity="other">Aquest color personalitzat s\'usa en %1$d converses. Voleu suprimir-lo per a totes?</item>
+  </plurals>
+  <!--CustomChatColorCreatorFragment-->
+  <string name="CustomChatColorCreatorFragment__solid">Sòlid</string>
+  <string name="CustomChatColorCreatorFragment__gradient">Gradient</string>
+  <string name="CustomChatColorCreatorFragment__hue">Tonalitat</string>
+  <string name="CustomChatColorCreatorFragment__saturation">Saturació</string>
+  <!--CustomChatColorCreatorFragmentPage-->
+  <string name="CustomChatColorCreatorFragmentPage__save">Desa</string>
+  <string name="CustomChatColorCreatorFragmentPage__edit_color">Edita el color</string>
+  <plurals name="CustomChatColorCreatorFragmentPage__this_color_is_used">
+    <item quantity="one">Aquest color s\'usa en %1$d conversa. Voleu desar els canvis per a totes?</item>
+    <item quantity="other">Aquest color s\'usa en %1$d converses. Voleu desar els canvis per a totes?</item>
+  </plurals>
+  <!--ChatColorGradientTool-->
+  <string name="ChatColorGradientTool_top_edge_selector">Selector de la vora de dalt</string>
+  <string name="ChatColorGradientTool_bottom_edge_selector">Selector de la vora de baix</string>
+  <!--EditReactionsFragment-->
+  <string name="EditReactionsFragment__customize_reactions">Personalització de reaccions</string>
+  <string name="EditReactionsFragment__tap_to_replace_an_emoji">Feu un toc per substituir l\'emoticona</string>
+  <string name="EditReactionsFragment__reset">Restableix</string>
+  <string name="EditReactionsFragment_save">Desa</string>
+  <string name="ChatColorSelectionFragment__auto_matches_the_color_to_the_wallpaper">Coincidència automàtica del color amb el fons</string>
+  <string name="CustomChatColorCreatorFragment__drag_to_change_the_direction_of_the_gradient">Arrossegueu-ho per canviar la direcció del gradient.</string>
+  <!--ChatColorsMegaphone-->
+  <string name="ChatColorsMegaphone__new_chat_colors">Colors nous de converses</string>
+  <string name="ChatColorsMegaphone__we_switched_up_chat_colors">Hem canviat els colors de les converses per oferir-vos més opcions i facilitar-ne la lectura.</string>
+  <string name="ChatColorsMegaphone__appearance">Aparença</string>
+  <string name="ChatColorsMegaphone__not_now">Ara no</string>
+  <!--KeyboardPagerFragment-->
+  <string name="KeyboardPagerFragment_emoji">Emoticones</string>
+  <string name="KeyboardPagerFragment_open_emoji_search">Obre la cerca d\'emoticones</string>
+  <string name="KeyboardPagerFragment_open_sticker_search">Obre la cerca d\'adhesius</string>
+  <string name="KeyboardPagerFragment_open_gif_search">Obre la cerca de GIF</string>
+  <string name="KeyboardPagerFragment_stickers">Adhesius</string>
+  <string name="KeyboardPagerFragment_backspace">Retrocés</string>
+  <string name="KeyboardPagerFragment_gifs">GIF</string>
+  <string name="KeyboardPagerFragment_search_emoji">Cerca d\'emoticones</string>
+  <string name="KeyboardPagerfragment_back_to_emoji">Torna a les emoticones</string>
+  <string name="KeyboardPagerfragment_clear_search_entry">Neteja l\'entrada de la cerca</string>
+  <string name="KeyboardPagerFragment_search_giphy">Cerca de GIPHY</string>
+  <!--StickerSearchDialogFragment-->
+  <string name="StickerSearchDialogFragment_search_stickers">Cerca d\'adhesius</string>
+  <string name="StickerSearchDialogFragment_no_results_found">No s\'ha trobat cap resultat.</string>
+  <string name="EmojiSearchFragment__no_results_found">No s\'ha trobat cap resultat.</string>
   <!--EOF-->
 </resources>

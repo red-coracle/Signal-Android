@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider;
 import org.signal.core.util.ThreadUtil;
 import org.thoughtcrime.securesms.BlockUnblockDialog;
 import org.thoughtcrime.securesms.ContactSelectionListFragment;
-import org.thoughtcrime.securesms.ExpirationDialog;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.contacts.ContactsCursorLoader;
 import org.thoughtcrime.securesms.database.MediaDatabase;
@@ -46,6 +45,7 @@ import org.thoughtcrime.securesms.util.DefaultValueLiveData;
 import org.thoughtcrime.securesms.util.ExpirationUtil;
 import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.livedata.LiveDataUtil;
+import org.thoughtcrime.securesms.util.livedata.Store;
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
 
 import java.util.ArrayList;
@@ -59,6 +59,8 @@ public class ManageGroupViewModel extends ViewModel {
   private final Context                                     context;
   private final ManageGroupRepository                       manageGroupRepository;
   private final LiveData<String>                            title;
+  private final Store<Description>                          descriptionStore;
+  private final LiveData<Description>                       description;
   private final LiveData<Boolean>                           isAdmin;
   private final LiveData<Boolean>                           canEditGroupAttributes;
   private final LiveData<Boolean>                           canAddMembers;
@@ -71,11 +73,11 @@ public class ManageGroupViewModel extends ViewModel {
   private final LiveData<GroupAccessControl>                editMembershipRights;
   private final LiveData<GroupAccessControl>                editGroupAttributesRights;
   private final LiveData<Recipient>                         groupRecipient;
-  private final MutableLiveData<GroupViewState>             groupViewState            = new MutableLiveData<>(null);
+  private final MutableLiveData<GroupViewState>             groupViewState          = new MutableLiveData<>(null);
   private final LiveData<MuteState>                         muteState;
   private final LiveData<Boolean>                           hasCustomNotifications;
   private final LiveData<Boolean>                           canCollapseMemberList;
-  private final DefaultValueLiveData<CollapseState>         memberListCollapseState   = new DefaultValueLiveData<>(CollapseState.COLLAPSED);
+  private final DefaultValueLiveData<CollapseState>         memberListCollapseState = new DefaultValueLiveData<>(CollapseState.COLLAPSED);
   private final LiveData<Boolean>                           canLeaveGroup;
   private final LiveData<Boolean>                           canBlockGroup;
   private final LiveData<Boolean>                           canUnblockGroup;
@@ -140,6 +142,15 @@ public class ManageGroupViewModel extends ViewModel {
                                                              return GroupInfoMessage.NONE;
                                                            }
                                                          });
+
+    this.descriptionStore = new Store<>(Description.NONE);
+    this.description      = groupId.isV2() ? this.descriptionStore.getStateLiveData() : LiveDataUtil.empty();
+
+    if (groupId.isV2()) {
+      this.descriptionStore.update(liveGroup.getDescription(), (description, state) -> new Description(description, state.shouldLinkifyWebLinks, state.canEditDescription));
+      this.descriptionStore.update(LiveDataUtil.mapAsync(groupRecipient, r -> RecipientUtil.isMessageRequestAccepted(context, r)), (linkify, state) -> new Description(state.description, linkify, state.canEditDescription));
+      this.descriptionStore.update(this.canEditGroupAttributes, (canEdit, state) -> new Description(state.description, state.shouldLinkifyWebLinks, canEdit));
+    }
   }
 
   @WorkerThread
@@ -179,6 +190,10 @@ public class ManageGroupViewModel extends ViewModel {
 
   LiveData<String> getTitle() {
     return title;
+  }
+
+  LiveData<Description> getDescription() {
+    return description;
   }
 
   LiveData<MuteState> getMuteState() {
@@ -239,14 +254,6 @@ public class ManageGroupViewModel extends ViewModel {
 
   LiveData<GroupInfoMessage> getGroupInfoMessage() {
     return groupInfoMessage;
-  }
-
-  void handleExpirationSelection() {
-    manageGroupRepository.getRecipient(getGroupId(),
-                                       groupRecipient ->
-                                         ExpirationDialog.show(context,
-                                                               groupRecipient.getExpireMessages(),
-                                                               expirationTime -> manageGroupRepository.setExpiration(getGroupId(), expirationTime, this::showErrorToast)));
   }
 
   void applyMembershipRightsChange(@NonNull GroupAccessControl newRights) {
@@ -417,6 +424,32 @@ public class ManageGroupViewModel extends ViewModel {
 
   interface CursorFactory {
     Cursor create();
+  }
+
+  public static class Description {
+    private static final Description NONE = new Description("", false, false);
+
+    private final String  description;
+    private final boolean shouldLinkifyWebLinks;
+    private final boolean canEditDescription;
+
+    public Description(String description, boolean shouldLinkifyWebLinks, boolean canEditDescription) {
+      this.description           = description;
+      this.shouldLinkifyWebLinks = shouldLinkifyWebLinks;
+      this.canEditDescription    = canEditDescription;
+    }
+
+    public @NonNull String getDescription() {
+      return description;
+    }
+
+    public boolean shouldLinkifyWebLinks() {
+      return shouldLinkifyWebLinks;
+    }
+
+    public boolean canEditDescription() {
+      return canEditDescription;
+    }
   }
 
   public static class Factory implements ViewModelProvider.Factory {

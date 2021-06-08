@@ -89,7 +89,6 @@
   <string name="BlockUnblockDialog_unblock_s">%1$sஐ தடைநீக்கவா?</string>
   <string name="BlockUnblockDialog_block">தடு </string>
   <string name="BlockUnblockDialog_block_and_leave">தடுத்து வெளியேறு</string>
-  <string name="BlockUnblockDialog_block_and_delete">தடுமற்றும் அழி</string>
   <!--BucketedThreadMedia-->
   <string name="BucketedThreadMedia_Today">இன்று</string>
   <string name="BucketedThreadMedia_Yesterday">நேற்று</string>
@@ -604,7 +603,6 @@
   <string name="ManageGroupActivity_mute_notifications">அறிவிப்பை ஒலியடக்கு</string>
   <string name="ManageGroupActivity_custom_notifications">தனிப்பயன் அறிவிப்புகள்</string>
   <string name="ManageGroupActivity_mentions">பெயர் குறிப்பிடுவது</string>
-  <string name="ManageGroupActivity_chat_wallpaper">உரையாடல் பின்னணிப்படம்</string>
   <string name="ManageGroupActivity_until_s">%1$s வரை</string>
   <string name="ManageGroupActivity_off">அணை</string>
   <string name="ManageGroupActivity_on">இயக்க</string>
@@ -828,6 +826,7 @@
   <string name="Megaphones_new_group">புதிய குழு</string>
   <string name="Megaphones_invite_friends">நண்பர்களை அழை</string>
   <string name="Megaphones_use_sms">எஸ்எம்எஸ் பயன்படுத்தவும்</string>
+  <string name="Megaphones_appearance">தோற்றம்</string>
   <!--NotificationBarManager-->
   <string name="NotificationBarManager_signal_call_in_progress">Signal அழைப்புப் போய்க்கொண்டிருக்கிறது</string>
   <string name="NotificationBarManager__establishing_signal_call">Signal அழைப்பு நிறுவுப்படுகிறது</string>
@@ -965,6 +964,8 @@
   <string name="MessageRecord_you_changed_the_group_name_to_s">குழுவின் பெயரை \"%1$s\" என்று மாற்றியுள்ளீர்கள்.</string>
   <string name="MessageRecord_s_changed_the_group_name_to_s">%1$s அவர்கள் குழு பெயரை \"%2$s\" என மாற்றினர்.</string>
   <string name="MessageRecord_the_group_name_has_changed_to_s">குழுவின் பெயர் \"%1$s\" என்று மாற்றப்பட்டுள்ளது.</string>
+  <!--GV2 description change-->
+  <string name="MessageRecord_s_changed_the_group_description">%1$s குழு விளக்கத்தை மாற்றினார்.</string>
   <!--GV2 avatar change-->
   <string name="MessageRecord_you_changed_the_group_avatar">குழு சின்னத்தை மாற்றியுள்ளீர்கள்.</string>
   <string name="MessageRecord_s_changed_the_group_avatar">%1$s குழு அவதாரத்தை மாற்றினார்.</string>
@@ -1096,10 +1097,6 @@
   <string name="DeviceProvisioningActivity_it_looks_like_youre_trying_to_link_a_signal_device_using_a_3rd_party_scanner">3 வது தரப்பு ஸ்கேனரைப் பயன்படுத்தி Signal சாதனத்தை இணைக்க முயற்சிக்கிறீர்கள் என்று தெரிகிறது. உங்கள் பாதுகாப்பிற்காக, Signal இருந்து குறியீட்டை மீண்டும் ஸ்கேன் செய்யுங்கள்.</string>
   <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">QR குறியீட்டை ஸ்கேன் செய்ய Signal கேமரா அனுமதி தேவை, ஆனால் அது நிரந்தரமாக மறுக்கப்பட்டது. பயன்பாடு அமைப்புகளைத் தொடரவும், \"அனுமதிகள்\" என்பதைத் தேர்ந்தெடுத்து \"கேமரா\" ஐ இயக்கவும்.</string>
   <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">கேமரா அனுமதியின்றி QR குறியீட்டை ஸ்கேன் செய்ய முடியவில்லை</string>
-  <!--ExpirationDialog-->
-  <string name="ExpirationDialog_disappearing_messages">காணாமல் போகும் செய்திகள்</string>
-  <string name="ExpirationDialog_your_messages_will_not_expire">உங்கள் செய்திகள் காலாவதியாகாது.</string>
-  <string name="ExpirationDialog_your_messages_will_disappear_s_after_they_have_been_seen">இந்த உரையாடலில் அனுப்பப்பட்ட மற்றும் பெறப்பட்ட செய்திகள் காணப்பட்ட பிறகு %s மறைந்துவிடும்.</string>
   <!--OutdatedBuildReminder-->
   <string name="OutdatedBuildReminder_update_now">இப்பொழுது மேம்படுத்து</string>
   <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">சிக்னலின் இந்த பதிப்பு இன்று காலாவதியாகும். மிக சமீபத்திய பதிப்பிற்கு புதுப்பிக்கவும்.</string>
@@ -1210,6 +1207,7 @@
   <string name="CallParticipantView__cant_receive_audio_video_from_s">%1$sஇலிருந்து ஆடியோ மற்றும் வீடியோவைப் பெற முடியவில்லை</string>
   <string name="CallParticipantView__cant_receive_audio_and_video_from_s">%1$sஇலிருந்து ஆடியோ மற்றும் வீடியோவைப் பெற முடியவில்லை </string>
   <string name="CallParticipantView__this_may_be_Because_they_have_not_verified_your_safety_number_change">இது உங்கள் பாதுகாப்பு எண் மாற்றத்தை அவர்கள் சரிபார்க்கவில்லை அல்லது அவர்களின் சாதனத்தில் சிக்கல் இருப்பதால் அல்லது அவர்கள் உங்களைத் தடுத்ததால் இருக்கலாம்.</string>
+  <!--CallToastPopupWindow-->
   <!--ProxyBottomSheetFragment-->
   <string name="ProxyBottomSheetFragment_proxy_server">பதிலி சேவையகம்</string>
   <string name="ProxyBottomSheetFragment_proxy_address">பதிலி முகவரி</string>
@@ -1600,6 +1598,7 @@
   <string name="ConversationUpdateItem_return_to_call">அழைப்புக்குத் திரும்பு</string>
   <string name="ConversationUpdateItem_call_is_full">அழைப்பு நிரம்பியுள்ளது</string>
   <string name="ConversationUpdateItem_invite_friends">நண்பர்களை அழை</string>
+  <string name="ConversationUpdateItem_view">காண்க</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">விளையாடு … இடைநிறுத்து</string>
   <string name="audio_view__download_accessibility_description">பதிவிறக்க</string>
@@ -1679,6 +1678,7 @@
     <item quantity="other">%d மற்றவர்கள்</item>
   </plurals>
   <!--giphy_activity-->
+  <string name="giphy_activity_toolbar__search_gifs">நகரும் படங்களைத் GIF தேடுங்கள்</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">எதுவும் கிடைக்கவில்லை</string>
   <!--log_submit_activity-->
@@ -1711,7 +1711,7 @@
   <string name="prompt_mms_activity__to_send_media_and_group_messages_tap_ok">மீடியா மற்றும் குழு செய்திகளை அனுப்ப, \'சரி\' என்பதைத் தட்டவும், கோரப்பட்ட அமைப்புகளை முடிக்கவும். \'உங்கள் கேரியர் APN\' ஐத் தேடுவதன் மூலம் உங்கள் கேரியருக்கான MMS அமைப்புகள் பொதுவாக அமைந்திருக்கும். நீங்கள் இதை ஒரு முறை மட்டுமே செய்ய வேண்டும்.</string>
   <!--profile_create_activity-->
   <string name="CreateProfileActivity_first_name_required">முதல் பெயர் (தேவை)</string>
-  <string name="CreateProfileActivity_last_name_optional">கடந்த பெயர் (விரும்பினால்)</string>
+  <string name="CreateProfileActivity_last_name_optional">குடும்பப் பெயர் (விரும்பினால்)</string>
   <string name="CreateProfileActivity_next">அடுத்தது</string>
   <string name="CreateProfileActivity__username">பயனர்பெயர்</string>
   <string name="CreateProfileActivity__create_a_username">பயனர்பெயரை உருவாக்கவும்</string>
@@ -1728,12 +1728,12 @@
   <string name="EditAboutFragment_taking_a_break">ஓய்வெடுத்து கொண்டிருக்கிறேன்</string>
   <string name="EditAboutFragment_working_on_something_new">ஒரு புதிய விஷயத்தில் ஈடுபட்டுள்ளேன்</string>
   <!--EditProfileFragment-->
-  <string name="EditProfileFragment__edit_group_name_and_photo">குழு பெயர் மற்றும் புகைப்படத்தைத் தொகு அல்லது திருத்தவும்</string>
+  <string name="EditProfileFragment__edit_group">குழுவைத் திருத்து</string>
   <string name="EditProfileFragment__group_name">குழுவின் பெயர்</string>
   <!--EditProfileNameFragment-->
   <string name="EditProfileNameFragment_your_name">உங்கள் பெயர்</string>
   <string name="EditProfileNameFragment_first_name">முதல் பெயர்</string>
-  <string name="EditProfileNameFragment_last_name_optional">கடந்த பெயர் (விரும்பினால்)</string>
+  <string name="EditProfileNameFragment_last_name_optional">குடும்பப் பெயர் (விரும்பினால்)</string>
   <string name="EditProfileNameFragment_save">சேமி</string>
   <string name="EditProfileNameFragment_failed_to_save_due_to_network_issues_try_again_later">இணையப் பிரச்சினகளால் சேமிக்க முடியவில்ல. சற்று நேரம் பொறுத்து முயற்சிக்கவும்.</string>
   <!--recipient_preferences_activity-->
@@ -1900,6 +1900,7 @@
   <string name="preferences__request_a_delivery_report_for_each_sms_message_you_send">நீங்கள் அனுப்பும் அனைத்து SMS-க்கும் விநியோக அறிக்கைகளை கோரவும்</string>
   <string name="preferences__data_and_storage">தரவு மற்றும் சேமிப்பு</string>
   <string name="preferences__storage">சேமிப்பு</string>
+  <string name="preferences__payments">பணம் வழங்கீடு</string>
   <string name="preferences__conversation_length_limit">உரையாடலின் நீள அளவு</string>
   <string name="preferences__keep_messages">செய்திகள் வைப்பு</string>
   <string name="preferences__clear_message_history">செய்தி வரலாற்றை அழிக்கவும்</string>
@@ -1927,7 +1928,6 @@
   <string name="preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts">வாசிப்பு ரசீதுகள் முடக்கப்பட்டிருந்தால், மற்றவர்களிடமிருந்து வாசிப்பு ரசீதுகளை நீங்கள் காண முடியாது.</string>
   <string name="preferences__typing_indicators">தட்டச்சு குறிகாட்டிகள்</string>
   <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">தட்டச்சு குறிகாட்டிகள் முடக்கப்பட்டிருந்தால், மற்றவர்களிடமிருந்து தட்டச்சு குறிகாட்டிகளை நீங்கள் பார்க்க முடியாது.</string>
-  <string name="preferences__request_keyboard_to_disable_personalized_learning">தனிப்பயனாக்கப்பட்ட கற்றலை முடக்க விசைப்பலகை கோருங்கள். இந்த அமைப்பு உத்தரவாதமல்ல, உங்கள் விசைப்பலகை அதை புறக்கணிக்கக்கூடும்.</string>
   <string name="preferences_app_protection__blocked_users">தடைசெய்த பயனர்கள்</string>
   <string name="preferences_chats__when_using_mobile_data">மொபைல் தரவைப் பயன்படுத்தும் போது</string>
   <string name="preferences_chats__when_using_wifi">வைஃபை பயன்படுத்தும் போது</string>
@@ -2272,9 +2272,13 @@
   <string name="backup_enable_dialog__folder">கோப்புறை</string>
   <string name="backup_enable_dialog__i_have_written_down_this_passphrase">இந்த கடவுச்சொற்றொடரை நான் எழுதியுள்ளேன். இது இல்லாமல், என்னால் ஒரு காப்புப்பதிவு பயனர் தரவு மீட்டெடுக்க முடியாது.</string>
   <string name="registration_activity__restore_backup">காப்புப்பதிவு பயனர் தரவு மீட்டமை</string>
+  <string name="registration_activity__transfer_or_restore_account">கணக்கை நகர்த்தவும் அல்லது மீட்டெடுக்கவும்</string>
+  <string name="registration_activity__transfer_account">Signal கணக்கை நகர்த்தவும் </string>
   <string name="registration_activity__skip">தவிர்</string>
   <string name="preferences_chats__chat_backups">அரட்டை காப்புப்பிரதிகள்</string>
   <string name="preferences_chats__backup_chats_to_external_storage">வெளிப்புற சேமிப்பகத்திற்கான காப்புப்பதிவு பயனர் தரவு அரட்டைகள்</string>
+  <string name="preferences_chats__transfer_account">Signal கணக்கை நகர்த்தவும்</string>
+  <string name="preferences_chats__transfer_account_to_a_new_android_device">கணக்கை புதிய சாதனத்திற்கு நகர்த்தவும்</string>
   <string name="RegistrationActivity_enter_backup_passphrase">காப்புப்பதிவு பயனர் தரவு கடவுச்சொற்றொடரை உள்ளிடவும்</string>
   <string name="RegistrationActivity_restore">மீட்க</string>
   <string name="RegistrationActivity_backup_failure_downgrade">Signal லின் புதிய பதிப்புகளிலிருந்து காப்புப்பிரதிகளை இறக்குமதி செய்ய முடியாது</string>
@@ -2349,6 +2353,7 @@
   <string name="prompt_passphrase_activity__tap_to_unlock">திறக்க தட்டவும் </string>
   <string name="Recipient_unknown">தெரியாத</string>
   <!--TransferOrRestoreFragment-->
+  <string name="TransferOrRestoreFragment__transfer_or_restore_account">கணக்கை நகர்த்தவும் அல்லது மீட்டெடுக்கவும்</string>
   <!--NewDeviceTransferInstructionsFragment-->
   <string name="NewDeviceTransferInstructions__continue">தொடர்ந்து செல் </string>
   <!--NewDeviceTransferSetupFragment-->
@@ -2369,6 +2374,8 @@
   <string name="OldDeviceTransferComplete__close">நெருக்கமான</string>
   <!--NewDeviceTransferComplete-->
   <!--DeviceToDeviceTransferService-->
+  <string name="DeviceToDeviceTransferService_content_title">கணக்கு பரிமாற்றம்</string>
+  <string name="DeviceToDeviceTransferService_status_service_connected">கணக்கை நகர்த்துகிறது…</string>
   <!--OldDeviceTransferLockedDialog-->
   <string name="OldDeviceTransferLockedDialog__done">முடிந்தது</string>
   <!--AdvancedPreferenceFragment-->
@@ -2487,17 +2494,13 @@
   <!--ChatWallpaperActivity-->
   <string name="ChatWallpaperActivity__chat_wallpaper">உரையாடல் பின்னணிப்படம்</string>
   <!--ChatWallpaperFragment-->
+  <string name="ChatWallpaperFragment__chat_color">உரையாடல் நிறம்</string>
   <string name="ChatWallpaperFragment__set_wallpaper">பின்னணிப்படம் அமைக்கவும்</string>
-  <string name="ChatWallpaperFragment__dark_theme_dims_wallpaper">இருண்ட கருப்பொருள் பின்னணிப்படத்தை மங்கச் செய்கிறது</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper">பின்னணிப்படம் நீக்கவும்</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper_for_this_chat">இந்த அரட்டைக்கு பின்னணிப்படத்தை நீக்கவா?</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper_this_will_not">பின்னணிப்படத்தை நீக்கவா? இது உரையாடல்களுக்காக நீங்கள் அமைத்துள்ள தனி பின்னணிப்படங்களை நீக்காது.</string>
-  <string name="ChatWallpaperFragment__reset_all_wallpapers">அனைத்து பின்னணிப்படங்களையும் மீட்டமைக்கவும்</string>
-  <string name="ChatWallpaperFragment__reset_all_wallpapers_including_custom">உங்கள் உரையாடல்களுக்காக நீங்கள் அமைத்துள்ள தனிப்பட்ட பின்னணிப்படங்கள் உட்பட அனைத்து பின்னணிப்படங்களையும் மீட்டமைக்கவா?</string>
   <string name="ChatWallpaperFragment__contact_name">தொடர்பு பெயர்</string>
   <string name="ChatWallpaperFragment__reset">மீட்டமைக்க</string>
   <string name="ChatWallpaperFragment__clear">அழி</string>
   <string name="ChatWallpaperFragment__wallpaper_preview_description">பின்னணிப்பட மாதிரிக்காட்சி</string>
+  <string name="ChatWallpaperFragment__reset_all_wallpapers">அனைத்து பின்னணிப்படங்களையும் மீட்டமைக்கவும்</string>
   <!--ChatWallpaperSelectionFragment-->
   <string name="ChatWallpaperSelectionFragment__choose_from_photos">புகைப்படங்களிலிருந்து தேர்வு செய்யவும்</string>
   <string name="ChatWallpaperSelectionFragment__presets">முன்னமைவுகள்</string>
@@ -2539,5 +2542,66 @@
   <string name="CanNotSendPaymentDialog__send_a_message">செய்தி அனுப்புங்கள்</string>
   <!--GroupsInCommonMessageRequest-->
   <string name="GroupsInCommonMessageRequest__okay">சரி</string>
+  <!--GroupDescriptionDialog-->
+  <!--QualitySelectorBottomSheetDialog-->
+  <string name="QualitySelectorBottomSheetDialog__standard">தரநிலை</string>
+  <string name="QualitySelectorBottomSheetDialog__faster_less_data">வேகமான, குறைந்த இணைய தரவு</string>
+  <string name="QualitySelectorBottomSheetDialog__high">உயர்</string>
+  <string name="QualitySelectorBottomSheetDialog__slower_more_data">மெதுவான, அதிகமான இணைய தரவு</string>
+  <string name="QualitySelectorBottomSheetDialog__photo_quality">புகைப்பட தரம்</string>
+  <!--AppSettingsFragment-->
+  <string name="AppSettingsFragment__invite_your_friends">நண்பர்களை அழைக்கவும்</string>
+  <!--AccountSettingsFragment-->
+  <string name="AccountSettingsFragment__account">பயனர் கணக்கு</string>
+  <!--ChatsSettingsFragment-->
+  <string name="ChatsSettingsFragment__keyboard">விசைப்பலகை</string>
+  <string name="ChatsSettingsFragment__enter_key_sends">பதிவு விசை அனுப்பும்</string>
+  <!--SmsSettingsFragment-->
+  <string name="SmsSettingsFragment__use_as_default_sms_app">இயல்புநிலை SMS பயன்பாடாக பயன்படுத்தவும்</string>
+  <!--NotificationsSettingsFragment-->
+  <string name="NotificationsSettingsFragment__messages">செய்திகள்</string>
+  <string name="NotificationsSettingsFragment__calls">அழைப்புகள்</string>
+  <!--PrivacySettingsFragment-->
+  <string name="PrivacySettingsFragment__blocked">தடுக்கப்பட்ட</string>
+  <string name="PrivacySettingsFragment__messaging">செய்தி அனுப்புதல்</string>
+  <string name="PrivacySettingsFragment__disappearing_messages">காணாமல் போகும் செய்திகள்</string>
+  <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">அண்மை பட்டியல் மற்றும் மென்பொருளுக்கு உள்ளே திரையை படம் எடுப்பதை தடுக்கவும்</string>
+  <!--AdvancedPrivacySettingsFragment-->
+  <!--ExpireTimerSettingsFragment-->
+  <string name="ExpireTimerSettingsFragment__off">அணை</string>
+  <string name="ExpireTimerSettingsFragment__1_week">1 வாரம்</string>
+  <string name="ExpireTimerSettingsFragment__1_day">1 நாள்</string>
+  <string name="ExpireTimerSettingsFragment__1_hour">1 மணி நேரம்</string>
+  <string name="ExpireTimerSettingsFragment__5_minutes">5 நிமிடம்</string>
+  <string name="ExpireTimerSettingsFragment__30_seconds">30 வினாடிகள்</string>
+  <string name="ExpireTimerSettingsFragment__set">அமைக்கவும்</string>
+  <string name="ExpireTimerSettingsFragment__save">சேமி</string>
+  <string name="CustomExpireTimerSelectorView__minutes">நிமிடங்கள்</string>
+  <string name="CustomExpireTimerSelectorView__hours">மணி நேரங்கள்</string>
+  <!--HelpSettingsFragment-->
+  <string name="HelpSettingsFragment__contact_us">எங்களை தொடர்பு கொள்ள</string>
+  <string name="HelpSettingsFragment__version">பதிப்பு</string>
+  <string name="HelpSettingsFragment__debug_log">பிழைத்திருத்த பதிவு</string>
+  <string name="HelpSettingsFragment__terms_amp_privacy_policy">விதிமுறைகள் &amp; ஆம்ப்; தனியுரிமைக் கொள்கை</string>
+  <!--DataAndStorageSettingsFragment-->
+  <string name="DataAndStorageSettingsFragment__calls">அழைப்புகள்</string>
+  <!--ChatColorSelectionFragment-->
+  <string name="ChatColorSelectionFragment__chat_color">உரையாடல் நிறம்</string>
+  <string name="ChatColorSelectionFragment__edit">தொகு</string>
+  <string name="ChatColorSelectionFragment__delete">நீக்கு</string>
+  <!--CustomChatColorCreatorFragment-->
+  <!--CustomChatColorCreatorFragmentPage-->
+  <string name="CustomChatColorCreatorFragmentPage__save">சேமி</string>
+  <!--ChatColorGradientTool-->
+  <!--EditReactionsFragment-->
+  <string name="EditReactionsFragment__reset">மீட்டமைக்க</string>
+  <string name="EditReactionsFragment_save">சேமி</string>
+  <!--ChatColorsMegaphone-->
+  <string name="ChatColorsMegaphone__appearance">தோற்றம்</string>
+  <string name="ChatColorsMegaphone__not_now">இப்போது இல்லை</string>
+  <!--KeyboardPagerFragment-->
+  <string name="KeyboardPagerFragment_emoji">உணர்வு படங்கள்</string>
+  <string name="KeyboardPagerFragment_stickers">ஒட்டிகள்</string>
+  <!--StickerSearchDialogFragment-->
   <!--EOF-->
 </resources>

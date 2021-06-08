@@ -14,18 +14,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
+import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
-
-import com.takisoft.colorpicker.ColorPickerDialog;
-import com.takisoft.colorpicker.ColorStateDrawable;
 
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.thoughtcrime.securesms.AvatarPreviewActivity;
@@ -33,12 +28,11 @@ import org.thoughtcrime.securesms.LoggingFragment;
 import org.thoughtcrime.securesms.MediaPreviewActivity;
 import org.thoughtcrime.securesms.MuteDialog;
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.color.MaterialColor;
-import org.thoughtcrime.securesms.color.MaterialColors;
 import org.thoughtcrime.securesms.components.AvatarImageView;
 import org.thoughtcrime.securesms.components.ThreadPhotoRailView;
 import org.thoughtcrime.securesms.contacts.avatars.FallbackContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.FallbackPhoto80dp;
+import org.thoughtcrime.securesms.conversation.colors.AvatarColor;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.groups.ui.GroupMemberListView;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
@@ -49,6 +43,7 @@ import org.thoughtcrime.securesms.profiles.edit.EditProfileActivity;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientExporter;
 import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.thoughtcrime.securesms.recipients.ui.disappearingmessages.RecipientDisappearingMessagesActivity;
 import org.thoughtcrime.securesms.recipients.ui.notifications.CustomNotificationsDialogFragment;
 import org.thoughtcrime.securesms.util.DateUtils;
 import org.thoughtcrime.securesms.util.LifecycleCursorWrapper;
@@ -88,8 +83,6 @@ public class ManageRecipientFragment extends LoggingFragment {
   private View                                   disappearingMessagesCard;
   private View                                   disappearingMessagesRow;
   private TextView                               disappearingMessages;
-  private View                                   colorRow;
-  private ImageView                              colorChip;
   private View                                   blockUnblockCard;
   private TextView                               block;
   private TextView                               unblock;
@@ -108,7 +101,7 @@ public class ManageRecipientFragment extends LoggingFragment {
   private View                                   secureCallButton;
   private View                                   insecureCallButton;
   private View                                   secureVideoCallButton;
-  private View                                   chatWallpaperButton;
+  private TextView                               chatWallpaperButton;
 
   static ManageRecipientFragment newInstance(@NonNull RecipientId recipientId, boolean fromConversation) {
     ManageRecipientFragment fragment = new ManageRecipientFragment();
@@ -147,8 +140,6 @@ public class ManageRecipientFragment extends LoggingFragment {
     disappearingMessagesCard    = view.findViewById(R.id.recipient_disappearing_messages_card);
     disappearingMessagesRow     = view.findViewById(R.id.disappearing_messages_row);
     disappearingMessages        = view.findViewById(R.id.disappearing_messages);
-    colorRow                    = view.findViewById(R.id.color_row);
-    colorChip                   = view.findViewById(R.id.color_chip);
     blockUnblockCard            = view.findViewById(R.id.recipient_block_and_leave_card);
     block                       = view.findViewById(R.id.block);
     unblock                     = view.findViewById(R.id.unblock);
@@ -239,7 +230,7 @@ public class ManageRecipientFragment extends LoggingFragment {
       internalDetails.setVisibility(View.GONE);
     }
 
-    disappearingMessagesRow.setOnClickListener(v -> viewModel.handleExpirationSelection(requireContext()));
+    disappearingMessagesRow.setOnClickListener(v -> startActivity(RecipientDisappearingMessagesActivity.forRecipient(requireContext(), recipientId)));
     block.setOnClickListener(v -> viewModel.onBlockClicked(requireActivity()));
     unblock.setOnClickListener(v -> viewModel.onUnblockClicked(requireActivity()));
 
@@ -293,6 +284,10 @@ public class ManageRecipientFragment extends LoggingFragment {
   }
 
   private void presentRecipient(@NonNull Recipient recipient) {
+    Drawable colorCircle = recipient.getChatColors().asCircle();
+    colorCircle.setBounds(0, 0, ViewUtil.dpToPx(16), ViewUtil.dpToPx(16));
+    TextViewCompat.setCompoundDrawablesRelative(chatWallpaperButton, null, null, colorCircle, null);
+
     if (recipient.isSystemContact()) {
       contactText.setText(R.string.ManageRecipientActivity_this_person_is_in_your_contacts);
       contactIcon.setVisibility(View.VISIBLE);
@@ -314,16 +309,16 @@ public class ManageRecipientFragment extends LoggingFragment {
     disappearingMessagesCard.setVisibility(recipient.isRegistered() ? View.VISIBLE : View.GONE);
     addToAGroup.setVisibility(recipient.isRegistered() ? View.VISIBLE : View.GONE);
 
-    MaterialColor recipientColor = recipient.getColor();
+    AvatarColor recipientColor = recipient.getAvatarColor();
     avatar.setFallbackPhotoProvider(new Recipient.FallbackPhotoProvider() {
       @Override
       public @NonNull FallbackContactPhoto getPhotoForRecipientWithoutName() {
-        return new FallbackPhoto80dp(R.drawable.ic_profile_80, recipientColor.toAvatarColor(requireContext()));
+        return new FallbackPhoto80dp(R.drawable.ic_profile_80, recipientColor.colorInt());
       }
 
       @Override
       public @NonNull FallbackContactPhoto getPhotoForLocalNumber() {
-        return new FallbackPhoto80dp(R.drawable.ic_note_80, recipientColor.toAvatarColor(requireContext()));
+        return new FallbackPhoto80dp(R.drawable.ic_note_80, recipientColor.colorInt());
       }
     });
     avatar.setAvatar(recipient);
@@ -332,11 +327,6 @@ public class ManageRecipientFragment extends LoggingFragment {
       activity.startActivity(AvatarPreviewActivity.intentFromRecipientId(activity, recipient.getId()),
                              AvatarPreviewActivity.createTransitionBundle(activity, avatar));
     });
-
-    @ColorInt int        color         = recipientColor.toActionBarColor(requireContext());
-              Drawable[] colorDrawable = new Drawable[]{ContextCompat.getDrawable(requireContext(), R.drawable.colorpickerpreference_pref_swatch)};
-    colorChip.setImageDrawable(new ColorStateDrawable(colorDrawable, color));
-    colorRow.setOnClickListener(v -> handleColorSelection(color));
 
     secureCallButton.setVisibility(recipient.isRegistered() && !recipient.isSelf() ? View.VISIBLE : View.GONE);
     insecureCallButton.setVisibility(!recipient.isRegistered() && !recipient.isSelf() ? View.VISIBLE : View.GONE);
@@ -382,22 +372,6 @@ public class ManageRecipientFragment extends LoggingFragment {
                                                                               muteState.getMutedUntil())));
       }
     }
-  }
-
-  private void handleColorSelection(@ColorInt int currentColor) {
-    @ColorInt int[] colors = MaterialColors.CONVERSATION_PALETTE.asConversationColorArray(requireContext());
-
-    ColorPickerDialog.Params params = new ColorPickerDialog.Params.Builder(requireContext())
-                                                                  .setSelectedColor(currentColor)
-                                                                  .setColors(colors)
-                                                                  .setSize(ColorPickerDialog.SIZE_SMALL)
-                                                                  .setSortColors(false)
-                                                                  .setColumns(3)
-                                                                  .build();
-
-    ColorPickerDialog dialog = new ColorPickerDialog(requireActivity(), color -> viewModel.onSelectColor(color), params);
-    dialog.setTitle(R.string.ManageRecipientActivity_chat_color);
-    dialog.show();
   }
 
   public boolean onMenuItemSelected(@NonNull MenuItem item) {

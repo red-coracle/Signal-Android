@@ -18,7 +18,6 @@ import com.annimon.stream.Stream;
 
 import org.signal.core.util.ThreadUtil;
 import org.thoughtcrime.securesms.BlockUnblockDialog;
-import org.thoughtcrime.securesms.ExpirationDialog;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.VerifyIdentityActivity;
 import org.thoughtcrime.securesms.database.IdentityDatabase;
@@ -187,13 +186,6 @@ public final class ManageRecipientViewModel extends ViewModel {
     return canUnblock;
   }
 
-  void handleExpirationSelection(@NonNull Context context) {
-    withRecipient(recipient ->
-                  ExpirationDialog.show(context,
-                                        recipient.getExpireMessages(),
-                                        manageRecipientRepository::setExpiration));
-  }
-
   void setMuteUntil(long muteUntil) {
     manageRecipientRepository.setMuteUntil(muteUntil);
   }
@@ -246,10 +238,6 @@ public final class ManageRecipientViewModel extends ViewModel {
 
   LiveData<String> getSharedGroupsCountSummary() {
     return sharedGroupsCountSummary;
-  }
-
-  void onSelectColor(int color) {
-   manageRecipientRepository.setColor(color);
   }
 
   void onGroupClicked(@NonNull Activity activity, @NonNull Recipient recipient) {

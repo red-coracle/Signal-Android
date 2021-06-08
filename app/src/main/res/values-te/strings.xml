@@ -89,7 +89,6 @@
   <string name="BlockUnblockDialog_unblock_s">అడ్డం తొలగించు 1%1$s</string>
   <string name="BlockUnblockDialog_block">నిరోధించు</string>
   <string name="BlockUnblockDialog_block_and_leave">అడ్డగించు మరియు వదిలివేయి</string>
-  <string name="BlockUnblockDialog_block_and_delete">అడ్డగించు మరియు తొలగించు</string>
   <!--BucketedThreadMedia-->
   <string name="BucketedThreadMedia_Today">నేడు</string>
   <string name="BucketedThreadMedia_Yesterday">నిన్న</string>
@@ -610,7 +609,6 @@
   <string name="ManageGroupActivity_mute_notifications">  ప్రకటనలను మ్యూట్లో ఉంచు</string>
   <string name="ManageGroupActivity_custom_notifications">అనుకూల ప్రకటనలను</string>
   <string name="ManageGroupActivity_mentions">ప్రస్తావనలు</string>
-  <string name="ManageGroupActivity_chat_wallpaper">సంభాషణ వాల్పేపర్</string>
   <string name="ManageGroupActivity_until_s">వరకు %1$s</string>
   <string name="ManageGroupActivity_always">ఎల్లప్పుడూ</string>
   <string name="ManageGroupActivity_off">ఆఫ్</string>
@@ -838,6 +836,7 @@
   <string name="Megaphones_new_group">కొత్త సమూహం</string>
   <string name="Megaphones_invite_friends">స్నేహితులను ఆహ్వానించండి</string>
   <string name="Megaphones_use_sms">సందేశాన్ని వాడుటకు </string>
+  <string name="Megaphones_appearance">స్వరూపం</string>
   <!--NotificationBarManager-->
   <string name="NotificationBarManager_signal_call_in_progress">పురోగతి లో Signal కాల్</string>
   <string name="NotificationBarManager__establishing_signal_call">స్థాపించబడుతున్న Signal కాల్</string>
@@ -975,6 +974,7 @@
   <string name="MessageRecord_you_changed_the_group_name_to_s">మీరు సమూహ పేరును \"%1$s\"కి మార్చారు. </string>
   <string name="MessageRecord_s_changed_the_group_name_to_s">%1$s సమూహ పేరును \"%2$s\"కి మార్చారు. </string>
   <string name="MessageRecord_the_group_name_has_changed_to_s">సమూహం పేరు \"%1$s\" గా మార్చబడింది.</string>
+  <!--GV2 description change-->
   <!--GV2 avatar change-->
   <string name="MessageRecord_you_changed_the_group_avatar">మీరు సమూహ చిత్రాన్ని మార్చారు. </string>
   <string name="MessageRecord_s_changed_the_group_avatar">%1$s సమూహ చిత్రాన్ని మార్చారు.</string>
@@ -1105,10 +1105,6 @@
   <string name="DeviceProvisioningActivity_it_looks_like_youre_trying_to_link_a_signal_device_using_a_3rd_party_scanner">మీరు ఒక 3 వ పార్టీ స్కానర్ను ఉపయోగించి ఒక Signal పరికరం లింక్ ప్రయత్నిస్తున్నట్లుగా కనిపిస్తోంది. మీ రక్షణ కోసం, Signal లోపల నుండి మళ్ళీ కోడ్ స్కాన్ చెయ్యండి.</string>
   <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">ఒక QR కోడ్ను స్కాన్ చేయడానికి Signalకు కెమెరా అనుమతి అవసరం, కానీ ఇది శాశ్వతంగా తిరస్కరించబడింది. దయచేసి అనువర్తనం సెట్టింగ్లకు కొనసాగించండి, \"అనుమతులు\" ఎంచుకోండి మరియు \"కెమెరా\" ని ప్రారంభించండి.</string>
   <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">కెమెరా అనుమతి లేకుండా QR కోడ్ను స్కాన్ చేయడం సాధ్యపడలేదు</string>
-  <!--ExpirationDialog-->
-  <string name="ExpirationDialog_disappearing_messages">అదృశ్యమవుతున్న  సందేశాలు</string>
-  <string name="ExpirationDialog_your_messages_will_not_expire">మీ సందేశాలకు గడువు ఉండదు.</string>
-  <string name="ExpirationDialog_your_messages_will_disappear_s_after_they_have_been_seen">వారు చూసిన తరువాత ఈ సంభాషణ లో పంపిన మరియు అందుకున్న సందేశాలు %s కనిపించదు.</string>
   <!--OutdatedBuildReminder-->
   <string name="OutdatedBuildReminder_update_now">నవీకరణ చేయండి ఇప్పుడు</string>
   <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Signal యొక్క ఈ వెర్షన్ ఈ రోజుతో ముగుస్తుంది. ఇటీవలి సంస్కరణకు నవీకరించండి.</string>
@@ -1221,6 +1217,7 @@
   <string name="CallParticipantView__cant_receive_audio_video_from_s">ఆడియోను స్వీకరించలేరు &amp; %1$s నుండి వీడియో</string>
   <string name="CallParticipantView__cant_receive_audio_and_video_from_s">%1$s నుండి ఆడియో మరియు వీడియోను స్వీకరించలేరు</string>
   <string name="CallParticipantView__this_may_be_Because_they_have_not_verified_your_safety_number_change">మీ భద్రతా సంఖ్య మార్పును వారు ధృవీకరించకపోవడమే దీనికి కారణం కావచ్చు, వారి పరికరంలో సమస్య ఉంది లేదా వారు మిమ్మల్ని నిరోధించారు.</string>
+  <!--CallToastPopupWindow-->
   <!--ProxyBottomSheetFragment-->
   <string name="ProxyBottomSheetFragment_proxy_server">ప్రాక్సీ సర్వర్</string>
   <string name="ProxyBottomSheetFragment_proxy_address">ప్రాక్సీ చిరునామా</string>
@@ -1608,6 +1605,7 @@
   <string name="ConversationUpdateItem_return_to_call">కాల్‌కు తిరిగి వెళ్ళు</string>
   <string name="ConversationUpdateItem_call_is_full">కాల్ నిండింది</string>
   <string name="ConversationUpdateItem_invite_friends">స్నేహితులను ఆహ్వానించండి</string>
+  <string name="ConversationUpdateItem_view">వీక్షణ</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">నడుపు … నిలుపు</string>
   <string name="audio_view__download_accessibility_description">దిగుమతి</string>
@@ -1736,7 +1734,7 @@
   <string name="EditAboutFragment_taking_a_break">విశ్రాంతి తీసుకొంటున్నా</string>
   <string name="EditAboutFragment_working_on_something_new">క్రొత్తదానిపై పని చేస్తోంది</string>
   <!--EditProfileFragment-->
-  <string name="EditProfileFragment__edit_group_name_and_photo">సమూహం పేరు మరియు ఛాయాచిత్రణంను సవరించండి</string>
+  <string name="EditProfileFragment__edit_group">సమూహాన్ని మార్చు</string>
   <string name="EditProfileFragment__group_name">సమూహం పేరు</string>
   <!--EditProfileNameFragment-->
   <string name="EditProfileNameFragment_your_name">మీ పేరు</string>
@@ -1936,7 +1934,6 @@
   <string name="preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts">చదివే రసీదులను నిలిపివేస్తే, మీరు ఇతరుల నుండి చదివే రసీదులను చూడలేరు.</string>
   <string name="preferences__typing_indicators">టైపింగ్ సూచికలు</string>
   <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">టైపింగ్ సూచికలు నిలిపివేయబడితే, మీరు ఇతరుల నుండి టైపింగ్ సూచికలను చూడలేరు.</string>
-  <string name="preferences__request_keyboard_to_disable_personalized_learning">వ్యక్తిగతీకరించిన అభ్యాసాన్ని నిలిపివేయడానికి కీబోర్డ్‌ను అభ్యర్థించండి. ఈ సెట్టింగ్ హామీ కాదు మరియు మీ కీబోర్డ్ దీన్ని విస్మరించవచ్చు.</string>
   <string name="preferences_app_protection__blocked_users">నిరోధించిన వినియోగదారులు</string>
   <string name="preferences_chats__when_using_mobile_data">మొబైల్ సమాచారం ఉపయోగిస్తున్నప్పుడు</string>
   <string name="preferences_chats__when_using_wifi">వైఫై ఉపయోగించి చేసినప్పుడు</string>
@@ -2497,17 +2494,13 @@
   <!--ChatWallpaperActivity-->
   <string name="ChatWallpaperActivity__chat_wallpaper">సంభాషణ వాల్పేపర్</string>
   <!--ChatWallpaperFragment-->
+  <string name="ChatWallpaperFragment__chat_color">మాటామంతీ రంగు </string>
   <string name="ChatWallpaperFragment__set_wallpaper">వాల్‌పేపర్‌ను జత చేయండి</string>
-  <string name="ChatWallpaperFragment__dark_theme_dims_wallpaper">మూదురు థీమ్ వాల్పెపర్ను మసకబారుతుంది</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper">వాల్‌పేపర్‌ను క్లియర్ చేయండి</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper_for_this_chat">ఈ మాటామంతీ కోసం వాల్‌పేపర్‌ను క్లియర్ చేయాలా?</string>
-  <string name="ChatWallpaperFragment__clear_wallpaper_this_will_not">వాల్‌పేపర్‌ను క్లియర్ చేయాలా? ఇది మీ మాటామంతీ‌ల కోసం మీరు సెట్ చేసిన అనుకూల వాల్‌పేపర్‌లను క్లియర్ చేయదు.</string>
-  <string name="ChatWallpaperFragment__reset_all_wallpapers">అన్ని వాల్‌పేపర్‌లను రీసెట్ చేయండి</string>
-  <string name="ChatWallpaperFragment__reset_all_wallpapers_including_custom">మీ చాట్‌ల కోసం మీరు సెట్ చేసిన అనుకూల వాల్‌పేపర్‌లతో సహా అన్ని వాల్‌పేపర్‌లను రీసెట్ చేయాలా?</string>
   <string name="ChatWallpaperFragment__contact_name">సంప్రదింపు పేరు</string>
   <string name="ChatWallpaperFragment__reset">పునరుద్ధరించు</string>
   <string name="ChatWallpaperFragment__clear">స్పష్టమైన</string>
   <string name="ChatWallpaperFragment__wallpaper_preview_description">వాల్పేపర్ పూర్వప్రదర్శన</string>
+  <string name="ChatWallpaperFragment__reset_all_wallpapers">అన్ని వాల్‌పేపర్‌లను రీసెట్ చేయండి</string>
   <!--ChatWallpaperSelectionFragment-->
   <string name="ChatWallpaperSelectionFragment__choose_from_photos">ఛాయాచిత్రల నుండి ఎంచుకోండి</string>
   <string name="ChatWallpaperSelectionFragment__presets">పూర్వఆకారాలు </string>
@@ -2551,5 +2544,60 @@
   <string name="CanNotSendPaymentDialog__send_a_message">సందేశం పంపండి</string>
   <!--GroupsInCommonMessageRequest-->
   <string name="GroupsInCommonMessageRequest__okay">సరే</string>
+  <!--GroupDescriptionDialog-->
+  <!--QualitySelectorBottomSheetDialog-->
+  <string name="QualitySelectorBottomSheetDialog__high">అధికం</string>
+  <!--AppSettingsFragment-->
+  <!--AccountSettingsFragment-->
+  <!--ChatsSettingsFragment-->
+  <string name="ChatsSettingsFragment__enter_key_sends">ఎంటర్ కీ పంపుతుంది </string>
+  <!--SmsSettingsFragment-->
+  <string name="SmsSettingsFragment__use_as_default_sms_app">డిఫాల్ట్ ఎస్ఎంఎస్ అప్లికేషన్ ని  ఉపయోగించండి</string>
+  <!--NotificationsSettingsFragment-->
+  <string name="NotificationsSettingsFragment__messages">సందేశాలు</string>
+  <string name="NotificationsSettingsFragment__calls">కాల్స్</string>
+  <!--PrivacySettingsFragment-->
+  <string name="PrivacySettingsFragment__blocked">నిరోధించిన
+ </string>
+  <string name="PrivacySettingsFragment__messaging">సందేశం</string>
+  <string name="PrivacySettingsFragment__disappearing_messages">అదృశ్యమవుతున్న  సందేశాలు</string>
+  <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">  నిరోధించు స్క్రీన్షాట్లు లో ది ఇటీవలి జాబితా మరియు లోపల ది అనువర్తనం</string>
+  <!--AdvancedPrivacySettingsFragment-->
+  <!--ExpireTimerSettingsFragment-->
+  <string name="ExpireTimerSettingsFragment__off">ఆఫ్</string>
+  <string name="ExpireTimerSettingsFragment__1_week">1 వారం</string>
+  <string name="ExpireTimerSettingsFragment__1_day">1 రోజు</string>
+  <string name="ExpireTimerSettingsFragment__1_hour">1 గంట</string>
+  <string name="ExpireTimerSettingsFragment__5_minutes">5 నిముషాలు </string>
+  <string name="ExpireTimerSettingsFragment__30_seconds">30సెకన్లు</string>
+  <string name="ExpireTimerSettingsFragment__set">జత</string>
+  <string name="ExpireTimerSettingsFragment__save">భద్రపరుచు</string>
+  <string name="CustomExpireTimerSelectorView__minutes">నిముషాలు </string>
+  <string name="CustomExpireTimerSelectorView__hours">గంటలు</string>
+  <!--HelpSettingsFragment-->
+  <string name="HelpSettingsFragment__contact_us">మమ్మల్ని సంప్రదించండి</string>
+  <string name="HelpSettingsFragment__version">వివరణము</string>
+  <string name="HelpSettingsFragment__debug_log">డీబగ్ సంఘటన లేకరి</string>
+  <string name="HelpSettingsFragment__terms_amp_privacy_policy">నిబంధనలు &amp; గోప్యతా విధానం</string>
+  <!--DataAndStorageSettingsFragment-->
+  <string name="DataAndStorageSettingsFragment__calls">కాల్స్</string>
+  <!--ChatColorSelectionFragment-->
+  <string name="ChatColorSelectionFragment__chat_color">మాటామంతీ రంగు </string>
+  <string name="ChatColorSelectionFragment__edit">సరిచేయు</string>
+  <string name="ChatColorSelectionFragment__delete">తొలగించండి</string>
+  <!--CustomChatColorCreatorFragment-->
+  <!--CustomChatColorCreatorFragmentPage-->
+  <string name="CustomChatColorCreatorFragmentPage__save">భద్రపరుచు</string>
+  <!--ChatColorGradientTool-->
+  <!--EditReactionsFragment-->
+  <string name="EditReactionsFragment__reset">పునరుద్ధరించు</string>
+  <string name="EditReactionsFragment_save">భద్రపరుచు</string>
+  <!--ChatColorsMegaphone-->
+  <string name="ChatColorsMegaphone__appearance">స్వరూపం</string>
+  <string name="ChatColorsMegaphone__not_now">ఇప్పుడు కాదు</string>
+  <!--KeyboardPagerFragment-->
+  <string name="KeyboardPagerFragment_emoji">ఎమోజి</string>
+  <string name="KeyboardPagerFragment_stickers">స్టిక్కర్లు</string>
+  <!--StickerSearchDialogFragment-->
   <!--EOF-->
 </resources>

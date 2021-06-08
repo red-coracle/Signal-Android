@@ -8,11 +8,11 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
-import org.thoughtcrime.securesms.components.MaskView;
 import org.thoughtcrime.securesms.components.voice.VoiceNotePlaybackState;
 import org.thoughtcrime.securesms.contactshare.Contact;
-import org.thoughtcrime.securesms.conversation.ConversationItem;
 import org.thoughtcrime.securesms.conversation.ConversationMessage;
+import org.thoughtcrime.securesms.conversation.colors.Colorizable;
+import org.thoughtcrime.securesms.conversation.colors.Colorizer;
 import org.thoughtcrime.securesms.database.model.InMemoryMessageRecord;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public interface BindableConversationItem extends Unbindable, GiphyMp4Playable {
+public interface BindableConversationItem extends Unbindable, GiphyMp4Playable, Colorizable {
   void bind(@NonNull LifecycleOwner lifecycleOwner,
             @NonNull ConversationMessage messageRecord,
             @NonNull Optional<MessageRecord> previousMessageRecord,
@@ -45,7 +45,8 @@ public interface BindableConversationItem extends Unbindable, GiphyMp4Playable {
             boolean hasWallpaper,
             boolean isMessageRequestAccepted,
             @NonNull AttachmentMediaSourceFactory attachmentMediaSourceFactory,
-            boolean canPlayInline);
+            boolean canPlayInline,
+            @NonNull Colorizer colorizer);
 
   ConversationMessage getConversationMessage();
 
@@ -78,6 +79,7 @@ public interface BindableConversationItem extends Unbindable, GiphyMp4Playable {
     void onEnableCallNotificationsClicked();
     void onPlayInlineContent(ConversationMessage conversationMessage);
     void onInMemoryMessageClicked(@NonNull InMemoryMessageRecord messageRecord);
+    void onViewGroupDescriptionChange(@Nullable GroupId groupId, @NonNull String description, boolean isMessageRequestAccepted);
 
     /** @return true if handled, false if you want to let the normal url handling continue */
     boolean onUrlClicked(@NonNull String url);

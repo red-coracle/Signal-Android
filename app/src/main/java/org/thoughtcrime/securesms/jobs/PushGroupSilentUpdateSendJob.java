@@ -19,6 +19,7 @@ import org.thoughtcrime.securesms.jobmanager.Data;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.mms.MessageGroupContext;
 import org.thoughtcrime.securesms.mms.OutgoingGroupUpdateMessage;
+import org.thoughtcrime.securesms.net.NotPushRegisteredException;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
@@ -128,6 +129,10 @@ public final class PushGroupSilentUpdateSendJob extends BaseJob {
 
   @Override
   protected void onRun() throws Exception {
+    if (!Recipient.self().isRegistered()) {
+      throw new NotPushRegisteredException();
+    }
+
     List<Recipient> destinations = Stream.of(recipients).map(Recipient::resolved).toList();
     List<Recipient> completions  = deliver(destinations);
 
@@ -146,6 +151,7 @@ public final class PushGroupSilentUpdateSendJob extends BaseJob {
   @Override
   protected boolean onShouldRetry(@NonNull Exception e) {
     if (e instanceof ServerRejectedException) return false;
+    if (e instanceof NotPushRegisteredException) return false;
     return e instanceof IOException ||
            e instanceof RetryLaterException;
   }

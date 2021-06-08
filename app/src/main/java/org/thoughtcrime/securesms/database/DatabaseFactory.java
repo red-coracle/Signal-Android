@@ -60,10 +60,12 @@ public class DatabaseFactory {
   private final SessionDatabase          sessionDatabase;
   private final SearchDatabase           searchDatabase;
   private final StickerDatabase          stickerDatabase;
-  private final UnknownStorageIdDatabase storageIdDatabase      ;
+  private final UnknownStorageIdDatabase storageIdDatabase;
   private final RemappedRecordsDatabase  remappedRecordsDatabase;
   private final MentionDatabase          mentionDatabase;
   private final PaymentDatabase          paymentDatabase;
+  private final ChatColorsDatabase       chatColorsDatabase;
+  private final EmojiSearchDatabase      emojiSearchDatabase;
 
   public static DatabaseFactory getInstance(Context context) {
     if (instance == null) {
@@ -170,8 +172,16 @@ public class DatabaseFactory {
     return getInstance(context).paymentDatabase;
   }
 
+  public static EmojiSearchDatabase getEmojiSearchDatabase(Context context) {
+    return getInstance(context).emojiSearchDatabase;
+  }
+
   public static SQLiteDatabase getBackupDatabase(Context context) {
     return getInstance(context).databaseHelper.getReadableDatabase().getSqlCipherDatabase();
+  }
+
+  public static ChatColorsDatabase getChatColorsDatabase(Context context) {
+    return getInstance(context).chatColorsDatabase;
   }
 
   public static void upgradeRestored(Context context, SQLiteDatabase database){
@@ -223,6 +233,8 @@ public class DatabaseFactory {
     this.remappedRecordsDatabase = new RemappedRecordsDatabase(context, databaseHelper);
     this.mentionDatabase         = new MentionDatabase(context, databaseHelper);
     this.paymentDatabase         = new PaymentDatabase(context, databaseHelper);
+    this.chatColorsDatabase      = new ChatColorsDatabase(context, databaseHelper);
+    this.emojiSearchDatabase     = new EmojiSearchDatabase(context, databaseHelper);
   }
 
   public void onApplicationLevelUpgrade(@NonNull Context context, @NonNull MasterSecret masterSecret,
