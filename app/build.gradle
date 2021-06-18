@@ -55,8 +55,8 @@ protobuf {
     }
 }
 
-def canonicalVersionCode = 863
-def canonicalVersionName = "5.14.2"
+def canonicalVersionCode = 865
+def canonicalVersionName = "5.14.4"
 
 def postFixSize = 100
 def abiPostFix = ['universal'   : 0,
@@ -411,7 +411,7 @@ dependencies {
     implementation 'org.whispersystems:signal-client-android:0.8.0'
     implementation 'com.google.protobuf:protobuf-javalite:3.10.0'
 
-    implementation('com.mobilecoin:android-sdk:1.0.0') {
+    implementation('com.mobilecoin:android-sdk:1.1.0') {
         exclude group: 'com.google.protobuf'
     }
 
