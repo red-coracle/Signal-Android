@@ -124,7 +124,7 @@ public class ConversationItemFooter extends LinearLayout {
     revealDot.addValueCallback(
         new KeyPath("**"),
         LottieProperty.COLOR_FILTER,
-        frameInfo -> new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+        frameInfo -> new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
     );
   }
 
@@ -313,10 +313,7 @@ public class ConversationItemFooter extends LinearLayout {
   private void showAudioDurationViews() {
     audioSpace.setVisibility(View.VISIBLE);
     audioDuration.setVisibility(View.GONE);
-
-    if (FeatureFlags.viewedReceipts()) {
-      revealDot.setVisibility(View.VISIBLE);
-    }
+    revealDot.setVisibility(View.VISIBLE);
   }
 
   private void hideAudioDurationViews() {

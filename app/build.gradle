@@ -55,8 +55,8 @@ protobuf {
     }
 }
 
-def canonicalVersionCode = 861
-def canonicalVersionName = "5.14.0"
+def canonicalVersionCode = 863
+def canonicalVersionName = "5.14.2"
 
 def postFixSize = 100
 def abiPostFix = ['universal'   : 0,
@@ -408,7 +408,7 @@ dependencies {
     implementation project(':device-transfer')
 
     implementation 'org.signal:zkgroup-android:0.7.0'
-    implementation 'org.whispersystems:signal-client-android:0.5.1'
+    implementation 'org.whispersystems:signal-client-android:0.8.0'
     implementation 'com.google.protobuf:protobuf-javalite:3.10.0'
 
     implementation('com.mobilecoin:android-sdk:1.0.0') {

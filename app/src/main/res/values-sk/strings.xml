@@ -243,6 +243,9 @@
   <string name="ConversationActivity_full">Plný</string>
   <string name="ConversationActivity_error_sending_media">Chyba pri odosielaní médií</string>
   <string name="ConversationActivity__reported_as_spam_and_blocked">Nahlásené ako spam a blokované.</string>
+  <string name="ConversationActivity_gifs_have_moved">GIFy sa presunuli</string>
+  <string name="ConversationActivity_look_for_gifs_next_to_emoji_and_stickers">Hľadajte obrázky GIF vedľa emotikónových nálepiek.</string>
+  <string name="ConversationActivity__gifs_are_now_here">GIFy sú tu.</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d neprečítaná správa</item>
@@ -343,6 +346,8 @@
   <!--ConversationTitleView-->
   <string name="ConversationTitleView_verified">Overený</string>
   <string name="ConversationTitleView_you">Vy</string>
+  <!--ConversationTypingView-->
+  <string name="ConversationTypingView__plus_d">+%1$d</string>
   <!--CreateGroupActivity-->
   <string name="CreateGroupActivity_some_contacts_cannot_be_in_legacy_groups">Niektoré kontakty nemôžu byť v zastaraných skupinách.</string>
   <!--CreateProfileActivity-->
@@ -509,10 +514,6 @@
     <item quantity="many">Títo členovia nedokážu vstupovať do Nových skupín a budú zo skupiny odstránení:</item>
     <item quantity="other">Títo členovia nedokážu vstupovať do Nových skupín a budú zo skupiny odstránení:</item>
   </plurals>
-  <!--GroupsV1MigrationInitiationReminder-->
-  <string name="GroupsV1MigrationInitiationReminder_to_access_new_features_like_mentions">Pre prístup k novým funkciám ako @spomenutia a administrátori modernizujte túto skupinu.</string>
-  <string name="GroupsV1MigrationInitiationReminder_not_now">Teraz nie</string>
-  <string name="GroupsV1MigrationInitiationReminder_upgrade_group">Modernizovať skupinu</string>
   <!--GroupsV1MigrationSuggestionsReminder-->
   <plurals name="GroupsV1MigrationSuggestionsReminder_members_couldnt_be_added_to_the_new_group">
     <item quantity="one">%1$d člen nemohol byť znovu pridaný do Novej skupiny. Chcete ho pridať teraz?</item>
@@ -1140,6 +1141,7 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_verified_from_another_device">Bezpečnostné číslo s %s ste označili ako overené z iného zariadenia</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">Bezpečnostné číslo s %s ste označili ako neoverené</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">Bezpečnostné číslo s %s ste označili ako neoverené z iného zariadenia</string>
+  <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">Správu od %s sa nepodarilo doručiť</string>
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s zahájil(a) skupinový hovor · %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s je v skupinovom hovore · %2$s</string>
@@ -1511,6 +1513,7 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="ThreadRecord_you_marked_verified">Označili ste ako overené</string>
   <string name="ThreadRecord_you_marked_unverified">Označili ste ako neoverené</string>
   <string name="ThreadRecord_message_could_not_be_processed">Správu sa nepodarilo spracovať</string>
+  <string name="ThreadRecord_delivery_issue">Problém s doručením</string>
   <string name="ThreadRecord_message_request">Žiadosť o správu</string>
   <string name="ThreadRecord_photo">Fotka</string>
   <string name="ThreadRecord_gif">GIF</string>
@@ -1896,6 +1899,10 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <!--prompt_mms_activity-->
   <string name="prompt_mms_activity__signal_requires_mms_settings_to_deliver_media_and_group_messages">Signal vyžaduje nastavenia MMS na doručenie médií a skupinových správ cez vášho poskytovateľa pripojenia. Vaše zariadenie neposkytuje tieto informácie, čo občas spôsobujú uzamknuté zariadenia alebo iné obmedzenia v nastaveniach.</string>
   <string name="prompt_mms_activity__to_send_media_and_group_messages_tap_ok">Pre odoslanie médií a skupinových správ stlačte OK, a dokončite príslušné nastavenia. MMS nastavenia vášho poskytovateľa sa väčšinov dajú nájsť vyhľadaním \"váš poskytovateľ APN\". Toto nastavenie musíte urobiť len raz.</string>
+  <!--BadDecryptLearnMoreDialog-->
+  <string name="BadDecryptLearnMoreDialog_delivery_issue">Problém s doručením</string>
+  <string name="BadDecryptLearnMoreDialog_couldnt_be_delivered_individual">Správu, nálepku, reakciu, potvrdenie o prečítaní, alebo média od %s vám nebolo možné doručiť. Možno sa vám pokúsili poslať ho priamo, alebo v skupine.</string>
+  <string name="BadDecryptLearnMoreDialog_couldnt_be_delivered_group">Od %s vám nebolo možné doručiť správu, nálepku, reakciu alebo potvrdenie o prečítaní.</string>
   <!--profile_create_activity-->
   <string name="CreateProfileActivity_first_name_required">Meno (povinné)</string>
   <string name="CreateProfileActivity_last_name_optional">Priezvisko (povinné)</string>
@@ -2174,8 +2181,8 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="preferences_data_and_storage__calls">Volania</string>
   <string name="preferences_data_and_storage__use_less_data_for_calls">Využívať menej dát na hovory</string>
   <string name="preferences_data_and_storage__never">Nikdy</string>
-  <string name="preferences_data_and_storage__wifi_and_cellular">Wi-Fi a Mobilné siete</string>
-  <string name="preferences_data_and_storage__cellular_only">Iba mobilné</string>
+  <string name="preferences_data_and_storage__wifi_and_mobile_data">WiFi a mobilné dáta</string>
+  <string name="preferences_data_and_storage__mobile_data_only">Iba mobilné dáta</string>
   <string name="preference_data_and_storage__using_less_data_may_improve_calls_on_bad_networks">Using less data may improve calls on bad networks</string>
   <string name="preferences_notifications__messages">Správy</string>
   <string name="preferences_notifications__events">Udalosti</string>
@@ -2200,7 +2207,7 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="preferences_off">Vypnuté</string>
   <string name="preferences_on">Zapnuté</string>
   <string name="preferences_proxy_address">Proxy adresa</string>
-  <string name="preferences_only_use_a_proxy_if">Server proxy používajte iba v prípade, že sa nemôžete pripojiť k Signal prostredníctvom mobilnej siete alebo siete Wi-Fi.</string>
+  <string name="preferences_only_use_a_proxy_if">Server proxy používajte iba v prípade, že sa nemôžete pripojiť k Signal cez mobilné dáta, alebo Wi-Fi.</string>
   <string name="preferences_share">Zdieľať</string>
   <string name="preferences_save">Uložiť</string>
   <string name="preferences_connecting_to_proxy">Pripája sa ku proxy…</string>
@@ -2903,7 +2910,7 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <!--ShareActivity-->
   <string name="ShareActivity__share">Zdieľať</string>
   <string name="ShareActivity__send">Poslať</string>
-  <string name="ShareActivity__s_comma">%1$s,</string>
+  <string name="ShareActivity__comma_s">, %1$s</string>
   <string name="ShareActivity__sharing_to_multiple_chats_is">Zdieľanie do viacerých chatov je možné iba Signal správami.</string>
   <!--MultiShareDialogs-->
   <string name="MultiShareDialogs__failed_to_send_to_some_users">Zlyhalo odoslanie niektorým používateľom</string>
@@ -3133,18 +3140,33 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="ChatColorGradientTool_top_edge_selector">Volič horného okraja</string>
   <string name="ChatColorGradientTool_bottom_edge_selector">Volič spodného okraja</string>
   <!--EditReactionsFragment-->
+  <string name="EditReactionsFragment__customize_reactions">Prispôsobte reakcie</string>
   <string name="EditReactionsFragment__tap_to_replace_an_emoji">Ťuknutím nahradíte emotikon</string>
   <string name="EditReactionsFragment__reset">Resetovať</string>
   <string name="EditReactionsFragment_save">Uložiť</string>
   <string name="ChatColorSelectionFragment__auto_matches_the_color_to_the_wallpaper">Automaticky nájde vhodnú farbu k pozadiu</string>
   <string name="CustomChatColorCreatorFragment__drag_to_change_the_direction_of_the_gradient">Potiahnite pre zmenu smeru farebného prechodu</string>
   <!--ChatColorsMegaphone-->
+  <string name="ChatColorsMegaphone__new_chat_colors">Nové farby konverzácie</string>
+  <string name="ChatColorsMegaphone__we_switched_up_chat_colors">Prepli sme farby konverzácie, aby sme vám poskytli viac možností a uľahčili čítanie konverzácií.</string>
   <string name="ChatColorsMegaphone__appearance">Vzhľad</string>
   <string name="ChatColorsMegaphone__not_now">Teraz nie</string>
   <!--KeyboardPagerFragment-->
   <string name="KeyboardPagerFragment_emoji">Emotikony</string>
+  <string name="KeyboardPagerFragment_open_emoji_search">Otvoriť vyhľadávanie emotikónov</string>
+  <string name="KeyboardPagerFragment_open_sticker_search">Otvoriť vyhľadávanie nálepiek</string>
+  <string name="KeyboardPagerFragment_open_gif_search">Otvoriť vyhľadávanie gif</string>
   <string name="KeyboardPagerFragment_stickers">Nálepky</string>
   <string name="KeyboardPagerFragment_backspace">Backspace</string>
+  <string name="KeyboardPagerFragment_gifs">Gify</string>
+  <string name="KeyboardPagerFragment_search_emoji">Hľadať emotikon</string>
+  <string name="KeyboardPagerfragment_back_to_emoji">Naspäť k emotikonu</string>
+  <string name="KeyboardPagerfragment_clear_search_entry">Vymazať hľadaný záznam</string>
+  <string name="KeyboardPagerFragment_search_giphy">Hľadať GIPHY</string>
   <!--StickerSearchDialogFragment-->
+  <string name="StickerSearchDialogFragment_search_stickers">Hľadať nálepky</string>
+  <string name="StickerSearchDialogFragment_no_results_found">Neboli nájdené žiadne výsledky</string>
+  <string name="EmojiSearchFragment__no_results_found">Neboli nájdené žiadne výsledky</string>
+  <string name="NotificationsSettingsFragment__unknown_ringtone">Neznámy vyzváňací tón</string>
   <!--EOF-->
 </resources>
