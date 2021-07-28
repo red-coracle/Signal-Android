@@ -1,5 +1,7 @@
 package org.thoughtcrime.securesms.groups.ui.addmembers;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -9,13 +11,18 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.thoughtcrime.securesms.ContactSelectionActivity;
+import org.thoughtcrime.securesms.ContactSelectionListFragment;
 import org.thoughtcrime.securesms.PushContactSelectionActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.groups.GroupId;
+import org.thoughtcrime.securesms.groups.SelectionLimits;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.libsignal.util.guava.Optional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddMembersActivity extends PushContactSelectionActivity {
 
@@ -23,6 +30,22 @@ public class AddMembersActivity extends PushContactSelectionActivity {
 
   private View                done;
   private AddMembersViewModel viewModel;
+
+  public static @NonNull Intent createIntent(@NonNull Context context,
+                                             @NonNull GroupId groupId,
+                                             int displayModeFlags,
+                                             int selectionWarning,
+                                             int selectionLimit,
+                                             @NonNull List<RecipientId> membersWithoutSelf)  {
+    Intent intent = new Intent(context, AddMembersActivity.class);
+
+    intent.putExtra(AddMembersActivity.GROUP_ID, groupId.toString());
+    intent.putExtra(ContactSelectionListFragment.DISPLAY_MODE, displayModeFlags);
+    intent.putExtra(ContactSelectionListFragment.SELECTION_LIMITS, new SelectionLimits(selectionWarning, selectionLimit));
+    intent.putParcelableArrayListExtra(ContactSelectionListFragment.CURRENT_SELECTION, new ArrayList<>(membersWithoutSelf));
+
+    return intent;
+  }
 
   @Override
   protected void onCreate(Bundle icicle, boolean ready) {
@@ -59,7 +82,7 @@ public class AddMembersActivity extends PushContactSelectionActivity {
     }
 
     if (contactsFragment.hasQueryFilter()) {
-      getToolbar().clear();
+      getContactFilterView().clear();
     }
 
     enableDone();
@@ -70,11 +93,21 @@ public class AddMembersActivity extends PushContactSelectionActivity {
   @Override
   public void onContactDeselected(Optional<RecipientId> recipientId, String number) {
     if (contactsFragment.hasQueryFilter()) {
-      getToolbar().clear();
+      getContactFilterView().clear();
     }
 
     if (contactsFragment.getSelectedContactsCount() < 1) {
       disableDone();
+    }
+  }
+
+  @Override
+  public void onSelectionChanged() {
+    int selectedContactsCount = contactsFragment.getTotalMemberCount() + 1;
+    if (selectedContactsCount == 0) {
+      getToolbar().setTitle(getString(R.string.AddMembersActivity__add_members));
+    } else {
+      getToolbar().setTitle(getResources().getQuantityString(R.plurals.CreateGroupActivity__d_members, selectedContactsCount, selectedContactsCount));
     }
   }
 

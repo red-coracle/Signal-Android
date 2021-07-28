@@ -50,9 +50,9 @@
   <string name="DraftDatabase_Draft_video_snippet">(видео)</string>
   <string name="DraftDatabase_Draft_location_snippet">(локација)</string>
   <string name="DraftDatabase_Draft_quote_snippet">(одговор)</string>
+  <string name="DraftDatabase_Draft_voice_note">(Гласовна порака)</string>
   <!--AttachmentKeyboard-->
   <string name="AttachmentKeyboard_gallery">Галерија</string>
-  <string name="AttachmentKeyboard_gif">GIF</string>
   <string name="AttachmentKeyboard_file">Датотека</string>
   <string name="AttachmentKeyboard_contact">Контакт</string>
   <string name="AttachmentKeyboard_location">Локација</string>
@@ -320,6 +320,7 @@
   <string name="ConversationTypingView__plus_d">+%1$d</string>
   <!--CreateGroupActivity-->
   <string name="CreateGroupActivity_some_contacts_cannot_be_in_legacy_groups">Некои контакти не можат да бидат во застарените групи.</string>
+  <string name="CreateGroupActivity__select_members">Изберете членови</string>
   <!--CreateProfileActivity-->
   <string name="CreateProfileActivity__profile">Профил</string>
   <string name="CreateProfileActivity_error_setting_profile_photo">Грешка при поставување на профилната слика</string>
@@ -426,6 +427,7 @@
   <string name="AddToGroupActivity_add_to_groups">Додај во групи</string>
   <string name="AddToGroupActivity_this_person_cant_be_added_to_legacy_groups">Оваа личност не може да биде додадена во стари групи.</string>
   <string name="AddToGroupActivity_add">Додај…</string>
+  <string name="AddToGroupActivity_add_to_a_group">Додај во група</string>
   <!--ChooseNewAdminActivity-->
   <string name="ChooseNewAdminActivity_choose_new_admin">Избери нов администратор</string>
   <string name="ChooseNewAdminActivity_done">Готово</string>
@@ -556,6 +558,7 @@
     <item quantity="other">Да ги додадам %3$d членови во \"%2$s\"?</item>
   </plurals>
   <string name="AddMembersActivity__add">Додадете…</string>
+  <string name="AddMembersActivity__add_members">Додај членови</string>
   <!--AddGroupDetailsFragment-->
   <string name="AddGroupDetailsFragment__name_this_group">Именувајте ја оваа група</string>
   <string name="AddGroupDetailsFragment__create_group">Создадете група</string>
@@ -648,32 +651,11 @@
   <string name="ManageProfileFragment_your_username">Вашето корисничко име</string>
   <string name="ManageProfileFragment_failed_to_set_avatar">Не успеав да поставам аватар</string>
   <!--ManageRecipientActivity-->
-  <string name="ManageRecipientActivity_add_to_system_contacts">Додај системски контакти</string>
-  <string name="ManageRecipientActivity_this_person_is_in_your_contacts">Оваа личност е во Вашите контакти</string>
-  <string name="ManageRecipientActivity_disappearing_messages">Пораки што исчезнуваат</string>
-  <string name="ManageRecipientActivity_chat_color">Боја на разговор</string>
-  <string name="ManageRecipientActivity_chat_wallpaper">Позадина за разговорот</string>
-  <string name="ManageRecipientActivity_block">Блокирај</string>
-  <string name="ManageRecipientActivity_unblock">Одблокирај</string>
-  <string name="ManageRecipientActivity_view_safety_number">Види сигурносен број</string>
-  <string name="ManageRecipientActivity_mute_notifications">Исклучи известувања</string>
-  <string name="ManageRecipientActivity_custom_notifications">Прилагодени известувања</string>
-  <string name="ManageRecipientActivity_until_s">До %1$s</string>
-  <string name="ManageRecipientActivity_always">Секогаш</string>
-  <string name="ManageRecipientActivity_off">Исклучено</string>
-  <string name="ManageRecipientActivity_on">Вклучено</string>
-  <string name="ManageRecipientActivity_add_to_a_group">Додај во група</string>
-  <string name="ManageRecipientActivity_view_all_groups">Види ги сите групи</string>
-  <string name="ManageRecipientActivity_see_all">Види сѐ</string>
   <string name="ManageRecipientActivity_no_groups_in_common">Немате заеднички групи</string>
   <plurals name="ManageRecipientActivity_d_groups_in_common">
     <item quantity="one">%d заедничка група</item>
     <item quantity="other">%d заеднички групи</item>
   </plurals>
-  <string name="ManageRecipientActivity_message_description">Порака</string>
-  <string name="ManageRecipientActivity_voice_call_description">Гласовен повик</string>
-  <string name="ManageRecipientActivity_insecure_voice_call_description">Небезбеден гласовен повик</string>
-  <string name="ManageRecipientActivity_video_call_description">Видео повик</string>
   <plurals name="GroupMemberList_invited">
     <item quantity="one">%1$s покани 1 личност</item>
     <item quantity="other">%1$s покани %2$d луѓе</item>
@@ -817,6 +799,7 @@
   <string name="MediaOverviewActivity_audio">Аудио</string>
   <string name="MediaOverviewActivity_video">Видео</string>
   <string name="MediaOverviewActivity_image">Слика</string>
+  <string name="MediaOverviewActivity_voice_message">Гласовна порака</string>
   <string name="MediaOverviewActivity_sent_by_s">Испратено од %1$s</string>
   <string name="MediaOverviewActivity_sent_by_you">Испратено од тебе</string>
   <string name="MediaOverviewActivity_sent_by_s_to_s">Испратено од %1$s до %2$s</string>
@@ -872,6 +855,7 @@
   <!--MediaRepository-->
   <string name="MediaRepository_all_media">Цела медија</string>
   <string name="MediaRepository__camera">Камера</string>
+  <!--MessageDecryptionUtil-->
   <!--MessageRecord-->
   <string name="MessageRecord_unknown">Непознато</string>
   <string name="MessageRecord_message_encrypted_with_a_legacy_protocol_version_that_is_no_longer_supported">Добивте порака која е енкриптирана користејќи стара верзија на Signal која веќе не е поддржана. Ве молиме побајте од праќачот пораката да ја апдејтира апликацијата на најновата верзија и пак да ја препрати пораката.</string>
@@ -1166,6 +1150,8 @@
   <string name="ReactionsRecipientAdapter_you">Вие</string>
   <!--RecaptchaRequiredBottomSheetFragment-->
   <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">Потврдете за да продолжите со пораките</string>
+  <!--Recipient-->
+  <string name="Recipient_you">Вие</string>
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">Блокирај</string>
   <string name="RecipientPreferenceActivity_unblock">Одблокирај</string>
@@ -1627,6 +1613,7 @@
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">Оди до дното</string>
   <!--safety_number_change_dialog-->
   <string name="safety_number_change_dialog__safety_number_changes">Промени на сигурносниот број</string>
+  <string name="safety_number_change_dialog__accept">Прифати </string>
   <string name="safety_number_change_dialog__send_anyway">Сепак испрати</string>
   <string name="safety_number_change_dialog__call_anyway">Сепак повикај</string>
   <string name="safety_number_change_dialog__join_call">Приклучи сѐ на повик</string>
@@ -1699,8 +1686,6 @@
   <string name="giphy_activity_toolbar__search_gifs">Пребарај GIF-ови</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">Ништо не е пронајдено</string>
-  <!--log_submit_activity-->
-  <string name="log_submit_activity__this_log_will_be_posted_online">Овој запис ќе биде објавен јавно онлајн за сите придонесувачи. Можете да го прегледате и уредите пред да го испратите.</string>
   <!--database_migration_activity-->
   <string name="database_migration_activity__would_you_like_to_import_your_existing_text_messages">Дали сакате да ги увезете постоечките текстуални пораки во енкриптираната база на Signal?</string>
   <string name="database_migration_activity__the_default_system_database_will_not_be_modified">Стандардната системска база нема да биде променета на ниеден начин.</string>
@@ -1828,6 +1813,7 @@
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__symbols">Симболи</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__flags">Знамиња</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__emoticons">Емотикони</string>
+  <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">Не се пронајдени резултати</string>
   <!--arrays.xml-->
   <string name="arrays__use_default">Користете стандардно</string>
   <string name="arrays__use_custom">Користи прилагодено</string>
@@ -1992,6 +1978,8 @@
   <string name="preferences_data_and_storage__calls">Повици</string>
   <string name="preferences_data_and_storage__use_less_data_for_calls">Користи помалку податоци за повици</string>
   <string name="preferences_data_and_storage__never">Никогаш</string>
+  <string name="preferences_data_and_storage__wifi_and_mobile_data">WiFi и податоци преку мобилен</string>
+  <string name="preferences_data_and_storage__mobile_data_only">Податоци само преку мобилен</string>
   <string name="preference_data_and_storage__using_less_data_may_improve_calls_on_bad_networks">Користење на помалку податоци може да ги подобри повиците на лоши мрежи</string>
   <string name="preferences_notifications__messages">Пораки</string>
   <string name="preferences_notifications__events">Настани</string>
@@ -2560,7 +2548,7 @@
   <string name="RecipientBottomSheet_add_to_a_group">Додај во група</string>
   <string name="RecipientBottomSheet_add_to_another_group">Додај во друга група</string>
   <string name="RecipientBottomSheet_view_safety_number">Види сигурносен број</string>
-  <string name="RecipientBottomSheet_make_group_admin">Направи администратор на група</string>
+  <string name="RecipientBottomSheet_make_admin">Направи админ</string>
   <string name="RecipientBottomSheet_remove_as_admin">Отстрани администратор</string>
   <string name="RecipientBottomSheet_remove_from_group">Отстрани од група</string>
   <string name="RecipientBottomSheet_message_description">Порака</string>
@@ -2676,7 +2664,12 @@
   <string name="ChatWallpaperFragment__reset">Ресетираj</string>
   <string name="ChatWallpaperFragment__clear">Исчисти</string>
   <string name="ChatWallpaperFragment__wallpaper_preview_description">Преглед на позадина</string>
+  <string name="ChatWallpaperFragment__reset_all_colors">Ресетирај ги сите бои</string>
+  <string name="ChatWallpaperFragment__reset_default_wallpaper">Ресетирај на стандардна позадина</string>
   <string name="ChatWallpaperFragment__reset_all_wallpapers">Ресетирај ги сите позадини</string>
+  <string name="ChatWallpaperFragment__reset_wallpapers">Ресетирај позадини</string>
+  <string name="ChatWallpaperFragment__reset_wallpaper">Ресетирај позадина</string>
+  <string name="ChatWallpaperFragment__reset_wallpaper_question">Да ја ресетирам позадината?</string>
   <!--ChatWallpaperSelectionFragment-->
   <string name="ChatWallpaperSelectionFragment__choose_from_photos">Избери од слики</string>
   <string name="ChatWallpaperSelectionFragment__presets">Стандардни</string>
@@ -2705,6 +2698,7 @@
   <string name="payment_info_card_update_pin">Ажурирај PIN</string>
   <!--DeactivateWalletFragment-->
   <string name="DeactivateWalletFragment__deactivate_wallet">Деактивирај го паричникот</string>
+  <string name="DeactivateWalletFragment__transfer_remaining_balance">Префли го преостанатиот баланс</string>
   <string name="DeactivateWalletFragment__deactivate">Деактивирај</string>
   <string name="DeactivateWalletFragment__error_deactivating_wallet">Грешка при деактивирање на паричникот.</string>
   <!--PaymentsRecoveryStartFragment-->
@@ -2742,21 +2736,28 @@
   <!--GroupDescriptionDialog-->
   <string name="GroupDescriptionDialog__group_description">Опис на групата</string>
   <!--QualitySelectorBottomSheetDialog-->
+  <string name="QualitySelectorBottomSheetDialog__standard">Стандардно</string>
   <string name="QualitySelectorBottomSheetDialog__high">Високо</string>
   <!--AppSettingsFragment-->
+  <string name="AppSettingsFragment__invite_your_friends">Покани ги пријателите</string>
   <!--AccountSettingsFragment-->
   <string name="AccountSettingsFragment__account">Сметка</string>
   <!--ChatsSettingsFragment-->
+  <string name="ChatsSettingsFragment__keyboard">Тастатура</string>
   <string name="ChatsSettingsFragment__enter_key_sends">Enter испраќа пораки</string>
   <!--SmsSettingsFragment-->
   <string name="SmsSettingsFragment__use_as_default_sms_app">Користи како стандардна СМС апликација</string>
   <!--NotificationsSettingsFragment-->
   <string name="NotificationsSettingsFragment__messages">Пораки</string>
   <string name="NotificationsSettingsFragment__calls">Повици</string>
+  <string name="NotificationsSettingsFragment__notify_when">Извести кога…</string>
+  <string name="NotificationsSettingsFragment__contact_joins_signal">Кога контакт ќе се приклучи на Signal</string>
   <!--PrivacySettingsFragment-->
   <string name="PrivacySettingsFragment__blocked">Блокирани</string>
   <string name="PrivacySettingsFragment__d_contacts">%1$d контакти</string>
+  <string name="PrivacySettingsFragment__messaging">Пораки</string>
   <string name="PrivacySettingsFragment__disappearing_messages">Пораки што исчезнуваат</string>
+  <string name="PrivacySettingsFragment__app_security">Безбедност на апликацијата</string>
   <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Блокирај слики од екранот во листата на последни апликации и во самата апликација</string>
   <!--AdvancedPrivacySettingsFragment-->
   <!--ExpireTimerSettingsFragment-->
@@ -2788,22 +2789,90 @@
   <!--DataAndStorageSettingsFragment-->
   <string name="DataAndStorageSettingsFragment__calls">Повици</string>
   <!--ChatColorSelectionFragment-->
+  <string name="ChatColorSelectionFragment__auto">Автоматски</string>
+  <string name="ChatColorSelectionFragment__use_custom_colors">Користи сопствени бои</string>
   <string name="ChatColorSelectionFragment__chat_color">Боја на разговор</string>
   <string name="ChatColorSelectionFragment__edit">Измени</string>
   <string name="ChatColorSelectionFragment__delete">Избриши</string>
   <!--CustomChatColorCreatorFragment-->
   <!--CustomChatColorCreatorFragmentPage-->
   <string name="CustomChatColorCreatorFragmentPage__save">Зачувај</string>
+  <string name="CustomChatColorCreatorFragmentPage__edit_color">Уреди боја</string>
   <!--ChatColorGradientTool-->
   <!--EditReactionsFragment-->
+  <string name="EditReactionsFragment__customize_reactions">Прилагоди реакции</string>
   <string name="EditReactionsFragment__reset">Ресетираj</string>
   <string name="EditReactionsFragment_save">Зачувај</string>
   <!--ChatColorsMegaphone-->
+  <string name="ChatColorsMegaphone__new_chat_colors">Нови бои за разговори</string>
   <string name="ChatColorsMegaphone__appearance">Изглед</string>
   <string name="ChatColorsMegaphone__not_now">Не сега</string>
+  <!--AddAProfilePhotoMegaphone-->
+  <string name="AddAProfilePhotoMegaphone__not_now">Не сега</string>
   <!--KeyboardPagerFragment-->
   <string name="KeyboardPagerFragment_emoji">Емоџи</string>
+  <string name="KeyboardPagerFragment_open_emoji_search">Отвори пребарување на емоџи</string>
   <string name="KeyboardPagerFragment_stickers">Стикери</string>
+  <string name="KeyboardPagerFragment_gifs">Gif-ови</string>
+  <string name="KeyboardPagerFragment_search_emoji">Пребарувај емоџи</string>
+  <string name="KeyboardPagerfragment_clear_search_entry">Исчисти ги записите од барањето</string>
+  <string name="KeyboardPagerFragment_search_giphy">Пребарувај на GIPHY</string>
   <!--StickerSearchDialogFragment-->
+  <string name="StickerSearchDialogFragment_search_stickers">Пребарувај стикери</string>
+  <string name="StickerSearchDialogFragment_no_results_found">Не се пронајдени резултати</string>
+  <string name="EmojiSearchFragment__no_results_found">Не се пронајдени резултати</string>
+  <string name="NotificationsSettingsFragment__unknown_ringtone">Непознат звук</string>
+  <!--ConversationSettingsFragment-->
+  <string name="ConversationSettingsFragment__message">Порака</string>
+  <string name="ConversationSettingsFragment__video">Видео</string>
+  <string name="ConversationSettingsFragment__audio">Аудио</string>
+  <string name="ConversationSettingsFragment__call">Повикај</string>
+  <string name="ConversationSettingsFragment__mute">Исклучи звук</string>
+  <string name="ConversationSettingsFragment__search">Барај</string>
+  <string name="ConversationSettingsFragment__disappearing_messages">Пораки што исчезнуваат</string>
+  <string name="ConversationSettingsFragment__view_safety_number">Види сигурносен број</string>
+  <string name="ConversationSettingsFragment__block">Блокирај</string>
+  <string name="ConversationSettingsFragment__block_group">Блокирај група</string>
+  <string name="ConversationSettingsFragment__unblock">Одблокирај</string>
+  <string name="ConversationSettingsFragment__unblock_group">Одблокирај група</string>
+  <string name="ConversationSettingsFragment__add_to_a_group">Додај во група</string>
+  <string name="ConversationSettingsFragment__see_all">Види сѐ</string>
+  <string name="ConversationSettingsFragment__add_members">Додај членови</string>
+  <string name="ConversationSettingsFragment__permissions">Дозволи</string>
+  <string name="ConversationSettingsFragment__group_link">Групен линк</string>
+  <string name="ConversationSettingsFragment__unmute">Вклучи известувања</string>
+  <string name="ConversationSettingsFragment__phone_number">Телефонски број</string>
+  <!--PermissionsSettingsFragment-->
+  <string name="PermissionsSettingsFragment__add_members">Додај членови</string>
+  <string name="PermissionsSettingsFragment__edit_group_info">Уреди инфо за група</string>
+  <string name="PermissionsSettingsFragment__all_members">Сите членови</string>
+  <string name="PermissionsSettingsFragment__only_admins">Само администратори</string>
+  <string name="PermissionsSettingsFragment__who_can_add_new_members">Кој може да додава нови членови?</string>
+  <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">Кој може да ги уредува информациите за групата?</string>
+  <!--SoundsAndNotificationsSettingsFragment-->
+  <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">Исклучи известувања</string>
+  <string name="SoundsAndNotificationsSettingsFragment__not_muted">Звукот не е исклучен</string>
+  <string name="SoundsAndNotificationsSettingsFragment__mentions">Спомнувања</string>
+  <string name="SoundsAndNotificationsSettingsFragment__custom_notifications">Прилагодени известувања</string>
+  <!--StickerKeyboard-->
+  <!--PlaybackSpeedToggleTextView-->
+  <!--PaymentRecipientSelectionFragment-->
+  <!--NewConversationActivity-->
+  <string name="NewConversationActivity__new_message">Нова порака</string>
+  <!--ContactFilterView-->
+  <!--VoiceNotePlayerView-->
+  <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <!--AvatarPickerFragment-->
+  <string name="AvatarPickerFragment__camera">Камера</string>
+  <string name="AvatarPickerFragment__photo">Слика</string>
+  <string name="AvatarPickerFragment__save">Зачувај</string>
+  <string name="AvatarPickerFragment__edit">Измени</string>
+  <!--TextAvatarCreationFragment-->
+  <string name="TextAvatarCreationFragment__preview">Преглед</string>
+  <string name="TextAvatarCreationFragment__done">Готово</string>
+  <string name="TextAvatarCreationFragment__color">Боја</string>
+  <!--VectorAvatarCreationFragment-->
+  <!--ContactSelectionListItem-->
+  <string name="ContactSelectionListItem__sms">SMS</string>
   <!--EOF-->
 </resources>

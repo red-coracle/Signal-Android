@@ -387,7 +387,13 @@ public class ConversationAdapter
       if (pagingController != null) {
         pagingController.onDataNeededAroundIndex(correctedPosition);
       }
-      return super.getItem(correctedPosition);
+
+      if (correctedPosition < getItemCount()) {
+        return super.getItem(correctedPosition);
+      } else {
+        Log.d(TAG, "Could not access corrected position " + correctedPosition + " as it is out of bounds.");
+        return null;
+      }
     }
   }
 
@@ -694,8 +700,8 @@ public class ConversationAdapter
     }
 
     @NonNull
-    public @Override Projection getProjection(@NonNull ViewGroup recyclerView) {
-      return getBindable().getProjection(recyclerView);
+    public @Override Projection getGiphyMp4PlayableProjection(@NonNull ViewGroup recyclerView) {
+      return getBindable().getGiphyMp4PlayableProjection(recyclerView);
     }
 
     @Override

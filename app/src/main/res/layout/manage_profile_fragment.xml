@@ -46,6 +46,21 @@
         app:layout_constraintTop_toTopOf="@+id/manage_profile_avatar_background"
         app:srcCompat="@drawable/ic_profile_outline_40" />
 
+    <org.thoughtcrime.securesms.components.emoji.EmojiTextView
+        android:id="@+id/manage_profile_avatar_initials"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/manage_profile_avatar_background"
+        app:layout_constraintEnd_toEndOf="@id/manage_profile_avatar_background"
+        app:layout_constraintStart_toStartOf="@id/manage_profile_avatar_background"
+        app:layout_constraintTop_toTopOf="@id/manage_profile_avatar_background"
+        tools:ignore="SpUsage"
+        tools:text="AF"
+        tools:visibility="visible" />
+
     <ImageView
         android:id="@+id/manage_profile_avatar"
         android:layout_width="0dp"
@@ -173,10 +188,11 @@
         android:background="?selectableItemBackground"
         app:layout_constraintTop_toBottomOf="@id/manage_profile_username_container">
 
-      <ImageView
+      <androidx.appcompat.widget.AppCompatImageView
           android:id="@+id/manage_profile_about_icon"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:scaleType="fitCenter"
           app:srcCompat="@drawable/ic_compose_24"
           app:tint="@color/signal_text_primary"
           app:layout_constraintTop_toTopOf="@id/manage_profile_about"

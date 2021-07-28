@@ -51,7 +51,6 @@
   <string name="DraftDatabase_Draft_quote_snippet">(جواب )</string>
   <!--AttachmentKeyboard-->
   <string name="AttachmentKeyboard_gallery">گیلری</string>
-  <string name="AttachmentKeyboard_gif">GIF</string>
   <string name="AttachmentKeyboard_file">فائل</string>
   <string name="AttachmentKeyboard_contact">رابطہ</string>
   <string name="AttachmentKeyboard_location">مقام</string>
@@ -424,6 +423,7 @@
   <string name="AddToGroupActivity_add_to_groups">گروپوں میں شامل کریں</string>
   <string name="AddToGroupActivity_this_person_cant_be_added_to_legacy_groups">اس شخص کو میراثی گروپوں میں شامل نہیں کیا جاسکتا۔</string>
   <string name="AddToGroupActivity_add">شامل کریں</string>
+  <string name="AddToGroupActivity_add_to_a_group">کسی گروپ میں شامل کریں</string>
   <!--ChooseNewAdminActivity-->
   <string name="ChooseNewAdminActivity_choose_new_admin">نیا ایڈمن منتخب کریں</string>
   <string name="ChooseNewAdminActivity_done">ہو گیا</string>
@@ -554,6 +554,7 @@
     <item quantity="other">\"%2$s\" میں\"%3$d\" ممبروں کو شامل کریں؟</item>
   </plurals>
   <string name="AddMembersActivity__add">شامل کریں</string>
+  <string name="AddMembersActivity__add_members">ممبران شامل کریں</string>
   <!--AddGroupDetailsFragment-->
   <string name="AddGroupDetailsFragment__name_this_group">اس گروپ کو نام دیں</string>
   <string name="AddGroupDetailsFragment__create_group">گروپ بنائیں</string>
@@ -642,31 +643,11 @@
   <string name="ManageProfileFragment_your_username">اپکا اسم رکنیت</string>
   <string name="ManageProfileFragment_failed_to_set_avatar">اوتار سیٹ کرنے میں ناکام</string>
   <!--ManageRecipientActivity-->
-  <string name="ManageRecipientActivity_add_to_system_contacts">سسٹم رابطوں میں شامل کریں</string>
-  <string name="ManageRecipientActivity_this_person_is_in_your_contacts">یہ شخص آپ کے رابطوں میں ہے</string>
-  <string name="ManageRecipientActivity_disappearing_messages">پیغامات غائب ہو رہے ہیں</string>
-  <string name="ManageRecipientActivity_chat_color">چیٹ کا رنگ</string>
-  <string name="ManageRecipientActivity_chat_wallpaper">چیٹ وال پیپر</string>
-  <string name="ManageRecipientActivity_block">بلاک</string>
-  <string name="ManageRecipientActivity_unblock">ان بلاک</string>
-  <string name="ManageRecipientActivity_view_safety_number">حفاظتی نمبر دیکھیں</string>
-  <string name="ManageRecipientActivity_mute_notifications">خاموش اطلاعات</string>
-  <string name="ManageRecipientActivity_custom_notifications">اپنی مرضی کے مطابق اطلاعات</string>
-  <string name="ManageRecipientActivity_until_s">جب تک %1$s</string>
-  <string name="ManageRecipientActivity_off">بند کریں</string>
-  <string name="ManageRecipientActivity_on">چلائیں</string>
-  <string name="ManageRecipientActivity_add_to_a_group">کسی گروپ میں شامل کریں</string>
-  <string name="ManageRecipientActivity_view_all_groups">تمام گروپ دیکھیں</string>
-  <string name="ManageRecipientActivity_see_all">تمام دیکھیں</string>
   <string name="ManageRecipientActivity_no_groups_in_common">مشترکہ طور پر کوئی گروپ نہیں</string>
   <plurals name="ManageRecipientActivity_d_groups_in_common">
     <item quantity="one">%d مشترکہ گروپ</item>
     <item quantity="other">%dمشترکہ گروپس</item>
   </plurals>
-  <string name="ManageRecipientActivity_message_description">پیغام</string>
-  <string name="ManageRecipientActivity_voice_call_description">آڈیو کال</string>
-  <string name="ManageRecipientActivity_insecure_voice_call_description">غیر محفوظ آڈیو کال</string>
-  <string name="ManageRecipientActivity_video_call_description">ویڈیو کال</string>
   <plurals name="GroupMemberList_invited">
     <item quantity="one">%1$s  نے 1 شخص کو مدعو کیا</item>
     <item quantity="other">%1$s نے %2$d لوگوں کو مدعو کیا</item>
@@ -810,6 +791,7 @@
   <string name="MediaOverviewActivity_audio">آڈیو</string>
   <string name="MediaOverviewActivity_video">وڈیو</string>
   <string name="MediaOverviewActivity_image">تصویر</string>
+  <string name="MediaOverviewActivity_voice_message">آڈیو پیغام</string>
   <string name="MediaOverviewActivity_sent_by_s">کی طرف سے بھیجا%1$s</string>
   <string name="MediaOverviewActivity_sent_by_you">آپ کے ذریعہ بھیجا گیا</string>
   <string name="MediaOverviewActivity_sent_by_s_to_s">%1$sبذریعہ%2$s بھیجا گیا</string>
@@ -864,6 +846,7 @@
   <!--MediaRepository-->
   <string name="MediaRepository_all_media">تمام میڈیا</string>
   <string name="MediaRepository__camera">کیمرہ</string>
+  <!--MessageDecryptionUtil-->
   <!--MessageRecord-->
   <string name="MessageRecord_unknown">نامعلوم</string>
   <string name="MessageRecord_message_encrypted_with_a_legacy_protocol_version_that_is_no_longer_supported">Signal کے پرانے ورژن کا استعمال کرتے ہوئے خفیہ کردہ ایک پیغام موصول ہوا جو اب تعاون یافتہ نہیں ہے۔ براہ کرم بھیجنے والے کو حالیہ ورژن میں اپ گریڈ کرنے کو کہے اور پیغام کو دوبارہ بھیجیں۔</string>
@@ -1152,6 +1135,8 @@
   <!--ReactionsRecipientAdapter-->
   <string name="ReactionsRecipientAdapter_you">آپ</string>
   <!--RecaptchaRequiredBottomSheetFragment-->
+  <!--Recipient-->
+  <string name="Recipient_you">آپ</string>
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">بلاک</string>
   <string name="RecipientPreferenceActivity_unblock">ان بلاک</string>
@@ -1604,6 +1589,7 @@
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">نیچے سکرول کریں</string>
   <!--safety_number_change_dialog-->
   <string name="safety_number_change_dialog__safety_number_changes">حفاظت نمبر میں تبدیلیاں</string>
+  <string name="safety_number_change_dialog__accept">قبول کریں</string>
   <string name="safety_number_change_dialog__send_anyway">بہر حال بھیجیں</string>
   <string name="safety_number_change_dialog__call_anyway">ویسے بھی کال کریں</string>
   <string name="safety_number_change_dialog__join_call">کال میں شامل ہوں</string>
@@ -1670,8 +1656,6 @@
   <!--giphy_activity-->
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">کچھ نہیں ملا</string>
-  <!--log_submit_activity-->
-  <string name="log_submit_activity__this_log_will_be_posted_online">یہ لاگ ان کو دیکھنے کے لئے عوامی طور پر آن لائن شائع کیا جائے گا ، آپ جمع کرانے سے پہلے اس کی جانچ اور ترمیم کرسکتے ہیں۔</string>
   <!--database_migration_activity-->
   <string name="database_migration_activity__would_you_like_to_import_your_existing_text_messages">کیا آپ اپنے موجودہ ٹیکسٹ پیغامات کو Signal کے خفیہ کردہ ڈیٹا بیس میں درآمد کرنا چاہیں گے؟</string>
   <string name="database_migration_activity__the_default_system_database_will_not_be_modified">پہلے سے طے شدہ نظام کے ڈیٹا بیس میں کسی بھی طرح سے ترمیم یا تبدیلی نہیں آئیں گے۔</string>
@@ -2363,7 +2347,7 @@
   <string name="RecipientBottomSheet_add_to_a_group">کسی گروپ میں شامل کریں</string>
   <string name="RecipientBottomSheet_add_to_another_group">کسی دوسرے گروپ میں شامل کریں</string>
   <string name="RecipientBottomSheet_view_safety_number">حفاظتی نمبر دیکھیں</string>
-  <string name="RecipientBottomSheet_make_group_admin">گروپ منتظم بنائیں</string>
+  <string name="RecipientBottomSheet_make_admin">منتظم بنائیں</string>
   <string name="RecipientBottomSheet_remove_as_admin">منتظم کی حیثیت سے ہٹائیں</string>
   <string name="RecipientBottomSheet_remove_from_group">گروپ سے ہٹائیں</string>
   <string name="RecipientBottomSheet_message_description">پیغام</string>
@@ -2566,9 +2550,64 @@
   <!--ChatColorsMegaphone-->
   <string name="ChatColorsMegaphone__appearance">ظہور ہونا</string>
   <string name="ChatColorsMegaphone__not_now">ابھی نہیں</string>
+  <!--AddAProfilePhotoMegaphone-->
+  <string name="AddAProfilePhotoMegaphone__not_now">ابھی نہیں</string>
   <!--KeyboardPagerFragment-->
   <string name="KeyboardPagerFragment_emoji">ایموجی</string>
   <string name="KeyboardPagerFragment_stickers">اسٹیکرز</string>
   <!--StickerSearchDialogFragment-->
+  <!--ConversationSettingsFragment-->
+  <string name="ConversationSettingsFragment__message">پیغام</string>
+  <string name="ConversationSettingsFragment__video">وڈیو</string>
+  <string name="ConversationSettingsFragment__audio">آڈیو</string>
+  <string name="ConversationSettingsFragment__call">کال</string>
+  <string name="ConversationSettingsFragment__mute">خاموش</string>
+  <string name="ConversationSettingsFragment__muted">خاموش</string>
+  <string name="ConversationSettingsFragment__search">تلاش کریں</string>
+  <string name="ConversationSettingsFragment__disappearing_messages">پیغامات غائب ہو رہے ہیں</string>
+  <string name="ConversationSettingsFragment__view_safety_number">حفاظتی نمبر دیکھیں</string>
+  <string name="ConversationSettingsFragment__block">بلاک</string>
+  <string name="ConversationSettingsFragment__block_group">مسدود گروپ</string>
+  <string name="ConversationSettingsFragment__unblock">ان بلاک</string>
+  <string name="ConversationSettingsFragment__unblock_group">غیر مسدود گروپ</string>
+  <string name="ConversationSettingsFragment__add_to_a_group">کسی گروپ میں شامل کریں</string>
+  <string name="ConversationSettingsFragment__see_all">تمام دیکھیں</string>
+  <string name="ConversationSettingsFragment__add_members">ممبران شامل کریں</string>
+  <string name="ConversationSettingsFragment__permissions">اجازت</string>
+  <string name="ConversationSettingsFragment__group_link">گروپ لنک</string>
+  <string name="ConversationSettingsFragment__unmute">غیر خاموش</string>
+  <string name="ConversationSettingsFragment__phone_number">فون نمبر</string>
+  <!--PermissionsSettingsFragment-->
+  <string name="PermissionsSettingsFragment__add_members">ممبران شامل کریں</string>
+  <string name="PermissionsSettingsFragment__edit_group_info">گروپ کی معلومات میں ترمیم کریں</string>
+  <string name="PermissionsSettingsFragment__all_members">تمام ممبران</string>
+  <string name="PermissionsSettingsFragment__only_admins">صرف منتظمین</string>
+  <string name="PermissionsSettingsFragment__who_can_add_new_members">کون نئے ممبروں کو شامل کرسکتا ہے؟</string>
+  <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">کون اس گروپ کی معلومات میں ترمیم کرسکتا ہے؟</string>
+  <!--SoundsAndNotificationsSettingsFragment-->
+  <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">خاموش اطلاعات</string>
+  <string name="SoundsAndNotificationsSettingsFragment__not_muted">غیر خاموش</string>
+  <string name="SoundsAndNotificationsSettingsFragment__mentions">ذکر</string>
+  <string name="SoundsAndNotificationsSettingsFragment__custom_notifications">اپنی مرضی کے مطابق اطلاعات</string>
+  <!--StickerKeyboard-->
+  <!--PlaybackSpeedToggleTextView-->
+  <!--PaymentRecipientSelectionFragment-->
+  <!--NewConversationActivity-->
+  <string name="NewConversationActivity__new_message">نيا پیغام</string>
+  <!--ContactFilterView-->
+  <!--VoiceNotePlayerView-->
+  <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <!--AvatarPickerFragment-->
+  <string name="AvatarPickerFragment__camera">کیمرہ</string>
+  <string name="AvatarPickerFragment__photo">تصویر</string>
+  <string name="AvatarPickerFragment__save">محفوظ کریں</string>
+  <string name="AvatarPickerFragment__edit">ترتیب دیں</string>
+  <!--TextAvatarCreationFragment-->
+  <string name="TextAvatarCreationFragment__preview">پیش نظارہ</string>
+  <string name="TextAvatarCreationFragment__done">ہو گیا</string>
+  <string name="TextAvatarCreationFragment__color">رنگ</string>
+  <!--VectorAvatarCreationFragment-->
+  <!--ContactSelectionListItem-->
+  <string name="ContactSelectionListItem__sms">ایس ایم ایس</string>
   <!--EOF-->
 </resources>

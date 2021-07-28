@@ -12,8 +12,8 @@ import com.annimon.stream.Stream;
 
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
-import org.thoughtcrime.securesms.crypto.DatabaseSessionLock;
 import org.thoughtcrime.securesms.crypto.SessionUtil;
+import org.thoughtcrime.securesms.crypto.ReentrantSessionLock;
 import org.thoughtcrime.securesms.crypto.storage.TextSecureIdentityKeyStore;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.IdentityDatabase;
@@ -29,6 +29,7 @@ import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.signalservice.api.SignalSessionLock;
+import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 
 import java.util.Collection;
 import java.util.List;
@@ -96,7 +97,7 @@ final class SafetyNumberChangeRepository {
   private TrustAndVerifyResult trustOrVerifyChangedRecipientsInternal(@NonNull List<ChangedRecipient> changedRecipients) {
     IdentityDatabase identityDatabase = DatabaseFactory.getIdentityDatabase(context);
 
-    try(SignalSessionLock.Lock unused = DatabaseSessionLock.INSTANCE.acquire()) {
+    try(SignalSessionLock.Lock unused = ReentrantSessionLock.INSTANCE.acquire()) {
       for (ChangedRecipient changedRecipient : changedRecipients) {
         IdentityRecord identityRecord = changedRecipient.getIdentityRecord();
 
@@ -122,15 +123,16 @@ final class SafetyNumberChangeRepository {
       Log.d(TAG, "No changed recipients to process, will still process message record");
     }
 
-    try(SignalSessionLock.Lock unused = DatabaseSessionLock.INSTANCE.acquire()) {
+    try(SignalSessionLock.Lock unused = ReentrantSessionLock.INSTANCE.acquire()) {
       for (ChangedRecipient changedRecipient : changedRecipients) {
-        SignalProtocolAddress      mismatchAddress  = new SignalProtocolAddress(changedRecipient.getRecipient().requireServiceId(), 1);
+        SignalProtocolAddress      mismatchAddress  = new SignalProtocolAddress(changedRecipient.getRecipient().requireServiceId(), SignalServiceAddress.DEFAULT_DEVICE_ID);
         TextSecureIdentityKeyStore identityKeyStore = new TextSecureIdentityKeyStore(context);
         Log.d(TAG, "Saving identity for: " + changedRecipient.getRecipient().getId() + " " + changedRecipient.getIdentityRecord().getIdentityKey().hashCode());
         TextSecureIdentityKeyStore.SaveResult result = identityKeyStore.saveIdentity(mismatchAddress, changedRecipient.getIdentityRecord().getIdentityKey(), true);
         Log.d(TAG, "Saving identity result: " + result);
         if (result == TextSecureIdentityKeyStore.SaveResult.NO_CHANGE) {
           Log.i(TAG, "Archiving sessions explicitly as they appear to be out of sync.");
+          SessionUtil.archiveSession(context, changedRecipient.getRecipient().getId(), SignalServiceAddress.DEFAULT_DEVICE_ID);
           SessionUtil.archiveSiblingSessions(context, mismatchAddress);
           DatabaseFactory.getSenderKeySharedDatabase(context).deleteAllFor(changedRecipient.getRecipient().getId());
         }

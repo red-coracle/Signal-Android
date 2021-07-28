@@ -58,7 +58,7 @@
   <string name="DraftDatabase_Draft_quote_snippet">(jibu)</string>
   <!--AttachmentKeyboard-->
   <string name="AttachmentKeyboard_gallery">Picha</string>
-  <string name="AttachmentKeyboard_gif">GIF</string>
+  <!-- Removed by excludeNonTranslatables <string name="AttachmentKeyboard_gif">GIF</string> -->
   <string name="AttachmentKeyboard_file">Faili</string>
   <string name="AttachmentKeyboard_contact">Mwasiliani</string>
   <string name="AttachmentKeyboard_location">Eneo</string>
@@ -381,15 +381,15 @@
   <!-- Removed by excludeNonTranslatables <string name="ManageGroupActivity_none">Hakuna</string> -->
   <!--GroupMentionSettingDialog-->
   <!--ManageRecipientActivity-->
-  <string name="ManageRecipientActivity_disappearing_messages">Jumbe zinazotoweka</string>
-  <string name="ManageRecipientActivity_block">Zuia</string>
-  <string name="ManageRecipientActivity_unblock">Fungua</string>
-  <string name="ManageRecipientActivity_view_safety_number">Tazama nambari ya usalama</string>
-  <string name="ManageRecipientActivity_mute_notifications">Zima arifa</string>
-  <string name="ManageRecipientActivity_custom_notifications">Taarifa kaida</string>
-  <string name="ManageRecipientActivity_off">Zima</string>
-  <string name="ManageRecipientActivity_on">Washwa</string>
-  <string name="ManageRecipientActivity_message_description">Ujumbe</string>
+  <!-- Removed by excludeNonTranslatables <string name="ManageRecipientActivity_disappearing_messages">Jumbe zinazotoweka</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ManageRecipientActivity_block">Zuia</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ManageRecipientActivity_unblock">Fungua</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ManageRecipientActivity_view_safety_number">Tazama nambari ya usalama</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ManageRecipientActivity_mute_notifications">Zima arifa</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ManageRecipientActivity_custom_notifications">Taarifa kaida</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ManageRecipientActivity_off">Zima</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ManageRecipientActivity_on">Washwa</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ManageRecipientActivity_message_description">Ujumbe</string> -->
   <!--CustomNotificationsDialogFragment-->
   <string name="CustomNotificationsDialogFragment__custom_notifications">Taarifa kaida</string>
   <string name="CustomNotificationsDialogFragment__messages">Jumbe</string>
@@ -1114,7 +1114,7 @@ nambari yako ya simu</string>
   <!-- Removed by excludeNonTranslatables <string name="log_submit_activity__button_submit">Tuma</string> -->
   <!-- Removed by excludeNonTranslatables <string name="log_submit_activity__button_got_it">Nimeelewa</string> -->
   <!-- Removed by excludeNonTranslatables <string name="log_submit_activity__button_compose_email">Tunga barua pepe</string> -->
-  <string name="log_submit_activity__this_log_will_be_posted_online">Faili hii itawekwa hadharani mkondoni ili wachangiaji watazame, unaweza kuikagua na kuihariri kabla ya kuiwasilisha.</string>
+  <!-- Removed by excludeNonTranslatables <string name="log_submit_activity__this_log_will_be_posted_online">Faili hii itawekwa hadharani mkondoni ili wachangiaji watazame, unaweza kuikagua na kuihariri kabla ya kuiwasilisha.</string> -->
   <!-- Removed by excludeNonTranslatables <string name="log_submit_activity__loading_logs">Inapakia logi</string> -->
   <!-- Removed by excludeNonTranslatables <string name="log_submit_activity__uploading_logs">Inapakia logi</string> -->
   <!-- Removed by excludeNonTranslatables <string name="log_submit_activity__choose_email_app">Chagua program ya barua pepe</string> -->

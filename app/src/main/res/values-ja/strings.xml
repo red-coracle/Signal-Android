@@ -50,9 +50,9 @@
   <string name="DraftDatabase_Draft_video_snippet">(動画)</string>
   <string name="DraftDatabase_Draft_location_snippet">(位置情報)</string>
   <string name="DraftDatabase_Draft_quote_snippet">(返信)</string>
+  <string name="DraftDatabase_Draft_voice_note">(音声メッセージ)</string>
   <!--AttachmentKeyboard-->
   <string name="AttachmentKeyboard_gallery">ギャラリー</string>
-  <string name="AttachmentKeyboard_gif">GIF</string>
   <string name="AttachmentKeyboard_file">ファイル</string>
   <string name="AttachmentKeyboard_contact">連絡先</string>
   <string name="AttachmentKeyboard_location">場所</string>
@@ -203,7 +203,7 @@
   <string name="ConversationActivity_lets_switch_to_signal">メッセージアプリをSignalにしましょう %1$s</string>
   <string name="ConversationActivity_specify_recipient">連絡先を選択してください</string>
   <string name="ConversationActivity_unblock">ブロックを解除します</string>
-  <string name="ConversationActivity_attachment_exceeds_size_limits">添付ファイルのサイズが上限を超えています。</string>
+  <string name="ConversationActivity_attachment_exceeds_size_limits">添付ファイルのサイズが、送信するメッセージタイプに応じた制限を超えています。</string>
   <string name="ConversationActivity_unable_to_record_audio">録音できません！</string>
   <string name="ConversationActivity_you_cant_send_messages_to_this_group">メンバーではなくなったので、このグループにメッセージを送ることはできません。</string>
   <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">このリンクを扱えるアプリがインストールされていません</string>
@@ -239,9 +239,6 @@
   <string name="ConversationActivity_full">満席</string>
   <string name="ConversationActivity_error_sending_media">メディア送信エラー</string>
   <string name="ConversationActivity__reported_as_spam_and_blocked">スパムとして報告してブロックしました。</string>
-  <string name="ConversationActivity_gifs_have_moved">GIFは移動しました</string>
-  <string name="ConversationActivity_look_for_gifs_next_to_emoji_and_stickers">GIFは絵文字やステッカーの隣にあります。</string>
-  <string name="ConversationActivity__gifs_are_now_here">GIFはここです。</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="other">%d件の未読メッセージ</item>
@@ -316,6 +313,7 @@
   <string name="ConversationTypingView__plus_d">+%1$d</string>
   <!--CreateGroupActivity-->
   <string name="CreateGroupActivity_some_contacts_cannot_be_in_legacy_groups">レガシーグループには入れられない連絡先があります。</string>
+  <string name="CreateGroupActivity__select_members">メンバーの選択</string>
   <!--CreateProfileActivity-->
   <string name="CreateProfileActivity__profile">プロフィール</string>
   <string name="CreateProfileActivity_error_setting_profile_photo">プロフィール画像の設定中にエラーが発生しました</string>
@@ -421,6 +419,7 @@
   <string name="AddToGroupActivity_add_to_groups">グループへ追加</string>
   <string name="AddToGroupActivity_this_person_cant_be_added_to_legacy_groups">このユーザーはレガシーグループに追加できません。</string>
   <string name="AddToGroupActivity_add">追加する</string>
+  <string name="AddToGroupActivity_add_to_a_group">グループへの追加</string>
   <!--ChooseNewAdminActivity-->
   <string name="ChooseNewAdminActivity_choose_new_admin">新しい管理者を選択</string>
   <string name="ChooseNewAdminActivity_done">完了</string>
@@ -535,6 +534,7 @@
     <item quantity="other">%3$d人のメンバーを「%2$s」へ追加しますか？</item>
   </plurals>
   <string name="AddMembersActivity__add">追加する</string>
+  <string name="AddMembersActivity__add_members">メンバーの追加</string>
   <!--AddGroupDetailsFragment-->
   <string name="AddGroupDetailsFragment__name_this_group">このグループに名前を付ける</string>
   <string name="AddGroupDetailsFragment__create_group">グループ作成</string>
@@ -570,8 +570,8 @@
   <string name="ManageGroupActivity_member_requests_and_invites">メンバー申請と招待</string>
   <string name="ManageGroupActivity_add_members">メンバーを追加</string>
   <string name="ManageGroupActivity_edit_group_info">グループの情報を編集</string>
-  <string name="ManageGroupActivity_who_can_add_new_members">メンバーを追加できる人は？</string>
-  <string name="ManageGroupActivity_who_can_edit_this_groups_info">グループ情報を編集できる人は？</string>
+  <string name="ManageGroupActivity_who_can_add_new_members">メンバーを追加できるユーザーは？</string>
+  <string name="ManageGroupActivity_who_can_edit_this_groups_info">グループ情報を編集できるユーザーは？</string>
   <string name="ManageGroupActivity_group_link">グループリンク</string>
   <string name="ManageGroupActivity_block_group">グループをブロック</string>
   <string name="ManageGroupActivity_unblock_group">グループのブロック解除</string>
@@ -622,31 +622,10 @@
   <string name="ManageProfileFragment_your_username">あなたのユーザー名</string>
   <string name="ManageProfileFragment_failed_to_set_avatar">アバターの設定に失敗しました</string>
   <!--ManageRecipientActivity-->
-  <string name="ManageRecipientActivity_add_to_system_contacts">システムの連絡先に追加</string>
-  <string name="ManageRecipientActivity_this_person_is_in_your_contacts">このユーザーは連絡先に入っています</string>
-  <string name="ManageRecipientActivity_disappearing_messages">消えるメッセージ</string>
-  <string name="ManageRecipientActivity_chat_color">チャットの色</string>
-  <string name="ManageRecipientActivity_chat_wallpaper">チャットの壁紙</string>
-  <string name="ManageRecipientActivity_block">ブロックする</string>
-  <string name="ManageRecipientActivity_unblock">ブロックを解除する</string>
-  <string name="ManageRecipientActivity_view_safety_number">安全番号を表示</string>
-  <string name="ManageRecipientActivity_mute_notifications">通知をミュート</string>
-  <string name="ManageRecipientActivity_custom_notifications">カスタム通知</string>
-  <string name="ManageRecipientActivity_until_s">%1$sまで</string>
-  <string name="ManageRecipientActivity_always">常時</string>
-  <string name="ManageRecipientActivity_off">オフ</string>
-  <string name="ManageRecipientActivity_on">オン</string>
-  <string name="ManageRecipientActivity_add_to_a_group">グループへ追加</string>
-  <string name="ManageRecipientActivity_view_all_groups">すべてのグループを表示</string>
-  <string name="ManageRecipientActivity_see_all">すべて表示</string>
   <string name="ManageRecipientActivity_no_groups_in_common">共通のグループ なし</string>
   <plurals name="ManageRecipientActivity_d_groups_in_common">
     <item quantity="other">共通のグループ %d件</item>
   </plurals>
-  <string name="ManageRecipientActivity_message_description">メッセージ</string>
-  <string name="ManageRecipientActivity_voice_call_description">音声通話</string>
-  <string name="ManageRecipientActivity_insecure_voice_call_description">安全でない音声通話</string>
-  <string name="ManageRecipientActivity_video_call_description">ビデオ通話</string>
   <plurals name="GroupMemberList_invited">
     <item quantity="other">%1$s は%2$d人招待しました</item>
   </plurals>
@@ -662,11 +641,11 @@
   <string name="CustomNotificationsDialogFragment__disabled">無効</string>
   <string name="CustomNotificationsDialogFragment__default">既定</string>
   <!--ShareableGroupLinkDialogFragment-->
-  <string name="ShareableGroupLinkDialogFragment__shareable_group_link">共有グループリンク</string>
+  <string name="ShareableGroupLinkDialogFragment__shareable_group_link">グループリンク</string>
   <string name="ShareableGroupLinkDialogFragment__manage_and_share">管理と共有</string>
   <string name="ShareableGroupLinkDialogFragment__group_link">グループリンク</string>
-  <string name="ShareableGroupLinkDialogFragment__share">共有する</string>
-  <string name="ShareableGroupLinkDialogFragment__reset_link">リンクをリセットする</string>
+  <string name="ShareableGroupLinkDialogFragment__share">共有</string>
+  <string name="ShareableGroupLinkDialogFragment__reset_link">リンクをリセット</string>
   <string name="ShareableGroupLinkDialogFragment__member_requests">メンバー申請</string>
   <string name="ShareableGroupLinkDialogFragment__approve_new_members">新メンバーを承認制にする</string>
   <string name="ShareableGroupLinkDialogFragment__require_an_admin_to_approve_new_members_joining_via_the_group_link">グループリンク経由での新メンバー参加時に、管理者の承認を要求します。</string>
@@ -781,6 +760,7 @@
   <string name="MediaOverviewActivity_audio">音声</string>
   <string name="MediaOverviewActivity_video">動画</string>
   <string name="MediaOverviewActivity_image">画像</string>
+  <string name="MediaOverviewActivity_voice_message">音声メッセージ</string>
   <string name="MediaOverviewActivity_sent_by_s">%1$s が送信</string>
   <string name="MediaOverviewActivity_sent_by_you">あなたが送信</string>
   <string name="MediaOverviewActivity_sent_by_s_to_s">%1$s が %2$s に送信</string>
@@ -797,6 +777,7 @@
   <string name="Megaphones_invite_friends">友達を招待しましょう</string>
   <string name="Megaphones_use_sms">SMSを使用する</string>
   <string name="Megaphones_appearance">デザイン</string>
+  <string name="Megaphones_add_photo">画像を追加</string>
   <!--NotificationBarManager-->
   <string name="NotificationBarManager_signal_call_in_progress">Signal通話中</string>
   <string name="NotificationBarManager__establishing_signal_call">Signal通話を接続しています</string>
@@ -820,7 +801,9 @@
   <string name="MediaPickerActivity__menu_open_camera">カメラを開く</string>
   <!--MediaSendActivity-->
   <string name="MediaSendActivity_add_a_caption">キャプションを追加…</string>
-  <string name="MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit">アイテムはサイズの上限を超えたため削除されました。</string>
+  <string name="MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit">サイズ制限を超えたアイテムが削除されました。</string>
+  <string name="MediaSendActivity_an_item_was_removed_because_it_had_an_unknown_type">タイプの不明なアイテムが削除されました。</string>
+  <string name="MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit_or_had_an_unknown_type">サイズ制限を超えていたり、タイプの不明なアイテムが削除されました。</string>
   <string name="MediaSendActivity_camera_unavailable">カメラは利用できません。</string>
   <string name="MediaSendActivity_message_to_s">%s へのメッセージ</string>
   <string name="MediaSendActivity_message">メッセージ</string>
@@ -835,6 +818,9 @@
   <!--MediaRepository-->
   <string name="MediaRepository_all_media">すべてのメディア</string>
   <string name="MediaRepository__camera">カメラ</string>
+  <!--MessageDecryptionUtil-->
+  <string name="MessageDecryptionUtil_failed_to_decrypt_message">メッセージの復号に失敗しました</string>
+  <string name="MessageDecryptionUtil_tap_to_send_a_debug_log">タップしてデバッグログを送信します</string>
   <!--MessageRecord-->
   <string name="MessageRecord_unknown">不明</string>
   <string name="MessageRecord_message_encrypted_with_a_legacy_protocol_version_that_is_no_longer_supported">受信したメッセージはサポート外の古いSignalで暗号化されています。送信者にSignalをアップデートして再送するよう依頼してください。</string>
@@ -1116,6 +1102,8 @@
   <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">メッセージ送受信のため認証してください</string>
   <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Signalがスパムを回避するために、認証を完了していください。</string>
   <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">認証後は、メッセージの送受信を再開できます。保留中のメッセージは、自動で送信されます。</string>
+  <!--Recipient-->
+  <string name="Recipient_you">あなた</string>
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">ブロックする</string>
   <string name="RecipientPreferenceActivity_unblock">ブロックを解除する</string>
@@ -1287,7 +1275,7 @@
   <string name="SubmitDebugLogActivity_success">成功しました！</string>
   <string name="SubmitDebugLogActivity_copy_this_url_and_add_it_to_your_issue">このURLをコピーしてバグレポートやサポートメールに貼り付けてください:\n\n<b>%1$s</b></string>
   <string name="SubmitDebugLogActivity_share">共有</string>
-  <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online">このログはコントリビュータに公開されますが、アップロードする前に内容を確認したり編集することができます。</string>
+  <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online_for_contributors">このログはコントリビュータにオンラインで公開されます。アップロードする前に内容を確認できます。</string>
   <!--SupportEmailUtil-->
   <string name="SupportEmailUtil_filter">フィルタ:</string>
   <string name="SupportEmailUtil_device_info">Device info:</string>
@@ -1575,6 +1563,7 @@
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">一番下までスクロール</string>
   <!--safety_number_change_dialog-->
   <string name="safety_number_change_dialog__safety_number_changes">安全番号の変更</string>
+  <string name="safety_number_change_dialog__accept">承認する</string>
   <string name="safety_number_change_dialog__send_anyway">とにかく送信する</string>
   <string name="safety_number_change_dialog__call_anyway">とにかく発信する</string>
   <string name="safety_number_change_dialog__join_call">通話に参加する</string>
@@ -1646,8 +1635,6 @@
   <string name="giphy_activity_toolbar__search_gifs">GiFを検索</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">何も見つかりませんでした</string>
-  <!--log_submit_activity-->
-  <string name="log_submit_activity__this_log_will_be_posted_online">このログはコントリビュータに公開されますが、提出する前に内容を確認したり編集することができます。</string>
   <!--database_migration_activity-->
   <string name="database_migration_activity__would_you_like_to_import_your_existing_text_messages">既存のテキストメッセージをSignalの暗号化されたデータベースにインポートしますか？</string>
   <string name="database_migration_activity__the_default_system_database_will_not_be_modified">既定のシステムデータベースは変更や改ざんされません。</string>
@@ -1733,6 +1720,7 @@
   <string name="message_details_recipient_header__delivered_to">配信先</string>
   <string name="message_details_recipient_header__read_by">既読者</string>
   <string name="message_details_recipient_header__not_sent">未送信</string>
+  <string name="message_details_recipient_header__viewed">閲覧済み</string>
   <!--message_Details_recipient-->
   <string name="message_details_recipient__failed_to_send">送信に失敗しました</string>
   <string name="message_details_recipient__new_safety_number">新しい安全番号</string>
@@ -1787,13 +1775,14 @@
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__symbols">記号</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__flags">旗</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__emoticons">顔文字</string>
+  <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">検索結果はありません</string>
   <!--arrays.xml-->
   <string name="arrays__use_default">既定を使う</string>
   <string name="arrays__use_custom">カスタムを使う</string>
-  <string name="arrays__mute_for_one_hour">1時間ミュート</string>
-  <string name="arrays__mute_for_eight_hours">8時間ミュート</string>
-  <string name="arrays__mute_for_one_day">1日間ミュート</string>
-  <string name="arrays__mute_for_seven_days">7日間ミュート</string>
+  <string name="arrays__mute_for_one_hour">1時間</string>
+  <string name="arrays__mute_for_eight_hours">8時間</string>
+  <string name="arrays__mute_for_one_day">1日間</string>
+  <string name="arrays__mute_for_seven_days">7日間</string>
   <string name="arrays__always">常時</string>
   <string name="arrays__settings_default">既定の設定</string>
   <string name="arrays__enabled">有効</string>
@@ -1826,9 +1815,9 @@
   <string name="preferences__pref_enter_sends_title">エンターキーで送信する</string>
   <string name="preferences__pressing_the_enter_key_will_send_text_messages">エンターキーでテキストメッセージを送信します</string>
   <string name="preferences__pref_use_address_book_photos">アドレス帳の写真を使用する</string>
-  <string name="preferences__display_contact_photos_from_your_address_book_if_available">可能であれば連絡先の表示にアドレス帳の写真を使用します</string>
+  <string name="preferences__display_contact_photos_from_your_address_book_if_available">可能であれば、連絡先の表示にアドレス帳の写真を使用します。</string>
   <string name="preferences__generate_link_previews">リンクプレビューを生成する</string>
-  <string name="preferences__retrieve_link_previews_from_websites_for_messages">送信メッセージのリンクプレビューをウェブサイトから直接取得します。</string>
+  <string name="preferences__retrieve_link_previews_from_websites_for_messages">送信メッセージのリンクプレビューを、ウェブサイトから直接取得します。</string>
   <string name="preferences__choose_identity">アイデンティティを選択</string>
   <string name="preferences__choose_your_contact_entry_from_the_contacts_list">連絡先リストからあなたの連絡先を選んでください。</string>
   <string name="preferences__change_passphrase">パスフレーズを変更</string>
@@ -1836,8 +1825,8 @@
   <string name="preferences__enable_passphrase">パスフレーズでの画面ロックを有効にする</string>
   <string name="preferences__lock_signal_and_message_notifications_with_a_passphrase">パスフレーズで画面と通知をロックします</string>
   <string name="preferences__screen_security">画面のセキュリティ</string>
-  <string name="preferences__disable_screen_security_to_allow_screen_shots">「最近使ったアプリ」やアプリ内でのスクリーンショットをブロックします</string>
-  <string name="preferences__auto_lock_signal_after_a_specified_time_interval_of_inactivity">指定した無操作時間経過後にSignalを自動でロックします</string>
+  <string name="preferences__disable_screen_security_to_allow_screen_shots">「最近使ったアプリ」やアプリ内でのスクリーンショットをブロックします。</string>
+  <string name="preferences__auto_lock_signal_after_a_specified_time_interval_of_inactivity">指定した無操作時間経過後にSignalを自動でロックします。</string>
   <string name="preferences__inactivity_timeout_passphrase">無操作タイムアウトのパスフレーズ</string>
   <string name="preferences__inactivity_timeout_interval">無操作タイムアウトの間隔</string>
   <string name="preferences__notifications">通知</string>
@@ -1954,7 +1943,7 @@
   <string name="preferences_data_and_storage__never">なし</string>
   <string name="preferences_data_and_storage__wifi_and_mobile_data">Wi-Fiとモバイルデータ</string>
   <string name="preferences_data_and_storage__mobile_data_only">モバイルデータのみ</string>
-  <string name="preference_data_and_storage__using_less_data_may_improve_calls_on_bad_networks">データ通信量を抑えて低品質なネットワーク上での通話を改善します</string>
+  <string name="preference_data_and_storage__using_less_data_may_improve_calls_on_bad_networks">データ通信量を抑えて、低品質なネットワーク上での通話を改善します。</string>
   <string name="preferences_notifications__messages">メッセージ</string>
   <string name="preferences_notifications__events">イベント</string>
   <string name="preferences_notifications__in_chat_sounds">チャット中の着信音</string>
@@ -1999,11 +1988,15 @@
   <string name="PaymentsHomeFragment__introducing_payments">支払い機能のご紹介 (ベータ)</string>
   <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Signalで、プライバシーを考慮した仮想通貨MobileCoinを利用できます。利用するには機能を有効化してください。</string>
   <string name="PaymentsHomeFragment__activate_payments">支払い機能を有効化</string>
+  <string name="PaymentsHomeFragment__activating_payments">支払い機能を有効化しています…</string>
+  <string name="PaymentsHomeFragment__recent_activity">最近のアクティビティ</string>
   <string name="PaymentsHomeFragment__see_all">すべて表示</string>
+  <string name="PaymentsHomeFragment__add_funds">入金</string>
   <string name="PaymentsHomeFragment__send">送信する</string>
   <string name="PaymentsHomeFragment__sent_s">%1$s を送付しました</string>
   <string name="PaymentsHomeFragment__received_s">%1$s を受け取りました</string>
   <string name="PaymentsHomeFragment__currency_conversion">通貨換算</string>
+  <string name="PaymentsHomeFragment__deactivate_payments">支払い機能を停止</string>
   <string name="PaymentsHomeFragment__recovery_phrase">リカバリーフレーズ</string>
   <string name="PaymentsHomeFragment__help">ヘルプ</string>
   <string name="PaymentsHomeFragment__sent_payment">送金済み</string>
@@ -2011,6 +2004,7 @@
   <string name="PaymentsHomeFragment__processing_payment">支払いを処理しています</string>
   <string name="PaymentsHomeFragment__unknown_amount">---</string>
   <string name="PaymentsHomeFragment__currency_conversion_not_available">通貨換算は利用できません</string>
+  <string name="PaymentsHomeFragment__cant_display_currency_conversion">通貨換算を表示できません。携帯電話のインターネット接続を確認して、再度試してください。</string>
   <string name="PaymentsHomeFragment__deactivate_payments_question">支払い機能を停止しますか？</string>
   <string name="PaymentsHomeFragment__deactivate">支払い機能を停止</string>
   <string name="PaymentsHomeFragment__continue">続ける</string>
@@ -2019,6 +2013,7 @@
   <string name="PaymentsHomeFragment__activate">同意</string>
   <string name="PaymentsHomeFragment__payments_not_available">Signalの支払い機能はもう利用できません。残金は取引所に移行できますが、送金や入金は今後できません。</string>
   <!--PaymentsAddMoneyFragment-->
+  <string name="PaymentsAddMoneyFragment__add_funds">入金</string>
   <string name="PaymentsAddMoneyFragment__your_wallet_address">あなたのウォレットアドレス</string>
   <string name="PaymentsAddMoneyFragment__copy">コピー</string>
   <string name="PaymentsAddMoneyFragment__copied_to_clipboard">クリップボードにコピーしました</string>
@@ -2028,6 +2023,7 @@
   <string name="PaymentsDetailsFragment__status">状態</string>
   <string name="PaymentsDetailsFragment__processing_payment">支払いを処理しています…</string>
   <string name="PaymentsDetailsFragment__network_fee">ネットワーク料金</string>
+  <string name="PaymentsDetailsFragment__sent_by">送金者</string>
   <string name="PaymentsDetailsFragment__to">宛先</string>
   <string name="PaymentsDetailsFragment__from">差出人</string>
   <string name="PaymentsDetailsFragment__information">金額と時間を含む取引詳細は、MobileCoinの元帳の一部です。</string>
@@ -2356,7 +2352,7 @@
   <string name="PhoneNumberPrivacy_everyone_see_description">あなたの電話番号は、あなたがメッセージを送信したすべての相手とグループに表示されます。</string>
   <string name="PhoneNumberPrivacy_everyone_find_description">あなたの電話番号を連絡先に登録している人には、あなたがSignalの連絡先として表示されます。他の人は検索であなたを見つけることができます。</string>
   <string name="preferences_app_protection__screen_lock">画面ロック</string>
-  <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">SignalをAndroidの画面ロックや指紋認証でロックします</string>
+  <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">SignalをAndroidの画面ロックや指紋認証でロックします。</string>
   <string name="preferences_app_protection__screen_lock_inactivity_timeout">画面ロックまでの無操作時間</string>
   <string name="preferences_app_protection__signal_pin">Signal PIN</string>
   <string name="preferences_app_protection__create_a_pin">PINを作成する</string>
@@ -2503,7 +2499,7 @@
   <string name="RecipientBottomSheet_add_to_a_group">グループへ追加</string>
   <string name="RecipientBottomSheet_add_to_another_group">他のグループに追加</string>
   <string name="RecipientBottomSheet_view_safety_number">安全番号を表示</string>
-  <string name="RecipientBottomSheet_make_group_admin">グループ管理者にする</string>
+  <string name="RecipientBottomSheet_make_admin">管理者にする</string>
   <string name="RecipientBottomSheet_remove_as_admin">管理者から外す</string>
   <string name="RecipientBottomSheet_remove_from_group">グループから削除</string>
   <string name="RecipientBottomSheet_message_description">メッセージ</string>
@@ -2528,7 +2524,7 @@
   <!--GroupLinkBottomSheetDialogFragment-->
   <string name="GroupLinkBottomSheet_share_hint_requiring_approval">誰でもこのリンクから、グループの名前やアイコンを見たり、参加を申請できます。信頼できる人と共有してください。</string>
   <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">誰でもこのリンクから、グループの名前やアイコンを見たり、グループに参加できます。信頼できる人と共有してください。</string>
-  <string name="GroupLinkBottomSheet_share_via_signal">Signal経由で共有する</string>
+  <string name="GroupLinkBottomSheet_share_via_signal">Signal経由で共有</string>
   <string name="GroupLinkBottomSheet_copy">コピー</string>
   <string name="GroupLinkBottomSheet_qr_code">QRコード</string>
   <string name="GroupLinkBottomSheet_share">共有</string>
@@ -2690,6 +2686,7 @@
   <string name="PaymentNotificationsView__view">表示する</string>
   <!--UnreadPayments-->
   <!--CanNotSendPaymentDialog-->
+  <string name="CanNotSendPaymentDialog__cant_send_payment">送金できません</string>
   <string name="CanNotSendPaymentDialog__to_send_a_payment_to_this_user">送金するには、このユーザーがあなたのメッセージリクエストを受け取る必要があります。リクエストを作成するため、先にメッセージを送ってください。</string>
   <string name="CanNotSendPaymentDialog__send_a_message">メッセージ送信</string>
   <!--GroupsInCommonMessageRequest-->
@@ -2698,7 +2695,7 @@
   <string name="GroupsInCommonMessageRequest__about_message_requests">メッセージ申請について</string>
   <string name="GroupsInCommonMessageRequest__okay">OK</string>
   <string name="ChatColorSelectionFragment__heres_a_preview_of_the_chat_color">チャットの色のプレビューです。</string>
-  <string name="ChatColorSelectionFragment__the_color_is_visible_to_only_you">この色はあなたたけに表示されます。</string>
+  <string name="ChatColorSelectionFragment__the_color_is_visible_to_only_you">この色はあなただけに表示されます。</string>
   <!--GroupDescriptionDialog-->
   <string name="GroupDescriptionDialog__group_description">グループの説明</string>
   <!--QualitySelectorBottomSheetDialog-->
@@ -2729,7 +2726,7 @@
   <string name="PrivacySettingsFragment__messaging">メッセージ送受信</string>
   <string name="PrivacySettingsFragment__disappearing_messages">消えるメッセージ</string>
   <string name="PrivacySettingsFragment__app_security">アプリのセキュリティ</string>
-  <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">「最近使ったアプリ」やアプリ内でのスクリーンショットをブロックします</string>
+  <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">「最近使ったアプリ」やアプリ内でのスクリーンショットをブロックします。</string>
   <string name="PrivacySettingsFragment__signal_message_and_calls">Signalメッセージと通話, 通話を常に中継, 送信者の秘匿化</string>
   <string name="PrivacySettingsFragment__default_timer_for_new_changes">新規チャットの既定タイマー</string>
   <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">今後新しく始めるチャットについて、消えるメッセージのタイマーの既定値を設定します。</string>
@@ -2776,6 +2773,7 @@
   <plurals name="ChatColorSelectionFragment__this_custom_color_is_used">
     <item quantity="other">この色は%1$d件のチャットで使用されています。すべてのチャットで削除しますか？</item>
   </plurals>
+  <string name="ChatColorSelectionFragment__delete_chat_color">チャットの色を削除しますか？</string>
   <!--CustomChatColorCreatorFragment-->
   <string name="CustomChatColorCreatorFragment__solid">無地</string>
   <string name="CustomChatColorCreatorFragment__gradient">グラデーション</string>
@@ -2802,6 +2800,11 @@
   <string name="ChatColorsMegaphone__we_switched_up_chat_colors">チャットの色のオプションを増やし、チャットを読みやすくしました。</string>
   <string name="ChatColorsMegaphone__appearance">デザイン</string>
   <string name="ChatColorsMegaphone__not_now">あとで</string>
+  <!--AddAProfilePhotoMegaphone-->
+  <string name="AddAProfilePhotoMegaphone__add_a_profile_photo">プロフィール画像を追加しよう</string>
+  <string name="AddAProfilePhotoMegaphone__choose_a_look_and_color">見た目や色を選んだり、イニシャルをカスタマイズできます。</string>
+  <string name="AddAProfilePhotoMegaphone__not_now">あとで</string>
+  <string name="AddAProfilePhotoMegaphone__add_photo">画像を追加</string>
   <!--KeyboardPagerFragment-->
   <string name="KeyboardPagerFragment_emoji">絵文字</string>
   <string name="KeyboardPagerFragment_open_emoji_search">絵文字検索を開く</string>
@@ -2819,5 +2822,86 @@
   <string name="StickerSearchDialogFragment_no_results_found">検索結果はありません</string>
   <string name="EmojiSearchFragment__no_results_found">検索結果はありません</string>
   <string name="NotificationsSettingsFragment__unknown_ringtone">不明な着信音</string>
+  <!--ConversationSettingsFragment-->
+  <string name="ConversationSettingsFragment__send_message">メッセージを送信</string>
+  <string name="ConversationSettingsFragment__start_video_call">ビデオ通話を開始</string>
+  <string name="ConversationSettingsFragment__start_audio_call">音声通話を開始</string>
+  <string name="ConversationSettingsFragment__message">メッセージ</string>
+  <string name="ConversationSettingsFragment__video">動画</string>
+  <string name="ConversationSettingsFragment__audio">音声</string>
+  <string name="ConversationSettingsFragment__call">発信</string>
+  <string name="ConversationSettingsFragment__mute">ミュート</string>
+  <string name="ConversationSettingsFragment__muted">ミュート中</string>
+  <string name="ConversationSettingsFragment__search">検索</string>
+  <string name="ConversationSettingsFragment__disappearing_messages">消えるメッセージ</string>
+  <string name="ConversationSettingsFragment__sounds_and_notifications">音と通知</string>
+  <string name="ConversationSettingsFragment__contact_details">連絡先の詳細</string>
+  <string name="ConversationSettingsFragment__view_safety_number">安全番号を表示</string>
+  <string name="ConversationSettingsFragment__block">ブロック</string>
+  <string name="ConversationSettingsFragment__block_group">グループをブロック</string>
+  <string name="ConversationSettingsFragment__unblock">ブロックを解除</string>
+  <string name="ConversationSettingsFragment__unblock_group">グループのブロックを解除</string>
+  <string name="ConversationSettingsFragment__add_to_a_group">グループへ追加</string>
+  <string name="ConversationSettingsFragment__see_all">すべて表示</string>
+  <string name="ConversationSettingsFragment__add_members">メンバーの追加</string>
+  <string name="ConversationSettingsFragment__permissions">アクセス許可</string>
+  <string name="ConversationSettingsFragment__requests_and_invites">申請と招待</string>
+  <string name="ConversationSettingsFragment__group_link">グループリンク</string>
+  <string name="ConversationSettingsFragment__add_as_a_contact">連絡先に追加</string>
+  <string name="ConversationSettingsFragment__unmute">ミュートを解除</string>
+  <string name="ConversationSettingsFragment__conversation_muted_until_s">チャットは%1$sまでミュートされます</string>
+  <string name="ConversationSettingsFragment__conversation_muted_forever">チャットは常にミュートされます</string>
+  <string name="ConversationSettingsFragment__copied_phone_number_to_clipboard">電話番号をクリップボードにコピーしました。</string>
+  <string name="ConversationSettingsFragment__phone_number">電話番号</string>
+  <!--PermissionsSettingsFragment-->
+  <string name="PermissionsSettingsFragment__add_members">メンバーの追加</string>
+  <string name="PermissionsSettingsFragment__edit_group_info">グループ情報を編集</string>
+  <string name="PermissionsSettingsFragment__all_members">すべてのメンバー</string>
+  <string name="PermissionsSettingsFragment__only_admins">管理者のみ</string>
+  <string name="PermissionsSettingsFragment__who_can_add_new_members">メンバーを追加できるユーザーは？</string>
+  <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">グループ情報を編集できるユーザーは？</string>
+  <!--SoundsAndNotificationsSettingsFragment-->
+  <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">通知をミュート</string>
+  <string name="SoundsAndNotificationsSettingsFragment__not_muted">ミュートしていません</string>
+  <string name="SoundsAndNotificationsSettingsFragment__muted_until_s">%1$sまでミュート中</string>
+  <string name="SoundsAndNotificationsSettingsFragment__mentions">メンション</string>
+  <string name="SoundsAndNotificationsSettingsFragment__always_notify">常に通知する</string>
+  <string name="SoundsAndNotificationsSettingsFragment__do_not_notify">通知しない</string>
+  <string name="SoundsAndNotificationsSettingsFragment__custom_notifications">カスタム通知</string>
+  <!--StickerKeyboard-->
+  <string name="StickerKeyboard__recently_used">最近使ったもの</string>
+  <!--PlaybackSpeedToggleTextView-->
+  <string name="PlaybackSpeedToggleTextView__p5x">0.5x</string>
+  <string name="PlaybackSpeedToggleTextView__1x">1x</string>
+  <string name="PlaybackSpeedToggleTextView__2x">2x</string>
+  <!--PaymentRecipientSelectionFragment-->
+  <string name="PaymentRecipientSelectionFragment__new_payment">新しい送金</string>
+  <!--NewConversationActivity-->
+  <string name="NewConversationActivity__new_message">新規メッセージ</string>
+  <!--ContactFilterView-->
+  <string name="ContactFilterView__search_name_or_number">名前か電話番号で検索</string>
+  <!--VoiceNotePlayerView-->
+  <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <!--AvatarPickerFragment-->
+  <string name="AvatarPickerFragment__avatar_preview">アバターのプレビュー</string>
+  <string name="AvatarPickerFragment__camera">カメラ</string>
+  <string name="AvatarPickerFragment__take_a_picture">写真を撮影</string>
+  <string name="AvatarPickerFragment__choose_a_photo">画像を選択</string>
+  <string name="AvatarPickerFragment__photo">写真</string>
+  <string name="AvatarPickerFragment__text">テキスト</string>
+  <string name="AvatarPickerFragment__save">保存</string>
+  <string name="AvatarPickerFragment__select_an_avatar">アバターを選択してください</string>
+  <string name="AvatarPickerFragment__clear_avatar">アバターを削除</string>
+  <string name="AvatarPickerFragment__edit">編集</string>
+  <string name="AvatarPickerRepository__failed_to_save_avatar">アバターの保存に失敗しました</string>
+  <!--TextAvatarCreationFragment-->
+  <string name="TextAvatarCreationFragment__preview">プレビュー</string>
+  <string name="TextAvatarCreationFragment__done">完了</string>
+  <string name="TextAvatarCreationFragment__text">テキスト</string>
+  <string name="TextAvatarCreationFragment__color">色</string>
+  <!--VectorAvatarCreationFragment-->
+  <!--ContactSelectionListItem-->
+  <string name="ContactSelectionListItem__sms">SMS</string>
+  <string name="ContactSelectionListItem__dot_s">· %1$s</string>
   <!--EOF-->
 </resources>

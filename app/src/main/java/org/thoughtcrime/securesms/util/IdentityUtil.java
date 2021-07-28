@@ -9,7 +9,7 @@ import androidx.annotation.StringRes;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.crypto.DatabaseSessionLock;
+import org.thoughtcrime.securesms.crypto.ReentrantSessionLock;
 import org.thoughtcrime.securesms.crypto.storage.TextSecureIdentityKeyStore;
 import org.thoughtcrime.securesms.crypto.storage.TextSecureSessionStore;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
@@ -74,7 +74,7 @@ public final class IdentityUtil {
         if (groupRecord.getMembers().contains(recipient.getId()) && groupRecord.isActive() && !groupRecord.isMms()) {
 
           if (remote) {
-            IncomingTextMessage incoming = new IncomingTextMessage(recipient.getId(), 1, time, -1, null, Optional.of(groupRecord.getId()), 0, false, null);
+            IncomingTextMessage incoming = new IncomingTextMessage(recipient.getId(), 1, time, -1, time, null, Optional.of(groupRecord.getId()), 0, false, null);
 
             if (verified) incoming = new IncomingIdentityVerifiedMessage(incoming);
             else          incoming = new IncomingIdentityDefaultMessage(incoming);
@@ -96,7 +96,7 @@ public final class IdentityUtil {
     }
 
     if (remote) {
-      IncomingTextMessage incoming = new IncomingTextMessage(recipient.getId(), 1, time, -1, null, Optional.absent(), 0, false, null);
+      IncomingTextMessage incoming = new IncomingTextMessage(recipient.getId(), 1, time, -1, time, null, Optional.absent(), 0, false, null);
 
       if (verified) incoming = new IncomingIdentityVerifiedMessage(incoming);
       else          incoming = new IncomingIdentityDefaultMessage(incoming);
@@ -125,7 +125,7 @@ public final class IdentityUtil {
 
       while ((groupRecord = reader.getNext()) != null) {
         if (groupRecord.getMembers().contains(recipientId) && groupRecord.isActive()) {
-          IncomingTextMessage           incoming    = new IncomingTextMessage(recipientId, 1, time, time, null, Optional.of(groupRecord.getId()), 0, false, null);
+          IncomingTextMessage           incoming    = new IncomingTextMessage(recipientId, 1, time, time, time, null, Optional.of(groupRecord.getId()), 0, false, null);
           IncomingIdentityUpdateMessage groupUpdate = new IncomingIdentityUpdateMessage(incoming);
 
           smsDatabase.insertMessageInbox(groupUpdate);
@@ -133,7 +133,7 @@ public final class IdentityUtil {
       }
     }
 
-    IncomingTextMessage           incoming         = new IncomingTextMessage(recipientId, 1, time, -1, null, Optional.absent(), 0, false, null);
+    IncomingTextMessage           incoming         = new IncomingTextMessage(recipientId, 1, time, -1, time, null, Optional.absent(), 0, false, null);
     IncomingIdentityUpdateMessage individualUpdate = new IncomingIdentityUpdateMessage(incoming);
     Optional<InsertResult>        insertResult     = smsDatabase.insertMessageInbox(individualUpdate);
 
@@ -143,7 +143,7 @@ public final class IdentityUtil {
   }
 
   public static void saveIdentity(Context context, String user, IdentityKey identityKey) {
-    try(SignalSessionLock.Lock unused = DatabaseSessionLock.INSTANCE.acquire()) {
+    try(SignalSessionLock.Lock unused = ReentrantSessionLock.INSTANCE.acquire()) {
       IdentityKeyStore      identityKeyStore = new TextSecureIdentityKeyStore(context);
       SessionStore          sessionStore     = new TextSecureSessionStore(context);
       SignalProtocolAddress address          = new SignalProtocolAddress(user, 1);
@@ -160,7 +160,7 @@ public final class IdentityUtil {
   }
 
   public static void processVerifiedMessage(Context context, VerifiedMessage verifiedMessage) {
-    try(SignalSessionLock.Lock unused = DatabaseSessionLock.INSTANCE.acquire()) {
+    try(SignalSessionLock.Lock unused = ReentrantSessionLock.INSTANCE.acquire()) {
       IdentityDatabase         identityDatabase = DatabaseFactory.getIdentityDatabase(context);
       Recipient                recipient        = Recipient.externalPush(context, verifiedMessage.getDestination());
       Optional<IdentityRecord> identityRecord   = identityDatabase.getIdentity(recipient.getId());

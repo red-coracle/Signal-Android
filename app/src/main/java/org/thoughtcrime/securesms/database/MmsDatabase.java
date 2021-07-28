@@ -47,6 +47,7 @@ import org.thoughtcrime.securesms.database.documents.NetworkFailureList;
 import org.thoughtcrime.securesms.database.helpers.SQLCipherOpenHelper;
 import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.Mention;
+import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.NotificationMmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.Quote;
@@ -125,44 +126,26 @@ public class MmsDatabase extends MessageDatabase {
 
   public  static final String VIEW_ONCE       = "reveal_duration";
 
-  public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + ID                     + " INTEGER PRIMARY KEY, " +
+  public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                                                                   THREAD_ID              + " INTEGER, " +
                                                                                   DATE_SENT              + " INTEGER, " +
                                                                                   DATE_RECEIVED          + " INTEGER, " +
                                                                                   DATE_SERVER            + " INTEGER DEFAULT -1, " +
                                                                                   MESSAGE_BOX            + " INTEGER, " +
                                                                                   READ                   + " INTEGER DEFAULT 0, " +
-                                                                                  "m_id"                 + " TEXT, " +
-                                                                                  "sub"                  + " TEXT, " +
-                                                                                  "sub_cs"               + " INTEGER, " +
                                                                                   BODY                   + " TEXT, " +
                                                                                   PART_COUNT             + " INTEGER, " +
-                                                                                  "ct_t"                 + " TEXT, " +
                                                                                   CONTENT_LOCATION       + " TEXT, " +
                                                                                   RECIPIENT_ID           + " INTEGER, " +
                                                                                   ADDRESS_DEVICE_ID      + " INTEGER, " +
                                                                                   EXPIRY                 + " INTEGER, " +
-                                                                                  "m_cls"                + " TEXT, " +
                                                                                   MESSAGE_TYPE           + " INTEGER, " +
-                                                                                  "v"                    + " INTEGER, " +
                                                                                   MESSAGE_SIZE           + " INTEGER, " +
-                                                                                  "pri"                  + " INTEGER, " +
-                                                                                  "rr"                   + " INTEGER, " +
-                                                                                  "rpt_a"                + " INTEGER, " +
-                                                                                  "resp_st"              + " INTEGER, " +
                                                                                   STATUS                 + " INTEGER, " +
                                                                                   TRANSACTION_ID         + " TEXT, " +
-                                                                                  "retr_st"              + " INTEGER, " +
-                                                                                  "retr_txt"             + " TEXT, " +
-                                                                                  "retr_txt_cs"          + " INTEGER, " +
-                                                                                  "read_status"          + " INTEGER, " +
-                                                                                  "ct_cls"               + " INTEGER, " +
-                                                                                  "resp_txt"             + " TEXT, " +
-                                                                                  "d_tm"                 + " INTEGER, " +
                                                                                   DELIVERY_RECEIPT_COUNT + " INTEGER DEFAULT 0, " +
                                                                                   MISMATCHED_IDENTITIES  + " TEXT DEFAULT NULL, " +
                                                                                   NETWORK_FAILURE        + " TEXT DEFAULT NULL," +
-                                                                                  "d_rpt"                + " INTEGER, " +
                                                                                   SUBSCRIPTION_ID        + " INTEGER DEFAULT -1, " +
                                                                                   EXPIRES_IN             + " INTEGER DEFAULT 0, " +
                                                                                   EXPIRE_STARTED         + " INTEGER DEFAULT 0, " +
@@ -188,11 +171,9 @@ public class MmsDatabase extends MessageDatabase {
                                                                                   SERVER_GUID            + " TEXT DEFAULT NULL);";
 
   public static final String[] CREATE_INDEXS = {
-    "CREATE INDEX IF NOT EXISTS mms_thread_id_index ON " + TABLE_NAME + " (" + THREAD_ID + ");",
-    "CREATE INDEX IF NOT EXISTS mms_read_index ON " + TABLE_NAME + " (" + READ + ");",
     "CREATE INDEX IF NOT EXISTS mms_read_and_notified_and_thread_id_index ON " + TABLE_NAME + "(" + READ + "," + NOTIFIED + "," + THREAD_ID + ");",
     "CREATE INDEX IF NOT EXISTS mms_message_box_index ON " + TABLE_NAME + " (" + MESSAGE_BOX + ");",
-    "CREATE INDEX IF NOT EXISTS mms_date_sent_index ON " + TABLE_NAME + " (" + DATE_SENT + ");",
+    "CREATE INDEX IF NOT EXISTS mms_date_sent_index ON " + TABLE_NAME + " (" + DATE_SENT + ", " + RECIPIENT_ID + ", " + THREAD_ID + ");",
     "CREATE INDEX IF NOT EXISTS mms_date_server_index ON " + TABLE_NAME + " (" + DATE_SERVER + ");",
     "CREATE INDEX IF NOT EXISTS mms_thread_date_index ON " + TABLE_NAME + " (" + THREAD_ID + ", " + DATE_RECEIVED + ");",
     "CREATE INDEX IF NOT EXISTS mms_reactions_unread_index ON " + TABLE_NAME + " (" + REACTIONS_UNREAD + ");"
@@ -380,7 +361,7 @@ public class MmsDatabase extends MessageDatabase {
   }
 
   @Override
-  public Pair<Long, Long> updateBundleMessageBody(long messageId, String body) {
+  public InsertResult updateBundleMessageBody(long messageId, String body) {
     throw new UnsupportedOperationException();
   }
 
@@ -399,11 +380,12 @@ public class MmsDatabase extends MessageDatabase {
 
       List<MarkedMessageInfo> results = new ArrayList<>(cursor.getCount());
       while (cursor.moveToNext()) {
+        long           messageId     = CursorUtil.requireLong(cursor, ID);
         RecipientId    recipientId   = RecipientId.from(CursorUtil.requireLong(cursor, RECIPIENT_ID));
         long           dateSent      = CursorUtil.requireLong(cursor, DATE_SENT);
         SyncMessageId  syncMessageId = new SyncMessageId(recipientId, dateSent);
 
-        results.add(new MarkedMessageInfo(threadId, syncMessageId, null));
+        results.add(new MarkedMessageInfo(threadId, syncMessageId, new MessageId(messageId, true), null));
       }
 
       return results;
@@ -437,12 +419,13 @@ public class MmsDatabase extends MessageDatabase {
       while (cursor != null && cursor.moveToNext()) {
         long type = CursorUtil.requireLong(cursor, MESSAGE_BOX);
         if (Types.isSecureType(type) && Types.isInboxType(type)) {
+          long          messageId     = CursorUtil.requireLong(cursor, ID);
           long          threadId      = CursorUtil.requireLong(cursor, THREAD_ID);
           RecipientId   recipientId   = RecipientId.from(CursorUtil.requireLong(cursor, RECIPIENT_ID));
           long          dateSent      = CursorUtil.requireLong(cursor, DATE_SENT);
           SyncMessageId syncMessageId = new SyncMessageId(recipientId, dateSent);
 
-          results.add(new MarkedMessageInfo(threadId, syncMessageId, null));
+          results.add(new MarkedMessageInfo(threadId, syncMessageId, new MessageId(messageId, true), null));
 
           ContentValues contentValues = new ContentValues();
           contentValues.put(VIEWED_RECEIPT_COUNT, 1);
@@ -769,6 +752,13 @@ public class MmsDatabase extends MessageDatabase {
   }
 
   @Override
+  public @Nullable MessageRecord getMessageRecordOrNull(long messageId) {
+    try (Cursor cursor = rawQuery(RAW_ID_WHERE, new String[] {messageId + ""})) {
+      return new Reader(cursor).getNext();
+    }
+  }
+
+  @Override
   public Reader getMessages(Collection<Long> messageIds) {
     String ids = TextUtils.join(",", messageIds);
     return readerFor(rawQuery(MmsDatabase.TABLE_NAME + "." + MmsDatabase.ID + " IN (" + ids + ")", null));
@@ -854,23 +844,32 @@ public class MmsDatabase extends MessageDatabase {
   public void markAsRemoteDelete(long messageId) {
     SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
-    ContentValues values = new ContentValues();
-    values.put(REMOTE_DELETED, 1);
-    values.putNull(BODY);
-    values.putNull(QUOTE_BODY);
-    values.putNull(QUOTE_AUTHOR);
-    values.putNull(QUOTE_ATTACHMENT);
-    values.putNull(QUOTE_ID);
-    values.putNull(LINK_PREVIEWS);
-    values.putNull(SHARED_CONTACTS);
-    values.putNull(REACTIONS);
-    db.update(TABLE_NAME, values, ID_WHERE, new String[] { String.valueOf(messageId) });
+    long threadId;
 
-    DatabaseFactory.getAttachmentDatabase(context).deleteAttachmentsForMessage(messageId);
-    DatabaseFactory.getMentionDatabase(context).deleteMentionsForMessage(messageId);
+    db.beginTransaction();
+    try {
+      ContentValues values = new ContentValues();
+      values.put(REMOTE_DELETED, 1);
+      values.putNull(BODY);
+      values.putNull(QUOTE_BODY);
+      values.putNull(QUOTE_AUTHOR);
+      values.putNull(QUOTE_ATTACHMENT);
+      values.putNull(QUOTE_ID);
+      values.putNull(LINK_PREVIEWS);
+      values.putNull(SHARED_CONTACTS);
+      values.putNull(REACTIONS);
+      db.update(TABLE_NAME, values, ID_WHERE, new String[] { String.valueOf(messageId) });
 
-    long threadId = getThreadIdForMessage(messageId);
-    DatabaseFactory.getThreadDatabase(context).update(threadId, false);
+      DatabaseFactory.getAttachmentDatabase(context).deleteAttachmentsForMessage(messageId);
+      DatabaseFactory.getMentionDatabase(context).deleteMentionsForMessage(messageId);
+      DatabaseFactory.getMessageLogDatabase(context).deleteAllRelatedToMessage(messageId, true);
+
+      threadId = getThreadIdForMessage(messageId);
+      DatabaseFactory.getThreadDatabase(context).update(threadId, false);
+      db.setTransactionSuccessful();
+    } finally {
+      db.endTransaction();
+    }
     notifyConversationListeners(threadId);
   }
 
@@ -988,7 +987,7 @@ public class MmsDatabase extends MessageDatabase {
           SyncMessageId  syncMessageId  = new SyncMessageId(recipientId, dateSent);
           ExpirationInfo expirationInfo = new ExpirationInfo(messageId, expiresIn, expireStarted, true);
 
-          result.add(new MarkedMessageInfo(threadId, syncMessageId, expirationInfo));
+          result.add(new MarkedMessageInfo(threadId, syncMessageId, new MessageId(messageId, true), expirationInfo));
         }
       }
 
@@ -1252,6 +1251,7 @@ public class MmsDatabase extends MessageDatabase {
           Avatar             updatedAvatar = new Avatar(contact.getAvatar().getAttachmentId(),
                                                         attachment,
                                                         contact.getAvatar().isProfile());
+
           contacts.add(new Contact(contact, updatedAvatar));
         } else {
           contacts.add(contact);
@@ -1289,6 +1289,8 @@ public class MmsDatabase extends MessageDatabase {
           DatabaseAttachment attachment = attachmentIdMap.get(preview.getAttachmentId());
           if (attachment != null) {
             previews.add(new LinkPreview(preview.getUrl(), preview.getTitle(), preview.getDescription(), preview.getDate(), attachment));
+          } else {
+            previews.add(preview);
           }
         } else {
           previews.add(preview);
@@ -1323,7 +1325,7 @@ public class MmsDatabase extends MessageDatabase {
     contentValues.put(THREAD_ID, threadId);
     contentValues.put(CONTENT_LOCATION, contentLocation);
     contentValues.put(STATUS, Status.DOWNLOAD_INITIALIZED);
-    contentValues.put(DATE_RECEIVED, retrieved.isPushMessage() ? System.currentTimeMillis() : generatePduCompatTimestamp());
+    contentValues.put(DATE_RECEIVED, retrieved.isPushMessage() ? retrieved.getReceivedTimeMillis() : generatePduCompatTimestamp(retrieved.getReceivedTimeMillis()));
     contentValues.put(PART_COUNT, retrieved.getAttachments().size());
     contentValues.put(SUBSCRIPTION_ID, retrieved.getSubscriptionId());
     contentValues.put(EXPIRES_IN, retrieved.getExpiresIn());
@@ -1429,7 +1431,7 @@ public class MmsDatabase extends MessageDatabase {
     contentValues.put(MESSAGE_BOX, Types.BASE_INBOX_TYPE);
     contentValues.put(THREAD_ID, threadId);
     contentValues.put(STATUS, Status.DOWNLOAD_INITIALIZED);
-    contentValues.put(DATE_RECEIVED, generatePduCompatTimestamp());
+    contentValues.put(DATE_RECEIVED, generatePduCompatTimestamp(System.currentTimeMillis()));
     contentValues.put(READ, Util.isDefaultSmsProvider(context) ? 0 : 1);
     contentValues.put(SUBSCRIPTION_ID, subscriptionId);
 
@@ -1658,6 +1660,7 @@ public class MmsDatabase extends MessageDatabase {
 
     SQLiteDatabase database = databaseHelper.getWritableDatabase();
     database.delete(TABLE_NAME, ID_WHERE, new String[] {messageId+""});
+
     boolean threadDeleted = DatabaseFactory.getThreadDatabase(context).update(threadId, false);
     notifyConversationListeners(threadId);
     notifyStickerListeners();
@@ -1722,15 +1725,12 @@ public class MmsDatabase extends MessageDatabase {
   }
 
   private boolean isDuplicate(IncomingMediaMessage message, long threadId) {
-    SQLiteDatabase database = databaseHelper.getReadableDatabase();
-    Cursor         cursor   = database.query(TABLE_NAME, null, DATE_SENT + " = ? AND " + RECIPIENT_ID + " = ? AND " + THREAD_ID + " = ?",
-                                             new String[]{String.valueOf(message.getSentTimeMillis()), message.getFrom().serialize(), String.valueOf(threadId)},
-                                             null, null, null, "1");
+    SQLiteDatabase db    = databaseHelper.getReadableDatabase();
+    String         query = DATE_SENT + " = ? AND " + RECIPIENT_ID + " = ? AND " + THREAD_ID + " = ?";
+    String[]       args  = SqlUtil.buildArgs(message.getSentTimeMillis(), message.getFrom().serialize(), threadId);
 
-    try {
-      return cursor != null && cursor.moveToFirst();
-    } finally {
-      if (cursor != null) cursor.close();
+    try (Cursor cursor = db.query(TABLE_NAME, new String[] { "1" }, query, args, null, null, null, "1")) {
+      return cursor.moveToFirst();
     }
   }
 
@@ -1773,7 +1773,6 @@ public class MmsDatabase extends MessageDatabase {
 
     SQLiteDatabase db = databaseHelper.getWritableDatabase();
     String where      = "";
-    Cursor cursor     = null;
 
     for (long threadId : threadIds) {
       where += THREAD_ID + " = '" + threadId + "' OR ";
@@ -1781,16 +1780,10 @@ public class MmsDatabase extends MessageDatabase {
 
     where = where.substring(0, where.length() - 4);
 
-    try {
-      cursor = db.query(TABLE_NAME, new String[] {ID}, where, null, null, null, null);
-
+    try (Cursor cursor = db.query(TABLE_NAME, new String[] {ID}, where, null, null, null, null)) {
       while (cursor != null && cursor.moveToNext()) {
         deleteMessage(cursor.getLong(0));
       }
-
-    } finally {
-      if (cursor != null)
-        cursor.close();
     }
   }
 
@@ -2084,12 +2077,12 @@ public class MmsDatabase extends MessageDatabase {
       Recipient                 recipient          = Recipient.live(RecipientId.from(recipientId)).get();
       List<IdentityKeyMismatch> mismatches         = getMismatchedIdentities(mismatchDocument);
       List<NetworkFailure>      networkFailures    = getFailures(networkDocument);
-      List<DatabaseAttachment>  attachments        = DatabaseFactory.getAttachmentDatabase(context).getAttachment(cursor);
+      List<DatabaseAttachment>  attachments        = DatabaseFactory.getAttachmentDatabase(context).getAttachments(cursor);
       List<Contact>             contacts           = getSharedContacts(cursor, attachments);
       Set<Attachment>           contactAttachments = Stream.of(contacts).map(Contact::getAvatarAttachment).withoutNulls().collect(Collectors.toSet());
       List<LinkPreview>         previews           = getLinkPreviews(cursor, attachments);
       Set<Attachment>           previewAttachments = Stream.of(previews).filter(lp -> lp.getThumbnail().isPresent()).map(lp -> lp.getThumbnail().get()).collect(Collectors.toSet());
-      SlideDeck                 slideDeck          = getSlideDeck(Stream.of(attachments).filterNot(contactAttachments::contains).filterNot(previewAttachments::contains).toList());
+      SlideDeck                 slideDeck          = buildSlideDeck(context, Stream.of(attachments).filterNot(contactAttachments::contains).filterNot(previewAttachments::contains).toList());
       Quote                     quote              = getQuote(cursor);
 
       return new MediaMmsMessageRecord(id, recipient, recipient,
@@ -2124,7 +2117,7 @@ public class MmsDatabase extends MessageDatabase {
       return new LinkedList<>();
     }
 
-    private SlideDeck getSlideDeck(@NonNull List<DatabaseAttachment> attachments) {
+    public static SlideDeck buildSlideDeck(@NonNull Context context, @NonNull List<DatabaseAttachment> attachments) {
       List<DatabaseAttachment> messageAttachments = Stream.of(attachments)
                                                           .filterNot(Attachment::isQuote)
                                                           .sorted(new DatabaseAttachment.DisplayOrderComparator())
@@ -2138,7 +2131,7 @@ public class MmsDatabase extends MessageDatabase {
       CharSequence               quoteText        = cursor.getString(cursor.getColumnIndexOrThrow(MmsDatabase.QUOTE_BODY));
       boolean                    quoteMissing     = cursor.getInt(cursor.getColumnIndexOrThrow(MmsDatabase.QUOTE_MISSING)) == 1;
       List<Mention>              quoteMentions    = parseQuoteMentions(context, cursor);
-      List<DatabaseAttachment>   attachments      = DatabaseFactory.getAttachmentDatabase(context).getAttachment(cursor);
+      List<DatabaseAttachment>   attachments      = DatabaseFactory.getAttachmentDatabase(context).getAttachments(cursor);
       List<? extends Attachment> quoteAttachments = Stream.of(attachments).filter(Attachment::isQuote).toList();
       SlideDeck                  quoteDeck        = new SlideDeck(context, quoteAttachments);
 
@@ -2164,8 +2157,7 @@ public class MmsDatabase extends MessageDatabase {
     }
   }
 
-  private long generatePduCompatTimestamp() {
-    final long time = System.currentTimeMillis();
+  private long generatePduCompatTimestamp(long time) {
     return time - (time % 1000);
   }
 }

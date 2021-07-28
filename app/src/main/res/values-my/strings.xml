@@ -53,7 +53,6 @@
   <string name="DraftDatabase_Draft_quote_snippet">(ပြန်လည်ပေးပို့လာသောစာတို)</string>
   <!--AttachmentKeyboard-->
   <string name="AttachmentKeyboard_gallery">ဓါတ်ပုံပြခန်း</string>
-  <string name="AttachmentKeyboard_gif">လှုပ်ရှားနေသောရုပ်ပုံ</string>
   <string name="AttachmentKeyboard_file">ဖိုင်</string>
   <string name="AttachmentKeyboard_contact">အဆက်အသွယ်</string>
   <string name="AttachmentKeyboard_location">တည်နေရာ</string>
@@ -416,6 +415,7 @@
   <string name="AddToGroupActivity_add_to_groups">အုပ်စုများထဲသို့ ထည့်ပါ။</string>
   <string name="AddToGroupActivity_this_person_cant_be_added_to_legacy_groups">ဤပုဂ္ဂိုလ်အား အမွေအဖွဲ့ထဲသို့ ထည့်၍မရပါ။</string>
   <string name="AddToGroupActivity_add">ထည့်သည်။</string>
+  <string name="AddToGroupActivity_add_to_a_group">အဖွဲ့တစ်ဖွဲ့ထဲသို့ ထည့်မယ်</string>
   <!--ChooseNewAdminActivity-->
   <string name="ChooseNewAdminActivity_choose_new_admin">အက်မင် အသစ် ရွေးချယ်ပါ။</string>
   <string name="ChooseNewAdminActivity_done">ပြီးပါပြီ။</string>
@@ -530,6 +530,7 @@
     <item quantity="other">\"%2$s\" ထဲသို့ အဖွဲ့ဝင် %3$d ဦးကို ပေါင်းထည့်မည်လား?</item>
   </plurals>
   <string name="AddMembersActivity__add">ပေါင်းထည့်မယ်</string>
+  <string name="AddMembersActivity__add_members">အဖွဲ့ဝင်များ ထည့်ပါ</string>
   <!--AddGroupDetailsFragment-->
   <string name="AddGroupDetailsFragment__name_this_group">၎င်းအဖွဲ့ကို အမည်ပေးပါ</string>
   <string name="AddGroupDetailsFragment__create_group">အဖွဲ့ ဖွဲ့မယ်</string>
@@ -614,31 +615,10 @@
   <string name="ManageProfileFragment_your_username">သင့်အသုံးပြုသူအမည်</string>
   <string name="ManageProfileFragment_failed_to_set_avatar">ကိုယ်စားပြုရုပ်ပုံ တင်ရန်မအောင်မြင်ပါ</string>
   <!--ManageRecipientActivity-->
-  <string name="ManageRecipientActivity_add_to_system_contacts">စနစ်အဆက်အသွယ်စာရင်း ထဲသို့ထည့်ပါ</string>
-  <string name="ManageRecipientActivity_this_person_is_in_your_contacts">၎င်းပုဂ္ဂိုလ်သည် သင့်အဆက်အသွယ်စာရင်းထဲတွင် ရှိပါသည်</string>
-  <string name="ManageRecipientActivity_disappearing_messages">ပျောက်ကွယ်သွားသော မက်ဆေ့ချ်များ</string>
-  <string name="ManageRecipientActivity_chat_color">စကားပြောဆိုမှု၏ အရောင်</string>
-  <string name="ManageRecipientActivity_chat_wallpaper">စကားပြောဆိုမှု၏ နောက်ခံပုံ</string>
-  <string name="ManageRecipientActivity_block">ပိတ်ပယ်မယ်</string>
-  <string name="ManageRecipientActivity_unblock">ပြန်ဖွင့်မယ်</string>
-  <string name="ManageRecipientActivity_view_safety_number">လုံခြုံရေးနံပါတ်ကိုကြည့်မယ်</string>
-  <string name="ManageRecipientActivity_mute_notifications">အသိပေးချက်များကို ပိတ်မယ်</string>
-  <string name="ManageRecipientActivity_custom_notifications">စိတ်ကြိုက်သတိပေးချက်များ</string>
-  <string name="ManageRecipientActivity_until_s">%1$s အထိ</string>
-  <string name="ManageRecipientActivity_always">အမြဲ</string>
-  <string name="ManageRecipientActivity_off">ပိတ်ပါ</string>
-  <string name="ManageRecipientActivity_on">ဖွင့်ပါ</string>
-  <string name="ManageRecipientActivity_add_to_a_group">အဖွဲ့တစ်ခုသို့ ပေါင်းထည့်မယ်</string>
-  <string name="ManageRecipientActivity_view_all_groups">အဖွဲ့များ အားလုံးကြည့်ရှုမယ်</string>
-  <string name="ManageRecipientActivity_see_all">အားလုံးကို ကြည့်မယ်</string>
   <string name="ManageRecipientActivity_no_groups_in_common">တူညီသော အဖွဲ့များ မရှိပါ</string>
   <plurals name="ManageRecipientActivity_d_groups_in_common">
     <item quantity="other">တူညီသော အဖွဲ့ %d ဖွဲ့</item>
   </plurals>
-  <string name="ManageRecipientActivity_message_description">မက်ဆေ့ချ်</string>
-  <string name="ManageRecipientActivity_voice_call_description">အသံခေါ်ဆိုမှု</string>
-  <string name="ManageRecipientActivity_insecure_voice_call_description">မလုံခြုံသောအသံခေါ်ဆိုမှု</string>
-  <string name="ManageRecipientActivity_video_call_description">ဗီဒီယို ခေါ်ဆိုမှု</string>
   <plurals name="GroupMemberList_invited">
     <item quantity="other">%1$s သည် %2$d ဦးကို ဖိတ်ကြားခဲ့သည်</item>
   </plurals>
@@ -773,6 +753,7 @@
   <string name="MediaOverviewActivity_audio">အသံ</string>
   <string name="MediaOverviewActivity_video">ဗီဒီယို</string>
   <string name="MediaOverviewActivity_image">ရုပ်ပုံ</string>
+  <string name="MediaOverviewActivity_voice_message">အသံ မက်ဆေ့ချ်</string>
   <string name="MediaOverviewActivity_sent_by_s">%1$s မှ ပို့သည်</string>
   <string name="MediaOverviewActivity_sent_by_you">သင်မှ ပို့ခဲ့သည်</string>
   <string name="MediaOverviewActivity_sent_by_s_to_s">%1$s မှ %2$s သို့ ပို့ခဲ့သည်</string>
@@ -827,6 +808,7 @@
   <!--MediaRepository-->
   <string name="MediaRepository_all_media">ရုပ်/သံ/ပုံ စာများအားလုံး</string>
   <string name="MediaRepository__camera">ကင်မရာ</string>
+  <!--MessageDecryptionUtil-->
   <!--MessageRecord-->
   <string name="MessageRecord_unknown">မသိ</string>
   <string name="MessageRecord_message_encrypted_with_a_legacy_protocol_version_that_is_no_longer_supported">ထပ်မံပံ့ပိုးမှုမရှိတော့သော Signal ဗားရှင်းအဟောင်းဖြင့် encrypt လုပ်ထားသော စာကိုလက်ခံရရှိသည်။ စာပို့သူအား signal နောက်ဆုံးဗားရှင်းကိုမြှင့်ပြီး စာအားပြန်ပို့ခုိင်းပါ။</string>
@@ -1101,6 +1083,8 @@
   <!--ReactionsRecipientAdapter-->
   <string name="ReactionsRecipientAdapter_you">သင်</string>
   <!--RecaptchaRequiredBottomSheetFragment-->
+  <!--Recipient-->
+  <string name="Recipient_you">သင်</string>
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">ဘလော့ လုပ်မည်</string>
   <string name="RecipientPreferenceActivity_unblock">ဘလော့ဖြည်ပါ </string>
@@ -1556,6 +1540,7 @@
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">အောက်သို့ ဆွဲလိုက်ပါ</string>
   <!--safety_number_change_dialog-->
   <string name="safety_number_change_dialog__safety_number_changes">လုံခြုံရေးနံပါတ်အပြောင်းအလဲများ</string>
+  <string name="safety_number_change_dialog__accept">လက်ခံမယ်</string>
   <string name="safety_number_change_dialog__send_anyway">ဘာပဲဖြစ်ဖြစ်ပို့ပါ</string>
   <string name="safety_number_change_dialog__call_anyway">ဘာပဲဖြစ်ဖြစ်ဖုန်းခေါ်ပါ</string>
   <string name="safety_number_change_dialog__join_call">ခေါ်ဆိုမှုထဲဝင်မယ်</string>
@@ -1627,8 +1612,6 @@
   <string name="giphy_activity_toolbar__search_gifs">GIF များရှာဖွေမယ်</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">ဘာမှ မတွေ့ဘူး</string>
-  <!--log_submit_activity-->
-  <string name="log_submit_activity__this_log_will_be_posted_online">ပံ့ပိုးသူများ ကြည့်ရှုနိုင်ရန် ဤမှတ်တမ်းကို အများကြည့်ရှုနိုင်ရန် အွန်လိုင်းပေါ်တင်ထားပါမည်။ သင်မတင်သွင်းမီ လေ့လာတည်းဖြတ်နိုင်ပါသည်။</string>
   <!--database_migration_activity-->
   <string name="database_migration_activity__would_you_like_to_import_your_existing_text_messages">သင်၏စာသားသတင်းစကားများကို Signal ၏encrypt အချက်အလက်အဖြစ်ကူးပြောင်းချင်ပါသလား?</string>
   <string name="database_migration_activity__the_default_system_database_will_not_be_modified">မူလဒေတာဘေ့စ်စနစ်ကို ပြောင်းလဲမည် မဟုတ်ပါ။</string>
@@ -2515,7 +2498,6 @@
   <string name="RecipientBottomSheet_add_to_a_group">အဖွဲ့တစ်ဖွဲ့ထဲသို့ ထည့်မယ်</string>
   <string name="RecipientBottomSheet_add_to_another_group">အခြား အဖွဲ့သို့ထည့်မယ်</string>
   <string name="RecipientBottomSheet_view_safety_number">လုံခြုံရေးနံပါတ်ကိုကြည့်မယ်</string>
-  <string name="RecipientBottomSheet_make_group_admin">အဖွဲ့စီမံသူ အဖြစ်ခန့်မယ်</string>
   <string name="RecipientBottomSheet_remove_as_admin">စီမံသူအဖြစ်မှ ဖယ်ရှားမယ်</string>
   <string name="RecipientBottomSheet_remove_from_group">အဖွဲ့မှ ဖယ်ရှားမယ်</string>
   <string name="RecipientBottomSheet_message_description">မက်ဆေ့ချ်</string>
@@ -2781,9 +2763,64 @@
   <!--ChatColorsMegaphone-->
   <string name="ChatColorsMegaphone__appearance">ပုံပန်းသဏ္ဌာန်</string>
   <string name="ChatColorsMegaphone__not_now">ယခု မလုပ်ဆောင်သေးပါ။</string>
+  <!--AddAProfilePhotoMegaphone-->
+  <string name="AddAProfilePhotoMegaphone__not_now">ယခု မလုပ်ဆောင်သေးပါ။</string>
   <!--KeyboardPagerFragment-->
   <string name="KeyboardPagerFragment_stickers">စတစ်ကာများ </string>
   <string name="KeyboardPagerFragment_backspace">Backspace</string>
   <!--StickerSearchDialogFragment-->
+  <!--ConversationSettingsFragment-->
+  <string name="ConversationSettingsFragment__message">မက်ဆေ့ချ်</string>
+  <string name="ConversationSettingsFragment__video">ဗီဒီယို</string>
+  <string name="ConversationSettingsFragment__audio">အသံ</string>
+  <string name="ConversationSettingsFragment__call">ခေါ်ဆိုမယ်</string>
+  <string name="ConversationSettingsFragment__mute">အသံတိတ်ထားမည်</string>
+  <string name="ConversationSettingsFragment__muted">အသံပိတ်ထား</string>
+  <string name="ConversationSettingsFragment__search">ရှာဖွေမယ်</string>
+  <string name="ConversationSettingsFragment__disappearing_messages">ပျောက်ကွယ်မည့် မက်ဆေ့ချ်များ</string>
+  <string name="ConversationSettingsFragment__view_safety_number">လုံခြုံရေးနံပါတ်ကိုကြည့်မယ်</string>
+  <string name="ConversationSettingsFragment__block">ပိတ်ပယ်မယ်</string>
+  <string name="ConversationSettingsFragment__block_group">အဖွဲ့ကိုပိတ်ပယ်မယ်</string>
+  <string name="ConversationSettingsFragment__unblock">ပြန်ဖွင့်မယ်</string>
+  <string name="ConversationSettingsFragment__unblock_group">အဖွဲ့ကိုပြန်ဖွင့်မယ်</string>
+  <string name="ConversationSettingsFragment__add_to_a_group">အဖွဲ့တစ်ဖွဲ့ထဲသို့ ထည့်မယ်</string>
+  <string name="ConversationSettingsFragment__see_all">အားလုံးကို ကြည့်မယ်</string>
+  <string name="ConversationSettingsFragment__add_members">အဖွဲ့ဝင်များ ထည့်ပါ</string>
+  <string name="ConversationSettingsFragment__permissions">ခွင့်ပြုချက်များ</string>
+  <string name="ConversationSettingsFragment__group_link">Group link</string>
+  <string name="ConversationSettingsFragment__unmute">အသံပြန်ဖွင့်မယ်</string>
+  <string name="ConversationSettingsFragment__phone_number">ဖုန်းနံပါတ်</string>
+  <!--PermissionsSettingsFragment-->
+  <string name="PermissionsSettingsFragment__add_members">အဖွဲ့ဝင်များ ထည့်ပါ</string>
+  <string name="PermissionsSettingsFragment__edit_group_info">အုပ်စုအချက်အလက်ကိုတည်းဖြတ်ပါ</string>
+  <string name="PermissionsSettingsFragment__all_members">အဖွဲ့ဝင် အားလုံး</string>
+  <string name="PermissionsSettingsFragment__only_admins">အက်မင်များသာ</string>
+  <string name="PermissionsSettingsFragment__who_can_add_new_members">အသင်းဝင်အသစ်များကို မည်သူထပ်ထည့်လို့ရမလဲ?</string>
+  <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">ဤအဖွဲ့၏အချက်အလက်ကို မည်သူတည်းဖြတ်နိုင်သနည်း။</string>
+  <!--SoundsAndNotificationsSettingsFragment-->
+  <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">အသိပေးချက်များကို ပိတ်ပါ</string>
+  <string name="SoundsAndNotificationsSettingsFragment__not_muted">အသံမပိတ်ပါ </string>
+  <string name="SoundsAndNotificationsSettingsFragment__mentions">မန်းရှင်းများ</string>
+  <string name="SoundsAndNotificationsSettingsFragment__custom_notifications">စိတ်ကြိုက်သတိပေးချက်များ</string>
+  <!--StickerKeyboard-->
+  <!--PlaybackSpeedToggleTextView-->
+  <!--PaymentRecipientSelectionFragment-->
+  <!--NewConversationActivity-->
+  <string name="NewConversationActivity__new_message">စာအသစ်</string>
+  <!--ContactFilterView-->
+  <!--VoiceNotePlayerView-->
+  <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <!--AvatarPickerFragment-->
+  <string name="AvatarPickerFragment__camera">ကင်မရာ</string>
+  <string name="AvatarPickerFragment__photo">ရုပ်ပုံ</string>
+  <string name="AvatarPickerFragment__save">သိမ်းမယ်</string>
+  <string name="AvatarPickerFragment__edit">ပြင်မယ်</string>
+  <!--TextAvatarCreationFragment-->
+  <string name="TextAvatarCreationFragment__preview">ကြိုတင်ကြည့်မယ်</string>
+  <string name="TextAvatarCreationFragment__done">ပြီးပါပြီ</string>
+  <string name="TextAvatarCreationFragment__color">အရောင်</string>
+  <!--VectorAvatarCreationFragment-->
+  <!--ContactSelectionListItem-->
+  <string name="ContactSelectionListItem__sms">SMS</string>
   <!--EOF-->
 </resources>

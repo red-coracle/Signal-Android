@@ -356,12 +356,6 @@
         <item name="searchIcon">@drawable/ic_search_24</item>
     </style>
 
-    <style name="Signal.SearchView.Dark">
-        <item name="closeIcon">@drawable/ic_x_conversation_20</item>
-        <item name="searchHintIcon">@drawable/ic_search_conversation_24</item>
-        <item name="searchIcon">@drawable/ic_search_conversation_24</item>
-    </style>
-
     <style name="Signal.Toolbar.Overflow" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="srcCompat">@drawable/ic_more_vert_24</item>
         <item name="android:src">@null</item>
@@ -521,5 +515,19 @@
         <item name="textAppearanceDisplay">@style/TextAppearance.TimeDurationPicker.Display.Large.Dark</item>
         <item name="textAppearanceUnit">@style/TextAppearance.TimeDurationPicker.Unit.Large.Dark</item>
         <item name="android:layoutDirection">ltr</item>
+    </style>
+
+    <style name="Widget.Signal.TextInputLayout.FilledBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:paddingStart">@dimen/dsl_settings_gutter</item>
+        <item name="android:paddingEnd">@dimen/dsl_settings_gutter</item>
+        <item name="boxBackgroundColor">@color/signal_background_secondary</item>
+        <item name="boxCornerRadiusBottomEnd">10dp</item>
+        <item name="boxCornerRadiusBottomStart">10dp</item>
+        <item name="boxCornerRadiusTopEnd">10dp</item>
+        <item name="boxCornerRadiusTopStart">10dp</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="hintTextColor">@color/signal_accent_primary</item>
+        <item name="android:textColorHint">@color/signal_text_hint</item>
     </style>
 </resources>

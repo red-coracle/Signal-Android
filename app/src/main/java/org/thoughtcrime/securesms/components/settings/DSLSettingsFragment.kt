@@ -12,21 +12,25 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.components.recyclerview.OnScrollAnimationHelper
+import org.thoughtcrime.securesms.components.recyclerview.ToolbarShadowAnimationHelper
 
 abstract class DSLSettingsFragment(
-  @StringRes private val titleId: Int,
+  @StringRes private val titleId: Int = -1,
   @MenuRes private val menuId: Int = -1,
   @LayoutRes layoutId: Int = R.layout.dsl_settings_fragment
 ) : Fragment(layoutId) {
 
   private lateinit var recyclerView: RecyclerView
-  private lateinit var toolbarShadowHelper: ToolbarShadowHelper
+  private lateinit var scrollAnimationHelper: OnScrollAnimationHelper
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     val toolbar: Toolbar = view.findViewById(R.id.toolbar)
     val toolbarShadow: View = view.findViewById(R.id.toolbar_shadow)
 
-    toolbar.setTitle(titleId)
+    if (titleId != -1) {
+      toolbar.setTitle(titleId)
+    }
 
     toolbar.setNavigationOnClickListener {
       requireActivity().onBackPressed()
@@ -39,18 +43,17 @@ abstract class DSLSettingsFragment(
 
     recyclerView = view.findViewById(R.id.recycler)
     recyclerView.edgeEffectFactory = EdgeEffectFactory()
-    toolbarShadowHelper = ToolbarShadowHelper(toolbarShadow)
+    scrollAnimationHelper = getOnScrollAnimationHelper(toolbarShadow)
     val adapter = DSLSettingsAdapter()
 
     recyclerView.adapter = adapter
-    recyclerView.addOnScrollListener(toolbarShadowHelper)
+    recyclerView.addOnScrollListener(scrollAnimationHelper)
 
     bindAdapter(adapter)
   }
 
-  override fun onResume() {
-    super.onResume()
-    toolbarShadowHelper.onScrolled(recyclerView, 0, 0)
+  protected open fun getOnScrollAnimationHelper(toolbarShadow: View): OnScrollAnimationHelper {
+    return ToolbarShadowAnimationHelper(toolbarShadow)
   }
 
   abstract fun bindAdapter(adapter: DSLSettingsAdapter)
@@ -64,33 +67,5 @@ abstract class DSLSettingsFragment(
         }
       }
     }
-  }
-
-  class ToolbarShadowHelper(private val toolbarShadow: View) : RecyclerView.OnScrollListener() {
-
-    private var lastAnimationState = ToolbarAnimationState.NONE
-
-    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-      val newAnimationState =
-        if (recyclerView.canScrollVertically(-1)) ToolbarAnimationState.SHOW else ToolbarAnimationState.HIDE
-
-      if (newAnimationState == lastAnimationState) {
-        return
-      }
-
-      when (newAnimationState) {
-        ToolbarAnimationState.NONE -> throw AssertionError()
-        ToolbarAnimationState.HIDE -> toolbarShadow.animate().alpha(0f)
-        ToolbarAnimationState.SHOW -> toolbarShadow.animate().alpha(1f)
-      }
-
-      lastAnimationState = newAnimationState
-    }
-  }
-
-  private enum class ToolbarAnimationState {
-    NONE,
-    HIDE,
-    SHOW
   }
 }

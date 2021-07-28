@@ -52,7 +52,6 @@
   <string name="DraftDatabase_Draft_quote_snippet">(ตอบกลับ)</string>
   <!--AttachmentKeyboard-->
   <string name="AttachmentKeyboard_gallery">อัลบั้มภาพ</string>
-  <string name="AttachmentKeyboard_gif">GIF</string>
   <string name="AttachmentKeyboard_file">แฟ้ม</string>
   <string name="AttachmentKeyboard_contact">ผู้ติดต่อ</string>
   <string name="AttachmentKeyboard_location">ตำแหน่งที่ตั้ง</string>
@@ -239,9 +238,6 @@
   <string name="ConversationActivity_full">เต็ม</string>
   <string name="ConversationActivity_error_sending_media">เกิดข้อผิดพลาดในการส่งสื่อ</string>
   <string name="ConversationActivity__reported_as_spam_and_blocked">ถูกรายงานว่าเป็นสแปมและถูกปิดกั้นแล้ว</string>
-  <string name="ConversationActivity_gifs_have_moved">GIF ถูกย้าย</string>
-  <string name="ConversationActivity_look_for_gifs_next_to_emoji_and_stickers">มองหา GIF ข้างๆ อีโมจิและสติกเกอร์</string>
-  <string name="ConversationActivity__gifs_are_now_here">ตอนนี้ GIF อยู่ที่นี่</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="other">%d ข้อความที่ยังไม่ได้อ่าน</item>
@@ -421,6 +417,7 @@
   <string name="AddToGroupActivity_add_to_groups">เพิ่มเข้ากลุ่ม</string>
   <string name="AddToGroupActivity_this_person_cant_be_added_to_legacy_groups">ไม่สามารถเพิ่มบุคคลนี้ในกลุ่มแบบเก่า</string>
   <string name="AddToGroupActivity_add">เพิ่ม</string>
+  <string name="AddToGroupActivity_add_to_a_group">เพิ่มเข้ากลุ่ม</string>
   <!--ChooseNewAdminActivity-->
   <string name="ChooseNewAdminActivity_choose_new_admin">เลือกผู้ดูแลใหม่</string>
   <string name="ChooseNewAdminActivity_done">เสร็จสิ้น</string>
@@ -535,6 +532,7 @@
     <item quantity="other">เพิ่มสมาชิก %3$d คนเข้า \"%2$s\" หรือไม่?</item>
   </plurals>
   <string name="AddMembersActivity__add">เพิ่ม</string>
+  <string name="AddMembersActivity__add_members">เพิ่มสมาชิก</string>
   <!--AddGroupDetailsFragment-->
   <string name="AddGroupDetailsFragment__name_this_group">ตั้งชื่อกลุ่มนี้</string>
   <string name="AddGroupDetailsFragment__create_group">สร้างกลุ่ม</string>
@@ -622,31 +620,10 @@
   <string name="ManageProfileFragment_your_username">ชื่อผู้ใช้ของคุณ</string>
   <string name="ManageProfileFragment_failed_to_set_avatar">ล้มเหลวในการสร้างภาพประจำตัว</string>
   <!--ManageRecipientActivity-->
-  <string name="ManageRecipientActivity_add_to_system_contacts">เพิ่มลงในรายชื่อผู้ติดต่อของระบบ</string>
-  <string name="ManageRecipientActivity_this_person_is_in_your_contacts">ผู้ใช้รายนี้อยู่ในรายชื่อผู้ติดต่อของคุณ</string>
-  <string name="ManageRecipientActivity_disappearing_messages">ข้อความที่ลบตัวเอง</string>
-  <string name="ManageRecipientActivity_chat_color">สีแชต</string>
-  <string name="ManageRecipientActivity_chat_wallpaper">ภาพพื้นหลังของหน้าแชต</string>
-  <string name="ManageRecipientActivity_block">ปิดกั้น</string>
-  <string name="ManageRecipientActivity_unblock">เลิกปิดกั้น</string>
-  <string name="ManageRecipientActivity_view_safety_number">ดูหมายเลขความปลอดภัย</string>
-  <string name="ManageRecipientActivity_mute_notifications">ปิดการแจ้งเตือน</string>
-  <string name="ManageRecipientActivity_custom_notifications">การแจ้งเตือนที่กำหนดเอง</string>
-  <string name="ManageRecipientActivity_until_s">จนถึง %1$s</string>
-  <string name="ManageRecipientActivity_always">ตลอดเวลา</string>
-  <string name="ManageRecipientActivity_off">ปิด</string>
-  <string name="ManageRecipientActivity_on">เปิด</string>
-  <string name="ManageRecipientActivity_add_to_a_group">เพิ่มเข้ากลุ่ม</string>
-  <string name="ManageRecipientActivity_view_all_groups">ดูกลุ่มทั้งหมด</string>
-  <string name="ManageRecipientActivity_see_all">ดูทั้งหมด</string>
   <string name="ManageRecipientActivity_no_groups_in_common">ไม่มีกลุ่มร่วมกัน</string>
   <plurals name="ManageRecipientActivity_d_groups_in_common">
     <item quantity="other">%d กลุ่มร่วมกัน</item>
   </plurals>
-  <string name="ManageRecipientActivity_message_description">ข้อความ</string>
-  <string name="ManageRecipientActivity_voice_call_description">โทรเสียง</string>
-  <string name="ManageRecipientActivity_insecure_voice_call_description">โทรเสียงแบบไม่ปลอดภัย</string>
-  <string name="ManageRecipientActivity_video_call_description">โทรวิดีโอ</string>
   <plurals name="GroupMemberList_invited">
     <item quantity="other">%1$s ได้เชิญ %2$d คน</item>
   </plurals>
@@ -781,6 +758,7 @@
   <string name="MediaOverviewActivity_audio">เสียง</string>
   <string name="MediaOverviewActivity_video">วิดีโอ</string>
   <string name="MediaOverviewActivity_image">รูปภาพ</string>
+  <string name="MediaOverviewActivity_voice_message">ข้อความเสียง</string>
   <string name="MediaOverviewActivity_sent_by_s">ส่งโดย %1$s</string>
   <string name="MediaOverviewActivity_sent_by_you">ส่งโดยคุณ</string>
   <string name="MediaOverviewActivity_sent_by_s_to_s">ส่งโดย %1$s ถึง %2$s</string>
@@ -835,6 +813,7 @@
   <!--MediaRepository-->
   <string name="MediaRepository_all_media">สื่อทั้งหมด</string>
   <string name="MediaRepository__camera">กล้อง</string>
+  <!--MessageDecryptionUtil-->
   <!--MessageRecord-->
   <string name="MessageRecord_unknown">ไม่ทราบ</string>
   <string name="MessageRecord_message_encrypted_with_a_legacy_protocol_version_that_is_no_longer_supported">ได้รับข้อความที่เข้ารหัสลับด้วย Signal รุ่นเก่าที่ไม่รองรับอีกต่อไปแล้ว โปรดขอให้ผู้ส่งปรับปรุงแอปเป็นรุ่นล่าสุดและส่งข้อความอีกครั้ง</string>
@@ -1116,6 +1095,8 @@
   <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">ตรวจยืนยันเพื่อรับส่งข้อความต่อ</string>
   <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">เพื่อช่วยป้องกันสแปมบน Signal โปรดตรวจยืนยันให้สำเร็จ</string>
   <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">หลังตรวจยืนยัน คุณจะรับส่งข้อความได้ต่อ ข้อความใดๆ ที่หยุดอยู่ชั่วคราว จะถูกส่งโดยอัตโนมัติ</string>
+  <!--Recipient-->
+  <string name="Recipient_you">คุณ</string>
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">ปิดกั้น</string>
   <string name="RecipientPreferenceActivity_unblock">เลิกปิดกั้น</string>
@@ -1578,6 +1559,7 @@
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">เลื่อนลงล่างสุด</string>
   <!--safety_number_change_dialog-->
   <string name="safety_number_change_dialog__safety_number_changes">การเปลี่ยนแปลงหมายเลขความปลอดภัย</string>
+  <string name="safety_number_change_dialog__accept">ตอบรับ</string>
   <string name="safety_number_change_dialog__send_anyway">ยืนยันที่จะส่ง</string>
   <string name="safety_number_change_dialog__call_anyway">ยืนยันที่จะโทร</string>
   <string name="safety_number_change_dialog__join_call">เข้าร่วมสาย</string>
@@ -1643,8 +1625,6 @@
   <string name="giphy_activity_toolbar__search_gifs">ค้นหาภาพ GIF</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">ไม่พบสิ่งใด</string>
-  <!--log_submit_activity-->
-  <string name="log_submit_activity__this_log_will_be_posted_online">ปูมนี้จะถูกเผยแพร่สู่สาธารณะทางออนไลน์ เพื่อให้ผู้ร่วมพัฒนาโปรแกรมได้เห็น คุณสามารถตรวจสอบและแก้ไขปูมได้ก่อนส่ง</string>
   <!--database_migration_activity-->
   <string name="database_migration_activity__would_you_like_to_import_your_existing_text_messages">คุณต้องการนำข้อความของคุณเข้าไปเก็บไว้ในฐานข้อมูลที่เข้ารหัสลับของ Signal หรือไม่?</string>
   <string name="database_migration_activity__the_default_system_database_will_not_be_modified">ฐานข้อมูลมาตรฐานของระบบจะไม่ถูกแก้ไขหรือเปลี่ยนแปลงใดๆ</string>
@@ -1726,6 +1706,7 @@
   <string name="message_details_recipient_header__delivered_to">ส่งถึงแล้วที่</string>
   <string name="message_details_recipient_header__read_by">อ่านโดย</string>
   <string name="message_details_recipient_header__not_sent">ไม่ได้ส่ง</string>
+  <string name="message_details_recipient_header__viewed">เห็นโดย</string>
   <!--message_Details_recipient-->
   <string name="message_details_recipient__failed_to_send">การส่งล้มเหลว</string>
   <string name="message_details_recipient__new_safety_number">หมายเลขความปลอดภัยใหม่</string>
@@ -1780,6 +1761,7 @@
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__symbols">สัญลักษณ์</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__flags">ธง</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__emoticons">อีโมติคอน</string>
+  <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">ไม่พบผลลัพธ์</string>
   <!--arrays.xml-->
   <string name="arrays__use_default">ใช้ค่าเริ่มต้น</string>
   <string name="arrays__use_custom">ใช้ค่าที่กำหนดเอง</string>
@@ -2518,7 +2500,7 @@
   <string name="RecipientBottomSheet_add_to_a_group">เพิ่มเข้ากลุ่ม</string>
   <string name="RecipientBottomSheet_add_to_another_group">เพิ่มเข้าอีกกลุ่ม</string>
   <string name="RecipientBottomSheet_view_safety_number">ดูหมายเลขความปลอดภัย</string>
-  <string name="RecipientBottomSheet_make_group_admin">ตั้งเป็นผู้ดูแลกลุ่ม</string>
+  <string name="RecipientBottomSheet_make_admin">แต่งตั้งเป็นผู้ดูแล</string>
   <string name="RecipientBottomSheet_remove_as_admin">ปลดจากการเป็นผู้ดูแล</string>
   <string name="RecipientBottomSheet_remove_from_group">ลบจากกลุ่ม</string>
   <string name="RecipientBottomSheet_message_description">ข้อความ</string>
@@ -2800,6 +2782,8 @@
   <string name="ChatColorsMegaphone__new_chat_colors">สีแชตใหม่</string>
   <string name="ChatColorsMegaphone__appearance">หน้าตา</string>
   <string name="ChatColorsMegaphone__not_now">ไม่ใช่ตอนนี้</string>
+  <!--AddAProfilePhotoMegaphone-->
+  <string name="AddAProfilePhotoMegaphone__not_now">ไม่ใช่ตอนนี้</string>
   <!--KeyboardPagerFragment-->
   <string name="KeyboardPagerFragment_emoji">อีโมจิ</string>
   <string name="KeyboardPagerFragment_open_emoji_search">หาอีโมจิ</string>
@@ -2816,5 +2800,58 @@
   <string name="StickerSearchDialogFragment_no_results_found">ไม่พบผลลัพธ์</string>
   <string name="EmojiSearchFragment__no_results_found">ไม่พบผลลัพธ์</string>
   <string name="NotificationsSettingsFragment__unknown_ringtone">เสียงเรียกเข้าที่ไม่รู้จัก</string>
+  <!--ConversationSettingsFragment-->
+  <string name="ConversationSettingsFragment__message">ข้อความ</string>
+  <string name="ConversationSettingsFragment__video">วิดีโอ</string>
+  <string name="ConversationSettingsFragment__audio">เสียง</string>
+  <string name="ConversationSettingsFragment__call">โทร</string>
+  <string name="ConversationSettingsFragment__mute">ปิดเสียง</string>
+  <string name="ConversationSettingsFragment__muted">ปิดเสียงอยู่</string>
+  <string name="ConversationSettingsFragment__search">ค้นหา</string>
+  <string name="ConversationSettingsFragment__disappearing_messages">ข้อความที่ลบตัวเอง</string>
+  <string name="ConversationSettingsFragment__view_safety_number">ดูหมายเลขความปลอดภัย</string>
+  <string name="ConversationSettingsFragment__block">ปิดกั้น</string>
+  <string name="ConversationSettingsFragment__block_group">ปิดกั้นกลุ่ม</string>
+  <string name="ConversationSettingsFragment__unblock">เลิกปิดกั้น</string>
+  <string name="ConversationSettingsFragment__unblock_group">เลิกปิดกั้นกลุ่ม</string>
+  <string name="ConversationSettingsFragment__add_to_a_group">เพิ่มเข้ากลุ่ม</string>
+  <string name="ConversationSettingsFragment__see_all">ดูทั้งหมด</string>
+  <string name="ConversationSettingsFragment__add_members">เพิ่มสมาชิก</string>
+  <string name="ConversationSettingsFragment__permissions">สิทธิ์</string>
+  <string name="ConversationSettingsFragment__group_link">ลิงก์กลุ่ม</string>
+  <string name="ConversationSettingsFragment__unmute">เปิดเสียง</string>
+  <string name="ConversationSettingsFragment__phone_number">หมายเลขโทรศัพท์</string>
+  <!--PermissionsSettingsFragment-->
+  <string name="PermissionsSettingsFragment__add_members">เพิ่มสมาชิก</string>
+  <string name="PermissionsSettingsFragment__edit_group_info">แก้ไขข้อมูลกลุ่ม</string>
+  <string name="PermissionsSettingsFragment__all_members">สมาชิกทุกคน</string>
+  <string name="PermissionsSettingsFragment__only_admins">เฉพาะผู้ดูแล</string>
+  <string name="PermissionsSettingsFragment__who_can_add_new_members">ใครสามารถเพิ่มสมาชิกใหม่?</string>
+  <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">ใครสามารถแก้ไขข้อมูลของกลุ่มนี้ได้?</string>
+  <!--SoundsAndNotificationsSettingsFragment-->
+  <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">ปิดการแจ้งเตือน</string>
+  <string name="SoundsAndNotificationsSettingsFragment__not_muted">ไม่ปิดเสียง</string>
+  <string name="SoundsAndNotificationsSettingsFragment__mentions">การกล่าวถึง</string>
+  <string name="SoundsAndNotificationsSettingsFragment__custom_notifications">การแจ้งเตือนที่กำหนดเอง</string>
+  <!--StickerKeyboard-->
+  <!--PlaybackSpeedToggleTextView-->
+  <!--PaymentRecipientSelectionFragment-->
+  <!--NewConversationActivity-->
+  <string name="NewConversationActivity__new_message">ข้อความใหม่</string>
+  <!--ContactFilterView-->
+  <!--VoiceNotePlayerView-->
+  <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <!--AvatarPickerFragment-->
+  <string name="AvatarPickerFragment__camera">กล้อง</string>
+  <string name="AvatarPickerFragment__photo">รูปถ่าย</string>
+  <string name="AvatarPickerFragment__save">บันทึก</string>
+  <string name="AvatarPickerFragment__edit">แก้ไข</string>
+  <!--TextAvatarCreationFragment-->
+  <string name="TextAvatarCreationFragment__preview">ภาพตัวอย่าง</string>
+  <string name="TextAvatarCreationFragment__done">เสร็จสิ้น</string>
+  <string name="TextAvatarCreationFragment__color">สี</string>
+  <!--VectorAvatarCreationFragment-->
+  <!--ContactSelectionListItem-->
+  <string name="ContactSelectionListItem__sms">SMS</string>
   <!--EOF-->
 </resources>

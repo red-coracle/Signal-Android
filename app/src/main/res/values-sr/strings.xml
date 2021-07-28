@@ -53,9 +53,9 @@
   <string name="DraftDatabase_Draft_video_snippet">(видео)</string>
   <string name="DraftDatabase_Draft_location_snippet">(локација)</string>
   <string name="DraftDatabase_Draft_quote_snippet">(одговор)</string>
+  <string name="DraftDatabase_Draft_voice_note">(Гласовна порука)</string>
   <!--AttachmentKeyboard-->
   <string name="AttachmentKeyboard_gallery">Галерија</string>
-  <string name="AttachmentKeyboard_gif">ГИФ</string>
   <string name="AttachmentKeyboard_file">Датотека</string>
   <string name="AttachmentKeyboard_contact">Контакт</string>
   <string name="AttachmentKeyboard_location">Локација</string>
@@ -242,9 +242,6 @@
   <string name="ConversationActivity_full">Пуно</string>
   <string name="ConversationActivity_error_sending_media">Грешка приликом слања медија</string>
   <string name="ConversationActivity__reported_as_spam_and_blocked">Пријављено као нежељена пошта и блокирано.</string>
-  <string name="ConversationActivity_gifs_have_moved">ГИФ-ови су премештени</string>
-  <string name="ConversationActivity_look_for_gifs_next_to_emoji_and_stickers">Потражите ГИФ-ове поред Емоџи и налепница.</string>
-  <string name="ConversationActivity__gifs_are_now_here">ГИФ-ови су сада овде</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d непрочитана порука</item>
@@ -339,6 +336,7 @@
   <string name="ConversationTypingView__plus_d">+%1$d</string>
   <!--CreateGroupActivity-->
   <string name="CreateGroupActivity_some_contacts_cannot_be_in_legacy_groups">Неки контакти не могу бити у застарелим групама.</string>
+  <string name="CreateGroupActivity__select_members">Одаберите чланове</string>
   <!--CreateProfileActivity-->
   <string name="CreateProfileActivity__profile">Профил</string>
   <string name="CreateProfileActivity_error_setting_profile_photo">Грешка постављања профилне слике</string>
@@ -446,6 +444,7 @@
   <string name="AddToGroupActivity_add_to_groups">Додај у групе</string>
   <string name="AddToGroupActivity_this_person_cant_be_added_to_legacy_groups">Ова особа не може да се дода у застареле групе.</string>
   <string name="AddToGroupActivity_add">Додај</string>
+  <string name="AddToGroupActivity_add_to_a_group">Додај у групу</string>
   <!--ChooseNewAdminActivity-->
   <string name="ChooseNewAdminActivity_choose_new_admin">Изабери новог администратора</string>
   <string name="ChooseNewAdminActivity_done">Готово</string>
@@ -592,6 +591,7 @@
     <item quantity="other">Додати %3$d чланова у групу „%2$s“?</item>
   </plurals>
   <string name="AddMembersActivity__add">Додај</string>
+  <string name="AddMembersActivity__add_members">Додај чланове</string>
   <!--AddGroupDetailsFragment-->
   <string name="AddGroupDetailsFragment__name_this_group">Дајте назив групи</string>
   <string name="AddGroupDetailsFragment__create_group">Направи групу</string>
@@ -689,33 +689,12 @@
   <string name="ManageProfileFragment_your_username">Твоје корисничко име</string>
   <string name="ManageProfileFragment_failed_to_set_avatar">Неуспех постављења аватара</string>
   <!--ManageRecipientActivity-->
-  <string name="ManageRecipientActivity_add_to_system_contacts">Додај у системске контакте</string>
-  <string name="ManageRecipientActivity_this_person_is_in_your_contacts">Ова особа је у вашим контактима</string>
-  <string name="ManageRecipientActivity_disappearing_messages">Самонестајуће поруке</string>
-  <string name="ManageRecipientActivity_chat_color">Боја ћаскања</string>
-  <string name="ManageRecipientActivity_chat_wallpaper">Позадина за ћаскање</string>
-  <string name="ManageRecipientActivity_block">Блокирај</string>
-  <string name="ManageRecipientActivity_unblock">Одблокирај</string>
-  <string name="ManageRecipientActivity_view_safety_number">Прикажи сигурносни број</string>
-  <string name="ManageRecipientActivity_mute_notifications">Утишај обавештења</string>
-  <string name="ManageRecipientActivity_custom_notifications">Прилагођена обавештења</string>
-  <string name="ManageRecipientActivity_until_s">До %1$s</string>
-  <string name="ManageRecipientActivity_always">Увек</string>
-  <string name="ManageRecipientActivity_off">Искључено</string>
-  <string name="ManageRecipientActivity_on">Укључено</string>
-  <string name="ManageRecipientActivity_add_to_a_group">Додај у групу</string>
-  <string name="ManageRecipientActivity_view_all_groups">Види све групе</string>
-  <string name="ManageRecipientActivity_see_all">Погледај све</string>
   <string name="ManageRecipientActivity_no_groups_in_common">Нема заједничких група</string>
   <plurals name="ManageRecipientActivity_d_groups_in_common">
     <item quantity="one">%d заједничка група</item>
     <item quantity="few">%d заједничке групе</item>
     <item quantity="other">%d заједничких група</item>
   </plurals>
-  <string name="ManageRecipientActivity_message_description">Порука</string>
-  <string name="ManageRecipientActivity_voice_call_description">Гласовни позив</string>
-  <string name="ManageRecipientActivity_insecure_voice_call_description">Несигуран гласовни позив</string>
-  <string name="ManageRecipientActivity_video_call_description">Видео позив</string>
   <plurals name="GroupMemberList_invited">
     <item quantity="one">%1$s је позвао/ла једну особу</item>
     <item quantity="few">%1$s је позвао/ла %2$d особа</item>
@@ -868,6 +847,7 @@
   <string name="MediaOverviewActivity_audio">Звук</string>
   <string name="MediaOverviewActivity_video">Видео</string>
   <string name="MediaOverviewActivity_image">Слика</string>
+  <string name="MediaOverviewActivity_voice_message">Гласовна порука</string>
   <string name="MediaOverviewActivity_sent_by_s">Послао %1$s</string>
   <string name="MediaOverviewActivity_sent_by_you">Ви сте послали</string>
   <string name="MediaOverviewActivity_sent_by_s_to_s">Послао %1$s за %2$s</string>
@@ -908,6 +888,8 @@
   <!--MediaSendActivity-->
   <string name="MediaSendActivity_add_a_caption">Додај натпис</string>
   <string name="MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit">Датотека је уклоњена јер је прекорачила дозвољену величину</string>
+  <string name="MediaSendActivity_an_item_was_removed_because_it_had_an_unknown_type">Датотека је уклоњена јер је имала непознати тип</string>
+  <string name="MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit_or_had_an_unknown_type">Датотека је уклоњена јер је прекорачила дозвољену величину или има непознати тип</string>
   <string name="MediaSendActivity_camera_unavailable">Камера није доступна.</string>
   <string name="MediaSendActivity_message_to_s">Порука за %s</string>
   <string name="MediaSendActivity_message">Порука</string>
@@ -924,6 +906,9 @@
   <!--MediaRepository-->
   <string name="MediaRepository_all_media">Сви медији</string>
   <string name="MediaRepository__camera">Камера</string>
+  <!--MessageDecryptionUtil-->
+  <string name="MessageDecryptionUtil_failed_to_decrypt_message">Грешка при дешифровању поруке</string>
+  <string name="MessageDecryptionUtil_tap_to_send_a_debug_log">Кликните да пошаљете извештај грешака</string>
   <!--MessageRecord-->
   <string name="MessageRecord_unknown">Непознато</string>
   <string name="MessageRecord_message_encrypted_with_a_legacy_protocol_version_that_is_no_longer_supported">Примљена је порука шифрована старим издањем Signal-a које више није подржано. Замолите пошиљаоца да надогради на најновије издање и поново пошаље поруку.</string>
@@ -1234,6 +1219,8 @@
   <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">Верификујте да би се наставило преписивање</string>
   <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Да бисте спречили спем у Signаl-у, испуните верификацију.</string>
   <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">Након верификације, можете наставити са порукама. Било која паузирана порука ће аутоматски бити послана.</string>
+  <!--Recipient-->
+  <string name="Recipient_you">Ви</string>
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">Блокирај</string>
   <string name="RecipientPreferenceActivity_unblock">Одблокирај</string>
@@ -1418,7 +1405,6 @@
   <string name="SubmitDebugLogActivity_success">Успех!</string>
   <string name="SubmitDebugLogActivity_copy_this_url_and_add_it_to_your_issue">Копирајте овај УРЛ и додајте га и вашу пријаву или имејл:\n\n<b>%1$s</b></string>
   <string name="SubmitDebugLogActivity_share">Дели</string>
-  <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online">Овај извештај ће бити објављен и видљив пројектантима. Можете га прегледати и изменити пре преноса.</string>
   <!--SupportEmailUtil-->
   <string name="SupportEmailUtil_filter">Филтер:</string>
   <string name="SupportEmailUtil_device_info">Инфо о уређају:</string>
@@ -1715,6 +1701,7 @@
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">Клизај на дно</string>
   <!--safety_number_change_dialog-->
   <string name="safety_number_change_dialog__safety_number_changes">Промене сигурносног броја</string>
+  <string name="safety_number_change_dialog__accept">Прихвати</string>
   <string name="safety_number_change_dialog__send_anyway">Нема везе, пошаљи</string>
   <string name="safety_number_change_dialog__call_anyway">Нема везе, позови</string>
   <string name="safety_number_change_dialog__join_call">Придружи се позиву</string>
@@ -1798,8 +1785,6 @@
   <string name="giphy_activity_toolbar__search_gifs">Тражи GIF-ове</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">Нема резултата</string>
-  <!--log_submit_activity-->
-  <string name="log_submit_activity__this_log_will_be_posted_online">Овај извештај ће бити објављен и видљив пројектантима. Можете га прегледати и изменити пре објаве.</string>
   <!--database_migration_activity-->
   <string name="database_migration_activity__would_you_like_to_import_your_existing_text_messages">Желите ли да увезете постојеће текстуалне поруке у Signalову шифровану базу података?</string>
   <string name="database_migration_activity__the_default_system_database_will_not_be_modified">Подразумевана системска база података неће бити измењена или преуређена на било који начин.</string>
@@ -1887,6 +1872,7 @@
   <string name="message_details_recipient_header__delivered_to">Достављено</string>
   <string name="message_details_recipient_header__read_by">Прочитао</string>
   <string name="message_details_recipient_header__not_sent">Није послато</string>
+  <string name="message_details_recipient_header__viewed">Погледао</string>
   <!--message_Details_recipient-->
   <string name="message_details_recipient__failed_to_send">Неуспех слања</string>
   <string name="message_details_recipient__new_safety_number">Нова шифра преписке</string>
@@ -1941,6 +1927,7 @@
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__symbols">Симболи</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__flags">Заставе</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__emoticons">Емотикони</string>
+  <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">Нема резултата</string>
   <!--arrays.xml-->
   <string name="arrays__use_default">Користи подразумевано</string>
   <string name="arrays__use_custom">Користи посебно</string>
@@ -2726,7 +2713,7 @@
   <string name="RecipientBottomSheet_add_to_a_group">Додај у групу</string>
   <string name="RecipientBottomSheet_add_to_another_group">Додај у другу групу</string>
   <string name="RecipientBottomSheet_view_safety_number">Прикажи сигурносни број</string>
-  <string name="RecipientBottomSheet_make_group_admin">Постави за администратора групе</string>
+  <string name="RecipientBottomSheet_make_admin">Постави за администратора</string>
   <string name="RecipientBottomSheet_remove_as_admin">Одузми администраторске дозволе</string>
   <string name="RecipientBottomSheet_remove_from_group">Уклони из групе</string>
   <string name="RecipientBottomSheet_message_description">Порука</string>
@@ -2758,6 +2745,7 @@
   <string name="GroupLinkBottomSheet_copied_to_clipboard">Копирано у остави</string>
   <string name="GroupLinkBottomSheet_the_link_is_not_currently_active">Веза није тренутно активна</string>
   <!--VoiceNotePlaybackPreparer-->
+  <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">Гласовна порука није успешно учитана</string>
   <!--VoiceNoteMediaDescriptionCompatFactory-->
   <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Гласовна порука · %1$s</string>
   <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s за %2$s</string>
@@ -2826,6 +2814,11 @@
   <string name="DeleteAccountCountryPickerFragment__search_countries">Претражити државе</string>
   <!--CreateGroupActivity-->
   <string name="CreateGroupActivity__skip">Прескочи</string>
+  <plurals name="CreateGroupActivity__d_members">
+    <item quantity="one">%1$d члан(ов)а</item>
+    <item quantity="few">%1$d члан(ов)а</item>
+    <item quantity="other">%1$d члан(ов)а</item>
+  </plurals>
   <!--ShareActivity-->
   <string name="ShareActivity__share">Поделите</string>
   <string name="ShareActivity__send">Пошаљи</string>
@@ -3040,6 +3033,7 @@
     <item quantity="few">Ова прилагођена боја користи се у %1$d ћаскања. Да ли желите да је избришете из свих ћаскања?</item>
     <item quantity="other">Ова прилагођена боја користи се у %1$d ћаскања. Да ли желите да је избришете из свих ћаскања?</item>
   </plurals>
+  <string name="ChatColorSelectionFragment__delete_chat_color">Обрисати боје ћаскања?</string>
   <!--CustomChatColorCreatorFragment-->
   <string name="CustomChatColorCreatorFragment__solid">Солидно</string>
   <string name="CustomChatColorCreatorFragment__gradient">Градијент</string>
@@ -3068,6 +3062,8 @@
   <string name="ChatColorsMegaphone__we_switched_up_chat_colors">Пребацили смо боје ћаскања да вам дају више опција и олакшавају читање ћаскања.</string>
   <string name="ChatColorsMegaphone__appearance">Изглед</string>
   <string name="ChatColorsMegaphone__not_now">Не сада</string>
+  <!--AddAProfilePhotoMegaphone-->
+  <string name="AddAProfilePhotoMegaphone__not_now">Не сада</string>
   <!--KeyboardPagerFragment-->
   <string name="KeyboardPagerFragment_emoji">Емоџи</string>
   <string name="KeyboardPagerFragment_open_emoji_search">Отворите претрагу емоџија</string>
@@ -3085,5 +3081,80 @@
   <string name="StickerSearchDialogFragment_no_results_found">Нема резултата</string>
   <string name="EmojiSearchFragment__no_results_found">Нема резултата</string>
   <string name="NotificationsSettingsFragment__unknown_ringtone">Непозната мелодија звона</string>
+  <!--ConversationSettingsFragment-->
+  <string name="ConversationSettingsFragment__send_message">Пошаљите поруку</string>
+  <string name="ConversationSettingsFragment__start_video_call">Започните видео позив</string>
+  <string name="ConversationSettingsFragment__start_audio_call">Започните гласовни позив</string>
+  <string name="ConversationSettingsFragment__message">Порука</string>
+  <string name="ConversationSettingsFragment__video">Видео запис</string>
+  <string name="ConversationSettingsFragment__audio">Звучни запис</string>
+  <string name="ConversationSettingsFragment__call">Позови</string>
+  <string name="ConversationSettingsFragment__mute">Утишај</string>
+  <string name="ConversationSettingsFragment__muted">Утишано</string>
+  <string name="ConversationSettingsFragment__search">Претрага</string>
+  <string name="ConversationSettingsFragment__disappearing_messages">Самонестајуће поруке</string>
+  <string name="ConversationSettingsFragment__sounds_and_notifications">Звук и обавештења</string>
+  <string name="ConversationSettingsFragment__contact_details">Детаљи контакта</string>
+  <string name="ConversationSettingsFragment__view_safety_number">Прикажи сигурносни број</string>
+  <string name="ConversationSettingsFragment__block">Блокирај</string>
+  <string name="ConversationSettingsFragment__block_group">Блокирај групу</string>
+  <string name="ConversationSettingsFragment__unblock">Одблокирај</string>
+  <string name="ConversationSettingsFragment__unblock_group">Одблокирај групу</string>
+  <string name="ConversationSettingsFragment__add_to_a_group">Додај у групу</string>
+  <string name="ConversationSettingsFragment__see_all">Погледај све</string>
+  <string name="ConversationSettingsFragment__add_members">Додај чланове</string>
+  <string name="ConversationSettingsFragment__permissions">Дозволе</string>
+  <string name="ConversationSettingsFragment__requests_and_invites">Захтеви и позивнице</string>
+  <string name="ConversationSettingsFragment__group_link">Веза до групе</string>
+  <string name="ConversationSettingsFragment__add_as_a_contact">Додај у контакте</string>
+  <string name="ConversationSettingsFragment__unmute">Укључи обавештења</string>
+  <string name="ConversationSettingsFragment__conversation_muted_until_s">Преписка је утишана до %1$s</string>
+  <string name="ConversationSettingsFragment__conversation_muted_forever">Преписка је заувек утишана</string>
+  <string name="ConversationSettingsFragment__copied_phone_number_to_clipboard">Број телефона је копиран у оставу.</string>
+  <string name="ConversationSettingsFragment__phone_number">Број телефона</string>
+  <!--PermissionsSettingsFragment-->
+  <string name="PermissionsSettingsFragment__add_members">Додај чланове</string>
+  <string name="PermissionsSettingsFragment__edit_group_info">Уреди информације о групи</string>
+  <string name="PermissionsSettingsFragment__all_members">Сви чланови</string>
+  <string name="PermissionsSettingsFragment__only_admins">Само администратори</string>
+  <string name="PermissionsSettingsFragment__who_can_add_new_members">Ко може додати нове чланове?</string>
+  <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">Ко може мењати информације о групи?</string>
+  <!--SoundsAndNotificationsSettingsFragment-->
+  <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">Утишај обавештења</string>
+  <string name="SoundsAndNotificationsSettingsFragment__not_muted">Није утишано</string>
+  <string name="SoundsAndNotificationsSettingsFragment__muted_until_s">Утишано до %1$s</string>
+  <string name="SoundsAndNotificationsSettingsFragment__mentions">Помињања</string>
+  <string name="SoundsAndNotificationsSettingsFragment__always_notify">Увек обавести</string>
+  <string name="SoundsAndNotificationsSettingsFragment__do_not_notify">Немој обавештавати</string>
+  <string name="SoundsAndNotificationsSettingsFragment__custom_notifications">Прилагођена обавештења</string>
+  <!--StickerKeyboard-->
+  <string name="StickerKeyboard__recently_used">Недавно коришћено</string>
+  <!--PlaybackSpeedToggleTextView-->
+  <string name="PlaybackSpeedToggleTextView__p5x">.5x</string>
+  <string name="PlaybackSpeedToggleTextView__1x">1x</string>
+  <string name="PlaybackSpeedToggleTextView__2x">2x</string>
+  <!--PaymentRecipientSelectionFragment-->
+  <string name="PaymentRecipientSelectionFragment__new_payment">Нова уплата</string>
+  <!--NewConversationActivity-->
+  <string name="NewConversationActivity__new_message">Нова порука</string>
+  <!--ContactFilterView-->
+  <string name="ContactFilterView__search_name_or_number">Претрага имена или броја</string>
+  <!--VoiceNotePlayerView-->
+  <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <!--AvatarPickerFragment-->
+  <string name="AvatarPickerFragment__camera">Камера</string>
+  <string name="AvatarPickerFragment__photo">Фотографија</string>
+  <string name="AvatarPickerFragment__text">Текст</string>
+  <string name="AvatarPickerFragment__save">Сачувај</string>
+  <string name="AvatarPickerFragment__edit">Уреди</string>
+  <!--TextAvatarCreationFragment-->
+  <string name="TextAvatarCreationFragment__preview">Преглед</string>
+  <string name="TextAvatarCreationFragment__done">Готово</string>
+  <string name="TextAvatarCreationFragment__text">Текст</string>
+  <string name="TextAvatarCreationFragment__color">Боја</string>
+  <!--VectorAvatarCreationFragment-->
+  <!--ContactSelectionListItem-->
+  <string name="ContactSelectionListItem__sms">СМС</string>
+  <string name="ContactSelectionListItem__dot_s">· %1$s</string>
   <!--EOF-->
 </resources>

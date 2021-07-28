@@ -51,12 +51,12 @@
   <string name="DraftDatabase_Draft_quote_snippet">(பதில்)</string>
   <!--AttachmentKeyboard-->
   <string name="AttachmentKeyboard_gallery">கேலரி</string>
-  <string name="AttachmentKeyboard_gif">GIF</string>
   <string name="AttachmentKeyboard_file">கோப்பு</string>
   <string name="AttachmentKeyboard_contact">தொடர்பு</string>
   <string name="AttachmentKeyboard_location">இடம்</string>
   <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">புகைப்படங்கள் மற்றும் காணொளிகளை காட்ட Signal-க்கு அனுமதி தேவை.</string>
   <string name="AttachmentKeyboard_give_access">அணுகல் கொடுங்கள்</string>
+  <string name="AttachmentKeyboard_payment">கட்டணம்</string>
   <!--AttachmentManager-->
   <string name="AttachmentManager_cant_open_media_selection">மீடியாவை தேர்வுசெய்யும் ஒரு பயன்பாட்டை கண்டுபிடிக்க முடியவில்லை.</string>
   <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">புகைப்படங்கள், காணொளிகள் அல்லது ஆடியோவை இணைக்கவும் Signal க்கு சேமிப்பக அனுமதி தேவைப்படுகிறது, ஆனால் அது நிரந்தரமாக மறுக்கப்பட்டது. பயன்பாடு அமைப்புகள் மெனுவில் தொடரவும், \"அனுமதிகள்\" என்பதைத் தேர்ந்தெடுத்து \"சேமிப்பகத்தை\" இயக்கவும்.</string>
@@ -164,6 +164,7 @@
   <string name="ConversationItem_error_network_not_delivered">அனுப்புவது தோல்வியுற்றது</string>
   <string name="ConversationItem_received_key_exchange_message_tap_to_process">முக்கிய பரிமாற்ற செய்தி பெறப்பட்டது, செயலாக்க தட்டவும்.</string>
   <string name="ConversationItem_group_action_left">%1$s இந்தக் குழுவை விட்டு விலகினார்.</string>
+  <string name="ConversationItem_send_paused">அனுப்பு இடைநிறுத்தப்பட்டது</string>
   <string name="ConversationItem_click_to_approve_unencrypted">அனுப்புதல் தோல்வியுற்றது, பாதுகாப்பற்ற மாற்று செய்ய  தட்டவும்</string>
   <string name="ConversationItem_click_to_approve_unencrypted_sms_dialog_title">மாற்றாக மறையாக்கப்படாத SMS-ஆக அனுப்பலாமா?</string>
   <string name="ConversationItem_click_to_approve_unencrypted_mms_dialog_title">மாற்றாக மறையாக்கப்படாத MMS-ஆக அனுப்பலாமா?</string>
@@ -233,6 +234,7 @@
   <string name="ConversationActivity__more_options_now_in_group_settings">கூடுதல் அம்சங்கள் இப்போது \"குழு அமைப்புகளில்\"</string>
   <string name="ConversationActivity_join">சேரவும்</string>
   <string name="ConversationActivity_full">நிரம்பியது</string>
+  <string name="ConversationActivity__reported_as_spam_and_blocked">என புகாரளிக்கப்பட்டது ஸ்பேம் மற்றும் தடுக்கப்பட்டது.</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d படிக்காத செய்தி</item>
@@ -423,6 +425,7 @@
   <string name="AddToGroupActivity_add_to_groups">குழுக்களில் சேர்க்கவும்</string>
   <string name="AddToGroupActivity_this_person_cant_be_added_to_legacy_groups">இந்த நபரை பழைய மரபு குழுக்களில் சேர்க்க முடியாது.</string>
   <string name="AddToGroupActivity_add">சேர்க்கவும்</string>
+  <string name="AddToGroupActivity_add_to_a_group">ஒரு குழுவில் சேர்க்கவும்</string>
   <!--ChooseNewAdminActivity-->
   <string name="ChooseNewAdminActivity_choose_new_admin">புதிய நிர்வாகியைத் தேர்வுசெய்க</string>
   <string name="ChooseNewAdminActivity_done">முடிந்தது</string>
@@ -553,6 +556,7 @@
     <item quantity="other">\"%3$d\" உறுப்பினர்களை %2$s\" இல் சேர்க்கவா?</item>
   </plurals>
   <string name="AddMembersActivity__add">சேர்க்கவும்</string>
+  <string name="AddMembersActivity__add_members">உறுப்பினர்களைச் சேர்க்கவும்</string>
   <!--AddGroupDetailsFragment-->
   <string name="AddGroupDetailsFragment__name_this_group">இந்த குழுவிற்கு பெயரிடுங்கள்</string>
   <string name="AddGroupDetailsFragment__create_group">குழு உருவாக்குக</string>
@@ -641,31 +645,11 @@
   <string name="ManageProfileFragment_your_username">உங்கள் பயனர்பெயர்</string>
   <string name="ManageProfileFragment_failed_to_set_avatar">சித்தரிப்பு அமைப்பதில் தோல்வி</string>
   <!--ManageRecipientActivity-->
-  <string name="ManageRecipientActivity_add_to_system_contacts">தொலைபேசி தொடர்புகளில் சேர்க்கவும்</string>
-  <string name="ManageRecipientActivity_this_person_is_in_your_contacts">இந்த நபர் உங்கள் தொலைபேசி தொடர்புகளில் உள்ளார்</string>
-  <string name="ManageRecipientActivity_disappearing_messages">காணாமல் போகும் செய்திகள்</string>
-  <string name="ManageRecipientActivity_chat_color">உரையாடல் நிறம்</string>
-  <string name="ManageRecipientActivity_chat_wallpaper">உரையாடல் பின்னணிப்படம்</string>
-  <string name="ManageRecipientActivity_block">தடு </string>
-  <string name="ManageRecipientActivity_unblock">தடைநீக்கு </string>
-  <string name="ManageRecipientActivity_view_safety_number">பாதுகாப்பு எண்ணைக் காண்பி</string>
-  <string name="ManageRecipientActivity_mute_notifications">அறிவிப்பை ஒலியடக்கு</string>
-  <string name="ManageRecipientActivity_custom_notifications">தனிப்பயன் அறிவிப்புகள்</string>
-  <string name="ManageRecipientActivity_until_s">%1$s வரை</string>
-  <string name="ManageRecipientActivity_off">அணை</string>
-  <string name="ManageRecipientActivity_on">இயக்க</string>
-  <string name="ManageRecipientActivity_add_to_a_group">ஒரு குழுவில் சேர்க்கவும்</string>
-  <string name="ManageRecipientActivity_view_all_groups">எல்லா குழுக்களையும் காண்க</string>
-  <string name="ManageRecipientActivity_see_all">அனைத்தையும் பார்</string>
   <string name="ManageRecipientActivity_no_groups_in_common">பொதுவான குழுக்கள் எதுவும் இல்லை</string>
   <plurals name="ManageRecipientActivity_d_groups_in_common">
     <item quantity="one">%d பொதுவான குழுக்கள்</item>
     <item quantity="other">%d பொதுவான குழுக்கள்</item>
   </plurals>
-  <string name="ManageRecipientActivity_message_description">செய்தி</string>
-  <string name="ManageRecipientActivity_voice_call_description">குரல் அழைப்பு</string>
-  <string name="ManageRecipientActivity_insecure_voice_call_description">பாதுகாப்பற்ற குரல் அழைப்பு </string>
-  <string name="ManageRecipientActivity_video_call_description">காணொளி அழைப்பு</string>
   <plurals name="GroupMemberList_invited">
     <item quantity="one">%1$s இந்த மக்களை அழைத்தார்கள்</item>
     <item quantity="other">%1$s அவர்கள்  %2$d அழைத்தார்கள்</item>
@@ -809,6 +793,7 @@
   <string name="MediaOverviewActivity_audio">ஒலி</string>
   <string name="MediaOverviewActivity_video">காணொளி</string>
   <string name="MediaOverviewActivity_image">படம் </string>
+  <string name="MediaOverviewActivity_voice_message">குரல் செய்தி</string>
   <string name="MediaOverviewActivity_sent_by_s">அனுப்பியது %1$s</string>
   <string name="MediaOverviewActivity_sent_by_you">அனுப்பியதுநீங்கள்</string>
   <string name="MediaOverviewActivity_sent_by_s_to_s">அனுப்பியது %1$s க்கு%2$s</string>
@@ -863,6 +848,7 @@
   <!--MediaRepository-->
   <string name="MediaRepository_all_media">அனைத்து ஊடகங்களும்</string>
   <string name="MediaRepository__camera">புகைப்பட கருவி</string>
+  <!--MessageDecryptionUtil-->
   <!--MessageRecord-->
   <string name="MessageRecord_unknown">தெரியாத</string>
   <string name="MessageRecord_message_encrypted_with_a_legacy_protocol_version_that_is_no_longer_supported">ஆதரவில்லா Signal-இன் பழைய பதிப்பைப் பயன்படுத்தி மறையாக்கப்பட்ட செய்தி பெறப்பட்டது. தயவுசெய்து அனுப்புநரிடம் மிகச் சமீபத்திய பதிப்பைப் புதுப்பித்து, செய்தியை மீண்டும் அனுப்பச் சொல்லுங்கள்.</string>
@@ -963,6 +949,7 @@
   <string name="MessageRecord_s_changed_the_group_name_to_s">%1$s அவர்கள் குழு பெயரை \"%2$s\" என மாற்றினர்.</string>
   <string name="MessageRecord_the_group_name_has_changed_to_s">குழுவின் பெயர் \"%1$s\" என்று மாற்றப்பட்டுள்ளது.</string>
   <!--GV2 description change-->
+  <string name="MessageRecord_you_changed_the_group_description">நீங்கள் மாற்றினீர்கள் குழு விளக்கம்.</string>
   <string name="MessageRecord_s_changed_the_group_description">%1$s குழு விளக்கத்தை மாற்றினார்.</string>
   <!--GV2 avatar change-->
   <string name="MessageRecord_you_changed_the_group_avatar">குழு சின்னத்தை மாற்றியுள்ளீர்கள்.</string>
@@ -1153,6 +1140,11 @@
   <!--ReactionsRecipientAdapter-->
   <string name="ReactionsRecipientAdapter_you">நீங்கள்</string>
   <!--RecaptchaRequiredBottomSheetFragment-->
+  <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">செய்தியைத் தொடர சரிபார்க்கவும்</string>
+  <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">க்கு உதவி தடுக்க ஸ்பேம் ஆன் சிக்னல், தயவு செய்து முழுமை சரிபார்ப்பு.</string>
+  <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">சரிபார்க்கப்பட்ட பிறகு, நீங்கள் தொடர்ந்து செய்தியிடலாம். இடைநிறுத்தப்பட்ட எந்த செய்திகளும் தானாகவே அனுப்பப்படும்.</string>
+  <!--Recipient-->
+  <string name="Recipient_you">நீங்கள்</string>
   <!--RecipientPreferencesActivity-->
   <string name="RecipientPreferenceActivity_block">தடு</string>
   <string name="RecipientPreferenceActivity_unblock">தடுப்புநீக்க</string>
@@ -1361,6 +1353,7 @@
   <string name="ThreadRecord_you_marked_verified">சரிபார்க்கப்பட்டதைக் குறித்தீர்கள்</string>
   <string name="ThreadRecord_you_marked_unverified">நீங்கள் சரிபார்க்கப்படவில்லை எனக் குறித்தீர்கள்</string>
   <string name="ThreadRecord_message_could_not_be_processed">செய்தியை செயலாக்க முடியவில்லை</string>
+  <string name="ThreadRecord_delivery_issue">டெலிவரி பிரச்சினை</string>
   <string name="ThreadRecord_message_request">செய்தி கோரிக்கை</string>
   <string name="ThreadRecord_photo">புகைப்படம் </string>
   <string name="ThreadRecord_gif">GIF</string>
@@ -1596,6 +1589,7 @@
   <string name="ConversationUpdateItem_return_to_call">அழைப்புக்குத் திரும்பு</string>
   <string name="ConversationUpdateItem_call_is_full">அழைப்பு நிரம்பியுள்ளது</string>
   <string name="ConversationUpdateItem_invite_friends">நண்பர்களை அழை</string>
+  <string name="ConversationUpdateItem_no_groups_in_common_review_requests_carefully">இல்லை குழுக்கள்பொதுவாக. கோரிக்கைகளை கவனமாக மதிப்பாய்வு செய்யவும்.</string>
   <string name="ConversationUpdateItem_view">காண்க</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">விளையாடு … இடைநிறுத்து</string>
@@ -1612,6 +1606,7 @@
   <string name="conversation_fragment__scroll_to_the_bottom_content_description">கீழே உருட்டவும்</string>
   <!--safety_number_change_dialog-->
   <string name="safety_number_change_dialog__safety_number_changes">பாதுகாப்பு எண் மாற்றங்கள்</string>
+  <string name="safety_number_change_dialog__accept">ஒப்புக்கொள்</string>
   <string name="safety_number_change_dialog__send_anyway">இருந்தாலும் அனுப்பு</string>
   <string name="safety_number_change_dialog__call_anyway">இருந்தாலும் அழைக்கவும்</string>
   <string name="safety_number_change_dialog__join_call">அழைப்பில் சேரவும்</string>
@@ -1679,8 +1674,6 @@
   <string name="giphy_activity_toolbar__search_gifs">நகரும் படங்களைத் GIF தேடுங்கள்</string>
   <!--giphy_fragment-->
   <string name="giphy_fragment__nothing_found">எதுவும் கிடைக்கவில்லை</string>
-  <!--log_submit_activity-->
-  <string name="log_submit_activity__this_log_will_be_posted_online">பங்களிப்பாளர்களைக் காண இந்த பதிவு ஆன்லைனில் பொதுவில் வெளியிடப்படும், சமர்ப்பிக்கும் முன் அதை ஆராய்ந்து திருத்தலாம்.</string>
   <!--database_migration_activity-->
   <string name="database_migration_activity__would_you_like_to_import_your_existing_text_messages">உங்களிடம்  இருக்கும் உரை செய்திகளை Signal-இன் மறையாக்கப்பட்ட தரவுத்தளத்தில் இறக்குமதி செய்ய விரும்புகிறீர்களா?</string>
   <string name="database_migration_activity__the_default_system_database_will_not_be_modified">இயல்புநிலை சாதனக் கோப்பு இதனால் எந்தவிதத்திலும் மாற்றமோ அல்லது திறுத்தமோ பெறாது.</string>
@@ -1708,6 +1701,7 @@
   <string name="prompt_mms_activity__signal_requires_mms_settings_to_deliver_media_and_group_messages">உங்கள் வயர்லெஸ் கேரியர் மூலம் மீடியா மற்றும் குழு செய்திகளை வழங்க Signal கு எம்எம்எஸ் அமைப்புகள் தேவை. உங்கள் சாதனத்தில் இந்த தகவல் கிடைக்கும்  இருப்பில் இருக்காது, இது பூட்டப்பட்ட சாதனங்கள், மற்றும் பிற கட்டுப்பாட்டு உள்ளமைவுகளுக்கு, அவ்வப்போது பொருந்தும்  உண்மை.</string>
   <string name="prompt_mms_activity__to_send_media_and_group_messages_tap_ok">மீடியா மற்றும் குழு செய்திகளை அனுப்ப, \'சரி\' என்பதைத் தட்டவும், கோரப்பட்ட அமைப்புகளை முடிக்கவும். \'உங்கள் கேரியர் APN\' ஐத் தேடுவதன் மூலம் உங்கள் கேரியருக்கான MMS அமைப்புகள் பொதுவாக அமைந்திருக்கும். நீங்கள் இதை ஒரு முறை மட்டுமே செய்ய வேண்டும்.</string>
   <!--BadDecryptLearnMoreDialog-->
+  <string name="BadDecryptLearnMoreDialog_delivery_issue">டெலிவரி பிரச்சினை</string>
   <!--profile_create_activity-->
   <string name="CreateProfileActivity_first_name_required">முதல் பெயர் (தேவை)</string>
   <string name="CreateProfileActivity_last_name_optional">குடும்பப் பெயர் (விரும்பினால்)</string>
@@ -1715,6 +1709,7 @@
   <string name="CreateProfileActivity__username">பயனர்பெயர்</string>
   <string name="CreateProfileActivity__create_a_username">பயனர்பெயரை உருவாக்கவும்</string>
   <string name="CreateProfileActivity_custom_mms_group_names_and_photos_will_only_be_visible_to_you">தனிப்பயன் எம்.எம்.எஸ் குழு பெயர்கள் மற்றும் புகைப்படங்கள் உங்களுக்கு மட்டுமே தெரியும்.</string>
+  <string name="CreateProfileActivity_group_descriptions_will_be_visible_to_members_of_this_group_and_people_who_have_been_invited">குழு இந்த உறுப்பினர்களுக்கு விளக்கங்கள் தெரியும் குழு மற்றும் மக்கள் அழைக்கப்பட்டவர்கள்.</string>
   <!--EditAboutFragment-->
   <string name="EditAboutFragment_about">பற்றி</string>
   <string name="EditAboutFragment_write_a_few_words_about_yourself">உங்களைப் பற்றி சில வார்த்தைகளை எழுதுங்கள்…</string>
@@ -1762,6 +1757,7 @@
   <string name="message_details_recipient_header__delivered_to">வழங்கப்பட்டது</string>
   <string name="message_details_recipient_header__read_by">படித்தவர்கள்</string>
   <string name="message_details_recipient_header__not_sent">அனுப்ப முடியவில்லை</string>
+  <string name="message_details_recipient_header__viewed">பார்த்தவர்</string>
   <!--message_Details_recipient-->
   <string name="message_details_recipient__failed_to_send">அனுப்ப முடியவில்லை</string>
   <string name="message_details_recipient__new_safety_number">புதிய பாதுகாப்பு எண்</string>
@@ -2382,7 +2378,7 @@
   <string name="RecipientBottomSheet_add_to_a_group">ஒரு குழுவில் சேர்க்கவும்</string>
   <string name="RecipientBottomSheet_add_to_another_group">மற்றொரு குழுவில் சேர்க்கவும்</string>
   <string name="RecipientBottomSheet_view_safety_number">பாதுகாப்பு எண்ணைக் காண்பி</string>
-  <string name="RecipientBottomSheet_make_group_admin">குழு நிர்வாகியாக்கு</string>
+  <string name="RecipientBottomSheet_make_admin">நிர்வாகியை உருவாக்குங்கள்</string>
   <string name="RecipientBottomSheet_remove_as_admin">நிர்வாகி நிலையிலிருந்து அகற்று</string>
   <string name="RecipientBottomSheet_remove_from_group">குழுவிலிருந்து அகற்று</string>
   <string name="RecipientBottomSheet_message_description">செய்தி</string>
@@ -2490,11 +2486,13 @@
   <string name="ChatWallpaperActivity__chat_wallpaper">உரையாடல் பின்னணிப்படம்</string>
   <!--ChatWallpaperFragment-->
   <string name="ChatWallpaperFragment__chat_color">உரையாடல் நிறம்</string>
+  <string name="ChatWallpaperFragment__reset_chat_color">மீட்டமை அரட்டை நிறம்</string>
   <string name="ChatWallpaperFragment__set_wallpaper">பின்னணிப்படம் அமைக்கவும்</string>
   <string name="ChatWallpaperFragment__contact_name">தொடர்பு பெயர்</string>
   <string name="ChatWallpaperFragment__reset">மீட்டமைக்க</string>
   <string name="ChatWallpaperFragment__clear">அழி</string>
   <string name="ChatWallpaperFragment__wallpaper_preview_description">பின்னணிப்பட மாதிரிக்காட்சி</string>
+  <string name="ChatWallpaperFragment__would_you_like_to_override_all_chat_colors">அனைத்தையும் மேலெழுத விரும்புகிறீர்களா? அரட்டை வண்ணங்கள்?</string>
   <string name="ChatWallpaperFragment__reset_all_wallpapers">அனைத்து பின்னணிப்படங்களையும் மீட்டமைக்கவும்</string>
   <!--ChatWallpaperSelectionFragment-->
   <string name="ChatWallpaperSelectionFragment__choose_from_photos">புகைப்படங்களிலிருந்து தேர்வு செய்யவும்</string>
@@ -2519,11 +2517,13 @@
   <string name="payment_info_card_update_pin">பின்னைப் புதுப்பிக்கவும்</string>
   <!--DeactivateWalletFragment-->
   <!--PaymentsRecoveryStartFragment-->
+  <string name="PaymentsRecoveryStartFragment__start">தொடங்கு</string>
   <!--PaymentsRecoveryPasteFragment-->
   <string name="PaymentsRecoveryPasteFragment__next">அடுத்தது</string>
   <!--PaymentsRecoveryPhraseFragment-->
   <string name="PaymentsRecoveryPhraseFragment__next">அடுத்தது</string>
   <string name="PaymentsRecoveryPhraseFragment__edit">தொகு</string>
+  <string name="PaymentsRecoveryPhraseFragment__previous">முந்தையது</string>
   <string name="PaymentsRecoveryPhraseFragment__copy">நகல்</string>
   <!--PaymentsRecoveryPhraseConfirmFragment-->
   <string name="PaymentRecoveryPhraseConfirmFragment__done">முடிந்தது</string>
@@ -2536,7 +2536,11 @@
   <!--CanNotSendPaymentDialog-->
   <string name="CanNotSendPaymentDialog__send_a_message">செய்தி அனுப்புங்கள்</string>
   <!--GroupsInCommonMessageRequest-->
+  <string name="GroupsInCommonMessageRequest__you_have_no_groups_in_common_with_this_person">உங்களிடம் உள்ளது இல்லை குழுக்கள்இந்த நபருடன் பொதுவானது. தேவையற்ற செய்திகளைத் தவிர்ப்பதற்கு ஏற்றுக்கொள்வதற்கு முன் கோரிக்கைகளை கவனமாக மதிப்பாய்வு செய்யவும்.
+ </string>
   <string name="GroupsInCommonMessageRequest__okay">சரி</string>
+  <string name="ChatColorSelectionFragment__heres_a_preview_of_the_chat_color">இங்கே ஒரு முன்னோட்டம் அரட்டை நிறம்.</string>
+  <string name="ChatColorSelectionFragment__the_color_is_visible_to_only_you">நிறம் உங்களுக்கு மட்டுமே தெரியும்.</string>
   <!--GroupDescriptionDialog-->
   <!--QualitySelectorBottomSheetDialog-->
   <string name="QualitySelectorBottomSheetDialog__standard">தரநிலை</string>
@@ -2561,6 +2565,8 @@
   <string name="PrivacySettingsFragment__messaging">செய்தி அனுப்புதல்</string>
   <string name="PrivacySettingsFragment__disappearing_messages">காணாமல் போகும் செய்திகள்</string>
   <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">அண்மை பட்டியல் மற்றும் மென்பொருளுக்கு உள்ளே திரையை படம் எடுப்பதை தடுக்கவும்</string>
+  <string name="PrivacySettingsFragment__default_timer_for_new_changes">இயல்புநிலை நேரக்குறிப்பான் புதிய அரட்டைகளுக்கு</string>
+  <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">அமை இயல்புநிலை மறைந்து வரும் செய்தி டைமர் நீங்கள் தொடங்கிய அனைத்து புதிய அரட்டைகளுக்கும்.</string>
   <!--AdvancedPrivacySettingsFragment-->
   <!--ExpireTimerSettingsFragment-->
   <string name="ExpireTimerSettingsFragment__off">அணை</string>
@@ -2569,6 +2575,7 @@
   <string name="ExpireTimerSettingsFragment__1_hour">1 மணி நேரம்</string>
   <string name="ExpireTimerSettingsFragment__5_minutes">5 நிமிடம்</string>
   <string name="ExpireTimerSettingsFragment__30_seconds">30 வினாடிகள்</string>
+  <string name="ExpireTimerSettingsFragment__custom_time">விருப்ப நேரம்</string>
   <string name="ExpireTimerSettingsFragment__set">அமைக்கவும்</string>
   <string name="ExpireTimerSettingsFragment__save">சேமி</string>
   <string name="CustomExpireTimerSelectorView__minutes">நிமிடங்கள்</string>
@@ -2583,20 +2590,85 @@
   <!--ChatColorSelectionFragment-->
   <string name="ChatColorSelectionFragment__chat_color">உரையாடல் நிறம்</string>
   <string name="ChatColorSelectionFragment__edit">தொகு</string>
+  <string name="ChatColorSelectionFragment__duplicate">நகல்</string>
   <string name="ChatColorSelectionFragment__delete">நீக்கு</string>
+  <string name="ChatColorSelectionFragment__delete_color">வண்ணத்தை நீக்கு</string>
   <!--CustomChatColorCreatorFragment-->
+  <string name="CustomChatColorCreatorFragment__solid">திட</string>
+  <string name="CustomChatColorCreatorFragment__gradient">சாய்வு</string>
+  <string name="CustomChatColorCreatorFragment__hue">சாயல்</string>
+  <string name="CustomChatColorCreatorFragment__saturation">செறிவூட்டல்</string>
   <!--CustomChatColorCreatorFragmentPage-->
   <string name="CustomChatColorCreatorFragmentPage__save">சேமி</string>
+  <string name="CustomChatColorCreatorFragmentPage__edit_color">தொகு நிறம்</string>
   <!--ChatColorGradientTool-->
   <!--EditReactionsFragment-->
   <string name="EditReactionsFragment__reset">மீட்டமைக்க</string>
   <string name="EditReactionsFragment_save">சேமி</string>
+  <string name="ChatColorSelectionFragment__auto_matches_the_color_to_the_wallpaper">ஆட்டோ வண்ணத்துடன் பொருந்துகிறது வால்பேப்பர்</string>
   <!--ChatColorsMegaphone-->
   <string name="ChatColorsMegaphone__appearance">தோற்றம்</string>
   <string name="ChatColorsMegaphone__not_now">இப்போது இல்லை</string>
+  <!--AddAProfilePhotoMegaphone-->
+  <string name="AddAProfilePhotoMegaphone__not_now">இப்போது இல்லை</string>
   <!--KeyboardPagerFragment-->
   <string name="KeyboardPagerFragment_emoji">உணர்வு படங்கள்</string>
   <string name="KeyboardPagerFragment_stickers">ஒட்டிகள்</string>
   <!--StickerSearchDialogFragment-->
+  <!--ConversationSettingsFragment-->
+  <string name="ConversationSettingsFragment__message">செய்தி</string>
+  <string name="ConversationSettingsFragment__video">காணொளி</string>
+  <string name="ConversationSettingsFragment__audio">ஒலி</string>
+  <string name="ConversationSettingsFragment__call">அழைப்பு</string>
+  <string name="ConversationSettingsFragment__mute">முடக்கு</string>
+  <string name="ConversationSettingsFragment__muted">முடக்கியது</string>
+  <string name="ConversationSettingsFragment__search">தேடு </string>
+  <string name="ConversationSettingsFragment__disappearing_messages">காணாமல் போகும் செய்திகள்</string>
+  <string name="ConversationSettingsFragment__view_safety_number">பாதுகாப்பு எண்ணைக் காண்பி</string>
+  <string name="ConversationSettingsFragment__block">தடு </string>
+  <string name="ConversationSettingsFragment__block_group">குழுவைத் தடு</string>
+  <string name="ConversationSettingsFragment__unblock">தடைநீக்கு </string>
+  <string name="ConversationSettingsFragment__unblock_group">குழுவைத் தடைநீக்கு</string>
+  <string name="ConversationSettingsFragment__add_to_a_group">ஒரு குழுவில் சேர்க்கவும்</string>
+  <string name="ConversationSettingsFragment__see_all">அனைத்தையும் பார்</string>
+  <string name="ConversationSettingsFragment__add_members">உறுப்பினர்களைச் சேர்க்கவும்</string>
+  <string name="ConversationSettingsFragment__permissions">அனுமதிகள்</string>
+  <string name="ConversationSettingsFragment__group_link">குழு இணைப்பு</string>
+  <string name="ConversationSettingsFragment__unmute">ஒலியடக்கை நீக்கு</string>
+  <string name="ConversationSettingsFragment__phone_number">தொலைபேசி எண்</string>
+  <!--PermissionsSettingsFragment-->
+  <string name="PermissionsSettingsFragment__add_members">உறுப்பினர்களைச் சேர்க்கவும்</string>
+  <string name="PermissionsSettingsFragment__edit_group_info">குழு தகவலைத் திருத்தல்</string>
+  <string name="PermissionsSettingsFragment__all_members">அனைத்து உறுப்பினர்கள்</string>
+  <string name="PermissionsSettingsFragment__only_admins">நிர்வாகிகள் மட்டுமே</string>
+  <string name="PermissionsSettingsFragment__who_can_add_new_members">புதிய உறுப்பினர்களை யார் சேர்க்க முடியும்?</string>
+  <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">இந்த குழுவின் தகவலை யார் திருத்தலாம்?</string>
+  <!--SoundsAndNotificationsSettingsFragment-->
+  <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">அறிவிப்பை ஒலியடக்கு</string>
+  <string name="SoundsAndNotificationsSettingsFragment__not_muted">முடக்கப்படவில்லை</string>
+  <string name="SoundsAndNotificationsSettingsFragment__mentions">பெயர் குறிப்பிடுவது</string>
+  <string name="SoundsAndNotificationsSettingsFragment__custom_notifications">தனிப்பயன் அறிவிப்புகள்</string>
+  <!--StickerKeyboard-->
+  <!--PlaybackSpeedToggleTextView-->
+  <!--PaymentRecipientSelectionFragment-->
+  <!--NewConversationActivity-->
+  <string name="NewConversationActivity__new_message">புதிய செய்தி</string>
+  <!--ContactFilterView-->
+  <!--VoiceNotePlayerView-->
+  <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <!--AvatarPickerFragment-->
+  <string name="AvatarPickerFragment__camera">புகைப்பட கருவி</string>
+  <string name="AvatarPickerFragment__photo">புகைப்படம் </string>
+  <string name="AvatarPickerFragment__text">உரை</string>
+  <string name="AvatarPickerFragment__save">சேமி</string>
+  <string name="AvatarPickerFragment__edit">தொகு</string>
+  <!--TextAvatarCreationFragment-->
+  <string name="TextAvatarCreationFragment__preview">முன்னோட்டம்</string>
+  <string name="TextAvatarCreationFragment__done">முடிந்தது</string>
+  <string name="TextAvatarCreationFragment__text">உரை</string>
+  <string name="TextAvatarCreationFragment__color">நிறம்</string>
+  <!--VectorAvatarCreationFragment-->
+  <!--ContactSelectionListItem-->
+  <string name="ContactSelectionListItem__sms">SMS</string>
   <!--EOF-->
 </resources>

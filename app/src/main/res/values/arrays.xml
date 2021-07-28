@@ -11,6 +11,7 @@
 <!-- bs --><item>Bosanski</item>
 <!-- bg --><item>Bulgarian български</item>
 <!-- my --><item>Burmese ဗမာစကား</item>
+<!-- yue --><item>Cantonese (Traditional) 粵語 (繁體)</item>
 <!-- ca --><item>Català</item>
 <!-- cs --><item>Čeština</item>
 <!-- zh_CN --><item>Chinese (Simplified) 中文 (简体)</item>
@@ -90,6 +91,7 @@
       <item>bs</item>
       <item>bg</item>
       <item>my</item>
+      <item>yue</item>
       <item>ca</item>
       <item>cs</item>
       <item>zh_CN</item>
@@ -390,6 +392,27 @@
         <item>@string/CustomExpireTimerSelectorView__hours</item>
         <item>@string/CustomExpireTimerSelectorView__days</item>
         <item>@string/CustomExpireTimerSelectorView__weeks</item>
+    </string-array>
+
+    <string-array name="PermissionsSettingsFragment__editor_labels">
+        <item>@string/PermissionsSettingsFragment__only_admins</item>
+        <item>@string/PermissionsSettingsFragment__all_members</item>
+    </string-array>
+
+    <string-array name="SoundsAndNotificationsSettingsFragment__mention_labels">
+        <item>@string/SoundsAndNotificationsSettingsFragment__always_notify</item>
+        <item>@string/SoundsAndNotificationsSettingsFragment__do_not_notify</item>
+    </string-array>
+
+    <integer-array name="PlaybackSpeedToggleTextView__speeds">
+        <item>100</item>
+        <item>200</item>
+        <item>50</item>
+    </integer-array>
+    <string-array name="PlaybackSpeedToggleTextView__speed_labels">
+        <item>@string/PlaybackSpeedToggleTextView__1x</item>
+        <item>@string/PlaybackSpeedToggleTextView__2x</item>
+        <item>@string/PlaybackSpeedToggleTextView__p5x</item>
     </string-array>
 
 </resources>

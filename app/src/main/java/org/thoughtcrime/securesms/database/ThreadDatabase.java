@@ -89,9 +89,9 @@ public class ThreadDatabase extends Database {
   public  static final String ID                     = "_id";
   public  static final String DATE                   = "date";
   public  static final String MESSAGE_COUNT          = "message_count";
-  public  static final String RECIPIENT_ID           = "recipient_ids";
+  public  static final String RECIPIENT_ID           = "thread_recipient_id";
   public  static final String SNIPPET                = "snippet";
-  private static final String SNIPPET_CHARSET        = "snippet_cs";
+  private static final String SNIPPET_CHARSET        = "snippet_charset";
   public  static final String READ                   = "read";
   public  static final String UNREAD_COUNT           = "unread_count";
   public  static final String TYPE                   = "type";
@@ -110,7 +110,7 @@ public class ThreadDatabase extends Database {
   private static final String LAST_SCROLLED          = "last_scrolled";
           static final String PINNED                 = "pinned";
 
-  public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + ID                     + " INTEGER PRIMARY KEY, " +
+  public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                                                                   DATE                   + " INTEGER DEFAULT 0, " +
                                                                                   MESSAGE_COUNT          + " INTEGER DEFAULT 0, " +
                                                                                   RECIPIENT_ID           + " INTEGER, " +
@@ -135,7 +135,7 @@ public class ThreadDatabase extends Database {
                                                                                   PINNED                 + " INTEGER DEFAULT 0);";
 
   public static final String[] CREATE_INDEXS = {
-    "CREATE INDEX IF NOT EXISTS thread_recipient_ids_index ON " + TABLE_NAME + " (" + RECIPIENT_ID + ");",
+    "CREATE INDEX IF NOT EXISTS thread_recipient_id_index ON " + TABLE_NAME + " (" + RECIPIENT_ID + ");",
     "CREATE INDEX IF NOT EXISTS archived_count_index ON " + TABLE_NAME + " (" + ARCHIVED + ", " + MESSAGE_COUNT + ");",
     "CREATE INDEX IF NOT EXISTS thread_pinned_index ON " + TABLE_NAME + " (" + PINNED + ");",
   };
@@ -255,6 +255,7 @@ public class ThreadDatabase extends Database {
     GroupReceiptDatabase groupReceiptDatabase = DatabaseFactory.getGroupReceiptDatabase(context);
     MmsSmsDatabase       mmsSmsDatabase       = DatabaseFactory.getMmsSmsDatabase(context);
     MentionDatabase      mentionDatabase      = DatabaseFactory.getMentionDatabase(context);
+    int                  deletes              = 0;
 
     try (Cursor cursor = databaseHelper.getReadableDatabase().query(TABLE_NAME, new String[] { ID }, null, null, null, null, null)) {
       while (cursor != null && cursor.moveToNext()) {
@@ -269,12 +270,15 @@ public class ThreadDatabase extends Database {
       attachmentDatabase.trimAllAbandonedAttachments();
       groupReceiptDatabase.deleteAbandonedRows();
       mentionDatabase.deleteAbandonedMentions();
-      attachmentDatabase.deleteAbandonedAttachmentFiles();
+      deletes = attachmentDatabase.deleteAbandonedAttachmentFiles();
       db.setTransactionSuccessful();
     } finally {
       db.endTransaction();
     }
 
+    if (deletes > 0) {
+      Log.i(TAG, "Trim all threads caused " + deletes + " attachments to be deleted.");
+    }
 
     notifyAttachmentListeners();
     notifyStickerListeners();
@@ -291,6 +295,7 @@ public class ThreadDatabase extends Database {
     GroupReceiptDatabase groupReceiptDatabase = DatabaseFactory.getGroupReceiptDatabase(context);
     MmsSmsDatabase       mmsSmsDatabase       = DatabaseFactory.getMmsSmsDatabase(context);
     MentionDatabase      mentionDatabase      = DatabaseFactory.getMentionDatabase(context);
+    int                  deletes              = 0;
 
     db.beginTransaction();
 
@@ -300,12 +305,15 @@ public class ThreadDatabase extends Database {
       attachmentDatabase.trimAllAbandonedAttachments();
       groupReceiptDatabase.deleteAbandonedRows();
       mentionDatabase.deleteAbandonedMentions();
-      attachmentDatabase.deleteAbandonedAttachmentFiles();
+      deletes = attachmentDatabase.deleteAbandonedAttachmentFiles();
       db.setTransactionSuccessful();
     } finally {
       db.endTransaction();
     }
 
+    if (deletes > 0) {
+      Log.i(TAG, "Trim thread " + threadId + " caused " + deletes + " attachments to be deleted.");
+    }
 
     notifyAttachmentListeners();
     notifyStickerListeners();
@@ -430,7 +438,7 @@ public class ThreadDatabase extends Database {
       db.endTransaction();
     }
 
-    notifyConversationListeners(threadIdToSinceTimestamp.keySet());
+    notifyVerboseConversationListeners(threadIdToSinceTimestamp.keySet());
     notifyConversationListListeners();
 
     if (needsSync) {
@@ -543,7 +551,8 @@ public class ThreadDatabase extends Database {
     }
 
     if (hideSms) {
-      query += " AND (" + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.GROUP_ID + " NOT NULL OR " + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.REGISTERED + " = " + RecipientDatabase.RegisteredState.REGISTERED.getId() + ")";
+      query += " AND ((" + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.GROUP_ID + " NOT NULL AND " + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.GROUP_TYPE + " != " + RecipientDatabase.GroupType.MMS.getId() + ")" +
+               " OR " + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.REGISTERED + " = " + RecipientDatabase.RegisteredState.REGISTERED.getId() + ")";
       query += " AND " + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.FORCE_SMS_SELECTION + " = 0";
     }
 
@@ -904,7 +913,8 @@ public class ThreadDatabase extends Database {
   }
 
   public void deleteConversation(long threadId) {
-    SQLiteDatabase db = databaseHelper.getWritableDatabase();
+    SQLiteDatabase db                     = databaseHelper.getWritableDatabase();
+    RecipientId    recipientIdForThreadId = getRecipientIdForThreadId(threadId);
 
     db.beginTransaction();
     try {
@@ -921,11 +931,12 @@ public class ThreadDatabase extends Database {
 
     notifyConversationListListeners();
     notifyConversationListeners(threadId);
-    ConversationUtil.clearShortcuts(context, Collections.singleton(threadId));
+    ConversationUtil.clearShortcuts(context, Collections.singleton(recipientIdForThreadId));
   }
 
   public void deleteConversations(Set<Long> selectedConversations) {
-    SQLiteDatabase db = databaseHelper.getWritableDatabase();
+    SQLiteDatabase    db                       = databaseHelper.getWritableDatabase();
+    List<RecipientId> recipientIdsForThreadIds = getRecipientIdsForThreadIds(selectedConversations);
 
     db.beginTransaction();
     try {
@@ -951,7 +962,7 @@ public class ThreadDatabase extends Database {
 
     notifyConversationListListeners();
     notifyConversationListeners(selectedConversations);
-    ConversationUtil.clearShortcuts(context, selectedConversations);
+    ConversationUtil.clearShortcuts(context, recipientIdsForThreadIds);
   }
 
   public void deleteAllConversations() {
@@ -959,6 +970,7 @@ public class ThreadDatabase extends Database {
 
     db.beginTransaction();
     try {
+      DatabaseFactory.getMessageLogDatabase(context).deleteAll();
       DatabaseFactory.getSmsDatabase(context).deleteAllThreads();
       DatabaseFactory.getMmsDatabase(context).deleteAllThreads();
       DatabaseFactory.getDraftDatabase(context).clearAllDrafts();
@@ -1264,16 +1276,16 @@ public class ThreadDatabase extends Database {
       throw new IllegalStateException("Must be in a transaction!");
     }
 
-    Log.w(TAG, "Merging threads. Primary: " + primaryRecipientId + ", Secondary: " + secondaryRecipientId);
+    Log.w(TAG, "Merging threads. Primary: " + primaryRecipientId + ", Secondary: " + secondaryRecipientId, true);
 
     ThreadRecord primary   = getThreadRecord(getThreadIdFor(primaryRecipientId));
     ThreadRecord secondary = getThreadRecord(getThreadIdFor(secondaryRecipientId));
 
     if (primary != null && secondary == null) {
-      Log.w(TAG, "[merge] Only had a thread for primary. Returning that.");
+      Log.w(TAG, "[merge] Only had a thread for primary. Returning that.", true);
       return new MergeResult(primary.getThreadId(), -1, false);
     } else if (primary == null && secondary != null) {
-      Log.w(TAG, "[merge] Only had a thread for secondary. Updating it to have the recipientId of the primary.");
+      Log.w(TAG, "[merge] Only had a thread for secondary. Updating it to have the recipientId of the primary.", true);
 
       ContentValues values = new ContentValues();
       values.put(RECIPIENT_ID, primaryRecipientId.serialize());
@@ -1284,7 +1296,7 @@ public class ThreadDatabase extends Database {
       Log.w(TAG, "[merge] No thread for either.");
       return new MergeResult(-1, -1, false);
     } else {
-      Log.w(TAG, "[merge] Had a thread for both. Deleting the secondary and merging the attributes together.");
+      Log.w(TAG, "[merge] Had a thread for both. Deleting the secondary and merging the attributes together.", true);
 
       SQLiteDatabase db = databaseHelper.getWritableDatabase();
 

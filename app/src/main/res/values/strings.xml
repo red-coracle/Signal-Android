@@ -68,10 +68,10 @@
     <string name="DraftDatabase_Draft_video_snippet">(video)</string>
     <string name="DraftDatabase_Draft_location_snippet">(location)</string>
     <string name="DraftDatabase_Draft_quote_snippet">(reply)</string>
+    <string name="DraftDatabase_Draft_voice_note">(Voice message)</string>
 
     <!-- AttachmentKeyboard -->
     <string name="AttachmentKeyboard_gallery">Gallery</string>
-    <string name="AttachmentKeyboard_gif">GIF</string>
     <string name="AttachmentKeyboard_file">File</string>
     <string name="AttachmentKeyboard_contact">Contact</string>
     <string name="AttachmentKeyboard_location">Location</string>
@@ -287,10 +287,6 @@
 
     <string name="ConversationActivity__reported_as_spam_and_blocked">Reported as spam and blocked.</string>
 
-    <string name="ConversationActivity_gifs_have_moved">GIFs have moved</string>
-    <string name="ConversationActivity_look_for_gifs_next_to_emoji_and_stickers">Look for GIFs next to emoji and stickers.</string>
-    <string name="ConversationActivity__gifs_are_now_here">GIFs are now here.</string>
-
     <!-- ConversationAdapter -->
     <plurals name="ConversationAdapter_n_unread_messages">
         <item quantity="one">%d unread message</item>
@@ -382,6 +378,7 @@
 
     <!-- CreateGroupActivity -->
     <string name="CreateGroupActivity_some_contacts_cannot_be_in_legacy_groups">Some contacts cannot be in legacy groups.</string>
+    <string name="CreateGroupActivity__select_members">Select members</string>
 
     <!-- CreateProfileActivity -->
     <string name="CreateProfileActivity__profile">Profile</string>
@@ -512,6 +509,7 @@
     <string name="AddToGroupActivity_add_to_groups">Add to groups</string>
     <string name="AddToGroupActivity_this_person_cant_be_added_to_legacy_groups">This person can\'t be added to legacy groups.</string>
     <string name="AddToGroupActivity_add">Add</string>
+    <string name="AddToGroupActivity_add_to_a_group">Add to a group</string>
 
     <!-- ChooseNewAdminActivity -->
     <string name="ChooseNewAdminActivity_choose_new_admin">Choose new admin</string>
@@ -667,6 +665,7 @@
         <item quantity="other">Add %3$d members to \"%2$s\"?</item>
     </plurals>
     <string name="AddMembersActivity__add">Add</string>
+    <string name="AddMembersActivity__add_members">Add members</string>
 
     <!-- AddGroupDetailsFragment -->
     <string name="AddGroupDetailsFragment__name_this_group">Name this group</string>
@@ -769,32 +768,11 @@
     <string name="ManageProfileFragment_failed_to_set_avatar">Failed to set avatar</string>
 
     <!-- ManageRecipientActivity -->
-    <string name="ManageRecipientActivity_add_to_system_contacts">Add to system contacts</string>
-    <string name="ManageRecipientActivity_this_person_is_in_your_contacts">This person is in your contacts</string>
-    <string name="ManageRecipientActivity_disappearing_messages">Disappearing messages</string>
-    <string name="ManageRecipientActivity_chat_color">Chat color</string>
-    <string name="ManageRecipientActivity_chat_wallpaper">Chat wallpaper</string>
-    <string name="ManageRecipientActivity_block">Block</string>
-    <string name="ManageRecipientActivity_unblock">Unblock</string>
-    <string name="ManageRecipientActivity_view_safety_number">View safety number</string>
-    <string name="ManageRecipientActivity_mute_notifications">Mute notifications</string>
-    <string name="ManageRecipientActivity_custom_notifications">Custom notifications</string>
-    <string name="ManageRecipientActivity_until_s">Until %1$s</string>
-    <string name="ManageRecipientActivity_always">Always</string>
-    <string name="ManageRecipientActivity_off">Off</string>
-    <string name="ManageRecipientActivity_on">On</string>
-    <string name="ManageRecipientActivity_add_to_a_group">Add to a group</string>
-    <string name="ManageRecipientActivity_view_all_groups">View all groups</string>
-    <string name="ManageRecipientActivity_see_all">See all</string>
     <string name="ManageRecipientActivity_no_groups_in_common">No groups in common</string>
     <plurals name="ManageRecipientActivity_d_groups_in_common">
         <item quantity="one">%d group in common</item>
         <item quantity="other">%d groups in common</item>
     </plurals>
-    <string name="ManageRecipientActivity_message_description">Message</string>
-    <string name="ManageRecipientActivity_voice_call_description">Voice call</string>
-    <string name="ManageRecipientActivity_insecure_voice_call_description">Insecure voice call</string>
-    <string name="ManageRecipientActivity_video_call_description">Video call</string>
 
     <plurals name="GroupMemberList_invited">
         <item quantity="one">%1$s invited 1 person</item>
@@ -962,6 +940,7 @@
     <string name="MediaOverviewActivity_image">Image</string>
     <string name="MediaOverviewActivity_detail_line_2_part" translatable="false">%1$s &#183; %2$s</string>
     <string name="MediaOverviewActivity_detail_line_3_part" translatable="false">%1$s &#183; %2$s &#183; %3$s</string>
+    <string name="MediaOverviewActivity_voice_message">Voice message</string>
 
     <string name="MediaOverviewActivity_sent_by_s">Sent by %1$s</string>
     <string name="MediaOverviewActivity_sent_by_you">Sent by you</string>
@@ -980,6 +959,7 @@
     <string name="Megaphones_invite_friends">Invite friends</string>
     <string name="Megaphones_use_sms">Use SMS</string>
     <string name="Megaphones_appearance">Appearance</string>
+    <string name="Megaphones_add_photo">Add photo</string>
 
     <!-- NotificationBarManager -->
     <string name="NotificationBarManager_signal_call_in_progress">Signal call in progress</string>
@@ -1027,6 +1007,10 @@
     <!-- MediaRepository -->
     <string name="MediaRepository_all_media">All media</string>
     <string name="MediaRepository__camera">Camera</string>
+
+    <!-- MessageDecryptionUtil -->
+    <string name="MessageDecryptionUtil_failed_to_decrypt_message">Failed to decrypt message</string>
+    <string name="MessageDecryptionUtil_tap_to_send_a_debug_log">Tap to send a debug log</string>
 
     <!-- MessageRecord -->
     <string name="MessageRecord_unknown">Unknown</string>
@@ -1590,7 +1574,7 @@
     <string name="SubmitDebugLogActivity_success">Success!</string>
     <string name="SubmitDebugLogActivity_copy_this_url_and_add_it_to_your_issue">Copy this URL and add it to your issue report or support email:\n\n<b>%1$s</b></string>
     <string name="SubmitDebugLogActivity_share">Share</string>
-    <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online">This log will be posted publicly online for contributors to view. You may examine and edit it before uploading.</string>
+    <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online_for_contributors">This log will be posted publicly online for contributors to view. You may examine it before uploading.</string>
 
     <!-- SupportEmailUtil -->
     <string name="SupportEmailUtil_support_email" translatable="false">support@signal.org</string>
@@ -1936,6 +1920,7 @@
 
     <!-- safety_number_change_dialog -->
     <string name="safety_number_change_dialog__safety_number_changes">Safety Number Changes</string>
+    <string name="safety_number_change_dialog__accept">Accept</string>
     <string name="safety_number_change_dialog__send_anyway">Send anyway</string>
     <string name="safety_number_change_dialog__call_anyway">Call anyway</string>
     <string name="safety_number_change_dialog__join_call">Join call</string>
@@ -2035,9 +2020,6 @@
 
     <!-- giphy_fragment -->
     <string name="giphy_fragment__nothing_found">Nothing found</string>
-
-    <!-- log_submit_activity -->
-    <string name="log_submit_activity__this_log_will_be_posted_online">This log will be posted publicly online for contributors to view, you may examine and edit it before submitting.</string>
 
     <!-- database_migration_activity -->
     <string name="database_migration_activity__would_you_like_to_import_your_existing_text_messages">Would you like to import your existing text messages into Signal\'s encrypted database?</string>
@@ -2145,6 +2127,7 @@
     <string name="message_details_recipient_header__delivered_to">Delivered to</string>
     <string name="message_details_recipient_header__read_by">Read by</string>
     <string name="message_details_recipient_header__not_sent">Not sent</string>
+    <string name="message_details_recipient_header__viewed">Viewed by</string>
 
     <!-- message_Details_recipient -->
     <string name="message_details_recipient__failed_to_send">Failed to send</string>
@@ -2211,6 +2194,7 @@
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__symbols">Symbols</string>
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__flags">Flags</string>
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__emoticons">Emoticons</string>
+    <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">No results found</string>
 
     <!-- arrays.xml -->
     <string name="arrays__use_default">Use default</string>
@@ -2471,6 +2455,7 @@
     <string name="preferences__internal_delete_all_dynamic_shortcuts" translatable="false">Delete all dynamic shortcuts</string>
     <string name="preferences__internal_click_to_delete_all_dynamic_shortcuts" translatable="false">Click to delete all dynamic shortcuts</string>
     <string name="preferences__internal_disable_profile_sharing" translatable="false">Disable Profile Sharing</string>
+    <string name="preferences__internal_delete_session" translatable="false">Delete Session</string>
     <string name="preferences__internal_sender_key" translatable="false">Sender Key</string>
     <string name="preferences__internal_clear_all_state" translatable="false">Clear all state</string>
     <string name="preferences__internal_click_to_delete_all_sender_key_state" translatable="false">Click to delete all sender key state</string>
@@ -2478,6 +2463,11 @@
     <string name="preferences__internal_click_to_delete_all_sharing_state" translatable="false">Click to delete all sharing state</string>
     <string name="preferences__internal_remove_two_person_minimum" translatable="false">Remove 2 person minimum</string>
     <string name="preferences__internal_remove_the_requirement_that_you_need" translatable="false">Remove the requirement that you  need at least 2 recipients to use sender key.</string>
+    <string name="preferences__internal_delay_resends" translatable="false">Delay resends</string>
+    <string name="preferences__internal_delay_resending_messages_in_response_to_retry_receipts" translatable="false">Delay resending messages in response to retry receipts by 10 seconds.</string>
+    <string name="preferences__internal_calling" translatable="false">Group call server</string>
+    <string name="preferences__internal_calling_default" translatable="false">Default</string>
+    <string name="preferences__internal_calling_s_server" translatable="false">%1$s server</string>
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">All activity</string>
@@ -3134,7 +3124,7 @@
     <string name="RecipientBottomSheet_add_to_a_group">Add to a group</string>
     <string name="RecipientBottomSheet_add_to_another_group">Add to another group</string>
     <string name="RecipientBottomSheet_view_safety_number">View safety number</string>
-    <string name="RecipientBottomSheet_make_group_admin">Make group admin</string>
+    <string name="RecipientBottomSheet_make_admin">Make admin</string>
     <string name="RecipientBottomSheet_remove_as_admin">Remove as admin</string>
     <string name="RecipientBottomSheet_remove_from_group">Remove from group</string>
     <string name="RecipientBottomSheet_message_description">Message</string>
@@ -3173,6 +3163,7 @@
     <string name="GroupLinkBottomSheet_the_link_is_not_currently_active">The link is not currently active</string>
 
     <!-- VoiceNotePlaybackPreparer -->
+    <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">Failed to play voice message</string>
 
     <!-- VoiceNoteMediaDescriptionCompatFactory -->
     <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Voice message &#183; %1$s</string>
@@ -3248,6 +3239,10 @@
 
     <!-- CreateGroupActivity -->
     <string name="CreateGroupActivity__skip">Skip</string>
+    <plurals name="CreateGroupActivity__d_members">
+        <item quantity="one">%1$d member</item>
+        <item quantity="other">%1$d members</item>
+    </plurals>
 
     <!-- ShareActivity -->
     <string name="ShareActivity__share">Share</string>
@@ -3506,6 +3501,7 @@
         <item quantity="one">This custom color is used in %1$d chat. Do you want to delete it for all chats?</item>
         <item quantity="other">This custom color is used in %1$d chats. Do you want to delete it for all chats?</item>
     </plurals>
+    <string name="ChatColorSelectionFragment__delete_chat_color">Delete chat color?</string>
 
     <!-- CustomChatColorCreatorFragment -->
     <string name="CustomChatColorCreatorFragment__solid">Solid</string>
@@ -3539,6 +3535,12 @@
     <string name="ChatColorsMegaphone__appearance">Appearance</string>
     <string name="ChatColorsMegaphone__not_now">Not now</string>
 
+    <!-- AddAProfilePhotoMegaphone -->
+    <string name="AddAProfilePhotoMegaphone__add_a_profile_photo">Add a profile photo</string>
+    <string name="AddAProfilePhotoMegaphone__choose_a_look_and_color">Choose a look and color or customize your initials.</string>
+    <string name="AddAProfilePhotoMegaphone__not_now">Not now</string>
+    <string name="AddAProfilePhotoMegaphone__add_photo">Add photo</string>
+
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_emoji">Emoji</string>
     <string name="KeyboardPagerFragment_open_emoji_search">Open emoji search</string>
@@ -3557,6 +3559,101 @@
     <string name="StickerSearchDialogFragment_no_results_found">No results found</string>
     <string name="EmojiSearchFragment__no_results_found">No results found</string>
     <string name="NotificationsSettingsFragment__unknown_ringtone">Unknown ringtone</string>
+
+    <!-- ConversationSettingsFragment -->
+    <string name="ConversationSettingsFragment__send_message">Send message</string>
+    <string name="ConversationSettingsFragment__start_video_call">Start video call</string>
+    <string name="ConversationSettingsFragment__start_audio_call">Start audio call</string>
+    <string name="ConversationSettingsFragment__message">Message</string>
+    <string name="ConversationSettingsFragment__video">Video</string>
+    <string name="ConversationSettingsFragment__audio">Audio</string>
+    <string name="ConversationSettingsFragment__call">Call</string>
+    <string name="ConversationSettingsFragment__mute">Mute</string>
+    <string name="ConversationSettingsFragment__muted">Muted</string>
+    <string name="ConversationSettingsFragment__search">Search</string>
+    <string name="ConversationSettingsFragment__disappearing_messages">Disappearing messages</string>
+    <string name="ConversationSettingsFragment__sounds_and_notifications">Sounds &amp; notifications</string>
+    <string name="ConversationSettingsFragment__contact_details">Contact details</string>
+    <string name="ConversationSettingsFragment__view_safety_number">View safety number</string>
+    <string name="ConversationSettingsFragment__block">Block</string>
+    <string name="ConversationSettingsFragment__block_group">Block group</string>
+    <string name="ConversationSettingsFragment__unblock">Unblock</string>
+    <string name="ConversationSettingsFragment__unblock_group">Unblock group</string>
+    <string name="ConversationSettingsFragment__add_to_a_group">Add to a group</string>
+    <string name="ConversationSettingsFragment__see_all">See all</string>
+    <string name="ConversationSettingsFragment__add_members">Add members</string>
+    <string name="ConversationSettingsFragment__permissions">Permissions</string>
+    <string name="ConversationSettingsFragment__requests_and_invites">Requests &amp; invites</string>
+    <string name="ConversationSettingsFragment__group_link">Group link</string>
+    <string name="ConversationSettingsFragment__add_as_a_contact">Add as a contact</string>
+    <string name="ConversationSettingsFragment__unmute">Unmute</string>
+    <string name="ConversationSettingsFragment__conversation_muted_until_s">Conversation muted until %1$s</string>
+    <string name="ConversationSettingsFragment__conversation_muted_forever">Conversation muted forever</string>
+    <string name="ConversationSettingsFragment__copied_phone_number_to_clipboard">Copied phone number to clipboard.</string>
+    <string name="ConversationSettingsFragment__phone_number">Phone number</string>
+
+    <!-- PermissionsSettingsFragment -->
+    <string name="PermissionsSettingsFragment__add_members">Add members</string>
+    <string name="PermissionsSettingsFragment__edit_group_info">Edit group info</string>
+    <string name="PermissionsSettingsFragment__all_members">All members</string>
+    <string name="PermissionsSettingsFragment__only_admins">Only admins</string>
+    <string name="PermissionsSettingsFragment__who_can_add_new_members">Who can add new members?</string>
+    <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">Who can edit this group\'s info?</string>
+
+    <!-- SoundsAndNotificationsSettingsFragment -->
+    <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">Mute notifications</string>
+    <string name="SoundsAndNotificationsSettingsFragment__not_muted">Not muted</string>
+    <string name="SoundsAndNotificationsSettingsFragment__muted_until_s">Muted until %1$s</string>
+    <string name="SoundsAndNotificationsSettingsFragment__mentions">Mentions</string>
+    <string name="SoundsAndNotificationsSettingsFragment__always_notify">Always notify</string>
+    <string name="SoundsAndNotificationsSettingsFragment__do_not_notify">Do not notify</string>
+    <string name="SoundsAndNotificationsSettingsFragment__custom_notifications">Custom notifications</string>
+
+    <!-- StickerKeyboard -->
+    <string name="StickerKeyboard__recently_used">Recently used</string>
+
+    <!-- PlaybackSpeedToggleTextView -->
+    <string name="PlaybackSpeedToggleTextView__p5x">.5x</string>
+    <string name="PlaybackSpeedToggleTextView__1x">1x</string>
+    <string name="PlaybackSpeedToggleTextView__2x">2x</string>
+
+    <!-- PaymentRecipientSelectionFragment -->
+    <string name="PaymentRecipientSelectionFragment__new_payment">New payment</string>
+
+    <!-- NewConversationActivity -->
+    <string name="NewConversationActivity__new_message">New message</string>
+
+    <!-- ContactFilterView -->
+    <string name="ContactFilterView__search_name_or_number">Search name or number</string>
+
+    <!-- VoiceNotePlayerView -->
+    <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+
+    <!-- AvatarPickerFragment -->
+    <string name="AvatarPickerFragment__avatar_preview">Avatar preview</string>
+    <string name="AvatarPickerFragment__camera">Camera</string>
+    <string name="AvatarPickerFragment__take_a_picture">Take a picture</string>
+    <string name="AvatarPickerFragment__choose_a_photo">Choose a photo</string>
+    <string name="AvatarPickerFragment__photo">Photo</string>
+    <string name="AvatarPickerFragment__text">Text</string>
+    <string name="AvatarPickerFragment__save">Save</string>
+    <string name="AvatarPickerFragment__select_an_avatar">Select an avatar</string>
+    <string name="AvatarPickerFragment__clear_avatar">Clear avatar</string>
+    <string name="AvatarPickerFragment__edit">Edit</string>
+    <string name="AvatarPickerRepository__failed_to_save_avatar">Failed to save avatar</string>
+
+    <!-- TextAvatarCreationFragment -->
+    <string name="TextAvatarCreationFragment__preview">Preview</string>
+    <string name="TextAvatarCreationFragment__done">Done</string>
+    <string name="TextAvatarCreationFragment__text">Text</string>
+    <string name="TextAvatarCreationFragment__color">Color</string>
+
+    <!-- VectorAvatarCreationFragment -->
+    <string name="VectorAvatarCreationFragment__select_a_color">Select a color</string>
+
+    <!-- ContactSelectionListItem -->
+    <string name="ContactSelectionListItem__sms">SMS</string>
+    <string name="ContactSelectionListItem__dot_s">· %1$s</string>
 
     <!-- EOF -->
 
