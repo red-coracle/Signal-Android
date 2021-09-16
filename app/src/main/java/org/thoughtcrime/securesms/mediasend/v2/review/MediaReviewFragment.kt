@@ -2,16 +2,20 @@ package org.thoughtcrime.securesms.mediasend.v2.review
 
 import android.animation.Animator
 import android.animation.AnimatorSet
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.ViewSwitcher
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -21,6 +25,7 @@ import org.thoughtcrime.securesms.conversation.mutiselect.forward.MultiselectFor
 import org.thoughtcrime.securesms.keyboard.findListener
 import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.v2.HudCommand
+import org.thoughtcrime.securesms.mediasend.v2.MediaAnimations
 import org.thoughtcrime.securesms.mediasend.v2.MediaSelectionNavigator
 import org.thoughtcrime.securesms.mediasend.v2.MediaSelectionNavigator.Companion.requestPermissionsForGallery
 import org.thoughtcrime.securesms.mediasend.v2.MediaSelectionState
@@ -30,6 +35,8 @@ import org.thoughtcrime.securesms.permissions.Permissions
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.util.MappingAdapter
 import org.thoughtcrime.securesms.util.MediaUtil
+import org.thoughtcrime.securesms.util.views.TouchInterceptingFrameLayout
+import org.thoughtcrime.securesms.util.visible
 
 /**
  * Allows the user to view and edit selected media.
@@ -57,6 +64,8 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment) {
   private lateinit var controls: ConstraintLayout
   private lateinit var selectionRecycler: RecyclerView
   private lateinit var controlsShade: View
+  private lateinit var progress: ProgressBar
+  private lateinit var progressWrapper: TouchInterceptingFrameLayout
 
   private val navigator = MediaSelectionNavigator(
     toGallery = R.id.action_mediaReviewFragment_to_mediaGalleryFragment,
@@ -85,6 +94,11 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment) {
     selectionRecycler = view.findViewById(R.id.selection_recycler)
     controlsShade = view.findViewById(R.id.controls_shade)
     viewOnceMessage = view.findViewById(R.id.view_once_message)
+    progress = view.findViewById(R.id.progress)
+    progressWrapper = view.findViewById(R.id.progress_wrapper)
+
+    DrawableCompat.setTint(progress.indeterminateDrawable, Color.WHITE)
+    progressWrapper.setOnInterceptTouchEventListener { true }
 
     val pagerAdapter = MediaReviewFragmentPagerAdapter(this)
 
@@ -168,6 +182,7 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment) {
       }
     }
     selectionRecycler.adapter = selectionAdapter
+    ItemTouchHelper(MediaSelectionItemTouchHelper(sharedViewModel)).attachToRecyclerView(selectionRecycler)
 
     sharedViewModel.state.observe(viewLifecycleOwner) { state ->
       pagerAdapter.submitMedia(state.selectedMedia)
@@ -217,6 +232,12 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment) {
   }
 
   private fun performSend(selection: List<RecipientId> = listOf()) {
+    progressWrapper.visible = true
+    progressWrapper.animate()
+      .setStartDelay(300)
+      .setInterpolator(MediaAnimations.interpolator)
+      .alpha(1f)
+
     sharedViewModel
       .send(selection)
       .subscribe(
@@ -263,7 +284,8 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment) {
     animators.addAll(computeAddMessageAnimators(state))
     animators.addAll(computeViewOnceButtonAnimators(state))
     animators.addAll(computeAddMediaButtonsAnimators(state))
-    animators.addAll(computeSendAndSaveButtonAnimators(state))
+    animators.addAll(computeSendButtonAnimators(state))
+    animators.addAll(computeSaveButtonAnimators(state))
     animators.addAll(computeQualityButtonAnimators(state))
     animators.addAll(computeCropAndRotateButtonAnimators(state))
     animators.addAll(computeDrawToolButtonAnimators(state))
@@ -272,6 +294,7 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment) {
 
     val animatorSet = AnimatorSet()
     animatorSet.playTogether(animators)
+    animatorSet.interpolator = MediaAnimations.interpolator
     animatorSet.start()
 
     this.animatorSet = animatorSet
@@ -349,21 +372,35 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment) {
     }
   }
 
-  private fun computeSendAndSaveButtonAnimators(state: MediaSelectionState): List<Animator> {
+  private fun computeSendButtonAnimators(state: MediaSelectionState): List<Animator> {
 
     val slideIn = listOf(
       MediaReviewAnimatorController.getSlideInAnimator(sendButton),
-      MediaReviewAnimatorController.getSlideInAnimator(saveButton)
     )
 
     return slideIn + if (state.isTouchEnabled) {
       listOf(
         MediaReviewAnimatorController.getFadeInAnimator(sendButton),
-        MediaReviewAnimatorController.getFadeInAnimator(saveButton)
       )
     } else {
       listOf(
         MediaReviewAnimatorController.getFadeOutAnimator(sendButton),
+      )
+    }
+  }
+
+  private fun computeSaveButtonAnimators(state: MediaSelectionState): List<Animator> {
+
+    val slideIn = listOf(
+      MediaReviewAnimatorController.getSlideInAnimator(saveButton)
+    )
+
+    return slideIn + if (state.isTouchEnabled && !MediaUtil.isVideo(state.focusedMedia?.mimeType)) {
+      listOf(
+        MediaReviewAnimatorController.getFadeInAnimator(saveButton)
+      )
+    } else {
+      listOf(
         MediaReviewAnimatorController.getFadeOutAnimator(saveButton)
       )
     }
@@ -401,7 +438,7 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment) {
 
   private fun computeRecipientDisplayAnimators(state: MediaSelectionState): List<Animator> {
     return if (state.isTouchEnabled && state.recipient != null) {
-      recipientDisplay.text = state.recipient.getDisplayName(requireContext())
+      recipientDisplay.text = if (state.recipient.isSelf) requireContext().getString(R.string.note_to_self) else state.recipient.getDisplayName(requireContext())
       listOf(MediaReviewAnimatorController.getFadeInAnimator(recipientDisplay))
     } else {
       listOf(MediaReviewAnimatorController.getFadeOutAnimator(recipientDisplay))

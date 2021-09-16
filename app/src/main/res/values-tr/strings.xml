@@ -1664,6 +1664,7 @@ Geçersiz protokol sürümünde anahtar değişim iletisi alındı.</string>
   <string name="ConversationUpdateItem_call_is_full">Arama dolu</string>
   <string name="ConversationUpdateItem_invite_friends">Arkadaşlarını davet et</string>
   <string name="ConversationUpdateItem_enable_call_notifications">Arama Bildirimlerini Etkinleştir</string>
+  <string name="ConversationUpdateItem_update_contact">Kişiyi güncelle</string>
   <string name="ConversationUpdateItem_no_groups_in_common_review_requests_carefully">Ortak bir grup yok. İstekleri dikkatlice gözden geçirin.</string>
   <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">Bu grupta kişilerinizden kimse yok. İstekleri dikkatlice gözden geçirin.</string>
   <string name="ConversationUpdateItem_view">Görüntüle</string>
@@ -1825,21 +1826,17 @@ Geçersiz protokol sürümünde anahtar değişim iletisi alındı.</string>
   <!--recipients_panel-->
   <string name="recipients_panel__to"><small>Bir ad veya numara girin</small></string>
   <!--verify_display_fragment-->
-  <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[%s ile şifreleme güvenliğini doğrulamak isterseniz,  yukarıdaki sayıları kişinin cihazındaki numaralar ile karşılaştırın. Alternatif olarak, kişinin telefonundaki kodu kendiniz tarayabilirsiniz, ya da kendisinin taramasını isteyebilirsiniz. <a href="https://signal.org/redirect/safety-numbers">Dahasını öğrenin.</a>]]></string>
   <string name="verify_display_fragment__tap_to_scan">Taramak için dokunun</string>
   <string name="verify_display_fragment__loading">Yükleniyor…</string>
-  <string name="verify_display_fragment__verified">Doğrulandı</string>
+  <string name="verify_display_fragment__mark_as_verified">Doğrulanmış olarak işaretle</string>
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">Güvenlik numarasını paylaş</string>
+  <!--verity_scan_fragment-->
   <!--webrtc_answer_decline_button-->
   <string name="webrtc_answer_decline_button__swipe_up_to_answer">Yanıtlamak için yukarı kaydırın</string>
   <string name="webrtc_answer_decline_button__swipe_down_to_reject">Reddetmek için aşağı kaydırın</string>
   <!--message_details_header-->
   <string name="message_details_header__issues_need_your_attention">İlgilenmenizi gerektiren sorunlar var.</string>
-  <string name="message_details_header__sent">Gönderildi</string>
-  <string name="message_details_header__received">Alındı</string>
-  <string name="message_details_header__disappears">Kaybolacak</string>
-  <string name="message_details_header__via">Vasıtasıyla</string>
   <!--message_details_recipient_header-->
   <string name="message_details_recipient_header__pending_send">Beklemede</string>
   <string name="message_details_recipient_header__sent_to">Gönderilen</string>
@@ -2931,6 +2928,20 @@ Geçersiz protokol sürümünde anahtar değişim iletisi alındı.</string>
   <string name="AccountSettingsFragment__account">Hesap</string>
   <string name="AccountSettingsFragment__youll_be_asked_less_frequently">Zaman geçtikçe daha az sorulacaktır</string>
   <string name="AccountSettingsFragment__require_your_signal_pin">Telefon numaranız Signal\'e tekrar kaydedilirken Signal PIN\'i istensin.</string>
+  <!--ChangeNumberFragment-->
+  <string name="ChangeNumberFragment__continue">Devam Et</string>
+  <!--ChangeNumberEnterPhoneNumberFragment-->
+  <string name="ChangeNumberEnterPhoneNumberFragment__the_phone_number_you_entered_doesnt_match_your_accounts">Girmiş olduğunuz numara hesabınızla uyuşmuyor.</string>
+  <!--ChangeNumberVerifyFragment-->
+  <!--ChangeNumberConfirmFragment-->
+  <string name="ChangeNumberConfirmFragment__edit_number">Numarayı düzenle</string>
+  <!--ChangeNumberRegistrationLockFragment-->
+  <!--ChangeNumberPinDiffersFragment-->
+  <string name="ChangeNumberPinDiffersFragment__update_pin">PIN\'i güncelle</string>
+  <!--ChangeNumberLockActivity-->
+  <string name="ChangeNumberLockActivity__retry">Tekrar dene</string>
+  <string name="ChangeNumberLockActivity__leave">Ayrıl</string>
+  <string name="ChangeNumberLockActivity__submit_debug_log">Hata ayıklama günlüğünü gönder</string>
   <!--ChatsSettingsFragment-->
   <string name="ChatsSettingsFragment__keyboard">Klavye</string>
   <string name="ChatsSettingsFragment__enter_key_sends">Enter tuşu ile gönder</string>
@@ -3157,5 +3168,14 @@ Geçersiz protokol sürümünde anahtar değişim iletisi alındı.</string>
     <item quantity="other">İletiler artık mevcut olmadığı için yönlendirilemedi.</item>
   </plurals>
   <string name="MultiselectForwardFragment__limit_reached">Sınıra ulaşıldı</string>
+  <!--Media V2-->
+  <string name="MediaReviewFragment__add_a_message">İleti ekle</string>
+  <string name="ImageEditorHud__cancel">İptal</string>
+  <string name="ImageEditorHud__blur">Bulanıklaştır</string>
+  <string name="ImageEditorHud__undo">Geri al</string>
+  <string name="MediaCountIndicatorButton__send">Gönder</string>
+  <string name="MediaReviewSelectedItem__tap_to_select">Seçmek için dokunun</string>
+  <string name="MediaReviewImagePageFragment__discard">Vazgeç</string>
+  <string name="ImageEditorHud__delete">Sil</string>
   <!--EOF-->
 </resources>

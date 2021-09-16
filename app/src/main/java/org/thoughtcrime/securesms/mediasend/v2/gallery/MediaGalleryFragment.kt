@@ -2,12 +2,14 @@ package org.thoughtcrime.securesms.mediasend.v2.gallery
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.recyclerview.GridDividerDecoration
@@ -38,10 +40,18 @@ class MediaGalleryFragment : Fragment(R.layout.v2_media_gallery_fragment) {
   private lateinit var bottomBarGroup: View
   private lateinit var selectedRecycler: RecyclerView
 
+  private var selectedMediaTouchHelper: ItemTouchHelper? = null
+
   private val galleryAdapter = MappingAdapter()
   private val selectedAdapter = MappingAdapter()
 
   private val viewStateLiveData = MutableLiveData(ViewState())
+
+  private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(false) {
+    override fun handleOnBackPressed() {
+      onBack()
+    }
+  }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     callbacks = requireNotNull(findListener())
@@ -61,9 +71,7 @@ class MediaGalleryFragment : Fragment(R.layout.v2_media_gallery_fragment) {
     }
 
     toolbar.setNavigationOnClickListener {
-      if (viewModel.pop()) {
-        callbacks.onToolbarNavigationClicked()
-      }
+      onBack()
     }
 
     toolbar.setOnMenuItemClickListener { item ->
@@ -83,10 +91,12 @@ class MediaGalleryFragment : Fragment(R.layout.v2_media_gallery_fragment) {
       callbacks.onSelectedMediaClicked(media)
     }
     selectedRecycler.adapter = selectedAdapter
+    selectedMediaTouchHelper?.attachToRecyclerView(selectedRecycler)
 
     MediaGallerySelectableItem.registerAdapter(
       mappingAdapter = galleryAdapter,
       onMediaFolderClicked = {
+        onBackPressedCallback.isEnabled = true
         viewModel.setMediaFolder(it)
       },
       onMediaClicked = { media, selected ->
@@ -132,10 +142,23 @@ class MediaGalleryFragment : Fragment(R.layout.v2_media_gallery_fragment) {
     galleryItemsWithSelection.observe(viewLifecycleOwner) {
       galleryAdapter.submitList(it)
     }
+
+    requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+  }
+
+  fun onBack() {
+    if (viewModel.pop()) {
+      onBackPressedCallback.isEnabled = false
+      callbacks.onToolbarNavigationClicked()
+    }
   }
 
   fun onViewStateUpdated(state: ViewState) {
     viewStateLiveData.value = state
+  }
+
+  fun bindSelectedMediaItemDragHelper(helper: ItemTouchHelper) {
+    selectedMediaTouchHelper = helper
   }
 
   data class ViewState(

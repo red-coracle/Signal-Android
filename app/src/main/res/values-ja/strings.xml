@@ -990,6 +990,7 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">%s に対する安全番号を未検証にしました</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">%s に対する安全番号を他の端末で未検証にしました</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">%s からのメッセージを配信できませんでした</string>
+  <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s が電話番号を変更しました。</string>
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s がグループ通話を開始しました · %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s はグループ通話中です · %2$s</string>
@@ -1230,6 +1231,7 @@
   <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">友達とつながったり、メッセージを交換したり、安全な通話をするには、Signalに連絡先へのアクセス許可が必要です。</string>
   <string name="RegistrationActivity_rate_limited_to_service">この番号の登録試行回数が多すぎます。あとで再度試してください。</string>
   <string name="RegistrationActivity_unable_to_connect_to_service">サービスに接続できませんでした。ネットワークの接続を確認してから、再度試してください。</string>
+  <string name="RegistrationActivity_call_requested">通話を要求されました</string>
   <plurals name="RegistrationActivity_debug_log_hint">
     <item quantity="other">デバッグログの提出まで、あと%dステップです。</item>
   </plurals>
@@ -1588,6 +1590,7 @@
   <string name="ConversationUpdateItem_call_is_full">満席です</string>
   <string name="ConversationUpdateItem_invite_friends">友達を招待する</string>
   <string name="ConversationUpdateItem_enable_call_notifications">着信通知を有効にする</string>
+  <string name="ConversationUpdateItem_update_contact">連絡先を更新する</string>
   <string name="ConversationUpdateItem_no_groups_in_common_review_requests_carefully">共通のグループはありません。慎重に申請を確認してください。</string>
   <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">このグループに連絡先の人はいません。慎重に申請を確認してください。</string>
   <string name="ConversationUpdateItem_view">表示する</string>
@@ -1742,21 +1745,26 @@
   <!--recipients_panel-->
   <string name="recipients_panel__to"><small>名前または番号を入力して下さい</small></string>
   <!--verify_display_fragment-->
-  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[%s に対する暗号化を検証するには、上記の番号が相手の端末のものと一致するか確認してください。相手の端末上のコードをスキャンするか、あなたのコードをスキャンしてもらうことでも可能です。<a href="https://signal.org/redirect/safety-numbers">詳細</a>]]></string> -->
+  <string name="verify_display_fragment__to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[%s とのエンドツーエンドの暗号化を検証するには、上記の番号が相手の端末のものと一致するか確認してください。相手の端末上のコードをスキャンするか、あなたのコードをスキャンしてもらうことでも可能です。<a href="https://signal.org/redirect/safety-numbers">詳細</a>]]></string>
   <string name="verify_display_fragment__tap_to_scan">タップしてスキャンする</string>
+  <string name="verify_display_fragment__successful_match">一致しました</string>
+  <string name="verify_display_fragment__failed_to_verify_safety_number">安全番号を検証できませんでした</string>
   <string name="verify_display_fragment__loading">読み込んでいます…</string>
-  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__verified">検証済み</string> -->
+  <string name="verify_display_fragment__mark_as_verified">検証済みにする</string>
+  <string name="verify_display_fragment__clear_verification">未検証にする</string>
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">安全番号を共有する</string>
+  <!--verity_scan_fragment-->
+  <string name="verify_scan_fragment__scan_the_qr_code_on_your_contact">連絡先の端末のQRコードをスキャンしてください。</string>
   <!--webrtc_answer_decline_button-->
   <string name="webrtc_answer_decline_button__swipe_up_to_answer">上にスワイプして電話に出る</string>
   <string name="webrtc_answer_decline_button__swipe_down_to_reject">下にスワイプして拒否する</string>
   <!--message_details_header-->
   <string name="message_details_header__issues_need_your_attention">問題が発生しました</string>
-  <string name="message_details_header__sent">送信</string>
-  <string name="message_details_header__received">受信</string>
-  <string name="message_details_header__disappears">消えるまで</string>
-  <string name="message_details_header__via">経由</string>
+  <string name="message_details_header__sent">送信:</string>
+  <string name="message_details_header__received">受信:</string>
+  <string name="message_details_header__disappears">消えるまで:</string>
+  <string name="message_details_header__via">経由:</string>
   <!--message_details_recipient_header-->
   <string name="message_details_recipient_header__pending_send">保留中</string>
   <string name="message_details_recipient_header__sent_to">宛先</string>
@@ -2426,6 +2434,7 @@
   <string name="RegistrationActivity_call_me_instead_available_in">代わりに電話してください\n (利用可能になるまで %1$02d:%2$02d)</string>
   <string name="RegistrationActivity_contact_signal_support">Signalサポートに問い合わせ</string>
   <string name="RegistrationActivity_code_support_subject">Signal登録 - Android用認証コード</string>
+  <string name="RegistrationActivity_incorrect_code">コードが違います</string>
   <string name="BackupUtil_never">なし</string>
   <string name="BackupUtil_unknown">不明</string>
   <string name="preferences_app_protection__see_my_phone_number">私の電話番号を確認できる人</string>
@@ -2622,8 +2631,8 @@
   <!--VoiceNotePlaybackPreparer-->
   <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">音声メッセージを再生できませんでした。</string>
   <!--VoiceNoteMediaDescriptionCompatFactory-->
-  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">音声メッセージ · %1$s</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s から %2$s</string> -->
+  <string name="VoiceNoteMediaItemFactory__voice_message">音声メッセージ · %1$s</string>
+  <string name="VoiceNoteMediaItemFactory__s_to_s">%1$s から %2$s</string>
   <!--StorageUtil-->
   <string name="StorageUtil__s_s">%1$s/%2$s</string>
   <string name="BlockedUsersActivity__s_has_been_blocked">「%1$s」はブロックされました。</string>
@@ -2837,6 +2846,47 @@
   <string name="AccountSettingsFragment__account">アカウント</string>
   <string name="AccountSettingsFragment__youll_be_asked_less_frequently">確認の頻度は次第に少なくなります。</string>
   <string name="AccountSettingsFragment__require_your_signal_pin">あなたの電話番号をSignalに再登録する際に、Signal PINを要求します。</string>
+  <string name="AccountSettingsFragment__change_phone_number">電話番号を変更</string>
+  <!--ChangeNumberFragment-->
+  <string name="ChangeNumberFragment__use_this_to_change_your_current_phone_number_to_a_new_phone_number">現在使用している電話番号を、新しい電話番号に変更する際に使用してください。この変更を元に戻すことはできません。続ける前に、新しい電話番号がSMSや通話を受信できることを確認してください。</string>
+  <string name="ChangeNumberFragment__continue">続ける</string>
+  <string name="ChangeNumber__your_phone_number_has_been_changed">電話番号を変更済みです。</string>
+  <!--ChangeNumberEnterPhoneNumberFragment-->
+  <string name="ChangeNumberEnterPhoneNumberFragment__change_number">番号を変更</string>
+  <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">古い番号</string>
+  <string name="ChangeNumberEnterPhoneNumberFragment__old_phone_number">古い電話番号</string>
+  <string name="ChangeNumberEnterPhoneNumberFragment__your_new_number">新しい番号</string>
+  <string name="ChangeNumberEnterPhoneNumberFragment__new_phone_number">新しい電話番号</string>
+  <string name="ChangeNumberEnterPhoneNumberFragment__the_phone_number_you_entered_doesnt_match_your_accounts">入力された電話番号は、あなたのアカウントのものと一致しません。</string>
+  <string name="ChangeNumberEnterPhoneNumberFragment__you_must_specify_your_old_number_country_code">変更前の電話番号の国番号を入力してください</string>
+  <string name="ChangeNumberEnterPhoneNumberFragment__you_must_specify_your_old_phone_number">変更前の電話番号を入力してください</string>
+  <string name="ChangeNumberEnterPhoneNumberFragment__you_must_specify_your_new_number_country_code">新しい電話番号の国番号を入力してください</string>
+  <string name="ChangeNumberEnterPhoneNumberFragment__you_must_specify_your_new_phone_number">新しい電話番号を入力してください</string>
+  <!--ChangeNumberVerifyFragment-->
+  <string name="ChangeNumberVerifyFragment__change_number">電話番号を変更</string>
+  <string name="ChangeNumberVerifyFragment__verifying_s">%1$s を検証中　</string>
+  <string name="ChangeNumberVerifyFragment__captcha_required">画像認証が必要です</string>
+  <!--ChangeNumberConfirmFragment-->
+  <string name="ChangeNumberConfirmFragment__change_number">番号を変更</string>
+  <string name="ChangeNumberConfirmFragment__you_are_about_to_change_your_phone_number_from_s_to_s">電話番号を %1$s から %2$s に変更しようとしています。\n\n続ける前に、以下の電話番号が正しいことを確認してください。</string>
+  <string name="ChangeNumberConfirmFragment__edit_number">番号を編集する</string>
+  <!--ChangeNumberRegistrationLockFragment-->
+  <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Signal電話番号変更 - AndroidのPINに関するサポートが必要 (v2 PIN)</string>
+  <!--ChangeNumberPinDiffersFragment-->
+  <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">PINが一致しません</string>
+  <string name="ChangeNumberPinDiffersFragment__the_pin_associated_with_your_new_number_is_different_from_the_pin_associated_with_your_old_one">新しい電話番号に対応するPINは、変更前の電話番号に対応するPINとは異なります。古いPINのままにするか、更新するかを選択してください。</string>
+  <string name="ChangeNumberPinDiffersFragment__keep_old_pin">古いPINを保持</string>
+  <string name="ChangeNumberPinDiffersFragment__update_pin">PINをアップデート</string>
+  <string name="ChangeNumberPinDiffersFragment__keep_old_pin_question">古いPINを保持しますか？</string>
+  <!--ChangeNumberLockActivity-->
+  <string name="ChangeNumberLockActivity__it_looks_like_you_tried_to_change_your_number_but_we_were_unable_to_determine_if_it_was_successful_rechecking_now">電話番号の変更が成功したかどうか、確認できませんでした。\n\n再確認しています…</string>
+  <string name="ChangeNumberLockActivity__change_status_confirmed">変更状況確認済み</string>
+  <string name="ChangeNumberLockActivity__your_number_has_been_confirmed_as_s">あなたの電話番号は %1$s であると確認されました。この電話番号が新しいものでない場合は、変更手続きを再度実施してください。</string>
+  <string name="ChangeNumberLockActivity__change_status_unconfirmed">変更状況未確認</string>
+  <string name="ChangeNumberLockActivity__we_could_not_determine_the_status_of_your_change_number_request">電話番号変更の状況を確認できませんでした。\n\n(エラー: %1$s)</string>
+  <string name="ChangeNumberLockActivity__retry">再試行</string>
+  <string name="ChangeNumberLockActivity__leave">抜ける</string>
+  <string name="ChangeNumberLockActivity__submit_debug_log">デバッグログの提出</string>
   <!--ChatsSettingsFragment-->
   <string name="ChatsSettingsFragment__keyboard">キーボード</string>
   <string name="ChatsSettingsFragment__enter_key_sends">エンターキーで送信する</string>
@@ -3057,5 +3107,28 @@
     <item quantity="other">すでにメッセージがないため、転送できませんでした。</item>
   </plurals>
   <string name="MultiselectForwardFragment__limit_reached">制限に達しました</string>
+  <!--Media V2-->
+  <string name="MediaReviewFragment__add_a_message">メッセージを追加してください</string>
+  <string name="MediaReviewFragment__add_a_reply">返信を追加</string>
+  <string name="MediaReviewFragment__send_to">宛先</string>
+  <string name="ImageEditorHud__cancel">キャンセル</string>
+  <string name="ImageEditorHud__draw">描く</string>
+  <string name="ImageEditorHud__write_text">テキストを記入</string>
+  <string name="ImageEditorHud__add_a_sticker">ステッカーを追加</string>
+  <string name="ImageEditorHud__blur">ぼかす</string>
+  <string name="ImageEditorHud__done_editing">編集完了</string>
+  <string name="ImageEditorHud__clear_all">すべて消去</string>
+  <string name="ImageEditorHud__undo">元に戻す</string>
+  <string name="ImageEditorHud__toggle_between_marker_and_highlighter">マーカーと蛍光ペンを切り替えます</string>
+  <string name="MediaCountIndicatorButton__send">送信する</string>
+  <string name="MediaReviewSelectedItem__tap_to_remove">タップして削除</string>
+  <string name="MediaReviewSelectedItem__tap_to_select">タップして選択</string>
+  <string name="MediaReviewImagePageFragment__discard">破棄する</string>
+  <string name="MediaReviewImagePageFragment__discard_changes">変更を破棄しますか？</string>
+  <string name="MediaReviewFragment__view_once_message">使い捨てメッセージ</string>
+  <string name="MediaReviewImagePageFragment__youll_lose_any_changes">この写真に加えた変更はすべて失われます。</string>
+  <string name="ImageEditorHud__delete">削除</string>
+  <string name="CameraFragment__failed_to_open_camera">カメラの起動に失敗しました</string>
+  <string name="ImageEditorHud__toggle_between_text_styles">テキストスタイルを切り替える</string>
   <!--EOF-->
 </resources>

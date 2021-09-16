@@ -1623,6 +1623,7 @@ Kulcs-csere üzenet érkezett érvénytelen protokoll verzióhoz.
   <string name="ConversationUpdateItem_call_is_full">A hívás betelt</string>
   <string name="ConversationUpdateItem_invite_friends">Barátok meghívása</string>
   <string name="ConversationUpdateItem_enable_call_notifications">Hívás-értesítések engedélyezése</string>
+  <string name="ConversationUpdateItem_update_contact">Profil frissítése</string>
   <string name="ConversationUpdateItem_no_groups_in_common_review_requests_carefully">Nincs közös csoportotok. A kérelmek áttekintése során légy óvatos.</string>
   <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">Nincs ismerősöd ebben a csoportban. A kérelmek áttekintése során légy óvatos.</string>
   <string name="ConversationUpdateItem_view">Megtekintés</string>
@@ -1782,21 +1783,17 @@ Kulcs-csere üzenet érkezett érvénytelen protokoll verzióhoz.
   <!--recipients_panel-->
   <string name="recipients_panel__to"><small>Adj meg egy nevet vagy telefonszámot</small></string>
   <!--verify_display_fragment-->
-  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Ha szeretnéd ellenőrizni a titkosítás sértetlenségét %s nevű partnereddel, hasonlítsd össze a fenti számot az ő készülékén megjelenő számmal. Alternatív megoldásként beszkennelheted a kódot telefonja kijelzőjéről, illetve te is megkérheted őt, hogy ő szkennelje be a te kódodat. <a href="https://signal.org/redirect/safety-numbers">További információ</a>]]></string> -->
   <string name="verify_display_fragment__tap_to_scan">Koppints a szkenneléshez</string>
   <string name="verify_display_fragment__loading">Betöltés…</string>
-  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__verified">Megerősítve</string> -->
+  <string name="verify_display_fragment__mark_as_verified">Megjelölés ellenőrzöttként</string>
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">Biztonsági szám megosztása</string>
+  <!--verity_scan_fragment-->
   <!--webrtc_answer_decline_button-->
   <string name="webrtc_answer_decline_button__swipe_up_to_answer">Válasz felfelé húzással</string>
   <string name="webrtc_answer_decline_button__swipe_down_to_reject">Elutasítás lefelé húzással</string>
   <!--message_details_header-->
   <string name="message_details_header__issues_need_your_attention">Néhány probléma a figyelmedet igényli.</string>
-  <string name="message_details_header__sent">Elküldve</string>
-  <string name="message_details_header__received">Érkezett</string>
-  <string name="message_details_header__disappears">Eltűnik</string>
-  <string name="message_details_header__via">Csatorna</string>
   <!--message_details_recipient_header-->
   <string name="message_details_recipient_header__pending_send">Folyamatban</string>
   <string name="message_details_recipient_header__sent_to">Címzett</string>
@@ -2473,6 +2470,7 @@ Kulcs-csere üzenet érkezett érvénytelen protokoll verzióhoz.
   <string name="RegistrationActivity_call_me_instead_available_in">Hívást kérek inkább \n (elérhető %1$02d:%2$02d múlva)</string>
   <string name="RegistrationActivity_contact_signal_support">Kapcsolatfelvétel a Signal támogatással</string>
   <string name="RegistrationActivity_code_support_subject">Signal regisztráció - megerősítő kód Androidhoz</string>
+  <string name="RegistrationActivity_incorrect_code">Helytelen kód</string>
   <string name="BackupUtil_never">Soha</string>
   <string name="BackupUtil_unknown">Ismeretlen</string>
   <string name="preferences_app_protection__see_my_phone_number">Megtekinteni telefonszámom</string>
@@ -2669,8 +2667,8 @@ Kulcs-csere üzenet érkezett érvénytelen protokoll verzióhoz.
   <!--VoiceNotePlaybackPreparer-->
   <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">Hangüzenet lejátszása sikertelen</string>
   <!--VoiceNoteMediaDescriptionCompatFactory-->
-  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Hangüzenet · %1$s</string> -->
-  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s (címzett: %2$s)</string> -->
+  <string name="VoiceNoteMediaItemFactory__voice_message">Hangüzenet · %1$s</string>
+  <string name="VoiceNoteMediaItemFactory__s_to_s">%1$s (címzett: %2$s)</string>
   <!--StorageUtil-->
   <string name="StorageUtil__s_s">%1$s/%2$s</string>
   <string name="BlockedUsersActivity__s_has_been_blocked">\"%1$s\" letiltva.</string>
@@ -2887,6 +2885,22 @@ Kulcs-csere üzenet érkezett érvénytelen protokoll verzióhoz.
   <string name="AccountSettingsFragment__account">Fiók</string>
   <string name="AccountSettingsFragment__youll_be_asked_less_frequently">Idővel egyre ritkábban kérünk meg rá</string>
   <string name="AccountSettingsFragment__require_your_signal_pin">Telefonszámod újraregisztrációját Signal PIN kódod megadásához kötheted</string>
+  <!--ChangeNumberFragment-->
+  <string name="ChangeNumberFragment__continue">Folytatás</string>
+  <!--ChangeNumberEnterPhoneNumberFragment-->
+  <string name="ChangeNumberEnterPhoneNumberFragment__change_number">Szám változtatása</string>
+  <string name="ChangeNumberEnterPhoneNumberFragment__the_phone_number_you_entered_doesnt_match_your_accounts">A megadott telefonszám nem egyezik a fiókodhoz tartozóval.</string>
+  <!--ChangeNumberVerifyFragment-->
+  <string name="ChangeNumberVerifyFragment__change_number">Szám változtatása</string>
+  <!--ChangeNumberConfirmFragment-->
+  <string name="ChangeNumberConfirmFragment__edit_number">Szám szerkesztése</string>
+  <!--ChangeNumberRegistrationLockFragment-->
+  <!--ChangeNumberPinDiffersFragment-->
+  <string name="ChangeNumberPinDiffersFragment__update_pin">PIN módosítása</string>
+  <!--ChangeNumberLockActivity-->
+  <string name="ChangeNumberLockActivity__retry">Újra</string>
+  <string name="ChangeNumberLockActivity__leave">Csoport elhagyása</string>
+  <string name="ChangeNumberLockActivity__submit_debug_log">Fejlesztői naplófájl elküldése</string>
   <!--ChatsSettingsFragment-->
   <string name="ChatsSettingsFragment__keyboard">Billentyűzet</string>
   <string name="ChatsSettingsFragment__enter_key_sends">Küldés az Enter lenyomásával</string>
@@ -3071,5 +3085,13 @@ Kulcs-csere üzenet érkezett érvénytelen protokoll verzióhoz.
     <item quantity="one">Sikertelen a továbbítás, mert az üzenetek már nem elérhetőek.</item>
     <item quantity="other">Sikertelen a továbbítás, mert az üzenetek már nem elérhetőek.</item>
   </plurals>
+  <!--Media V2-->
+  <string name="MediaReviewFragment__add_a_message">Szöveg hozzáadása</string>
+  <string name="ImageEditorHud__cancel">Mégsem</string>
+  <string name="ImageEditorHud__undo">Visszavonás</string>
+  <string name="MediaCountIndicatorButton__send">Küldés</string>
+  <string name="MediaReviewSelectedItem__tap_to_select">Koppints a kiválasztáshoz</string>
+  <string name="MediaReviewImagePageFragment__discard">Elvetés</string>
+  <string name="ImageEditorHud__delete">Törlés</string>
   <!--EOF-->
 </resources>

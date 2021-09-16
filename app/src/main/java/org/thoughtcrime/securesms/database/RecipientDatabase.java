@@ -29,9 +29,9 @@ import org.thoughtcrime.securesms.conversation.colors.ChatColors;
 import org.thoughtcrime.securesms.conversation.colors.ChatColorsMapper;
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil;
 import org.thoughtcrime.securesms.crypto.storage.TextSecureIdentityKeyStore;
-import org.thoughtcrime.securesms.database.model.IdentityRecord;
 import org.thoughtcrime.securesms.database.IdentityDatabase.VerifiedStatus;
 import org.thoughtcrime.securesms.database.helpers.SQLCipherOpenHelper;
+import org.thoughtcrime.securesms.database.model.IdentityRecord;
 import org.thoughtcrime.securesms.database.model.ThreadRecord;
 import org.thoughtcrime.securesms.database.model.databaseprotos.ChatColor;
 import org.thoughtcrime.securesms.database.model.databaseprotos.DeviceLastResetTime;
@@ -39,9 +39,11 @@ import org.thoughtcrime.securesms.database.model.databaseprotos.ProfileKeyCreden
 import org.thoughtcrime.securesms.database.model.databaseprotos.RecipientExtras;
 import org.thoughtcrime.securesms.database.model.databaseprotos.Wallpaper;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.groups.BadGroupIdException;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.groups.v2.ProfileKeySet;
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor;
+import org.thoughtcrime.securesms.jobs.RecipientChangedNumberJob;
 import org.thoughtcrime.securesms.jobs.RefreshAttributesJob;
 import org.thoughtcrime.securesms.jobs.RequestGroupV2InfoJob;
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
@@ -59,6 +61,7 @@ import org.thoughtcrime.securesms.util.GroupUtil;
 import org.thoughtcrime.securesms.util.IdentityUtil;
 import org.thoughtcrime.securesms.util.SqlUtil;
 import org.thoughtcrime.securesms.util.StringUtil;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaperFactory;
@@ -167,6 +170,7 @@ public class RecipientDatabase extends Database {
     static final int GROUPS_V1_MIGRATION = 1;
     static final int SENDER_KEY          = 2;
     static final int ANNOUNCEMENT_GROUPS = 3;
+    static final int CHANGE_NUMBER       = 4;
   }
 
   private static final String[] RECIPIENT_PROJECTION = new String[] {
@@ -421,12 +425,17 @@ public class RecipientDatabase extends Database {
   }
 
   public @NonNull RecipientId getAndPossiblyMerge(@Nullable UUID uuid, @Nullable String e164, boolean highTrust) {
+    return getAndPossiblyMerge(uuid, e164, highTrust, false);
+  }
+
+  public @NonNull RecipientId getAndPossiblyMerge(@Nullable UUID uuid, @Nullable String e164, boolean highTrust, boolean changeSelf) {
     if (uuid == null && e164 == null) {
       throw new IllegalArgumentException("Must provide a UUID or E164!");
     }
 
     RecipientId                    recipientNeedingRefresh = null;
     Pair<RecipientId, RecipientId> remapped                = null;
+    RecipientId                    recipientChangedNumber  = null;
     boolean                        transactionSuccessful   = false;
 
     SQLiteDatabase db = databaseHelper.getSignalWritableDatabase();
@@ -485,9 +494,21 @@ public class RecipientDatabase extends Database {
       } else if (!byE164.isPresent() && byUuid.isPresent()) {
         if (e164 != null) {
           if (highTrust) {
-            Log.i(TAG, String.format(Locale.US, "Found out about an E164 (%s) for a known UUID user (%s). High-trust, so updating.", e164, byUuid.get()), true);
-            setPhoneNumberOrThrow(byUuid.get(), e164);
-            finalId = byUuid.get();
+            if (Objects.equals(uuid, TextSecurePreferences.getLocalUuid(context)) && !changeSelf) {
+              Log.w(TAG, String.format(Locale.US, "Found out about an E164 (%s) for our own UUID user (%s). High-trust but not change self, doing nothing.", e164, byUuid.get()), true);
+              finalId = byUuid.get();
+            } else {
+              Log.i(TAG, String.format(Locale.US, "Found out about an E164 (%s) for a known UUID user (%s). High-trust, so updating.", e164, byUuid.get()), true);
+
+              RecipientSettings byUuidSettings = getRecipientSettings(byUuid.get());
+
+              setPhoneNumberOrThrow(byUuid.get(), e164);
+              finalId = byUuid.get();
+
+              if (!Util.isEmpty(byUuidSettings.e164) && !byUuidSettings.e164.equals(e164)) {
+                recipientChangedNumber = finalId;
+              }
+            }
           } else {
             Log.i(TAG, String.format(Locale.US, "Found out about an E164 (%s) for a known UUID user (%s). Low-trust, so doing nothing.", e164, byUuid.get()), true);
             finalId = byUuid.get();
@@ -510,9 +531,14 @@ public class RecipientDatabase extends Database {
               removePhoneNumber(byE164.get(), db);
               recipientNeedingRefresh = byE164.get();
 
-              setPhoneNumberOrThrow(byUuid.get(), Objects.requireNonNull(e164));
+              RecipientSettings byUuidSettings = getRecipientSettings(byUuid.get());
 
+              setPhoneNumberOrThrow(byUuid.get(), Objects.requireNonNull(e164));
               finalId = byUuid.get();
+
+              if (!Util.isEmpty(byUuidSettings.e164) && !byUuidSettings.e164.equals(e164)) {
+                recipientChangedNumber = finalId;
+              }
             } else {
               Log.w(TAG, "The E164 contact has a different UUID. Likely a case of re-registration. Low-trust, so doing nothing.", true);
               finalId = byUuid.get();
@@ -551,6 +577,10 @@ public class RecipientDatabase extends Database {
         if (recipientNeedingRefresh != null || remapped != null) {
           StorageSyncHelper.scheduleSyncForDataChange();
           RecipientId.clearCache();
+        }
+
+        if (recipientChangedNumber != null) {
+          ApplicationDependencies.getJobManager().add(new RecipientChangedNumberJob(recipientChangedNumber));
         }
       }
     }
@@ -1616,6 +1646,7 @@ public class RecipientDatabase extends Database {
     value = Bitmask.update(value, Capabilities.GROUPS_V1_MIGRATION, Capabilities.BIT_LENGTH, Recipient.Capability.fromBoolean(capabilities.isGv1Migration()).serialize());
     value = Bitmask.update(value, Capabilities.SENDER_KEY,          Capabilities.BIT_LENGTH, Recipient.Capability.fromBoolean(capabilities.isSenderKey()).serialize());
     value = Bitmask.update(value, Capabilities.ANNOUNCEMENT_GROUPS, Capabilities.BIT_LENGTH, Recipient.Capability.fromBoolean(capabilities.isAnnouncementGroup()).serialize());
+    value = Bitmask.update(value, Capabilities.CHANGE_NUMBER,       Capabilities.BIT_LENGTH, Recipient.Capability.fromBoolean(capabilities.isChangeNumber()).serialize());
 
     ContentValues values = new ContentValues(1);
     values.put(CAPABILITIES, value);
@@ -2031,6 +2062,25 @@ public class RecipientDatabase extends Database {
       rotateStorageId(id);
       Recipient.live(id).refresh();
       StorageSyncHelper.scheduleSyncForDataChange();
+    }
+  }
+
+  public void updateSelfPhone(@NonNull String e164) {
+    SQLiteDatabase db = databaseHelper.getSignalWritableDatabase();
+    db.beginTransaction();
+
+    try {
+      RecipientId id    = Recipient.self().getId();
+      RecipientId newId = getAndPossiblyMerge(Recipient.self().requireUuid(), e164, true, true);
+
+      if (id.equals(newId)) {
+        Log.i(TAG, "[updateSelfPhone] Phone updated for self");
+      } else {
+        throw new AssertionError("[updateSelfPhone] Self recipient id changed when updating phone. old: " + id + " new: " + newId);
+      }
+      db.setTransactionSuccessful();
+    } finally {
+      db.endTransaction();
     }
   }
 
@@ -2609,7 +2659,15 @@ public class RecipientDatabase extends Database {
         db.update(TABLE_NAME, setBlocked, UUID + " = ?", new String[] { uuid });
       }
 
-      List<GroupId.V1> groupIdStrings = Stream.of(groupIds).map(GroupId::v1orThrow).toList();
+      List<GroupId.V1> groupIdStrings = new ArrayList<>(groupIds.size());
+
+      for (byte[] raw : groupIds) {
+        try {
+          groupIdStrings.add(GroupId.v1(raw));
+        } catch (BadGroupIdException e) {
+          Log.w(TAG, "[applyBlockedUpdate] Bad GV1 ID!");
+        }
+      }
 
       for (GroupId.V1 groupId : groupIdStrings) {
         db.update(TABLE_NAME, setBlocked, GROUP_ID + " = ?", new String[] { groupId.toString() });
@@ -3140,6 +3198,7 @@ public class RecipientDatabase extends Database {
     private final Recipient.Capability            groupsV1MigrationCapability;
     private final Recipient.Capability            senderKeyCapability;
     private final Recipient.Capability            announcementGroupCapability;
+    private final Recipient.Capability            changeNumberCapability;
     private final InsightsBannerTier              insightsBannerTier;
     private final byte[]                          storageId;
     private final MentionSetting                  mentionSetting;
@@ -3232,6 +3291,7 @@ public class RecipientDatabase extends Database {
       this.groupsV1MigrationCapability = Recipient.Capability.deserialize((int) Bitmask.read(capabilities, Capabilities.GROUPS_V1_MIGRATION, Capabilities.BIT_LENGTH));
       this.senderKeyCapability         = Recipient.Capability.deserialize((int) Bitmask.read(capabilities, Capabilities.SENDER_KEY, Capabilities.BIT_LENGTH));
       this.announcementGroupCapability = Recipient.Capability.deserialize((int) Bitmask.read(capabilities, Capabilities.ANNOUNCEMENT_GROUPS, Capabilities.BIT_LENGTH));
+      this.changeNumberCapability      = Recipient.Capability.deserialize((int) Bitmask.read(capabilities, Capabilities.CHANGE_NUMBER, Capabilities.BIT_LENGTH));
       this.insightsBannerTier          = insightsBannerTier;
       this.storageId                   = storageId;
       this.mentionSetting              = mentionSetting;
@@ -3387,6 +3447,10 @@ public class RecipientDatabase extends Database {
 
     public @NonNull Recipient.Capability getAnnouncementGroupCapability() {
       return announcementGroupCapability;
+    }
+
+    public @NonNull Recipient.Capability getChangeNumberCapability() {
+      return changeNumberCapability;
     }
 
     public @Nullable byte[] getStorageId() {

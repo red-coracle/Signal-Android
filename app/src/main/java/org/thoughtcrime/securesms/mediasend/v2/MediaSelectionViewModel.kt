@@ -11,6 +11,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.PublishSubject
 import org.thoughtcrime.securesms.TransportOption
+import org.thoughtcrime.securesms.components.mention.MentionAnnotation
 import org.thoughtcrime.securesms.mediasend.Media
 import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.VideoEditorFragment
@@ -21,6 +22,7 @@ import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.scribbles.ImageEditorFragment
 import org.thoughtcrime.securesms.util.Util
 import org.thoughtcrime.securesms.util.livedata.Store
+import java.util.Collections
 
 /**
  * ViewModel which maintains the list of selected media and other shared values.
@@ -61,10 +63,17 @@ class MediaSelectionViewModel(
     }
   }
 
+  private var lastMediaDrag: Pair<Int, Int> = Pair(0, 0)
+
   init {
     val recipientId = destination.getRecipientId()
     if (recipientId != null) {
-      store.update(Recipient.live(recipientId).liveData) { r, s -> s.copy(recipient = r) }
+      store.update(Recipient.live(recipientId).liveData) { r, s ->
+        s.copy(
+          recipient = r,
+          isPreUploadEnabled = shouldPreUpload(s.isMeteredConnection, s.transportOption.isSms, r)
+        )
+      }
     }
 
     if (initialMedia.isNotEmpty()) {
@@ -120,6 +129,52 @@ class MediaSelectionViewModel(
           }
         }
     )
+  }
+
+  fun swapMedia(originalStart: Int, end: Int): Boolean {
+    var start: Int = originalStart
+
+    if (lastMediaDrag.first == start && lastMediaDrag.second == end) {
+      return true
+    } else if (lastMediaDrag.first == start) {
+      start = lastMediaDrag.second
+    }
+
+    val snapshot = store.state
+
+    if (end >= snapshot.selectedMedia.size || end < 0 || start >= snapshot.selectedMedia.size || start < 0) {
+      return false
+    }
+
+    lastMediaDrag = Pair(originalStart, end)
+
+    val newMediaList = snapshot.selectedMedia.toMutableList()
+
+    if (start < end) {
+      for (i in start until end) {
+        Collections.swap(newMediaList, i, i + 1)
+      }
+    } else {
+      for (i in start downTo end + 1) {
+        Collections.swap(newMediaList, i, i - 1)
+      }
+    }
+
+    store.update {
+      it.copy(
+        selectedMedia = newMediaList
+      )
+    }
+
+    return true
+  }
+
+  fun isValidMediaDragPosition(position: Int): Boolean {
+    return position >= 0 && position < store.state.selectedMedia.size
+  }
+
+  fun onMediaDragFinished() {
+    lastMediaDrag = Pair(0, 0)
   }
 
   fun removeMedia(media: Media) {
@@ -229,7 +284,7 @@ class MediaSelectionViewModel(
       isViewOnceEnabled(),
       destination.getRecipientId(),
       if (selectedRecipientIds.isNotEmpty()) selectedRecipientIds else destination.getRecipientIdList(),
-      emptyList(), // TODO [alex] -- mentions
+      MentionAnnotation.getMentionsFromAnnotations(store.state.message),
       store.state.transportOption
     )
   }

@@ -18,6 +18,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +42,7 @@ import org.thoughtcrime.securesms.animation.AnimationCompleteListener;
 import org.thoughtcrime.securesms.components.TooltipPopup;
 import org.thoughtcrime.securesms.mediasend.camerax.CameraXFlashToggleView;
 import org.thoughtcrime.securesms.mediasend.camerax.CameraXUtil;
+import org.thoughtcrime.securesms.mediasend.v2.MediaAnimations;
 import org.thoughtcrime.securesms.mediasend.v2.MediaCountIndicatorButton;
 import org.thoughtcrime.securesms.mms.DecryptableStreamUriLoader.DecryptableUri;
 import org.thoughtcrime.securesms.mms.MediaConstraints;
@@ -117,7 +119,7 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
     this.controlsContainer = view.findViewById(R.id.camerax_controls_container);
 
     camera.setScaleType(PreviewView.ScaleType.FIT_CENTER);
-    camera.bindToLifecycle(getViewLifecycleOwner());
+    camera.bindToLifecycle(getViewLifecycleOwner(), this::handleCameraInitializationError);
     camera.setCameraLensFacing(CameraXUtil.toLensFacing(TextSecurePreferences.getDirectCaptureCameraId(requireContext())));
 
     onOrientationChanged(getResources().getConfiguration().orientation);
@@ -126,7 +128,7 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
 
     view.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
       // Let's assume portrait for now, so 9:16
-      float aspectRatio = 9f / 16f;
+      float aspectRatio = CameraFragment.getAspectRatioForOrientation(getResources().getConfiguration().orientation);
       float width       = right - left;
       float height      = Math.min((1f / aspectRatio) * width, bottom - top);
 
@@ -146,7 +148,7 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
   public void onResume() {
     super.onResume();
 
-    camera.bindToLifecycle(getViewLifecycleOwner());
+    camera.bindToLifecycle(getViewLifecycleOwner(),  this::handleCameraInitializationError);
     requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
   }
@@ -169,6 +171,7 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
     controlsContainer.animate()
                      .setDuration(250)
                      .alpha(0f)
+                     .setInterpolator(MediaAnimations.getInterpolator())
                      .setListener(new AnimationCompleteListener() {
                        @Override
                        public void onAnimationEnd(Animator animation) {
@@ -184,12 +187,22 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
     controlsContainer.animate()
                      .setDuration(250)
                      .alpha(1f)
+                     .setInterpolator(MediaAnimations.getInterpolator())
                      .setListener(new AnimationCompleteListener() {
                        @Override
                        public void onAnimationEnd(Animator animation) {
                          controlsContainer.setEnabled(true);
                        }
                      });
+  }
+
+  private void handleCameraInitializationError(Throwable error) {
+    Log.w(TAG, "An error occurred", error);
+
+    Context context = getActivity();
+    if (context != null) {
+      Toast.makeText(context, R.string.CameraFragment__failed_to_open_camera, Toast.LENGTH_SHORT).show();
+    }
   }
 
   private void onOrientationChanged(int orientation) {

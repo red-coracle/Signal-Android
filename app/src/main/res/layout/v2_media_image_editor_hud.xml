@@ -64,14 +64,18 @@
             android:layout_height="48dp"
             android:layout_marginStart="10dp"
             android:layout_marginBottom="10dp"
+            android:alpha="0"
             android:contentDescription="@string/ImageEditorHud__cancel"
             android:padding="6dp"
+            android:translationY="56dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_goneMarginEnd="10dp"
             app:srcCompat="@drawable/ic_cancel_36"
             app:tint="@color/core_white"
+            tools:alpha="1"
+            tools:translationY="0dp"
             tools:visibility="visible" />
 
         <ImageView
@@ -79,8 +83,10 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginBottom="10dp"
+            android:alpha="0"
             android:contentDescription="@string/ImageEditorHud__draw"
             android:padding="6dp"
+            android:translationY="56dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/image_editor_hud_text_button"
@@ -88,6 +94,8 @@
             app:layout_goneMarginEnd="10dp"
             app:layout_goneMarginStart="10dp"
             app:srcCompat="@drawable/image_editor_hud_draw"
+            tools:alpha="1"
+            tools:translationY="0dp"
             tools:visibility="visible" />
 
         <ImageView
@@ -95,8 +103,10 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginBottom="10dp"
+            android:alpha="0"
             android:contentDescription="@string/ImageEditorHud__write_text"
             android:padding="6dp"
+            android:translationY="56dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/image_editor_hud_sticker_button"
@@ -104,6 +114,8 @@
             app:layout_goneMarginEnd="10dp"
             app:layout_goneMarginStart="10dp"
             app:srcCompat="@drawable/image_editor_hud_text"
+            tools:alpha="1"
+            tools:translationY="0dp"
             tools:visibility="visible" />
 
         <ImageView
@@ -111,8 +123,10 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginBottom="10dp"
+            android:alpha="0"
             android:contentDescription="@string/ImageEditorHud__add_a_sticker"
             android:padding="6dp"
+            android:translationY="56dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/image_editor_hud_blur_button"
@@ -120,6 +134,8 @@
             app:layout_goneMarginEnd="10dp"
             app:layout_goneMarginStart="10dp"
             app:srcCompat="@drawable/image_editor_hud_sticker"
+            tools:alpha="1"
+            tools:translationY="0dp"
             tools:visibility="visible" />
 
         <ImageView
@@ -127,8 +143,10 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginBottom="10dp"
+            android:alpha="0"
             android:contentDescription="@string/ImageEditorHud__blur"
             android:padding="6dp"
+            android:translationY="56dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/image_editor_hud_done_button"
@@ -136,6 +154,8 @@
             app:layout_goneMarginEnd="10dp"
             app:layout_goneMarginStart="10dp"
             app:srcCompat="@drawable/image_editor_hud_blur"
+            tools:alpha="1"
+            tools:translationY="0dp"
             tools:visibility="visible" />
 
         <ImageView
@@ -144,14 +164,18 @@
             android:layout_height="48dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
+            android:alpha="0"
             android:contentDescription="@string/ImageEditorHud__done_editing"
             android:padding="6dp"
+            android:translationY="56dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_goneMarginStart="10dp"
             app:srcCompat="@drawable/ic_confirm_36"
             app:tint="@color/core_white"
+            tools:alpha="1"
+            tools:translationY="0dp"
             tools:visibility="visible" />
 
         <ImageView
@@ -179,16 +203,24 @@
             android:splitTrack="false"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/image_editor_hud_top_of_button_bar_spacing"
-            app:layout_constraintEnd_toStartOf="@+id/image_editor_hud_draw_brush"
+            app:layout_constraintEnd_toStartOf="@+id/toggle_button_barrier"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_goneMarginEnd="32dp"
             tools:visibility="visible" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/toggle_button_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:barrierDirection="start"
+            app:constraint_referenced_ids="image_editor_hud_draw_brush,image_editor_hud_text_style_button" />
 
         <ImageView
             android:id="@+id/image_editor_hud_draw_brush"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="16dp"
+            android:alpha="0"
             android:background="@drawable/circle_tintable_padded"
             android:contentDescription="@string/ImageEditorHud__toggle_between_marker_and_highlighter"
             android:padding="12dp"
@@ -198,6 +230,26 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/image_editor_hud_draw_color_bar"
             app:srcCompat="@drawable/ic_draw_white_24"
+            tools:alpha="1"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/image_editor_hud_text_style_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            android:alpha="0"
+            android:background="@drawable/circle_tintable_padded"
+            android:contentDescription="@string/ImageEditorHud__toggle_between_text_styles"
+            android:padding="12dp"
+            android:visibility="gone"
+            app:backgroundTint="@color/transparent_black_40"
+            app:layout_constraintBottom_toBottomOf="@id/image_editor_hud_draw_color_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/image_editor_hud_draw_color_bar"
+            app:srcCompat="@drawable/ic_text_tool_24"
+            app:tint="@color/core_white"
+            tools:alpha="1"
             tools:visibility="visible" />
 
         <androidx.appcompat.widget.AppCompatSeekBar
@@ -221,9 +273,11 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginBottom="10dp"
+            android:alpha="0"
             android:contentDescription="@string/ImageEditorHud__draw"
             android:padding="6dp"
             android:scaleType="centerInside"
+            android:translationY="56dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/image_editor_hud_flip_button"
@@ -231,6 +285,8 @@
             app:layout_goneMarginEnd="10dp"
             app:layout_goneMarginStart="10dp"
             app:srcCompat="@drawable/ic_rotate_outline_24"
+            tools:alpha="1"
+            tools:translationY="0dp"
             tools:visibility="visible" />
 
         <ImageView
@@ -238,9 +294,11 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginBottom="10dp"
+            android:alpha="0"
             android:contentDescription="@string/ImageEditorHud__draw"
             android:padding="6dp"
             android:scaleType="centerInside"
+            android:translationY="56dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/image_editor_hud_aspect_lock_button"
@@ -248,6 +306,8 @@
             app:layout_goneMarginEnd="10dp"
             app:layout_goneMarginStart="10dp"
             app:srcCompat="@drawable/ic_flip_outline_24"
+            tools:alpha="1"
+            tools:translationY="0dp"
             tools:visibility="visible" />
 
         <ImageView
@@ -255,8 +315,10 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginBottom="10dp"
+            android:alpha="0"
             android:contentDescription="@string/ImageEditorHud__draw"
             android:scaleType="centerInside"
+            android:translationY="56dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/image_editor_hud_done_button"
@@ -265,6 +327,8 @@
             app:layout_goneMarginStart="10dp"
             app:srcCompat="@drawable/ic_crop_unlock_24"
             app:tint="@color/core_white"
+            tools:alpha="1"
+            tools:translationY="0dp"
             tools:visibility="visible" />
 
         <!-- endregion -->
@@ -330,8 +394,22 @@
                 android:saveEnabled="false" />
         </LinearLayout>
 
-        <!-- -->
+        <!-- Delete -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/image_editor_bottom_guide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="72dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <org.thoughtcrime.securesms.scribbles.BrushWidthPreviewView
+        android:id="@+id/image_editor_hud_brush_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:visibility="gone"
+        tools:alpha="1"
+        tools:visibility="visible" />
 </merge>
