@@ -6,6 +6,7 @@ public interface MmsSmsColumns {
   public static final String ID                       = "_id";
   public static final String NORMALIZED_DATE_SENT     = "date_sent";
   public static final String NORMALIZED_DATE_RECEIVED = "date_received";
+  public static final String NORMALIZED_TYPE          = "type";
   public static final String DATE_SERVER              = "date_server";
   public static final String THREAD_ID                = "thread_id";
   public static final String READ                     = "read";
@@ -28,6 +29,7 @@ public interface MmsSmsColumns {
   public static final String REACTIONS_LAST_SEEN      = "reactions_last_seen";
   public static final String REMOTE_DELETED           = "remote_deleted";
   public static final String SERVER_GUID              = "server_guid";
+  public static final String RECEIPT_TIMESTAMP        = "receipt_timestamp";
 
   /**
    * For storage efficiency, all types are stored within a single 64-bit integer column in the

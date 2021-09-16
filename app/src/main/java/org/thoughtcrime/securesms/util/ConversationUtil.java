@@ -39,6 +39,8 @@ public final class ConversationUtil {
 
   private static final String TAG = Log.tag(ConversationUtil.class);
 
+  private static final String CATEGORY_SHARE_TARGET = "org.thoughtcrime.securesms.sharing.CATEGORY_SHARE_TARGET";
+
   private ConversationUtil() {}
 
 
@@ -193,18 +195,18 @@ public final class ConversationUtil {
   {
     Recipient resolved  = recipient.resolve();
     Person[]  persons   = buildPersons(context, resolved);
-    long      threadId  = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(resolved);
+    Long      threadId  = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(resolved.getId());
     String    shortName = resolved.isSelf() ? context.getString(R.string.note_to_self) : resolved.getShortDisplayName(context);
     String    longName  = resolved.isSelf() ? context.getString(R.string.note_to_self) : resolved.getDisplayName(context);
 
     return new ShortcutInfoCompat.Builder(context, getShortcutId(resolved))
                                  .setLongLived(true)
-                                 .setIntent(ConversationIntents.createBuilder(context, resolved.getId(), threadId).build())
+                                 .setIntent(ConversationIntents.createBuilder(context, resolved.getId(), threadId != null ? threadId : -1).build())
                                  .setShortLabel(shortName)
                                  .setLongLabel(longName)
                                  .setIcon(AvatarUtil.getIconCompatForShortcut(context, resolved))
                                  .setPersons(persons)
-                                 .setCategories(Collections.singleton("android.shortcut.conversation"))
+                                 .setCategories(Collections.singleton(CATEGORY_SHARE_TARGET))
                                  .setActivity(new ComponentName(context, "org.thoughtcrime.securesms.RoutingActivity"))
                                  .setRank(rank)
                                  .build();

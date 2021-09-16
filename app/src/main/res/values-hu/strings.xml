@@ -209,6 +209,11 @@
   <string name="ConversationActivity_attachment_exceeds_size_limits">A melléklet mérete meghaladja az adott típushoz tartozó mérethatárt.</string>
   <string name="ConversationActivity_unable_to_record_audio">Nem lehet hangot rögzíteni!</string>
   <string name="ConversationActivity_you_cant_send_messages_to_this_group">Nem küldhetsz ebbe a csoportba üzenetet, mivel nem vagy a tagja.</string>
+  <string name="ConversationActivity_only_s_can_send_messages">Csak %1$s küldhetnek üzeneteket.</string>
+  <string name="ConversationActivity_admins">adminok</string>
+  <string name="ConversationActivity_message_an_admin">Üzenet egy adminnak</string>
+  <string name="ConversationActivity_cant_start_group_call">Nem engedélyezett csoporthívás</string>
+  <string name="ConversationActivity_only_admins_of_this_group_can_start_a_call">Csak adminok indíthatnak hívást ebben a csoportban.</string>
   <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">Nem található eszközödön megfelelő alkalmazás a hivatkozás kezeléséhez.</string>
   <string name="ConversationActivity_your_request_to_join_has_been_sent_to_the_group_admin">A csatlakozási kérésed el lett küldve a csoportadmin részére. Értesítést fogsz kapni, amint reagálnak rá.</string>
   <string name="ConversationActivity_cancel_request">Kérés törlése</string>
@@ -741,22 +746,16 @@
   <!--InviteActivity-->
   <string name="InviteActivity_share">Megosztás</string>
   <string name="InviteActivity_share_with_contacts">Megosztás kontaktokkal</string>
-  <string name="InviteActivity_choose_how_to_share">Megosztás módjának kiválasztása</string>
   <string name="InviteActivity_cancel">Mégse</string>
   <string name="InviteActivity_sending">Küldés…</string>
   <string name="InviteActivity_invitations_sent">Meghívók elküldve!</string>
   <string name="InviteActivity_invite_to_signal">Meghívás a Signal-ba</string>
-  <plurals name="InviteActivity_send_sms_to_friends">
-    <item quantity="one">SMS KÜLDÉSE %d BARÁTNAK</item>
-    <item quantity="other">SMS KÜLDÉSE %d BARÁTNAK</item>
-  </plurals>
   <plurals name="InviteActivity_send_sms_invites">
     <item quantity="one">Elküldesz %d SMS meghívót?</item>
     <item quantity="other">Elküldesz %d db SMS meghívót?</item>
   </plurals>
   <string name="InviteActivity_lets_switch_to_signal">Válts Signal-ra: %1$s</string>
   <string name="InviteActivity_no_app_to_share_to">Úgy néz ki, hogy egy alkalmazásod sincs a megosztás kezeléséhez.</string>
-  <string name="InviteActivity_friends_dont_let_friends_text_unencrypted">Az igaz barátok nem hagyják barátaiknak, hogy titkosítatlanul csevegjenek.</string>
   <!--LearnMoreTextView-->
   <string name="LearnMoreTextView_learn_more">További információ</string>
   <!--LongMessageActivity-->
@@ -827,10 +826,10 @@
   <string name="NotificationBarManager__establishing_signal_call">Signal hívás létesítése</string>
   <string name="NotificationBarManager__incoming_signal_call">Bejövő Signal hívás</string>
   <string name="NotificationBarManager__stopping_signal_call_service">A Signal hívás szolgáltatás leállítása</string>
-  <string name="NotificationBarManager__deny_call">Hívás elutasítása</string>
   <string name="NotificationBarManager__answer_call">Hívás felvétele</string>
   <string name="NotificationBarManager__end_call">Hívás befejezése</string>
   <string name="NotificationBarManager__cancel_call">Hívás megszakítása</string>
+  <string name="NotificationBarManager__join_call">Belépés a hívásba</string>
   <!--NotificationsMegaphone-->
   <string name="NotificationsMegaphone_turn_on_notifications">Értesítések bekapcsolása?</string>
   <string name="NotificationsMegaphone_never_miss_a_message">Ne maradj le kontakjaid és csoportjaid értesítéseiről.</string>
@@ -979,6 +978,11 @@
   <string name="MessageRecord_you_changed_who_can_edit_group_membership_to_s">Megváltoztattad a csoport tagjainak szerkeszthetőségét erre: \"%1$s\".</string>
   <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">%1$s megváltoztatta a csoport tagjainak szerkeszthetőségét erre: \"%2$s\".</string>
   <string name="MessageRecord_who_can_edit_group_membership_has_been_changed_to_s">A csoporttagságot szerkeszthetők köre megváltozott erre: \"%1$s\"</string>
+  <!--GV2 announcement group change-->
+  <string name="MessageRecord_you_allow_all_members_to_send">Megváltoztattad a csoportbeállításokat: mostantól minden tag küldhet üzenetet a csoportba.</string>
+  <string name="MessageRecord_you_allow_only_admins_to_send">Megváltoztattad a csoportbeállításokat: mostantól csak adminok küldhetnek üzenetet a csoportba.</string>
+  <string name="MessageRecord_allow_all_members_to_send">Megváltozott csoportbeállítások: mostantól minden tag küldhet üzenetet a csoportba.</string>
+  <string name="MessageRecord_allow_only_admins_to_send">Megváltozott csoportbeállítások: mostantól csak adminok küldhetnek üzenetet a csoportba.</string>
   <!--GV2 group link invite access level change-->
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_off">Bekapcsoltad a megosztható csoporthivatkozást (adminisztrátori jóváhagyás jelenleg kikapcsolva).</string>
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_on">Bekapcsoltad a megosztható csoporthivatkozást adminisztrátori jóváhagyással.</string>
@@ -1183,13 +1187,12 @@ Kérlek telepítsd újra a Google Play Szolgáltatásokat, majd próbáld újra!
   <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
   <string name="WebRtcCallActivity__calling">Hívás…</string>
   <!--WebRtcCallView-->
-  <string name="WebRtcCallView__signal_voice_call">Signal hanghívás…</string>
-  <string name="WebRtcCallView__signal_video_call">Signal videóhívás…</string>
+  <string name="WebRtcCallView__signal_call">Signal hívás</string>
+  <string name="WebRtcCallView__signal_video_call">Signal videóhívás</string>
   <string name="WebRtcCallView__start_call">Hívás indítása</string>
   <string name="WebRtcCallView__join_call">Belépés a hívásba</string>
   <string name="WebRtcCallView__call_is_full">A hívás betelt</string>
   <string name="WebRtcCallView__the_maximum_number_of_d_participants_has_been_Reached_for_this_call">A csoporthívás elérte a maximális %1$d főt ebben a hívásban. Kérlek próbáld később.</string>
-  <string name="WebRtcCallView__s_group_call">\"%1$s\" Csoporthívás</string>
   <string name="WebRtcCallView__view_participants_list">Résztvevők megtekintése</string>
   <string name="WebRtcCallView__your_video_is_off">A kamerád ki van kapcsolva</string>
   <string name="WebRtcCallView__reconnecting">Újracsatlakozás…</string>
@@ -1202,6 +1205,10 @@ Kérlek telepítsd újra a Google Play Szolgáltatásokat, majd próbáld újra!
     <item quantity="one">%1$s, %2$s és még %3$d másik személy van ebben a hívásban</item>
     <item quantity="other">%1$s, %2$s és még %3$d másik személy van ebben a hívásban</item>
   </plurals>
+  <string name="WebRtcCallView__speaker">Kihangosító</string>
+  <string name="WebRtcCallView__camera">Kamera</string>
+  <string name="WebRtcCallView__mute">Némítás</string>
+  <string name="WebRtcCallView__end_call">Hívás befejezése</string>
   <!--CallParticipantsListDialog-->
   <plurals name="CallParticipantsListDialog_in_this_call_d_people">
     <item quantity="one">Ebben a hívásban · %1$d személy</item>
@@ -1775,10 +1782,10 @@ Kulcs-csere üzenet érkezett érvénytelen protokoll verzióhoz.
   <!--recipients_panel-->
   <string name="recipients_panel__to"><small>Adj meg egy nevet vagy telefonszámot</small></string>
   <!--verify_display_fragment-->
-  <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Ha szeretnéd ellenőrizni a titkosítás sértetlenségét %s nevű partnereddel, hasonlítsd össze a fenti számot az ő készülékén megjelenő számmal. Alternatív megoldásként beszkennelheted a kódot telefonja kijelzőjéről, illetve te is megkérheted őt, hogy ő szkennelje be a te kódodat. <a href="https://signal.org/redirect/safety-numbers">További információ</a>]]></string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Ha szeretnéd ellenőrizni a titkosítás sértetlenségét %s nevű partnereddel, hasonlítsd össze a fenti számot az ő készülékén megjelenő számmal. Alternatív megoldásként beszkennelheted a kódot telefonja kijelzőjéről, illetve te is megkérheted őt, hogy ő szkennelje be a te kódodat. <a href="https://signal.org/redirect/safety-numbers">További információ</a>]]></string> -->
   <string name="verify_display_fragment__tap_to_scan">Koppints a szkenneléshez</string>
   <string name="verify_display_fragment__loading">Betöltés…</string>
-  <string name="verify_display_fragment__verified">Megerősítve</string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__verified">Megerősítve</string> -->
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">Biztonsági szám megosztása</string>
   <!--webrtc_answer_decline_button-->
@@ -2662,8 +2669,8 @@ Kulcs-csere üzenet érkezett érvénytelen protokoll verzióhoz.
   <!--VoiceNotePlaybackPreparer-->
   <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">Hangüzenet lejátszása sikertelen</string>
   <!--VoiceNoteMediaDescriptionCompatFactory-->
-  <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Hangüzenet · %1$s</string>
-  <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s (címzett: %2$s)</string>
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Hangüzenet · %1$s</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s (címzett: %2$s)</string> -->
   <!--StorageUtil-->
   <string name="StorageUtil__s_s">%1$s/%2$s</string>
   <string name="BlockedUsersActivity__s_has_been_blocked">\"%1$s\" letiltva.</string>
@@ -3057,5 +3064,12 @@ Kulcs-csere üzenet érkezett érvénytelen protokoll verzióhoz.
   <!--ContactSelectionListItem-->
   <string name="ContactSelectionListItem__sms">SMS</string>
   <string name="ContactSelectionListItem__dot_s">· %1$s</string>
+  <!--DSLSettingsToolbar-->
+  <string name="MultiselectForwardFragment__add_a_message">Szöveg hozzáadása</string>
+  <string name="MultiselectForwardFragment__forwarded_messages_are_now">A továbbított üzenetek azonnal elküldésre kerülnek.</string>
+  <plurals name="MultiselectForwardFragment__couldnt_forward_messages">
+    <item quantity="one">Sikertelen a továbbítás, mert az üzenetek már nem elérhetőek.</item>
+    <item quantity="other">Sikertelen a továbbítás, mert az üzenetek már nem elérhetőek.</item>
+  </plurals>
   <!--EOF-->
 </resources>

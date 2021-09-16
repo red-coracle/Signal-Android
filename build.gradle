@@ -17,7 +17,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.1.0'
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -34,6 +34,8 @@ ext {
     MINIMUM_SDK = 19
 
     JAVA_VERSION = JavaVersion.VERSION_1_8
+
+    LIBSIGNAL_CLIENT_VERSION = '0.9.0'
 }
 
 wrapper {
@@ -43,7 +45,7 @@ wrapper {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 

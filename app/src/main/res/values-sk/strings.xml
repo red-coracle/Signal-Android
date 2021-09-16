@@ -210,6 +210,11 @@
   <string name="ConversationActivity_attachment_exceeds_size_limits">Príloha presahuje limit veľkosti pre tento typ správy.</string>
   <string name="ConversationActivity_unable_to_record_audio">Nemôžem zaznamenať zvuk!</string>
   <string name="ConversationActivity_you_cant_send_messages_to_this_group">Do tejto skupiny nemôžete posielať správy, pretože už nie ste jej členom.</string>
+  <string name="ConversationActivity_only_s_can_send_messages">Iba %1$s môže odosielať správy.</string>
+  <string name="ConversationActivity_admins">administrátori</string>
+  <string name="ConversationActivity_message_an_admin">Pošlite správu správcovi</string>
+  <string name="ConversationActivity_cant_start_group_call">Skupinový hovor sa nedá začať</string>
+  <string name="ConversationActivity_only_admins_of_this_group_can_start_a_call">Len administrátori z tejto skupiny môžu zahájiť hovor.</string>
   <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">Vo vašom zariadení nie je aplikácia schopná otvoriť tento odkaz.</string>
   <string name="ConversationActivity_your_request_to_join_has_been_sent_to_the_group_admin">Vaša žiadosť o členstvo bola odoslaná administrátorovi skupiny. Keď na ňu zareaguje, dostanete oznámenie.</string>
   <string name="ConversationActivity_cancel_request">Zrušiť žiadosť</string>
@@ -361,6 +366,7 @@
   <string name="ChooseBackupFragment__icon_content_description">ikona Obnoviť zo zálohy</string>
   <string name="ChooseBackupFragment__choose_backup">Vyberte zálohu</string>
   <string name="ChooseBackupFragment__learn_more">Dozvedieť sa viac</string>
+  <string name="ChooseBackupFragment__no_file_browser_available">Nie je k dispozícii žiadny prehľadávač súborov</string>
   <!--RestoreBackupFragment-->
   <string name="RestoreBackupFragment__restore_complete">Obnova dokončená</string>
   <string name="RestoreBackupFragment__to_continue_using_backups_please_choose_a_folder">Ak chcete ďalej používať zálohy, zvoľte, prosím, priečinok. Nové zálohy budú ukladané do tejto lokácie.</string>
@@ -440,6 +446,7 @@
   <!--ShareActivity-->
   <string name="ShareActivity_share_with">Zdieľať s</string>
   <string name="ShareActivity_multiple_attachments_are_only_supported">Viaceré prílohy sú podporované iba pre obrázky a videá</string>
+  <string name="ShareActivity_you_do_not_have_permission_to_send_to_this_group">Na odosielanie do tejto skupiny nemáte povolenie</string>
   <!--GcmRefreshJob-->
   <string name="GcmRefreshJob_Permanent_Signal_communication_failure">Trvalá chyba komunikácie Signal!</string>
   <string name="GcmRefreshJob_Signal_was_unable_to_register_with_Google_Play_Services">Signal sa nebol schopný registrovať k službám Google Play. Signal správy a hovory boli vypnuté, prosím zaregistrujte sa opätovne cez Nastavenia &gt; Rozšírené.</string>
@@ -612,6 +619,7 @@
   <!--AddMembersActivity-->
   <string name="AddMembersActivity__done">Hotovo</string>
   <string name="AddMembersActivity__this_person_cant_be_added_to_legacy_groups">Táto osoba nemôže byť pridaná do zastaraných skupín.</string>
+  <string name="AddMembersActivity__this_person_cant_be_added_to_announcement_groups">Túto osobu nemožno pridať do skupín oznámení.</string>
   <plurals name="AddMembersActivity__add_d_members_to_s">
     <item quantity="one">Pridať \"%1$s\" do \"%2$s\"?</item>
     <item quantity="few">Pridať %3$d členov do \"%2$s\"?</item>
@@ -694,6 +702,7 @@
   <string name="ManageGroupActivity_only_admins_can_reset_the_sharable_group_link">Iba administrátori môžu zresetovať zdieľateľný odkaz do skupiny.</string>
   <string name="ManageGroupActivity_you_dont_have_the_rights_to_do_this">Nemáte oprávnenia na vykonanie tejto akcie</string>
   <string name="ManageGroupActivity_not_capable">Niekto, koho ste pridali, nepodporuje nové skupiny a potrebuje si aktualizovať Signal</string>
+  <string name="ManageGroupActivity_not_announcement_capable">Niekto, koho ste pridali, nepodporuje skupiny oznámení a potrebuje aktualizovať Signal</string>
   <string name="ManageGroupActivity_failed_to_update_the_group">Nepodarilo sa aktualizovať skupinu</string>
   <string name="ManageGroupActivity_youre_not_a_member_of_the_group">Nie ste členom tejto skupiny</string>
   <string name="ManageGroupActivity_failed_to_update_the_group_please_retry_later">Nepodarilo sa aktualizovať skupinu, prosím, skúste to neskôr</string>
@@ -814,17 +823,12 @@
   <!--InviteActivity-->
   <string name="InviteActivity_share">Zdieľať</string>
   <string name="InviteActivity_share_with_contacts">Zdieľať s kontaktmi</string>
-  <string name="InviteActivity_choose_how_to_share">Výber spôsobu zdieľania</string>
+  <string name="InviteActivity_share_via">Zdieľať prostredníctvom…</string>
   <string name="InviteActivity_cancel">Zrušiť</string>
   <string name="InviteActivity_sending">Odosiela sa…</string>
   <string name="InviteActivity_invitations_sent">Pozvánky odoslané!</string>
   <string name="InviteActivity_invite_to_signal">Pozvať do Signalu</string>
-  <plurals name="InviteActivity_send_sms_to_friends">
-    <item quantity="one">ODOSLAŤ SMS %d PRIATEĽOVI</item>
-    <item quantity="few">ODOSLAŤ SMS %d PRIATEĽOM</item>
-    <item quantity="many">ODOSLAŤ SMS %d PRIATEĽOM</item>
-    <item quantity="other">ODOSLAŤ SMS %d PRIATEĽOM</item>
-  </plurals>
+  <string name="InviteActivity_send_sms">Odoslať SMS (%d)</string>
   <plurals name="InviteActivity_send_sms_invites">
     <item quantity="one">Odoslať %d SMS pozvánku? </item>
     <item quantity="few">Odoslať %d SMS pozvánky? </item>
@@ -833,7 +837,6 @@
   </plurals>
   <string name="InviteActivity_lets_switch_to_signal">Prejdime na Signal: %1$s</string>
   <string name="InviteActivity_no_app_to_share_to">Vyzerá to, že nemáte žiadne aplikácie kam by ste mohli zdieľať.</string>
-  <string name="InviteActivity_friends_dont_let_friends_text_unencrypted">Priatelia nenechávajú priateľov chatovať nešifrovane.</string>
   <!--LearnMoreTextView-->
   <string name="LearnMoreTextView_learn_more">Dozvedieť sa viac</string>
   <!--LongMessageActivity-->
@@ -912,11 +915,13 @@
   <string name="NotificationBarManager_signal_call_in_progress">Prebieha Signal hovor</string>
   <string name="NotificationBarManager__establishing_signal_call">Príprava na Signal hovor</string>
   <string name="NotificationBarManager__incoming_signal_call">Prichádzajúci Signal hovor</string>
+  <string name="NotificationBarManager__incoming_signal_group_call">Prichádzajúci Signal skupinový hovor</string>
   <string name="NotificationBarManager__stopping_signal_call_service">Zastavenie služby Signal hovoru</string>
-  <string name="NotificationBarManager__deny_call">Odmietnuť hovor</string>
+  <string name="NotificationBarManager__decline_call">Odmietnuť hovor</string>
   <string name="NotificationBarManager__answer_call">Prijať hovor</string>
   <string name="NotificationBarManager__end_call">Ukončiť hovor</string>
   <string name="NotificationBarManager__cancel_call">Zrušiť hovor</string>
+  <string name="NotificationBarManager__join_call">Pripojiť sa k hovoru</string>
   <!--NotificationsMegaphone-->
   <string name="NotificationsMegaphone_turn_on_notifications">Zapnúť hlásenia?</string>
   <string name="NotificationsMegaphone_never_miss_a_message">Nikdy nezmeškajte správu od vašich kontaktov a skupín.</string>
@@ -1013,7 +1018,7 @@
   <string name="MessageRecord_s_made_s_an_admin">%1$s urobil/a %2$s správcom.</string>
   <string name="MessageRecord_s_made_you_an_admin">%1$s vás urobil/a správcom.</string>
   <string name="MessageRecord_you_revoked_admin_privileges_from_s">Odobrali ste správcovské práva %1$s.</string>
-  <string name="MessageRecord_s_revoked_your_admin_privileges">%1$s vám odobral/a správcovské práva.\"</string>
+  <string name="MessageRecord_s_revoked_your_admin_privileges">%1$s zrušil vaše oprávnenia správcu.</string>
   <string name="MessageRecord_s_revoked_admin_privileges_from_s">%1$s odobral/a správcovské práva %2$s.</string>
   <string name="MessageRecord_s_is_now_an_admin">%1$s je teraz administrátorom.</string>
   <string name="MessageRecord_you_are_now_an_admin">Odteraz ste adminom.</string>
@@ -1083,6 +1088,13 @@
   <string name="MessageRecord_you_changed_who_can_edit_group_membership_to_s">Zmenili ste, kto môže upravovať členstvo v skupine na \"%1$s\".</string>
   <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">%1$s zmenil/a, kto môže upravovať členstvo v skupine na \"%2$s\".</string>
   <string name="MessageRecord_who_can_edit_group_membership_has_been_changed_to_s">Kto môže meniť členstvo v skupine, sa zmenilo na \"%1$s\".</string>
+  <!--GV2 announcement group change-->
+  <string name="MessageRecord_you_allow_all_members_to_send">Zmenili ste nastavenia skupiny, aby všetci členovia mohli posielať správy.</string>
+  <string name="MessageRecord_you_allow_only_admins_to_send">Zmenili ste nastavenia skupiny, aby len administrátori mohli posielať správy.</string>
+  <string name="MessageRecord_s_allow_all_members_to_send">%1$s zmenil skupinové nastavenia tak, aby umožňovali všetkým členom odosielať správy.</string>
+  <string name="MessageRecord_s_allow_only_admins_to_send">%1$s zmenil nastavenie skupiny tak, aby umožňoval posielanie správ iba správcom.</string>
+  <string name="MessageRecord_allow_all_members_to_send">Zmenili sa nastavenia skupiny, aby všetci členovia mohli posielať správy.</string>
+  <string name="MessageRecord_allow_only_admins_to_send">Zmenili sa nastavenia skupiny, aby len administrátori mohli posielať správy.</string>
   <!--GV2 group link invite access level change-->
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_off">Zapli ste odkaz do skupiny so schválením administrátorom neaktívnym.</string>
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_on">Zapli ste odkaz do skupiny so schválením administrátorom aktívnym.</string>
@@ -1299,21 +1311,55 @@
   <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">Pre volanie %1$s potrebuje Signal prístup k vašej kamere</string>
   <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
   <string name="WebRtcCallActivity__calling">Uskutočňovanie hovoru…</string>
+  <string name="WebRtcCallActivity__group_is_too_large_to_ring_the_participants">Skupina je príliš veľká na to, aby vyzváňala účastníkom.</string>
   <!--WebRtcCallView-->
-  <string name="WebRtcCallView__signal_voice_call">Signal hlasový hovor…</string>
-  <string name="WebRtcCallView__signal_video_call">Signal videohovor…</string>
+  <string name="WebRtcCallView__signal_call">Signal hovor</string>
+  <string name="WebRtcCallView__signal_video_call">Videohovor Signal</string>
   <string name="WebRtcCallView__start_call">Začať hovor</string>
   <string name="WebRtcCallView__join_call">Pripojiť sa k hovoru</string>
   <string name="WebRtcCallView__call_is_full">Hovor je plne obsadený</string>
   <string name="WebRtcCallView__the_maximum_number_of_d_participants_has_been_Reached_for_this_call">Bol dosiahnutý maximálny počet %1$d účastníkov pre tento hovor. Skúste to znovu neskôr.</string>
-  <string name="WebRtcCallView__s_group_call">\"%1$s\" Skupinový hovor</string>
   <string name="WebRtcCallView__view_participants_list">Zobraziť účastníkov</string>
   <string name="WebRtcCallView__your_video_is_off">Vaše video je vypnuté</string>
   <string name="WebRtcCallView__reconnecting">Pripájanie…</string>
   <string name="WebRtcCallView__joining">Pripája sa…</string>
   <string name="WebRtcCallView__disconnected">Odpojený</string>
+  <string name="WebRtcCallView__signal_will_ring_s">Signal zazvoní %1$s</string>
+  <string name="WebRtcCallView__signal_will_ring_s_and_s">Signal zazvoní %1$s a %2$s</string>
+  <plurals name="WebRtcCallView__signal_will_ring_s_s_and_d_others">
+    <item quantity="one">Signal zazvoní %1$s, %2$s a %3$d ďalšiemu</item>
+    <item quantity="few">Signal zazvoní %1$s, %2$s a %3$d ďalším</item>
+    <item quantity="many">Signal zazvoní %1$s, %2$s a %3$d ďalším</item>
+    <item quantity="other">Signal zazvoní %1$s, %2$s a %3$d ďalším</item>
+  </plurals>
+  <string name="WebRtcCallView__s_will_be_notified">%1$s bude upozornený</string>
+  <string name="WebRtcCallView__s_and_s_will_be_notified">%1$s a %2$s bude upozornený</string>
+  <plurals name="WebRtcCallView__s_s_and_d_others_will_be_notified">
+    <item quantity="one">%1$s, %2$s a %3$d ďalší bude upozornený</item>
+    <item quantity="few">%1$s, %2$s a %3$d ďalší budú upozornení</item>
+    <item quantity="many">%1$s, %2$s a %3$d ďalší budú upozornení</item>
+    <item quantity="other">%1$s, %2$s a %3$d ďalší budú upozornení</item>
+  </plurals>
+  <string name="WebRtcCallView__ringing_s">Zvoní %1$s</string>
+  <string name="WebRtcCallView__ringing_s_and_s">Vyzváňa %1$s a %2$s</string>
+  <plurals name="WebRtcCallView__ringing_s_s_and_d_others">
+    <item quantity="one">Vyzváňa %1$s, %2$s a %3$d ďalšiemu</item>
+    <item quantity="few">Vyzváňa %1$s, %2$s a %3$d ďalším</item>
+    <item quantity="many">Vyzváňa %1$s, %2$s a %3$d ďalším</item>
+    <item quantity="other">Vyzváňa %1$s, %2$s a %3$d ďalším</item>
+  </plurals>
+  <string name="WebRtcCallView__s_is_calling_you">%1$s vám volá</string>
+  <string name="WebRtcCallView__s_is_calling_you_and_s">%1$s vám a %2$s volá </string>
+  <string name="WebRtcCallView__s_is_calling_you_s_and_s">%1$s vám,%2$s a%3$s volá</string>
+  <plurals name="WebRtcCallView__s_is_calling_you_s_s_and_d_others">
+    <item quantity="one"> %1$s vám, %2$s, %3$s a %4$d ďalšiemu volá</item>
+    <item quantity="few">%1$s vám, %2$s, %3$s a %4$d ďalším volá </item>
+    <item quantity="many">%1$s vám, %2$s, %3$s a %4$d ďalším volá </item>
+    <item quantity="other">%1$s vám, %2$s, %3$s a %4$d ďalším volá </item>
+  </plurals>
   <string name="WebRtcCallView__no_one_else_is_here">Nikto iný tu nie je</string>
   <string name="WebRtcCallView__s_is_in_this_call">%1$s je v tomto hovore</string>
+  <string name="WebRtcCallView__s_are_in_this_call">%1$s sú v tomto hovore</string>
   <string name="WebRtcCallView__s_and_s_are_in_this_call">%1$s a %2$s sú v tomto hovore</string>
   <string name="WebRtcCallView__s_is_presenting">%1$s prezentuje</string>
   <plurals name="WebRtcCallView__s_s_and_d_others_are_in_this_call">
@@ -1322,6 +1368,12 @@
     <item quantity="many">%1$s, %2$s a %3$d ďalších je v tomto hovore</item>
     <item quantity="other">%1$s, %2$s a %3$d ďalších je v tomto hovore</item>
   </plurals>
+  <string name="WebRtcCallView__flip">Preklopiť</string>
+  <string name="WebRtcCallView__speaker">Reproduktor</string>
+  <string name="WebRtcCallView__camera">Fotoaparát</string>
+  <string name="WebRtcCallView__mute">Stlmiť</string>
+  <string name="WebRtcCallView__ring">Zvoniť</string>
+  <string name="WebRtcCallView__end_call">Ukončiť hovor</string>
   <!--CallParticipantsListDialog-->
   <plurals name="CallParticipantsListDialog_in_this_call_d_people">
     <item quantity="one">V tomto hovore · %1$d osoba</item>
@@ -1924,10 +1976,10 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <!--recipients_panel-->
   <string name="recipients_panel__to"><small>Zadajte meno alebo číslo</small></string>
   <!--verify_display_fragment-->
-  <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Ak si chcete overiť zabezpečenie vášho šifrovania s %s, porovnajte číslo vyššie s číslom na druhom zariadení. Môžete tiež naskenovať kód na ich zariadení alebo ich požiadať o naskenovanie vášho kódu. <a href="https://signal.org/redirect/safety-numbers">Zistiť viac.</a>]]></string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Ak si chcete overiť zabezpečenie vášho šifrovania s %s, porovnajte číslo vyššie s číslom na druhom zariadení. Môžete tiež naskenovať kód na ich zariadení alebo ich požiadať o naskenovanie vášho kódu. <a href="https://signal.org/redirect/safety-numbers">Zistiť viac.</a>]]></string> -->
   <string name="verify_display_fragment__tap_to_scan">Ťuknutím naskenujte</string>
   <string name="verify_display_fragment__loading">Načítava sa…</string>
-  <string name="verify_display_fragment__verified">Overené</string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__verified">Overené</string> -->
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">Zdieľať bezpečnostné číslo</string>
   <!--webrtc_answer_decline_button-->
@@ -2828,8 +2880,8 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <!--VoiceNotePlaybackPreparer-->
   <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">Nepodarilo sa prehrať hlasovú správu</string>
   <!--VoiceNoteMediaDescriptionCompatFactory-->
-  <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Hlasová správa · %1$s</string>
-  <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">od %1$s do %2$s</string>
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Hlasová správa · %1$s</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">od %1$s do %2$s</string> -->
   <!--StorageUtil-->
   <string name="StorageUtil__s_s">%1$s/%2$s</string>
   <string name="BlockedUsersActivity__s_has_been_blocked">\"%1$s\" bol/a zablokovaný/á.</string>
@@ -3204,10 +3256,12 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <!--PermissionsSettingsFragment-->
   <string name="PermissionsSettingsFragment__add_members">Pridať členov</string>
   <string name="PermissionsSettingsFragment__edit_group_info">Upraviť informácie o skupine</string>
+  <string name="PermissionsSettingsFragment__send_messages">Posielať správy</string>
   <string name="PermissionsSettingsFragment__all_members">Všetci členovia</string>
   <string name="PermissionsSettingsFragment__only_admins">Iba správcovia</string>
   <string name="PermissionsSettingsFragment__who_can_add_new_members">Kto môže pridávať nových členov?</string>
   <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">Kto môže upraviť informácie o tejto skupine?</string>
+  <string name="PermissionsSettingsFragment__who_can_send_messages">Kto môže posielať správy?</string>
   <!--SoundsAndNotificationsSettingsFragment-->
   <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">Stlmiť upozornenia</string>
   <string name="SoundsAndNotificationsSettingsFragment__not_muted">Nestlmené</string>
@@ -3230,6 +3284,11 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <string name="ContactFilterView__search_name_or_number">Vyhľadajte meno, alebo číslo</string>
   <!--VoiceNotePlayerView-->
   <string name="VoiceNotePlayerView__s_dot_s">%1$s . %2$s</string>
+  <string name="VoiceNotePlayerView__stop_voice_message">Zastaviť hlasovú správu</string>
+  <string name="VoiceNotePlayerView__change_voice_message_speed">Zmeniť rýchlosť hlasových správ</string>
+  <string name="VoiceNotePlayerView__pause_voice_message">Pozastaviť hlasovú správu</string>
+  <string name="VoiceNotePlayerView__play_voice_message">Prehrať hlasovú správu</string>
+  <string name="VoiceNotePlayerView__navigate_to_voice_message">Prejdite na hlasovú správu</string>
   <!--AvatarPickerFragment-->
   <string name="AvatarPickerFragment__avatar_preview">Ukážka avataru</string>
   <string name="AvatarPickerFragment__camera">Fotoaparát</string>
@@ -3252,5 +3311,36 @@ Bola prijatá správa výmeny kľúčov s neplatnou verziou protokolu.
   <!--ContactSelectionListItem-->
   <string name="ContactSelectionListItem__sms">SMS</string>
   <string name="ContactSelectionListItem__dot_s">· %1$s</string>
+  <!--DSLSettingsToolbar-->
+  <string name="DSLSettingsToolbar__navigate_up">Prejdite nahor</string>
+  <string name="MultiselectForwardFragment__forward_to">Preposlať</string>
+  <string name="MultiselectForwardFragment__add_a_message">Pridajte správu</string>
+  <string name="MultiselectForwardFragment__faster_forwards">Rýchlejšie preposlania</string>
+  <string name="MultiselectForwardFragment__forwarded_messages_are_now">Preposlané správy sú teraz odoslané okamžite.</string>
+  <plurals name="MultiselectForwardFragment_send_d_messages">
+    <item quantity="one">%1$d poslal správu</item>
+    <item quantity="few">%1$d poslal správy</item>
+    <item quantity="many">%1$d poslal správy</item>
+    <item quantity="other">%1$d poslal správy</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment_messages_sent">
+    <item quantity="one">Správa odoslaná</item>
+    <item quantity="few">Správy odoslané</item>
+    <item quantity="many">Správy odoslané</item>
+    <item quantity="other">Správy odoslané</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment_messages_failed_to_send">
+    <item quantity="one">Správu sa nepodarilo odoslať</item>
+    <item quantity="few">Správy sa nepodarilo odoslať</item>
+    <item quantity="many">Správy sa nepodarilo odoslať</item>
+    <item quantity="other">Správy sa nepodarilo odoslať</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment__couldnt_forward_messages">
+    <item quantity="one">Správu sa nepodarilo preposlať, pretože už nie je k dispozícii.</item>
+    <item quantity="few">Správy sa nepodarilo preposlať, pretože už nie sú k dispozícii.</item>
+    <item quantity="many">Správy sa nepodarilo preposlať, pretože už nie sú k dispozícii.</item>
+    <item quantity="other">Správy sa nepodarilo preposlať, pretože už nie sú k dispozícii.</item>
+  </plurals>
+  <string name="MultiselectForwardFragment__limit_reached">Limit dosiahnutý</string>
   <!--EOF-->
 </resources>

@@ -208,6 +208,11 @@
   <string name="ConversationActivity_attachment_exceeds_size_limits">El fitxer adjunt excedeix la mida màxima per a aquest tipus de missatges.</string>
   <string name="ConversationActivity_unable_to_record_audio">No s\'ha pogut enregistrar l\'àudio.</string>
   <string name="ConversationActivity_you_cant_send_messages_to_this_group">No podeu enviar missatges a aquest grup perquè ja no en sou membre.</string>
+  <string name="ConversationActivity_only_s_can_send_messages">Només els %1$s poden enviar missatges. </string>
+  <string name="ConversationActivity_admins">administradors</string>
+  <string name="ConversationActivity_message_an_admin">Envia un missatge a un administrador</string>
+  <string name="ConversationActivity_cant_start_group_call">No es pot iniciar la trucada de grup.</string>
+  <string name="ConversationActivity_only_admins_of_this_group_can_start_a_call">Només els administradors d\'aquest grup poden iniciar una trucada.</string>
   <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">No hi ha cap aplicació que pugui obrir aquest enllaç.</string>
   <string name="ConversationActivity_your_request_to_join_has_been_sent_to_the_group_admin">La sol·licitud per afegir-vos-hi s\'ha enviat a l\'administrador/a del grup. Rebreu una notificació quan la resolguin.</string>
   <string name="ConversationActivity_cancel_request">Cancel·la la sol·licitud</string>
@@ -339,6 +344,7 @@
   <string name="ChooseBackupFragment__icon_content_description">Restaura des de la icona de còpia de seguretat</string>
   <string name="ChooseBackupFragment__choose_backup">Trieu la còpia de seguretat</string>
   <string name="ChooseBackupFragment__learn_more">Més informació</string>
+  <string name="ChooseBackupFragment__no_file_browser_available">No hi ha gestor de fitxers disponible.</string>
   <!--RestoreBackupFragment-->
   <string name="RestoreBackupFragment__restore_complete">Restauració completa</string>
   <string name="RestoreBackupFragment__to_continue_using_backups_please_choose_a_folder">Per continuar usant les còpies de seguretat, trieu una carpeta. S\'hi desaran les còpies noves.</string>
@@ -416,6 +422,7 @@
   <!--ShareActivity-->
   <string name="ShareActivity_share_with">Comparteix amb</string>
   <string name="ShareActivity_multiple_attachments_are_only_supported">Els adjunts múltiples només s\'admeten per a imatges i vídeos.</string>
+  <string name="ShareActivity_you_do_not_have_permission_to_send_to_this_group">No teniu permís per enviar a aquest grup.</string>
   <!--GcmRefreshJob-->
   <string name="GcmRefreshJob_Permanent_Signal_communication_failure">La comunicació del Signal falla contínuament!</string>
   <string name="GcmRefreshJob_Signal_was_unable_to_register_with_Google_Play_Services">El Signal no s\'ha pogut registrar al Google Play Services. Els missatges i les trucades del Signal s\'han desactivat, registreu-vos de nou a Configuració &gt; Avançada.</string>
@@ -558,6 +565,7 @@
   <!--AddMembersActivity-->
   <string name="AddMembersActivity__done">Fet</string>
   <string name="AddMembersActivity__this_person_cant_be_added_to_legacy_groups">Aquesta persona no es pot afegir a grups de llegat.</string>
+  <string name="AddMembersActivity__this_person_cant_be_added_to_announcement_groups">Aquesta persona no es pot afegir als anuncis dels grups.</string>
   <plurals name="AddMembersActivity__add_d_members_to_s">
     <item quantity="one">Voleu afegir %1$s a \"%2$s\"?</item>
     <item quantity="other">Voleu afegir %3$d membres a \"%2$s\"?</item>
@@ -628,6 +636,7 @@
   <string name="ManageGroupActivity_only_admins_can_reset_the_sharable_group_link">Només els administradors poden restablir l\'enllaç de grup que es pot compartir.</string>
   <string name="ManageGroupActivity_you_dont_have_the_rights_to_do_this">No teniu permís per fer això.</string>
   <string name="ManageGroupActivity_not_capable">Algú que heu afegit no admet grups nous i cal que actualitzi el Signal.</string>
+  <string name="ManageGroupActivity_not_announcement_capable">Algú que heu afegit no admet els anuncis de grups i cal que actualitzi el Signal.</string>
   <string name="ManageGroupActivity_failed_to_update_the_group">Ha fallat actualitzar el grup.</string>
   <string name="ManageGroupActivity_youre_not_a_member_of_the_group">No sou membre del grup.</string>
   <string name="ManageGroupActivity_failed_to_update_the_group_please_retry_later">Ha fallat actualitzar el grup. Torneu-ho a provar més tard.</string>
@@ -740,22 +749,18 @@
   <!--InviteActivity-->
   <string name="InviteActivity_share">Comparteix</string>
   <string name="InviteActivity_share_with_contacts">Comparteix amb els contactes</string>
-  <string name="InviteActivity_choose_how_to_share">Trieu com compartir-ho</string>
+  <string name="InviteActivity_share_via">Comparteix via…</string>
   <string name="InviteActivity_cancel">Cancel·la</string>
   <string name="InviteActivity_sending">S\'envia…</string>
   <string name="InviteActivity_invitations_sent">Invitacions enviades!</string>
   <string name="InviteActivity_invite_to_signal">Convida al Signal</string>
-  <plurals name="InviteActivity_send_sms_to_friends">
-    <item quantity="one">ENVIA L\'SMS A %d AMISTAT</item>
-    <item quantity="other">ENVIA L\'SMS A %d AMISTATS</item>
-  </plurals>
+  <string name="InviteActivity_send_sms">Envia SMS (%d)</string>
   <plurals name="InviteActivity_send_sms_invites">
     <item quantity="one">Voleu enviar %d invitació SMS?</item>
     <item quantity="other">Voleu enviar %d invitacions SMS?</item>
   </plurals>
   <string name="InviteActivity_lets_switch_to_signal">Canviem al Signal: %1$s</string>
   <string name="InviteActivity_no_app_to_share_to">Sembla que no teniu cap aplicació on compartir-ho.</string>
-  <string name="InviteActivity_friends_dont_let_friends_text_unencrypted">Les amistats no deixen que les seves amistats xerrin sense encriptació.</string>
   <!--LearnMoreTextView-->
   <string name="LearnMoreTextView_learn_more">Més informació</string>
   <!--LongMessageActivity-->
@@ -826,11 +831,13 @@
   <string name="NotificationBarManager_signal_call_in_progress">Trucada del Signal en curs</string>
   <string name="NotificationBarManager__establishing_signal_call">S\'estableix la trucada del Signal</string>
   <string name="NotificationBarManager__incoming_signal_call">Trucada del Signal rebuda</string>
+  <string name="NotificationBarManager__incoming_signal_group_call">Trucada de grup de Signal rebuda</string>
   <string name="NotificationBarManager__stopping_signal_call_service">S\'atura el servei de trucades del Signal</string>
-  <string name="NotificationBarManager__deny_call">Rebutja la trucada</string>
+  <string name="NotificationBarManager__decline_call">Rebutja la trucada</string>
   <string name="NotificationBarManager__answer_call">Respon la trucada</string>
   <string name="NotificationBarManager__end_call">Acaba la trucada</string>
   <string name="NotificationBarManager__cancel_call">Cancel·la la trucada</string>
+  <string name="NotificationBarManager__join_call">Afegeix-me a la trucada</string>
   <!--NotificationsMegaphone-->
   <string name="NotificationsMegaphone_turn_on_notifications">Voleu activar les notificacions?</string>
   <string name="NotificationsMegaphone_never_miss_a_message">No us perdeu mai cap missatge dels contactes i dels grups.</string>
@@ -981,6 +988,13 @@
   <string name="MessageRecord_you_changed_who_can_edit_group_membership_to_s">Heu canviat qui pot editar els membres del grup a \"%1$s\".</string>
   <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">%1$s ha canviat qui pot editar els membres del grup a \"%2$s\".</string>
   <string name="MessageRecord_who_can_edit_group_membership_has_been_changed_to_s">S\'ha canviat qui pot editar els membres del grup a \"%1$s\".</string>
+  <!--GV2 announcement group change-->
+  <string name="MessageRecord_you_allow_all_members_to_send">Heu canviat la configuració del grup per permetre enviar missatges a tots els membres.</string>
+  <string name="MessageRecord_you_allow_only_admins_to_send">Heu canviat la configuració del grup per permetre enviar missatges només als administradors.</string>
+  <string name="MessageRecord_s_allow_all_members_to_send">%1$s ha canviat la configuració del grup per permetre enviar missatges a tots els membres.</string>
+  <string name="MessageRecord_s_allow_only_admins_to_send">%1$s ha canviat la configuració del grup per permetre enviar missatges només als administradors.</string>
+  <string name="MessageRecord_allow_all_members_to_send">La configuració del grup s\'ha canviat per permetre enviar missatges a tots els membres.</string>
+  <string name="MessageRecord_allow_only_admins_to_send">La configuració del grup s\'ha canviat per permetre enviar missatges només als administradors.</string>
   <!--GV2 group link invite access level change-->
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_off">Heu activat l\'enllaç de grup amb l\'aprovació de l\'administrador desactivada.</string>
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_on">Heu activat l\'enllaç de grup amb l\'aprovació de l\'administrador activada.</string>
@@ -1183,27 +1197,59 @@
   <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">Per trucar a %1$s, el Signal necessita accés a la càmera.</string>
   <string name="WebRtcCallActivity__signal_s">Trucada del Signal: %1$s</string>
   <string name="WebRtcCallActivity__calling">Es truca…</string>
+  <string name="WebRtcCallActivity__group_is_too_large_to_ring_the_participants">El grup és massa gran per a trucar als participants.</string>
   <!--WebRtcCallView-->
-  <string name="WebRtcCallView__signal_voice_call">Trucada de veu del Signal…</string>
-  <string name="WebRtcCallView__signal_video_call">Trucada de vídeo del Signal…</string>
+  <string name="WebRtcCallView__signal_call">Trucada del Signal</string>
+  <string name="WebRtcCallView__signal_video_call">Trucada de vídeo del Signal</string>
   <string name="WebRtcCallView__start_call">Inicia una trucada</string>
   <string name="WebRtcCallView__join_call">Afegeix-me a la trucada</string>
   <string name="WebRtcCallView__call_is_full">La trucada és plena</string>
   <string name="WebRtcCallView__the_maximum_number_of_d_participants_has_been_Reached_for_this_call">S\'ha assolit el nombre màxim de %1$d participants per a aquesta trucada. Torneu-ho a provar més tard.</string>
-  <string name="WebRtcCallView__s_group_call">Trucada de grup \"%1$s\"</string>
   <string name="WebRtcCallView__view_participants_list">Mostra els participants</string>
   <string name="WebRtcCallView__your_video_is_off">El vídeo està desactivat.</string>
   <string name="WebRtcCallView__reconnecting">Es torna a connectar…</string>
   <string name="WebRtcCallView__joining">S\'afegeix…</string>
   <string name="WebRtcCallView__disconnected">Desconnectat</string>
+  <string name="WebRtcCallView__signal_will_ring_s">El Signal trucarà a %1$s</string>
+  <string name="WebRtcCallView__signal_will_ring_s_and_s">El Signal trucarà a %1$s i %2$s</string>
+  <plurals name="WebRtcCallView__signal_will_ring_s_s_and_d_others">
+    <item quantity="one">El Signal trucarà a %1$s, %2$s i %3$d més </item>
+    <item quantity="other">El Signal trucarà a %1$s, %2$s i %3$d més </item>
+  </plurals>
+  <string name="WebRtcCallView__s_will_be_notified">%1$s rebrà una notificació</string>
+  <string name="WebRtcCallView__s_and_s_will_be_notified">%1$s i %2$s rebran una notificació</string>
+  <plurals name="WebRtcCallView__s_s_and_d_others_will_be_notified">
+    <item quantity="one">%1$s, %2$s i %3$d més rebran una notificació</item>
+    <item quantity="other">%1$s, %2$s i %3$d més rebran una notificació</item>
+  </plurals>
+  <string name="WebRtcCallView__ringing_s">S\'està trucant a %1$s</string>
+  <string name="WebRtcCallView__ringing_s_and_s">S\'està trucant a %1$s i %2$s</string>
+  <plurals name="WebRtcCallView__ringing_s_s_and_d_others">
+    <item quantity="one">S\'està trucant a %1$s, %2$s i %3$d més</item>
+    <item quantity="other">S\'està trucant a %1$s, %2$s i %3$d més</item>
+  </plurals>
+  <string name="WebRtcCallView__s_is_calling_you">%1$s us està trucant</string>
+  <string name="WebRtcCallView__s_is_calling_you_and_s">%1$sus està trucat a vós i a %2$s</string>
+  <string name="WebRtcCallView__s_is_calling_you_s_and_s">%1$s us està trucant a vòs, %2$s i %3$s</string>
+  <plurals name="WebRtcCallView__s_is_calling_you_s_s_and_d_others">
+    <item quantity="one">%1$s us està trucant a vós, a %2$s, a %3$s i a %4$d més</item>
+    <item quantity="other">%1$s us està trucant a vós, a %2$s, a %3$s i a %4$d més</item>
+  </plurals>
   <string name="WebRtcCallView__no_one_else_is_here">Aquí no hi ha ningú més.</string>
   <string name="WebRtcCallView__s_is_in_this_call">%1$s és en aquesta trucada.</string>
+  <string name="WebRtcCallView__s_are_in_this_call">%1$s és en aquesta trucada</string>
   <string name="WebRtcCallView__s_and_s_are_in_this_call">%1$s i %2$s són en aquesta trucada.</string>
   <string name="WebRtcCallView__s_is_presenting">%1$s fa la presentació</string>
   <plurals name="WebRtcCallView__s_s_and_d_others_are_in_this_call">
     <item quantity="one">%1$s, %2$s i %3$d més són en aquesta trucada.</item>
     <item quantity="other">%1$s, %2$s i %3$d més són en aquesta trucada.</item>
   </plurals>
+  <string name="WebRtcCallView__flip">Canvia</string>
+  <string name="WebRtcCallView__speaker">Altaveu</string>
+  <string name="WebRtcCallView__camera">Càmera</string>
+  <string name="WebRtcCallView__mute">Silenci</string>
+  <string name="WebRtcCallView__ring">Truca</string>
+  <string name="WebRtcCallView__end_call">Penja</string>
   <!--CallParticipantsListDialog-->
   <plurals name="CallParticipantsListDialog_in_this_call_d_people">
     <item quantity="one">En aquesta trucada · %1$d persona</item>
@@ -1775,10 +1821,10 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <!--recipients_panel-->
   <string name="recipients_panel__to"><small>Escriviu un nom o un número</small></string>
   <!--verify_display_fragment-->
-  <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Si voleu verificar la seguretat de l\'encriptació amb %s, compareu el número anterior amb el del seu dispositiu. Altrament, podeu escanejar el codi al seu telèfon o demanar-los que escanegin el vostre. <a href="https://signal.org/redirect/safety-numbers">Més informació.</a>]]></string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Si voleu verificar la seguretat de l\'encriptació amb %s, compareu el número anterior amb el del seu dispositiu. Altrament, podeu escanejar el codi al seu telèfon o demanar-los que escanegin el vostre. <a href="https://signal.org/redirect/safety-numbers">Més informació.</a>]]></string> -->
   <string name="verify_display_fragment__tap_to_scan">Feu un toc per escanejar</string>
   <string name="verify_display_fragment__loading">Es carrega…</string>
-  <string name="verify_display_fragment__verified">Verificat</string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__verified">Verificat</string> -->
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">Comparteix el número de seguretat</string>
   <!--webrtc_answer_decline_button-->
@@ -2663,8 +2709,8 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <!--VoiceNotePlaybackPreparer-->
   <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">Ha fallat reproduir el missatge de veu.</string>
   <!--VoiceNoteMediaDescriptionCompatFactory-->
-  <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Missatge de veu · %1$s</string>
-  <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s a %2$s</string>
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Missatge de veu · %1$s</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s a %2$s</string> -->
   <!--StorageUtil-->
   <string name="StorageUtil__s_s">%1$s/%2$s</string>
   <string name="BlockedUsersActivity__s_has_been_blocked">S\'ha blocat %1$s.</string>
@@ -3029,10 +3075,12 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <!--PermissionsSettingsFragment-->
   <string name="PermissionsSettingsFragment__add_members">Afegeix-hi membres</string>
   <string name="PermissionsSettingsFragment__edit_group_info">Edita la informació del grup</string>
+  <string name="PermissionsSettingsFragment__send_messages">Enviament de missatges</string>
   <string name="PermissionsSettingsFragment__all_members">Tots els membres</string>
   <string name="PermissionsSettingsFragment__only_admins">Només els administradors</string>
   <string name="PermissionsSettingsFragment__who_can_add_new_members">Qui pot afegir membres nous?</string>
   <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">Qui pot editar la informació del grup?</string>
+  <string name="PermissionsSettingsFragment__who_can_send_messages">Qui pot enviar missatges?</string>
   <!--SoundsAndNotificationsSettingsFragment-->
   <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">Silencia les notificacions</string>
   <string name="SoundsAndNotificationsSettingsFragment__not_muted">No silenciat</string>
@@ -3055,6 +3103,11 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="ContactFilterView__search_name_or_number">Cerqueu un nom o un número</string>
   <!--VoiceNotePlayerView-->
   <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <string name="VoiceNotePlayerView__stop_voice_message">Atura el missatge de veu</string>
+  <string name="VoiceNotePlayerView__change_voice_message_speed">Canvia la velocitat del missatge de veu</string>
+  <string name="VoiceNotePlayerView__pause_voice_message">Interromp el missatge de veu</string>
+  <string name="VoiceNotePlayerView__play_voice_message">Reprodueix el missatge de veu</string>
+  <string name="VoiceNotePlayerView__navigate_to_voice_message">Navega fins al missatge de veu</string>
   <!--AvatarPickerFragment-->
   <string name="AvatarPickerFragment__avatar_preview">Previsualització de l\'avatar</string>
   <string name="AvatarPickerFragment__camera">Càmera</string>
@@ -3073,8 +3126,32 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="TextAvatarCreationFragment__text">Text</string>
   <string name="TextAvatarCreationFragment__color">Color</string>
   <!--VectorAvatarCreationFragment-->
+  <string name="VectorAvatarCreationFragment__select_a_color">Seleccioneu un color</string>
   <!--ContactSelectionListItem-->
   <string name="ContactSelectionListItem__sms">SMS</string>
   <string name="ContactSelectionListItem__dot_s">· %1$s</string>
+  <!--DSLSettingsToolbar-->
+  <string name="DSLSettingsToolbar__navigate_up">Amunt</string>
+  <string name="MultiselectForwardFragment__forward_to">Reenvia a</string>
+  <string name="MultiselectForwardFragment__add_a_message">Afegiu-hi un missatge</string>
+  <string name="MultiselectForwardFragment__faster_forwards">Reenviaments més ràpids</string>
+  <string name="MultiselectForwardFragment__forwarded_messages_are_now">Ara els missatges reenviats s\'envien immediatament.</string>
+  <plurals name="MultiselectForwardFragment_send_d_messages">
+    <item quantity="one">Envia %1$d missatge</item>
+    <item quantity="other">Envia %1$d missatges</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment_messages_sent">
+    <item quantity="one">Missatge enviat</item>
+    <item quantity="other">Missatges enviats</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment_messages_failed_to_send">
+    <item quantity="one">Ha fallat enviar el missatge.</item>
+    <item quantity="other">Ha fallat enviar els missatges.</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment__couldnt_forward_messages">
+    <item quantity="one">No s\'ha pogut reenviar el missatge perquè ja no està disponible.</item>
+    <item quantity="other">No s\'han pogut reenviar els missatges perquè ja no estan disponibles.</item>
+  </plurals>
+  <string name="MultiselectForwardFragment__limit_reached">S\'ha arribat al límit.</string>
   <!--EOF-->
 </resources>

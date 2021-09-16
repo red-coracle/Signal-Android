@@ -30,11 +30,12 @@
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
+        <org.thoughtcrime.securesms.components.emoji.EmojiTextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Signal.Text.Title.SettingsBio"
+            android:textAlignment="viewStart"
             tools:text="Peter Parker" />
 
         <org.thoughtcrime.securesms.components.emoji.EmojiTextView
@@ -44,13 +45,15 @@
             style="@style/Signal.Text.Preview.Secondary"
             android:maxLines="1"
             android:ellipsize="end"
+            android:textAlignment="viewStart"
             tools:text="Crusin' the web" />
 
-        <TextView
+        <org.thoughtcrime.securesms.components.emoji.EmojiTextView
             android:id="@+id/summary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/Signal.Text.Preview.Secondary"
+            android:textAlignment="viewStart"
             tools:text="+1 (999) 555-1234" />
 
     </LinearLayout>

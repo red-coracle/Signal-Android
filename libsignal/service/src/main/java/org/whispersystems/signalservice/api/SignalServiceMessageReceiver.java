@@ -23,9 +23,7 @@ import org.whispersystems.signalservice.api.profiles.SignalServiceProfile;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 import org.whispersystems.signalservice.api.push.exceptions.MissingConfigurationException;
 import org.whispersystems.signalservice.api.util.CredentialsProvider;
-import org.whispersystems.signalservice.api.util.SleepTimer;
 import org.whispersystems.signalservice.api.util.UuidUtil;
-import org.whispersystems.signalservice.api.websocket.ConnectivityListener;
 import org.whispersystems.signalservice.internal.configuration.SignalServiceConfiguration;
 import org.whispersystems.signalservice.internal.push.PushServiceSocket;
 import org.whispersystems.signalservice.internal.push.SignalServiceEnvelopeEntity;
@@ -50,16 +48,9 @@ import java.util.UUID;
  *
  * @author Moxie Marlinspike
  */
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class SignalServiceMessageReceiver {
 
-  private final PushServiceSocket          socket;
-  private final SignalServiceConfiguration urls;
-  private final CredentialsProvider        credentialsProvider;
-  private final String                     signalAgent;
-  private final ConnectivityListener       connectivityListener;
-  private final SleepTimer                 sleepTimer;
-  private final ClientZkProfileOperations  clientZkProfileOperations;
+  private final PushServiceSocket socket;
 
   /**
    * Construct a SignalServiceMessageReceiver.
@@ -70,18 +61,10 @@ public class SignalServiceMessageReceiver {
   public SignalServiceMessageReceiver(SignalServiceConfiguration urls,
                                       CredentialsProvider credentials,
                                       String signalAgent,
-                                      ConnectivityListener listener,
-                                      SleepTimer timer,
                                       ClientZkProfileOperations clientZkProfileOperations,
                                       boolean automaticNetworkRetry)
   {
-    this.urls                      = urls;
-    this.credentialsProvider       = credentials;
-    this.socket                    = new PushServiceSocket(urls, credentials, signalAgent, clientZkProfileOperations, automaticNetworkRetry);
-    this.signalAgent               = signalAgent;
-    this.connectivityListener      = listener;
-    this.sleepTimer                = timer;
-    this.clientZkProfileOperations = clientZkProfileOperations;
+    this.socket = new PushServiceSocket(urls, credentials, signalAgent, clientZkProfileOperations, automaticNetworkRetry);
   }
 
   /**
@@ -105,13 +88,13 @@ public class SignalServiceMessageReceiver {
                                                                  Optional<UnidentifiedAccess> unidentifiedAccess,
                                                                  SignalServiceProfile.RequestType requestType)
   {
-    Optional<UUID> uuid = address.getUuid();
+    UUID uuid = address.getUuid();
 
-    if (uuid.isPresent() && profileKey.isPresent()) {
+    if (profileKey.isPresent()) {
       if (requestType == SignalServiceProfile.RequestType.PROFILE_AND_CREDENTIAL) {
-        return socket.retrieveVersionedProfileAndCredential(uuid.get(), profileKey.get(), unidentifiedAccess);
+        return socket.retrieveVersionedProfileAndCredential(uuid, profileKey.get(), unidentifiedAccess);
       } else {
-        return FutureTransformers.map(socket.retrieveVersionedProfile(uuid.get(), profileKey.get(), unidentifiedAccess), profile -> {
+        return FutureTransformers.map(socket.retrieveVersionedProfile(uuid, profileKey.get(), unidentifiedAccess), profile -> {
           return new ProfileAndCredential(profile,
                                           SignalServiceProfile.RequestType.PROFILE,
                                           Optional.absent());
@@ -219,7 +202,7 @@ public class SignalServiceMessageReceiver {
       SignalServiceEnvelope envelope;
 
       if (entity.hasSource() && entity.getSourceDevice() > 0) {
-        SignalServiceAddress address = new SignalServiceAddress(UuidUtil.parseOrNull(entity.getSourceUuid()), entity.getSourceE164());
+        SignalServiceAddress address = new SignalServiceAddress(UuidUtil.parseOrThrow(entity.getSourceUuid()), entity.getSourceE164());
         envelope = new SignalServiceEnvelope(entity.getType(),
                                              Optional.of(address),
                                              entity.getSourceDevice(),

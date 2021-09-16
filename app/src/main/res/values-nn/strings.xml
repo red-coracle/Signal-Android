@@ -208,6 +208,11 @@
   <string name="ConversationActivity_attachment_exceeds_size_limits">Vedlegg overskrid maksimal storleiksgrense for gjeldande meldingstype.</string>
   <string name="ConversationActivity_unable_to_record_audio">Klarte ikkje å ta opp lydar.</string>
   <string name="ConversationActivity_you_cant_send_messages_to_this_group">Du kan ikkje senda meldingar til denne gruppa sidan du ikkje lenger er medlem.</string>
+  <string name="ConversationActivity_only_s_can_send_messages">Berre %1$s kan senda meldingar.</string>
+  <string name="ConversationActivity_admins">administratorar</string>
+  <string name="ConversationActivity_message_an_admin">Send melding til ein administrator</string>
+  <string name="ConversationActivity_cant_start_group_call">Klarte ikkje starta gruppesamtale</string>
+  <string name="ConversationActivity_only_admins_of_this_group_can_start_a_call">Berre gruppeadministratorar kan starta ein samtale.</string>
   <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">Du har inga program på denne eininga som kan handtera denne lenka.</string>
   <string name="ConversationActivity_your_request_to_join_has_been_sent_to_the_group_admin">Førespurnaden din om å bli med er sendt til gruppeadministratoren. Du får eit varsel når dei gjer noko med det.</string>
   <string name="ConversationActivity_cancel_request">Avslå førespurnad</string>
@@ -340,6 +345,7 @@ Viss kontoen din har lenka einingar, så vil nye notat bli synkroniserte.</strin
   <string name="ChooseBackupFragment__icon_content_description">Gjenopprett frå reservekopi-ikon</string>
   <string name="ChooseBackupFragment__choose_backup">Vel reservekopi</string>
   <string name="ChooseBackupFragment__learn_more">Lær meir</string>
+  <string name="ChooseBackupFragment__no_file_browser_available">Fann ingen filveljar</string>
   <!--RestoreBackupFragment-->
   <string name="RestoreBackupFragment__restore_complete">Gjenoppretting utført</string>
   <string name="RestoreBackupFragment__to_continue_using_backups_please_choose_a_folder">For å fortsetja å ta reservekopiar må du velja ei mappe. Nye kopiar blir lagra der.</string>
@@ -417,6 +423,7 @@ Viss kontoen din har lenka einingar, så vil nye notat bli synkroniserte.</strin
   <!--ShareActivity-->
   <string name="ShareActivity_share_with">Del med</string>
   <string name="ShareActivity_multiple_attachments_are_only_supported">Fleire vedlegg er berre støtta for bilde og film</string>
+  <string name="ShareActivity_you_do_not_have_permission_to_send_to_this_group">Du har ikkje tilgang til å senda til denne gruppa</string>
   <!--GcmRefreshJob-->
   <string name="GcmRefreshJob_Permanent_Signal_communication_failure">Varig Signal-kommunikasjonsfeil.</string>
   <string name="GcmRefreshJob_Signal_was_unable_to_register_with_Google_Play_Services">Signal klarte ikkje å registrera seg som Google Play-teneste. Signal-meldingar og samtalar er difor slått av. Prøv å registrera programmet på nytt under Innstillingar &gt; Avansert.</string>
@@ -563,6 +570,7 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <!--AddMembersActivity-->
   <string name="AddMembersActivity__done">Ferdig</string>
   <string name="AddMembersActivity__this_person_cant_be_added_to_legacy_groups">Denne kontakten kan ikkje vera med i eldre grupper.</string>
+  <string name="AddMembersActivity__this_person_cant_be_added_to_announcement_groups">Denne personen kan ikkje leggast til kunngjeringsgrupper.</string>
   <plurals name="AddMembersActivity__add_d_members_to_s">
     <item quantity="one">Legg til %1$s medlem til «%2$s»?</item>
     <item quantity="other">Legg til %3$d medlemmar til «%2$s»?</item>
@@ -633,6 +641,7 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="ManageGroupActivity_only_admins_can_reset_the_sharable_group_link">Berre administratorar kan nullstilla den delbare gruppelenka.</string>
   <string name="ManageGroupActivity_you_dont_have_the_rights_to_do_this">Du har ikkje rettar til å gjera dette</string>
   <string name="ManageGroupActivity_not_capable">Nokon du la til må oppdatera Signal for å få støtte for nye grupper</string>
+  <string name="ManageGroupActivity_not_announcement_capable">Ein person du la til har ikkje støtte for kunngjeringsgrupper og må oppdatera Signal</string>
   <string name="ManageGroupActivity_failed_to_update_the_group">Klarte ikkje oppdatera gruppa</string>
   <string name="ManageGroupActivity_youre_not_a_member_of_the_group">Du er ikkje medlem av gruppa</string>
   <string name="ManageGroupActivity_failed_to_update_the_group_please_retry_later">Klarte ikkje oppdatera gruppa, prøv igjen seinare</string>
@@ -745,22 +754,18 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <!--InviteActivity-->
   <string name="InviteActivity_share">Del</string>
   <string name="InviteActivity_share_with_contacts">Del med kontaktar</string>
-  <string name="InviteActivity_choose_how_to_share">Vel korleis du vil dela</string>
+  <string name="InviteActivity_share_via">Del via …</string>
   <string name="InviteActivity_cancel">Avbryt</string>
   <string name="InviteActivity_sending">Sendar …</string>
   <string name="InviteActivity_invitations_sent">Invitasjonar sendt.</string>
   <string name="InviteActivity_invite_to_signal">Inviter til Signal</string>
-  <plurals name="InviteActivity_send_sms_to_friends">
-    <item quantity="one">SEND SMS TIL %d VENN</item>
-    <item quantity="other">SEND SMS TIL %d VENNAR</item>
-  </plurals>
+  <string name="InviteActivity_send_sms">Send SMS (%d)</string>
   <plurals name="InviteActivity_send_sms_invites">
     <item quantity="one">Send %d SMS-invitasjon?</item>
     <item quantity="other">Send %d SMS-invitasjonar?</item>
   </plurals>
   <string name="InviteActivity_lets_switch_to_signal">La oss byta til Signal. %1$s</string>
   <string name="InviteActivity_no_app_to_share_to">Det ser ut som at du ikkje har nokon program å dela denne informasjonen med.</string>
-  <string name="InviteActivity_friends_dont_let_friends_text_unencrypted">Vennar burde ikkje prata ukryptert over nettet.</string>
   <!--LearnMoreTextView-->
   <string name="LearnMoreTextView_learn_more">Lær meir</string>
   <!--LongMessageActivity-->
@@ -831,11 +836,13 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="NotificationBarManager_signal_call_in_progress">Signal-samtale i gang</string>
   <string name="NotificationBarManager__establishing_signal_call">Set opp Signal-anrop</string>
   <string name="NotificationBarManager__incoming_signal_call">Inngåande Signal-anrop</string>
+  <string name="NotificationBarManager__incoming_signal_group_call">Inngåande Signal-gruppesamtale</string>
   <string name="NotificationBarManager__stopping_signal_call_service">Stoppar Signal-samtaleteneste</string>
-  <string name="NotificationBarManager__deny_call">Avslå anrop</string>
+  <string name="NotificationBarManager__decline_call">Avslå anrop</string>
   <string name="NotificationBarManager__answer_call">Svar på anrop</string>
   <string name="NotificationBarManager__end_call">Avslutt samtale</string>
   <string name="NotificationBarManager__cancel_call">Avbryt samtale</string>
+  <string name="NotificationBarManager__join_call">Bli med i samtalen</string>
   <!--NotificationsMegaphone-->
   <string name="NotificationsMegaphone_turn_on_notifications">Skru på varsel?</string>
   <string name="NotificationsMegaphone_never_miss_a_message">Gå aldri glipp av meldingar frå kontaktane og gruppene dine.</string>
@@ -888,7 +895,7 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="MessageRecord_you_set_disappearing_message_time_to_s">Du stilte inn utløpstida for forsvinnande meldingar til %1$s</string>
   <string name="MessageRecord_s_set_disappearing_message_time_to_s">%1$s stilte inn utløpstida for forsvinnande meldingar til %2$s</string>
   <string name="MessageRecord_disappearing_message_time_set_to_s">Nedtellinga for forsvinnande meldingar er stilt til %1$s.</string>
-  <string name="MessageRecord_this_group_was_updated_to_a_new_group">Denne gruppa blei oppgradert til ei Ny gruppe.</string>
+  <string name="MessageRecord_this_group_was_updated_to_a_new_group">Denne gruppa vart oppgradert til ei Ny gruppe.</string>
   <string name="MessageRecord_you_couldnt_be_added_to_the_new_group_and_have_been_invited_to_join">Du er ikkje lagt til i den Nye gruppa, men er invitert til å bli med.</string>
   <string name="MessageRecord_chat_session_refreshed">Samtaleøkta er oppfriska</string>
   <plurals name="MessageRecord_members_couldnt_be_added_to_the_new_group_and_have_been_invited">
@@ -911,7 +918,7 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="MessageRecord_you_added_s">Du la til %1$s.</string>
   <string name="MessageRecord_s_added_s">%1$s la til %2$s</string>
   <string name="MessageRecord_s_added_you">%1$s la deg til i gruppa.</string>
-  <string name="MessageRecord_you_joined_the_group">Du blei med i gruppa.</string>
+  <string name="MessageRecord_you_joined_the_group">Du vart med i gruppa.</string>
   <string name="MessageRecord_s_joined_the_group">%1$s vart med i gruppa.</string>
   <!--GV2 member removals-->
   <string name="MessageRecord_you_removed_s">Du fjerna %1$s.</string>
@@ -986,6 +993,13 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="MessageRecord_you_changed_who_can_edit_group_membership_to_s">Du endra kven som kan redigera gruppemedlemskap til «%1$s».</string>
   <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">%1$s endra kven som kan redigera gruppemedlemskap til «%2$s».</string>
   <string name="MessageRecord_who_can_edit_group_membership_has_been_changed_to_s">Kven som kan endra gruppemedlemskap er endra til «%1$s».</string>
+  <!--GV2 announcement group change-->
+  <string name="MessageRecord_you_allow_all_members_to_send">Du endra gruppeinnstillingane til å la alle medlemmar senda meldingar.</string>
+  <string name="MessageRecord_you_allow_only_admins_to_send">Du endra gruppeinnstillingane til at berre administratorar kan senda meldingar.</string>
+  <string name="MessageRecord_s_allow_all_members_to_send">%1$s endra gruppeinnstillingane til å la alle medlemmar senda meldingar.</string>
+  <string name="MessageRecord_s_allow_only_admins_to_send">%1$s endra gruppeinnstillingane til at berre administratorar kan senda meldingar.</string>
+  <string name="MessageRecord_allow_all_members_to_send">Gruppeinnstillingane vart endra til at alle medlemmar kan senda meldingar.</string>
+  <string name="MessageRecord_allow_only_admins_to_send">Gruppeinnstillingane vart endra til at berre administratorar kan senda meldingar.</string>
   <!--GV2 group link invite access level change-->
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_off">Du aktiverte gruppelenka utan admin-godkjenning.</string>
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_on">Du aktiverte gruppelenka med admin-godkjenning.</string>
@@ -1007,8 +1021,8 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="MessageRecord_s_reset_the_group_link">%1$s nullstilte gruppelenka.</string>
   <string name="MessageRecord_the_group_link_has_been_reset">Gruppelenka er nullstilt.</string>
   <!--GV2 group link joins-->
-  <string name="MessageRecord_you_joined_the_group_via_the_group_link">Du blei med i gruppa via gruppelenka.</string>
-  <string name="MessageRecord_s_joined_the_group_via_the_group_link">%1$s blei med i gruppa via gruppelenka.</string>
+  <string name="MessageRecord_you_joined_the_group_via_the_group_link">Du vart med i gruppa via gruppelenka.</string>
+  <string name="MessageRecord_s_joined_the_group_via_the_group_link">%1$s vart med i gruppa via gruppelenka.</string>
   <!--GV2 group link requests-->
   <string name="MessageRecord_you_sent_a_request_to_join_the_group">Du spurde om å bli med i gruppa.</string>
   <string name="MessageRecord_s_requested_to_join_via_the_group_link">%1$s spurde om å bli med via gruppelenka.</string>
@@ -1190,27 +1204,59 @@ Viss du ikkje klarer å hugsa PIN-en, kan du oppretta ein ny ein. Du kan registr
   <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">Signal treng tilgang til kameraet ditt for å ringa %1$s</string>
   <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
   <string name="WebRtcCallActivity__calling">Ringer …</string>
+  <string name="WebRtcCallActivity__group_is_too_large_to_ring_the_participants">Gruppa er for stor til å ringa alle deltakarane.</string>
   <!--WebRtcCallView-->
-  <string name="WebRtcCallView__signal_voice_call">Signal-samtale …</string>
-  <string name="WebRtcCallView__signal_video_call">Signal-videosamtale …</string>
+  <string name="WebRtcCallView__signal_call">Signal-anrop</string>
+  <string name="WebRtcCallView__signal_video_call">Signal-videosamtale</string>
   <string name="WebRtcCallView__start_call">Start samtale</string>
   <string name="WebRtcCallView__join_call">Bli med på samtalen</string>
   <string name="WebRtcCallView__call_is_full">Samtalen er fylt opp</string>
   <string name="WebRtcCallView__the_maximum_number_of_d_participants_has_been_Reached_for_this_call">Denne samtalen har allereie %1$d medlemmar og har ikkje plass til fleire. Prøv igjen seinare.</string>
-  <string name="WebRtcCallView__s_group_call">«%1$s»-gruppesamtale</string>
   <string name="WebRtcCallView__view_participants_list">Vis medlem</string>
   <string name="WebRtcCallView__your_video_is_off">Du har skrudd av video</string>
   <string name="WebRtcCallView__reconnecting">Koplar til på nytt …</string>
   <string name="WebRtcCallView__joining">Blir med …</string>
   <string name="WebRtcCallView__disconnected">Kopla frå</string>
+  <string name="WebRtcCallView__signal_will_ring_s">Signal vil ringa til %1$s</string>
+  <string name="WebRtcCallView__signal_will_ring_s_and_s">Signal vil ringa til %1$s og %2$s</string>
+  <plurals name="WebRtcCallView__signal_will_ring_s_s_and_d_others">
+    <item quantity="one">Signal vil ringa til %1$s, %2$s og %3$d til</item>
+    <item quantity="other">Signal vil ringa til %1$s, %2$s og %3$d til</item>
+  </plurals>
+  <string name="WebRtcCallView__s_will_be_notified">%1$s vil få eit varsel</string>
+  <string name="WebRtcCallView__s_and_s_will_be_notified">%1$s og %2$s vil bli varsla</string>
+  <plurals name="WebRtcCallView__s_s_and_d_others_will_be_notified">
+    <item quantity="one">%1$s, %2$s og %3$d til vil bli varsla</item>
+    <item quantity="other">%1$s, %2$s og %3$d til vil bli varsla</item>
+  </plurals>
+  <string name="WebRtcCallView__ringing_s">Ringer til %1$s</string>
+  <string name="WebRtcCallView__ringing_s_and_s">Ringer til %1$s og %2$s</string>
+  <plurals name="WebRtcCallView__ringing_s_s_and_d_others">
+    <item quantity="one">Ringer til %1$s, %2$s og %3$d til</item>
+    <item quantity="other">Ringer til %1$s, %2$s og %3$d til</item>
+  </plurals>
+  <string name="WebRtcCallView__s_is_calling_you">%1$s ringer deg</string>
+  <string name="WebRtcCallView__s_is_calling_you_and_s">%1$s ringer deg og %2$s </string>
+  <string name="WebRtcCallView__s_is_calling_you_s_and_s">%1$s ringer deg, %2$s og %3$s</string>
+  <plurals name="WebRtcCallView__s_is_calling_you_s_s_and_d_others">
+    <item quantity="one">%1$s ringer deg, %2$s, %3$s, og %4$d til</item>
+    <item quantity="other">%1$s ringer deg, %2$s, %3$s, og %4$d til</item>
+  </plurals>
   <string name="WebRtcCallView__no_one_else_is_here">Du er åleine her</string>
   <string name="WebRtcCallView__s_is_in_this_call">%1$s er i denne samtalen</string>
+  <string name="WebRtcCallView__s_are_in_this_call">%1$s er i denne samtalen</string>
   <string name="WebRtcCallView__s_and_s_are_in_this_call">%1$s og %2$s er i denne samtalen</string>
   <string name="WebRtcCallView__s_is_presenting">%1$s deler skjerm</string>
   <plurals name="WebRtcCallView__s_s_and_d_others_are_in_this_call">
     <item quantity="one">%1$s, %2$s og %3$d til er i denne samtalen</item>
     <item quantity="other">%1$s, %2$s og %3$d til er i denne samtalen</item>
   </plurals>
+  <string name="WebRtcCallView__flip">Vend</string>
+  <string name="WebRtcCallView__speaker">Høgtalar</string>
+  <string name="WebRtcCallView__camera">Kamera</string>
+  <string name="WebRtcCallView__mute">Demp</string>
+  <string name="WebRtcCallView__ring">Ring</string>
+  <string name="WebRtcCallView__end_call">Avslutt samtale</string>
   <!--CallParticipantsListDialog-->
   <plurals name="CallParticipantsListDialog_in_this_call_d_people">
     <item quantity="one">I denne samtalen · %1$d person</item>
@@ -1785,10 +1831,10 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <!--recipients_panel-->
   <string name="recipients_panel__to"><small>Skriv inn namn eller nummer</small></string>
   <!--verify_display_fragment-->
-  <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Viss du vil stadfesta tryggleiken på krypteringa di med %s, så kan du samanlikna talet vist over med talet på deira eining. Alternativt kan du skanna koden på telefonen deira, eller be dei om å skanna din kode. <a href="https://signal.org/redirect/safety-numbers">Lær meir.</a>]]></string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Viss du vil stadfesta tryggleiken på krypteringa di med %s, så kan du samanlikna talet vist over med talet på deira eining. Alternativt kan du skanna koden på telefonen deira, eller be dei om å skanna din kode. <a href="https://signal.org/redirect/safety-numbers">Lær meir.</a>]]></string> -->
   <string name="verify_display_fragment__tap_to_scan">Trykk for å skanna</string>
   <string name="verify_display_fragment__loading">Lastar …</string>
-  <string name="verify_display_fragment__verified">Stadfesta</string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__verified">Stadfesta</string> -->
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">Del tryggleiksnummeret</string>
   <!--webrtc_answer_decline_button-->
@@ -2308,12 +2354,12 @@ Kom i gang ved å senda ei melding til ein venn.</string>
   <string name="InsightsDashboardFragment__your_insights_percentage_is_calculated_based_on">Prosentane i oversikta er rekna ut frå utgåande meldingar dei siste %1$d dagane som ikkje har forsvunne eller blitt sletta.</string>
   <string name="InsightsDashboardFragment__start_a_conversation">Start ein samtale</string>
   <string name="InsightsDashboardFragment__invite_your_contacts">Start å kommunisera trygt og skru på nye funksjonar som går forbi begrensningane til ukrypterte SMS-meldingar, ved å invitera fleire kontaktar til Signal.</string>
-  <string name="InsightsDashboardFragment__this_stat_was_generated_locally">Denne statistikken blei generert på di eining, det er berre du som kan sjå han. Den blir aldri sendt nokon stad.</string>
+  <string name="InsightsDashboardFragment__this_stat_was_generated_locally">Denne statistikken vart generert på di eining, det er berre du som kan sjå han. Den blir aldri sendt nokon stad.</string>
   <string name="InsightsDashboardFragment__encrypted_messages">Krypterte meldingar</string>
   <string name="InsightsDashboardFragment__cancel">Avbryt</string>
   <string name="InsightsDashboardFragment__send">Send</string>
   <string name="InsightsModalFragment__title">Her kjem Oversikt</string>
-  <string name="InsightsModalFragment__description">Finn ut kor mange av dine utgåande meldingar som blei sendt trygt, og inviter enkelt nye kontaktar for å auka Signal-prosenten din.</string>
+  <string name="InsightsModalFragment__description">Finn ut kor mange av dine utgåande meldingar som vart sendt trygt, og inviter enkelt nye kontaktar for å auka Signal-prosenten din.</string>
   <string name="InsightsModalFragment__view_insights">Vis Oversikt</string>
   <string name="FirstInviteReminder__title">Inviter til Signal</string>
   <string name="FirstInviteReminder__description">Du kan auka kor mange krypterte meldingar du sender med %1$d%%</string>
@@ -2675,8 +2721,8 @@ Kom i gang ved å senda ei melding til ein venn.</string>
   <!--VoiceNotePlaybackPreparer-->
   <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">Klarte ikkje spela av talemelding</string>
   <!--VoiceNoteMediaDescriptionCompatFactory-->
-  <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Talemelding · %1$s</string>
-  <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s til %2$s</string>
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Talemelding · %1$s</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s til %2$s</string> -->
   <!--StorageUtil-->
   <string name="StorageUtil__s_s">%1$s/%2$s</string>
   <string name="BlockedUsersActivity__s_has_been_blocked">«%1$s» er blokkert.</string>
@@ -2710,10 +2756,10 @@ Kom i gang ved å senda ei melding til ein venn.</string>
   <string name="ReviewCard__delete">Slett</string>
   <string name="ReviewCard__recently_changed">Endra nyleg profilnamnet sitt frå %1$s til %2$s</string>
   <!--CallParticipantsListUpdatePopupWindow-->
-  <string name="CallParticipantsListUpdatePopupWindow__s_joined">%1$s blei med</string>
-  <string name="CallParticipantsListUpdatePopupWindow__s_and_s_joined">%1$s og %2$s blei med</string>
-  <string name="CallParticipantsListUpdatePopupWindow__s_s_and_s_joined">%1$s, %2$s og %3$s blei med </string>
-  <string name="CallParticipantsListUpdatePopupWindow__s_s_and_d_others_joined">%1$s, %2$s og %3$d til blei med </string>
+  <string name="CallParticipantsListUpdatePopupWindow__s_joined">%1$s vart med</string>
+  <string name="CallParticipantsListUpdatePopupWindow__s_and_s_joined">%1$s og %2$s vart med</string>
+  <string name="CallParticipantsListUpdatePopupWindow__s_s_and_s_joined">%1$s, %2$s og %3$s vart med </string>
+  <string name="CallParticipantsListUpdatePopupWindow__s_s_and_d_others_joined">%1$s, %2$s og %3$d til vart med </string>
   <string name="CallParticipantsListUpdatePopupWindow__s_left">%1$s la på</string>
   <string name="CallParticipantsListUpdatePopupWindow__s_and_s_left">%1$s og %2$s la på</string>
   <string name="CallParticipantsListUpdatePopupWindow__s_s_and_s_left">%1$s, %2$s og %3$s la på</string>
@@ -3041,10 +3087,12 @@ Kom i gang ved å senda ei melding til ein venn.</string>
   <!--PermissionsSettingsFragment-->
   <string name="PermissionsSettingsFragment__add_members">Legg til medlemmar</string>
   <string name="PermissionsSettingsFragment__edit_group_info">Endra gruppeinfo</string>
+  <string name="PermissionsSettingsFragment__send_messages">Send meldingar</string>
   <string name="PermissionsSettingsFragment__all_members">Alle medlemmar</string>
   <string name="PermissionsSettingsFragment__only_admins">Berre administratorar</string>
   <string name="PermissionsSettingsFragment__who_can_add_new_members">Kven kan legga til nye medlemmar?</string>
   <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">Kven kan redigera infoen til denne gruppa?</string>
+  <string name="PermissionsSettingsFragment__who_can_send_messages">Kven kan senda meldingar?</string>
   <!--SoundsAndNotificationsSettingsFragment-->
   <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">Ikkje vis varsel</string>
   <string name="SoundsAndNotificationsSettingsFragment__not_muted">Ikkje dempa</string>
@@ -3067,6 +3115,11 @@ Kom i gang ved å senda ei melding til ein venn.</string>
   <string name="ContactFilterView__search_name_or_number">Søk etter namn eller nummer</string>
   <!--VoiceNotePlayerView-->
   <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <string name="VoiceNotePlayerView__stop_voice_message">Stopp talemelding</string>
+  <string name="VoiceNotePlayerView__change_voice_message_speed">Endra hastigheit på talemelding</string>
+  <string name="VoiceNotePlayerView__pause_voice_message">Set talemelding på pause</string>
+  <string name="VoiceNotePlayerView__play_voice_message">Spel av talemelding</string>
+  <string name="VoiceNotePlayerView__navigate_to_voice_message">Naviger til talemelding</string>
   <!--AvatarPickerFragment-->
   <string name="AvatarPickerFragment__avatar_preview">Førehandsvising av avatar</string>
   <string name="AvatarPickerFragment__camera">Kamera</string>
@@ -3089,5 +3142,28 @@ Kom i gang ved å senda ei melding til ein venn.</string>
   <!--ContactSelectionListItem-->
   <string name="ContactSelectionListItem__sms">SMS</string>
   <string name="ContactSelectionListItem__dot_s">· %1$s</string>
+  <!--DSLSettingsToolbar-->
+  <string name="DSLSettingsToolbar__navigate_up">Naviger opp</string>
+  <string name="MultiselectForwardFragment__forward_to">Vidaresend til</string>
+  <string name="MultiselectForwardFragment__add_a_message">Legg til melding</string>
+  <string name="MultiselectForwardFragment__faster_forwards">Kjappare vidaresending</string>
+  <string name="MultiselectForwardFragment__forwarded_messages_are_now">Vidaresende meldingar blir no sende umiddelbart.</string>
+  <plurals name="MultiselectForwardFragment_send_d_messages">
+    <item quantity="one">Send %1$d melding</item>
+    <item quantity="other">Send %1$d meldingar</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment_messages_sent">
+    <item quantity="one">Melding sendt</item>
+    <item quantity="other">Meldingar sende</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment_messages_failed_to_send">
+    <item quantity="one">Klarte ikkje senda meldinga</item>
+    <item quantity="other">Klarte ikkje senda meldingane</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment__couldnt_forward_messages">
+    <item quantity="one">Kunne ikkje vidaresenda meldinga sidan ho ikkje lenger er til å få tak i.</item>
+    <item quantity="other">Kunne ikkje vidaresenda meldingane sidan dei ikkje lenger er til å få tak i.</item>
+  </plurals>
+  <string name="MultiselectForwardFragment__limit_reached">Grense nådd</string>
   <!--EOF-->
 </resources>

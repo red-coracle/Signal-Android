@@ -208,6 +208,11 @@
   <string name="ConversationActivity_attachment_exceeds_size_limits">Anhang zu groß für die zu sendende Nachrichtenart.</string>
   <string name="ConversationActivity_unable_to_record_audio">Audioaufnahme nicht möglich!</string>
   <string name="ConversationActivity_you_cant_send_messages_to_this_group">Du kannst keine Nachrichten an diese Gruppe senden, da du kein Gruppenmitglied mehr bist.</string>
+  <string name="ConversationActivity_only_s_can_send_messages">Nur %1$s dürfen Nachrichten senden.</string>
+  <string name="ConversationActivity_admins">Admins</string>
+  <string name="ConversationActivity_message_an_admin">Schreib einem Admin</string>
+  <string name="ConversationActivity_cant_start_group_call">Starten eines Gruppenanrufs nicht möglich</string>
+  <string name="ConversationActivity_only_admins_of_this_group_can_start_a_call">Nur Admins können in dieser Gruppe Anrufe starten.</string>
   <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">Auf deinem Gerät ist derzeit keine App installiert, die mit diesem Link umgehen kann.</string>
   <string name="ConversationActivity_your_request_to_join_has_been_sent_to_the_group_admin">Deine Beitrittsanfrage wurde an den Gruppen-Admin gesendet. Du wirst benachrichtigt, sobald er über sie entschieden hat.</string>
   <string name="ConversationActivity_cancel_request">Anfrage abbrechen</string>
@@ -339,6 +344,7 @@
   <string name="ChooseBackupFragment__icon_content_description">Symbol: Aus Datensicherung wiederherstellen</string>
   <string name="ChooseBackupFragment__choose_backup">Datensicherung wählen</string>
   <string name="ChooseBackupFragment__learn_more">Mehr erfahren</string>
+  <string name="ChooseBackupFragment__no_file_browser_available">Kein Dateimanager verfügbar</string>
   <!--RestoreBackupFragment-->
   <string name="RestoreBackupFragment__restore_complete">Wiederherstellung abgeschlossen</string>
   <string name="RestoreBackupFragment__to_continue_using_backups_please_choose_a_folder">Um weiterhin Datensicherungen zu verwenden, wähle bitte einen Ordner. Neue Sicherungen werden dort gespeichert.</string>
@@ -416,6 +422,7 @@
   <!--ShareActivity-->
   <string name="ShareActivity_share_with">Teilen mit</string>
   <string name="ShareActivity_multiple_attachments_are_only_supported">Mehrere Anhänge werden nur für Bilder und Videos unterstützt</string>
+  <string name="ShareActivity_you_do_not_have_permission_to_send_to_this_group">Du hast in dieser Gruppe keine Berechtigung zum Senden</string>
   <!--GcmRefreshJob-->
   <string name="GcmRefreshJob_Permanent_Signal_communication_failure">Dauerhafter Signal-Kommunikationsfehler!</string>
   <string name="GcmRefreshJob_Signal_was_unable_to_register_with_Google_Play_Services">Signal konnte nicht für die Google-Play-Dienste registriert werden. Signal-Nachrichten und ‑Anrufe wurden daher deaktiviert. Bitte registriere Signal erneut in Signal → Einstellungen → Datenschutz → Erweiterte Einstellungen.</string>
@@ -558,6 +565,7 @@
   <!--AddMembersActivity-->
   <string name="AddMembersActivity__done">Fertig</string>
   <string name="AddMembersActivity__this_person_cant_be_added_to_legacy_groups">Diese Person kann nicht zu Gruppen alten Typs hinzugefügt werden.</string>
+  <string name="AddMembersActivity__this_person_cant_be_added_to_announcement_groups">Diese Person kann nicht zu Bekanntgabegruppen hinzugefügt werden.</string>
   <plurals name="AddMembersActivity__add_d_members_to_s">
     <item quantity="one"> %1$s zu »%2$s« hinzufügen?</item>
     <item quantity="other">%3$d Mitglieder zu »%2$s« hinzufügen?</item>
@@ -627,7 +635,8 @@
   <string name="ManageGroupActivity_only_admins_can_enable_or_disable_the_option_to_approve_new_members">Nur Admins können die Option zur Bestätigung neuer Mitglieder aktivieren oder deaktivieren.</string>
   <string name="ManageGroupActivity_only_admins_can_reset_the_sharable_group_link">Nur Admins können den Gruppen-Link zurücksetzen.</string>
   <string name="ManageGroupActivity_you_dont_have_the_rights_to_do_this">Dir fehlen die hierfür erforderlichen Rechte</string>
-  <string name="ManageGroupActivity_not_capable">Die Signal-App eines von dir hinzugefügten Mitglieds unterstützt nicht die neueste Version von Gruppenunterhaltungen und muss daher aktualisiert werden</string>
+  <string name="ManageGroupActivity_not_capable">Die Signal-App eines von dir hinzugefügten Mitglieds unterstützt keine Gruppen neuen Typs und muss daher aktualisiert werden</string>
+  <string name="ManageGroupActivity_not_announcement_capable">Die Signal-App eines von dir hinzugefügten Mitglieds unterstützt keine Bekanntgabegruppen und muss daher aktualisiert werden</string>
   <string name="ManageGroupActivity_failed_to_update_the_group">Gruppe konnte nicht aktualisiert werden</string>
   <string name="ManageGroupActivity_youre_not_a_member_of_the_group">Du bist kein Mitglied der Gruppe</string>
   <string name="ManageGroupActivity_failed_to_update_the_group_please_retry_later">Gruppe konnte nicht aktualisiert werden, bitte versuche es später erneut</string>
@@ -740,22 +749,18 @@
   <!--InviteActivity-->
   <string name="InviteActivity_share">Teilen</string>
   <string name="InviteActivity_share_with_contacts">Mit Kontakten teilen (SMS)</string>
-  <string name="InviteActivity_choose_how_to_share">Mit anderer App teilen</string>
+  <string name="InviteActivity_share_via">Teilen über …</string>
   <string name="InviteActivity_cancel">Abbrechen</string>
   <string name="InviteActivity_sending">Wird versendet …</string>
   <string name="InviteActivity_invitations_sent">Einladungen versendet!</string>
   <string name="InviteActivity_invite_to_signal">Zu Signal einladen</string>
-  <plurals name="InviteActivity_send_sms_to_friends">
-    <item quantity="one">SMS AN %d FREUND SENDEN</item>
-    <item quantity="other">SMS AN %d FREUNDE SENDEN</item>
-  </plurals>
+  <string name="InviteActivity_send_sms">SMS senden (%d)</string>
   <plurals name="InviteActivity_send_sms_invites">
     <item quantity="one">%d SMS-Einladung senden?</item>
     <item quantity="other">%d SMS-Einladungen senden?</item>
   </plurals>
   <string name="InviteActivity_lets_switch_to_signal">Lass uns zu »Signal« wechseln: %1$s</string>
   <string name="InviteActivity_no_app_to_share_to">Es sieht so aus, als hättest du keine zum Teilen geeignete Apps installiert.</string>
-  <string name="InviteActivity_friends_dont_let_friends_text_unencrypted">Freunde lassen Freunde nicht unverschlüsselt kommunizieren.</string>
   <!--LearnMoreTextView-->
   <string name="LearnMoreTextView_learn_more">Mehr erfahren</string>
   <!--LongMessageActivity-->
@@ -826,11 +831,13 @@
   <string name="NotificationBarManager_signal_call_in_progress">Signal-Anruf läuft</string>
   <string name="NotificationBarManager__establishing_signal_call">Signal-Anruf wird hergestellt</string>
   <string name="NotificationBarManager__incoming_signal_call">Eingehender Signal-Anruf</string>
+  <string name="NotificationBarManager__incoming_signal_group_call">Eingehender Signal-Gruppenanruf</string>
   <string name="NotificationBarManager__stopping_signal_call_service">Signals Anrufdienst wird gestoppt</string>
-  <string name="NotificationBarManager__deny_call">Anruf ablehnen</string>
+  <string name="NotificationBarManager__decline_call">Anruf ablehnen</string>
   <string name="NotificationBarManager__answer_call">Anruf annehmen</string>
   <string name="NotificationBarManager__end_call">Anruf beenden</string>
   <string name="NotificationBarManager__cancel_call">Anruf abbrechen</string>
+  <string name="NotificationBarManager__join_call">Anruf beitreten</string>
   <!--NotificationsMegaphone-->
   <string name="NotificationsMegaphone_turn_on_notifications">Benachrichtigungen einschalten?</string>
   <string name="NotificationsMegaphone_never_miss_a_message">Versäume nie eine Nachricht deiner Kontakte und Gruppen.</string>
@@ -981,6 +988,13 @@
   <string name="MessageRecord_you_changed_who_can_edit_group_membership_to_s">Du hast die Bearbeitungsberechtigten für die Gruppenmitgliedschaft zu »%1$s« geändert.</string>
   <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">%1$s hat die Bearbeitungsberechtigten für die Gruppenmitgliedschaft zu »%2$s« geändert.</string>
   <string name="MessageRecord_who_can_edit_group_membership_has_been_changed_to_s">Die Bearbeitungsberechtigten für die Gruppenmitgliedschaft wurden zu »%1$s« geändert.</string>
+  <!--GV2 announcement group change-->
+  <string name="MessageRecord_you_allow_all_members_to_send">Du hast die Gruppen-Einstellungen geändert, um allen Mitgliedern das Senden von Nachrichten zu erlauben.</string>
+  <string name="MessageRecord_you_allow_only_admins_to_send">Du hast die Gruppen-Einstellungen geändert, um nur Admins das Senden von Nachrichten zu erlauben.</string>
+  <string name="MessageRecord_s_allow_all_members_to_send">%1$s hat die Gruppen-Einstellungen geändert, um allen Mitgliedern das Senden von Nachrichten zu erlauben.</string>
+  <string name="MessageRecord_s_allow_only_admins_to_send">%1$s hat die Gruppen-Einstellungen geändert, um nur Admins das Senden von Nachrichten zu erlauben.</string>
+  <string name="MessageRecord_allow_all_members_to_send">Die Gruppen-Einstellungen wurden geändert, um allen Mitgliedern das Senden von Nachrichten zu erlauben.</string>
+  <string name="MessageRecord_allow_only_admins_to_send">Die Gruppen-Einstellungen wurden geändert, um nur Admins das Senden von Nachrichten zu erlauben.</string>
   <!--GV2 group link invite access level change-->
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_off">Du hast den Gruppen-Link mit ausgeschalteter Admin-Bestätigung aktiviert.</string>
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_on">Du hast den Gruppen-Link mit eingeschalteter Admin-Bestätigung aktiviert.</string>
@@ -1039,12 +1053,12 @@
   <string name="MessageRecord_group_call">Gruppenanruf</string>
   <string name="MessageRecord_you">Du</string>
   <plurals name="MessageRecord_s_s_and_d_others_are_in_the_group_call_s">
-    <item quantity="one">%1$s, %2$s und %3$d Weiterer nehmen am Gruppenanruf teil · %4$s</item>
-    <item quantity="other">%1$s, %2$s und %3$d Weitere nehmen am Gruppenanruf teil · %4$s</item>
+    <item quantity="one">%1$s, %2$s und %3$d weitere Person nehmen am Gruppenanruf teil · %4$s</item>
+    <item quantity="other">%1$s, %2$s und %3$d weitere Personen nehmen am Gruppenanruf teil · %4$s</item>
   </plurals>
   <plurals name="MessageRecord_s_s_and_d_others_are_in_the_group_call">
-    <item quantity="one">%1$s, %2$s und %3$d Weiterer nehmen am Gruppenanruf teil</item>
-    <item quantity="other">%1$s, %2$s und %3$d Weitere nehmen am Gruppenanruf teil</item>
+    <item quantity="one">%1$s, %2$s und %3$d weitere Person nehmen am Gruppenanruf teil</item>
+    <item quantity="other">%1$s, %2$s und %3$d weitere Personen nehmen am Gruppenanruf teil</item>
   </plurals>
   <!--MessageRequestBottomView-->
   <string name="MessageRequestBottomView_accept">Annehmen</string>
@@ -1182,27 +1196,59 @@
   <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">Um %1$s anzurufen, benötigt Signal Zugriff auf deine Kamera</string>
   <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
   <string name="WebRtcCallActivity__calling">Anrufen …</string>
+  <string name="WebRtcCallActivity__group_is_too_large_to_ring_the_participants">Gruppe ist zu groß, um die Teilnehmer anzuklingeln.</string>
   <!--WebRtcCallView-->
-  <string name="WebRtcCallView__signal_voice_call">Signal-Sprachanruf …</string>
-  <string name="WebRtcCallView__signal_video_call">Signal-Videoanruf …</string>
+  <string name="WebRtcCallView__signal_call">Signal-Anruf</string>
+  <string name="WebRtcCallView__signal_video_call">Signal-Videoanruf</string>
   <string name="WebRtcCallView__start_call">Anruf starten</string>
   <string name="WebRtcCallView__join_call">Anruf beitreten</string>
   <string name="WebRtcCallView__call_is_full">Anruf ist voll</string>
   <string name="WebRtcCallView__the_maximum_number_of_d_participants_has_been_Reached_for_this_call">Für diesen Anruf wurde die maximale Anzahl von %1$d Teilnehmern erreicht. Bitte versuche es später erneut.</string>
-  <string name="WebRtcCallView__s_group_call">»%1$s« Gruppenanruf</string>
   <string name="WebRtcCallView__view_participants_list">Teilnehmer anzeigen</string>
-  <string name="WebRtcCallView__your_video_is_off">Dein Video ist aus</string>
+  <string name="WebRtcCallView__your_video_is_off">Deine Kamera ist ausgeschaltet</string>
   <string name="WebRtcCallView__reconnecting">Verbindung wird neu hergestellt …</string>
   <string name="WebRtcCallView__joining">Beitreten …</string>
   <string name="WebRtcCallView__disconnected">Verbindung getrennt</string>
+  <string name="WebRtcCallView__signal_will_ring_s">Signal wird bei %1$s klingeln</string>
+  <string name="WebRtcCallView__signal_will_ring_s_and_s">Signal wird bei %1$s und %2$s klingeln</string>
+  <plurals name="WebRtcCallView__signal_will_ring_s_s_and_d_others">
+    <item quantity="one">Signal wird bei %1$s, %2$s und %3$d weiteren Person klingeln</item>
+    <item quantity="other">Signal wird bei %1$s, %2$s und %3$d weiteren Personen klingeln</item>
+  </plurals>
+  <string name="WebRtcCallView__s_will_be_notified">%1$s wird benachrichtigt werden</string>
+  <string name="WebRtcCallView__s_and_s_will_be_notified">%1$s und %2$s werden benachrichtigt werden</string>
+  <plurals name="WebRtcCallView__s_s_and_d_others_will_be_notified">
+    <item quantity="one">%1$s, %2$s und %3$d weitere Person werden benachrichtigt werden</item>
+    <item quantity="other">%1$s, %2$s und %3$d weitere Personen werden benachrichtigt werden</item>
+  </plurals>
+  <string name="WebRtcCallView__ringing_s">Klingelt gerade bei %1$s</string>
+  <string name="WebRtcCallView__ringing_s_and_s">Klingelt gerade bei %1$s und %2$s</string>
+  <plurals name="WebRtcCallView__ringing_s_s_and_d_others">
+    <item quantity="one">Klingelt gerade bei %1$s, %2$s und %3$d weiteren Person</item>
+    <item quantity="other">Klingelt gerade bei %1$s, %2$s und %3$d weiteren Personen</item>
+  </plurals>
+  <string name="WebRtcCallView__s_is_calling_you">%1$s ruft dich gerade an</string>
+  <string name="WebRtcCallView__s_is_calling_you_and_s">%1$s ruft dich und %2$s gerade an</string>
+  <string name="WebRtcCallView__s_is_calling_you_s_and_s">%1$s ruft dich, %2$s und %3$s gerade an</string>
+  <plurals name="WebRtcCallView__s_is_calling_you_s_s_and_d_others">
+    <item quantity="one">%1$s ruft dich, %2$s, %3$s und %4$d weitere Person gerade an</item>
+    <item quantity="other">%1$s ruft dich, %2$s, %3$s und %4$d weitere Personen gerade an</item>
+  </plurals>
   <string name="WebRtcCallView__no_one_else_is_here">Niemand anderes ist hier</string>
   <string name="WebRtcCallView__s_is_in_this_call">%1$s nimmt an diesem Anruf teil</string>
+  <string name="WebRtcCallView__s_are_in_this_call">%1$s nimmst an diesem Anruf teil</string>
   <string name="WebRtcCallView__s_and_s_are_in_this_call">%1$s und %2$s nehmen an diesem Anruf teil</string>
   <string name="WebRtcCallView__s_is_presenting">%1$s präsentiert gerade</string>
   <plurals name="WebRtcCallView__s_s_and_d_others_are_in_this_call">
-    <item quantity="one">%1$s, %2$s und %3$d Weiterer nehmen an diesem Anruf teil</item>
-    <item quantity="other">%1$s, %2$s und %3$d Weitere nehmen an diesem Anruf teil</item>
+    <item quantity="one">%1$s, %2$s und %3$d weitere Person nehmen an diesem Anruf teil</item>
+    <item quantity="other">%1$s, %2$s und %3$d weitere Personen nehmen an diesem Anruf teil</item>
   </plurals>
+  <string name="WebRtcCallView__flip">Drehen</string>
+  <string name="WebRtcCallView__speaker">Lautspr.</string>
+  <string name="WebRtcCallView__camera">Kamera</string>
+  <string name="WebRtcCallView__mute">Stumm</string>
+  <string name="WebRtcCallView__ring">Klingeln</string>
+  <string name="WebRtcCallView__end_call">Auflegen</string>
   <!--CallParticipantsListDialog-->
   <plurals name="CallParticipantsListDialog_in_this_call_d_people">
     <item quantity="one">In diesem Anruf · %1$d Person</item>
@@ -1336,7 +1382,7 @@ Schlüsselaustausch-Nachricht für eine ungültige Protokollversion empfangen</s
   <string name="SubmitDebugLogActivity_success">Erfolgreich!</string>
   <string name="SubmitDebugLogActivity_copy_this_url_and_add_it_to_your_issue">Bitte kopiere diese Internetadresse und füge sie deinem Fehlerbericht oder deiner E-Mail an den Support hinzu:\n\n<b>%1$s</b></string>
   <string name="SubmitDebugLogActivity_share">Teilen</string>
-  <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online_for_contributors">Dieses Diagnoseprotokoll wird im Internet veröffentlicht, damit Mitwirkende es einsehen können. Bevor du das Protokoll hochlädst, kannst du es noch einmal überprüfen.</string>
+  <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online_for_contributors">Dieses Diagnoseprotokoll wird im Internet veröffentlicht, sodass Mitwirkende es einsehen können. Bevor du das Protokoll hochlädst, kannst du es noch einmal überprüfen.</string>
   <!--SupportEmailUtil-->
   <string name="SupportEmailUtil_filter">Filter:</string>
   <string name="SupportEmailUtil_device_info">Geräteinformationen:</string>
@@ -1770,10 +1816,10 @@ Schlüsselaustausch-Nachricht für eine ungültige Protokollversion empfangen</s
   <!--recipients_panel-->
   <string name="recipients_panel__to"><small>Name/Rufnummer eingeben</small></string>
   <!--verify_display_fragment-->
-  <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Falls du die Sicherheit deiner Verschlüsselung mit %s verifizieren möchtest, vergleiche bitte die oben dargestellte Nummer mit der Nummer auf dem Gerät deines Kontakts. Alternativ kannst du den Code deines Kontakts einscannen oder ihn deinen eigenen Code einscannen lassen. <a href="https://signal.org/redirect/safety-numbers">Mehr erfahren</a>]]></string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[Falls du die Sicherheit deiner Verschlüsselung mit %s verifizieren möchtest, vergleiche bitte die oben dargestellte Nummer mit der Nummer auf dem Gerät deines Kontakts. Alternativ kannst du den Code deines Kontakts einscannen oder ihn deinen eigenen Code einscannen lassen. <a href="https://signal.org/redirect/safety-numbers">Mehr erfahren</a>]]></string> -->
   <string name="verify_display_fragment__tap_to_scan">Zum Scannen antippen</string>
   <string name="verify_display_fragment__loading">Wird geladen …</string>
-  <string name="verify_display_fragment__verified">Verifiziert</string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__verified">Verifiziert</string> -->
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">Sicherheitsnummer teilen</string>
   <!--webrtc_answer_decline_button-->
@@ -2006,7 +2052,7 @@ Schlüsselaustausch-Nachricht für eine ungültige Protokollversion empfangen</s
   <string name="preferences_advanced__disable_signal_built_in_emoji_support">Integrierte Emojis deaktivieren und stattdessen System-Emojis verwenden</string>
   <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Alle Anrufe über den Signal-Server leiten, um die eigene IP-Adresse gegenüber Kontakten nicht offenzulegen. Dies verringert die Anrufqualität.</string>
   <string name="preferences_advanced__always_relay_calls">Anrufe immer indirekt</string>
-  <string name="preferences_app_protection__who_can">Wer kann …</string>
+  <string name="preferences_app_protection__who_can">Wer darf …</string>
   <string name="preferences_app_protection__app_access">App-Zugriff</string>
   <string name="preferences_app_protection__communication">Kommunikation</string>
   <string name="preferences_chats__chats">Unterhaltungen</string>
@@ -2446,7 +2492,7 @@ Schlüsselaustausch-Nachricht für eine ungültige Protokollversion empfangen</s
   <string name="BackupDialog_to_enable_backups_choose_a_folder">Um Datensicherungen zu aktivieren, wähle einen Ordner. Sicherungen werden dort gespeichert.</string>
   <string name="BackupDialog_choose_folder">Ordner wählen</string>
   <string name="BackupDialog_copied_to_clipboard">In Zwischenablage kopiert</string>
-  <string name="BackupDialog_no_file_picker_available">Keine Dateiauswahl verfügbar.</string>
+  <string name="BackupDialog_no_file_picker_available">Keine Dateimanager verfügbar.</string>
   <string name="BackupDialog_enter_backup_passphrase_to_verify">Gib deine Sicherungspassphrase ein</string>
   <string name="BackupDialog_verify">Bestätigen</string>
   <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">Du hast deine Sicherungspassphrase richtig eingegeben</string>
@@ -2658,8 +2704,8 @@ Schlüsselaustausch-Nachricht für eine ungültige Protokollversion empfangen</s
   <!--VoiceNotePlaybackPreparer-->
   <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">Sprachnachricht konnte nicht wiedergegeben werden</string>
   <!--VoiceNoteMediaDescriptionCompatFactory-->
-  <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Sprachnachricht · %1$s</string>
-  <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s an %2$s</string>
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">Sprachnachricht · %1$s</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s an %2$s</string> -->
   <!--StorageUtil-->
   <string name="StorageUtil__s_s">%1$s/%2$s</string>
   <string name="BlockedUsersActivity__s_has_been_blocked">%1$s wurde blockiert.</string>
@@ -2696,11 +2742,11 @@ Schlüsselaustausch-Nachricht für eine ungültige Protokollversion empfangen</s
   <string name="CallParticipantsListUpdatePopupWindow__s_joined">%1$s ist beigetreten</string>
   <string name="CallParticipantsListUpdatePopupWindow__s_and_s_joined">%1$s und %2$s sind beigetreten</string>
   <string name="CallParticipantsListUpdatePopupWindow__s_s_and_s_joined">%1$s, %2$s und %3$s sind beigetreten</string>
-  <string name="CallParticipantsListUpdatePopupWindow__s_s_and_d_others_joined">%1$s, %2$s und %3$d Weitere sind beigetreten</string>
+  <string name="CallParticipantsListUpdatePopupWindow__s_s_and_d_others_joined">%1$s, %2$s und %3$d weitere Personen sind beigetreten</string>
   <string name="CallParticipantsListUpdatePopupWindow__s_left"> %1$s ist ausgetreten</string>
   <string name="CallParticipantsListUpdatePopupWindow__s_and_s_left">%1$s und %2$s sind ausgetreten</string>
   <string name="CallParticipantsListUpdatePopupWindow__s_s_and_s_left">%1$s, %2$s und %3$s sind ausgetreten</string>
-  <string name="CallParticipantsListUpdatePopupWindow__s_s_and_d_others_left">%1$s, %2$s und %3$d Weitere sind ausgetreten</string>
+  <string name="CallParticipantsListUpdatePopupWindow__s_s_and_d_others_left">%1$s, %2$s und %3$d weitere Personen sind ausgetreten</string>
   <string name="CallParticipant__you">Du</string>
   <string name="CallParticipant__you_on_another_device">Du (auf einem anderen Gerät)</string>
   <string name="CallParticipant__s_on_another_device">%1$s (auf einem anderen Gerät)</string>
@@ -3024,10 +3070,12 @@ Schlüsselaustausch-Nachricht für eine ungültige Protokollversion empfangen</s
   <!--PermissionsSettingsFragment-->
   <string name="PermissionsSettingsFragment__add_members">Mitglieder hinzufügen</string>
   <string name="PermissionsSettingsFragment__edit_group_info">Gruppendetails bearbeiten</string>
+  <string name="PermissionsSettingsFragment__send_messages">Nachrichten senden</string>
   <string name="PermissionsSettingsFragment__all_members">Alle Mitglieder</string>
   <string name="PermissionsSettingsFragment__only_admins">Nur Admins</string>
   <string name="PermissionsSettingsFragment__who_can_add_new_members">Wer darf neue Mitglieder hinzufügen?</string>
   <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">Wer darf die Gruppendetails bearbeiten?</string>
+  <string name="PermissionsSettingsFragment__who_can_send_messages">Wer darf Nachrichten senden?</string>
   <!--SoundsAndNotificationsSettingsFragment-->
   <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">Benachrichtigungen stummschalten</string>
   <string name="SoundsAndNotificationsSettingsFragment__not_muted">Nicht stumm</string>
@@ -3050,6 +3098,11 @@ Schlüsselaustausch-Nachricht für eine ungültige Protokollversion empfangen</s
   <string name="ContactFilterView__search_name_or_number">Name oder Nummer suchen</string>
   <!--VoiceNotePlayerView-->
   <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <string name="VoiceNotePlayerView__stop_voice_message">Sprachnachricht stoppen</string>
+  <string name="VoiceNotePlayerView__change_voice_message_speed">Geschwindigkeit der Sprachnachricht ändern</string>
+  <string name="VoiceNotePlayerView__pause_voice_message">Sprachnachricht pausieren</string>
+  <string name="VoiceNotePlayerView__play_voice_message">Sprachnachricht abspielen</string>
+  <string name="VoiceNotePlayerView__navigate_to_voice_message">Zu Sprachnachricht navigieren</string>
   <!--AvatarPickerFragment-->
   <string name="AvatarPickerFragment__avatar_preview">Avatar-Vorschau</string>
   <string name="AvatarPickerFragment__camera">Kamera</string>
@@ -3072,5 +3125,28 @@ Schlüsselaustausch-Nachricht für eine ungültige Protokollversion empfangen</s
   <!--ContactSelectionListItem-->
   <string name="ContactSelectionListItem__sms">SMS</string>
   <string name="ContactSelectionListItem__dot_s">· %1$s</string>
+  <!--DSLSettingsToolbar-->
+  <string name="DSLSettingsToolbar__navigate_up">Nach oben navigieren</string>
+  <string name="MultiselectForwardFragment__forward_to">Weiterleiten an</string>
+  <string name="MultiselectForwardFragment__add_a_message">Füge eine Nachricht hinzu</string>
+  <string name="MultiselectForwardFragment__faster_forwards">Schnellere Weiterleitungen</string>
+  <string name="MultiselectForwardFragment__forwarded_messages_are_now">Weitergeleitete Nachrichten werden nun sofort gesendet.</string>
+  <plurals name="MultiselectForwardFragment_send_d_messages">
+    <item quantity="one">%1$d Nachricht senden</item>
+    <item quantity="other">%1$d Nachrichten senden</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment_messages_sent">
+    <item quantity="one">Nachricht gesendet</item>
+    <item quantity="other">Nachrichten gesendet</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment_messages_failed_to_send">
+    <item quantity="one">Nachricht konnte nicht gesendet werden</item>
+    <item quantity="other">Nachrichten konnten nicht gesendet werden</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment__couldnt_forward_messages">
+    <item quantity="one">Nachricht konnte nicht weitergeleitet werden, da sie nicht mehr verfügbar ist.</item>
+    <item quantity="other">Nachrichten konnten nicht weitergeleitet werden, da sie nicht mehr verfügbar sind.</item>
+  </plurals>
+  <string name="MultiselectForwardFragment__limit_reached">Höchstzahl erreicht</string>
   <!--EOF-->
 </resources>

@@ -207,6 +207,11 @@
   <string name="ConversationActivity_attachment_exceeds_size_limits">添付ファイルのサイズが、送信するメッセージタイプに応じた制限を超えています。</string>
   <string name="ConversationActivity_unable_to_record_audio">録音できません！</string>
   <string name="ConversationActivity_you_cant_send_messages_to_this_group">メンバーではなくなったので、このグループにメッセージを送ることはできません。</string>
+  <string name="ConversationActivity_only_s_can_send_messages">%1$s のみがメッセージを送信できます。</string>
+  <string name="ConversationActivity_admins">管理者</string>
+  <string name="ConversationActivity_message_an_admin">管理者に連絡</string>
+  <string name="ConversationActivity_cant_start_group_call">グループ通話を開始できません</string>
+  <string name="ConversationActivity_only_admins_of_this_group_can_start_a_call">グループ管理者のみが通話を開始できます。</string>
   <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">このリンクを扱えるアプリがインストールされていません</string>
   <string name="ConversationActivity_your_request_to_join_has_been_sent_to_the_group_admin">あなたの参加申請はグループ管理者に送信されました。応答があると通知されます。</string>
   <string name="ConversationActivity_cancel_request">申請をキャンセル</string>
@@ -328,6 +333,7 @@
   <string name="ChooseBackupFragment__icon_content_description">バックアップアイコンから復元</string>
   <string name="ChooseBackupFragment__choose_backup">バックアップを選択する</string>
   <string name="ChooseBackupFragment__learn_more">詳しく見る</string>
+  <string name="ChooseBackupFragment__no_file_browser_available">ファイルブラウザーを使用できません</string>
   <!--RestoreBackupFragment-->
   <string name="RestoreBackupFragment__restore_complete">復元が完了しました</string>
   <string name="RestoreBackupFragment__to_continue_using_backups_please_choose_a_folder">バックアップを続けるには、フォルダを選択してください。新しいバックアップはこの場所に保存されます。</string>
@@ -404,6 +410,7 @@
   <!--ShareActivity-->
   <string name="ShareActivity_share_with">共有</string>
   <string name="ShareActivity_multiple_attachments_are_only_supported">画像と動画以外のファイルを複数添付することはできません。</string>
+  <string name="ShareActivity_you_do_not_have_permission_to_send_to_this_group">このグループに送信する権限がありません</string>
   <!--GcmRefreshJob-->
   <string name="GcmRefreshJob_Permanent_Signal_communication_failure">Signalの永続的な通信エラー！</string>
   <string name="GcmRefreshJob_Signal_was_unable_to_register_with_Google_Play_Services">Google Play開発者サービスにSignalを登録できなかったため、Signalのメッセージと通話は無効になっています。設定 &gt; 詳細設定で再登録を試してください。</string>
@@ -531,6 +538,7 @@
   <!--AddMembersActivity-->
   <string name="AddMembersActivity__done">完了</string>
   <string name="AddMembersActivity__this_person_cant_be_added_to_legacy_groups">このユーザーはレガシーグループに追加できません。</string>
+  <string name="AddMembersActivity__this_person_cant_be_added_to_announcement_groups">このユーザーはアナウンスグループに追加できません。</string>
   <plurals name="AddMembersActivity__add_d_members_to_s">
     <item quantity="other">%3$d人のメンバーを「%2$s」へ追加しますか？</item>
   </plurals>
@@ -595,6 +603,7 @@
   <string name="ManageGroupActivity_only_admins_can_reset_the_sharable_group_link">管理者のみがグループリンクをリセットできます。</string>
   <string name="ManageGroupActivity_you_dont_have_the_rights_to_do_this">これを実行する権限がありません</string>
   <string name="ManageGroupActivity_not_capable">あなたが追加した相手は新しいグループに対応していないので、Signalをアップデートする必要があります</string>
+  <string name="ManageGroupActivity_not_announcement_capable">あなたが追加したユーザーは、アナウンスグループに対応していないため、Signalをアップデートする必要があります。</string>
   <string name="ManageGroupActivity_failed_to_update_the_group">グループの更新に失敗しました</string>
   <string name="ManageGroupActivity_youre_not_a_member_of_the_group">あなたはこのグループのメンバーではありません</string>
   <string name="ManageGroupActivity_failed_to_update_the_group_please_retry_later">グループを更新できませんでした。のちほど再度試してください。</string>
@@ -703,20 +712,17 @@
   <!--InviteActivity-->
   <string name="InviteActivity_share">共有</string>
   <string name="InviteActivity_share_with_contacts">連絡先と共有</string>
-  <string name="InviteActivity_choose_how_to_share">共有方法を選択</string>
+  <string name="InviteActivity_share_via">共有…</string>
   <string name="InviteActivity_cancel">キャンセル</string>
   <string name="InviteActivity_sending">送信しています…</string>
-  <string name="InviteActivity_invitations_sent">招待を送信しました！</string>
-  <string name="InviteActivity_invite_to_signal">Signalに招待する</string>
-  <plurals name="InviteActivity_send_sms_to_friends">
-    <item quantity="other">SMSを友達%d人に送る</item>
-  </plurals>
+  <string name="InviteActivity_invitations_sent">招待状を送信しました！</string>
+  <string name="InviteActivity_invite_to_signal">Signalへの招待</string>
+  <string name="InviteActivity_send_sms">SMSを送信する (%d)</string>
   <plurals name="InviteActivity_send_sms_invites">
-    <item quantity="other">SMS招待状%d件を送信しますか？</item>
+    <item quantity="other">%d件のSMS招待状を送信しますか？</item>
   </plurals>
   <string name="InviteActivity_lets_switch_to_signal">メッセージアプリをSignalにしましょう: %1$s</string>
   <string name="InviteActivity_no_app_to_share_to">共有先として使えるアプリがないようです。</string>
-  <string name="InviteActivity_friends_dont_let_friends_text_unencrypted">友達とのチャットを暗号化しましょう。</string>
   <!--LearnMoreTextView-->
   <string name="LearnMoreTextView_learn_more">詳しく見る</string>
   <!--LongMessageActivity-->
@@ -783,11 +789,13 @@
   <string name="NotificationBarManager_signal_call_in_progress">Signal通話中</string>
   <string name="NotificationBarManager__establishing_signal_call">Signal通話を接続しています</string>
   <string name="NotificationBarManager__incoming_signal_call">Signal通話の着信</string>
+  <string name="NotificationBarManager__incoming_signal_group_call">Signalグループ着信</string>
   <string name="NotificationBarManager__stopping_signal_call_service">Signal通話サービスを停止しています</string>
-  <string name="NotificationBarManager__deny_call">通話を拒否</string>
+  <string name="NotificationBarManager__decline_call">拒否する</string>
   <string name="NotificationBarManager__answer_call">通話を開始</string>
   <string name="NotificationBarManager__end_call">通話を終了</string>
   <string name="NotificationBarManager__cancel_call">通話をキャンセル</string>
+  <string name="NotificationBarManager__join_call">通話に参加する</string>
   <!--NotificationsMegaphone-->
   <string name="NotificationsMegaphone_turn_on_notifications">通知を有効にしますか？</string>
   <string name="NotificationsMegaphone_never_miss_a_message">連絡先やグループからのメッセージを見逃しません。</string>
@@ -930,6 +938,13 @@
   <string name="MessageRecord_you_changed_who_can_edit_group_membership_to_s">グループ情報を編集できるユーザーを「%1$s」に変更しました。</string>
   <string name="MessageRecord_s_changed_who_can_edit_group_membership_to_s">%1$s がグループ情報を編集できるユーザーを「%2$s」に変更しました。</string>
   <string name="MessageRecord_who_can_edit_group_membership_has_been_changed_to_s">グループ情報を編集できるユーザーが「%1$s」に変更されました。</string>
+  <!--GV2 announcement group change-->
+  <string name="MessageRecord_you_allow_all_members_to_send">グループ設定を変更し、すべてのメンバーがメッセージ送信を可能にしました。</string>
+  <string name="MessageRecord_you_allow_only_admins_to_send">グループ設定を変更し、メッセージ送信を管理者に限定しました。</string>
+  <string name="MessageRecord_s_allow_all_members_to_send">%1$s がグループ設定を変更し、すべてのメンバーがメッセージを送信可能になりました。</string>
+  <string name="MessageRecord_s_allow_only_admins_to_send">%1$s がグループ設定を変更し、メッセージ送信を管理者に限定しました。</string>
+  <string name="MessageRecord_allow_all_members_to_send">グループ設定が変更され、すべてのメンバーがメッセージを送信可能になりました。</string>
+  <string name="MessageRecord_allow_only_admins_to_send">グループ設定が変更され、メッセージ送信は管理者に限定されました。</string>
   <!--GV2 group link invite access level change-->
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_off">管理者承認の不要なグループリンクを有効にしました。</string>
   <string name="MessageRecord_you_turned_on_the_group_link_with_admin_approval_on">管理者承認制のグループリンクを有効にしました。</string>
@@ -1125,26 +1140,54 @@
   <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">%1$s と通話するには、Signalにカメラへのアクセスを許可してください。</string>
   <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
   <string name="WebRtcCallActivity__calling">呼び出しています…</string>
+  <string name="WebRtcCallActivity__group_is_too_large_to_ring_the_participants">グループが大きすぎるため、参加者を呼べません。</string>
   <!--WebRtcCallView-->
-  <string name="WebRtcCallView__signal_voice_call">Signal音声通話…</string>
-  <string name="WebRtcCallView__signal_video_call">Signalビデオ通話…</string>
+  <string name="WebRtcCallView__signal_call">Signal通話</string>
+  <string name="WebRtcCallView__signal_video_call">Signalビデオ通話</string>
   <string name="WebRtcCallView__start_call">通話を開始する</string>
   <string name="WebRtcCallView__join_call">通話に参加する</string>
   <string name="WebRtcCallView__call_is_full">満席です</string>
   <string name="WebRtcCallView__the_maximum_number_of_d_participants_has_been_Reached_for_this_call">この通話の参加者が、上限の%1$d人に達しました。あとで再度試してください。</string>
-  <string name="WebRtcCallView__s_group_call">「%1$s」グループ通話</string>
   <string name="WebRtcCallView__view_participants_list">参加者を確認する</string>
   <string name="WebRtcCallView__your_video_is_off">あなたの映像はオフです</string>
   <string name="WebRtcCallView__reconnecting">再接続しています…</string>
   <string name="WebRtcCallView__joining">参加しています…</string>
   <string name="WebRtcCallView__disconnected">接続していません</string>
+  <string name="WebRtcCallView__signal_will_ring_s">Signalは %1$s を呼び出します</string>
+  <string name="WebRtcCallView__signal_will_ring_s_and_s">Signalは %1$s と %2$s を呼び出します</string>
+  <plurals name="WebRtcCallView__signal_will_ring_s_s_and_d_others">
+    <item quantity="other">Signalは %1$s, %2$s ほか%3$d名を呼び出します</item>
+  </plurals>
+  <string name="WebRtcCallView__s_will_be_notified">%1$s には通知されません</string>
+  <string name="WebRtcCallView__s_and_s_will_be_notified">%1$s と %2$s には通知されません</string>
+  <plurals name="WebRtcCallView__s_s_and_d_others_will_be_notified">
+    <item quantity="other">%1$s, %2$s ほか%3$d名には通知されません</item>
+  </plurals>
+  <string name="WebRtcCallView__ringing_s">%1$s を呼び出しています</string>
+  <string name="WebRtcCallView__ringing_s_and_s">%1$s と %2$s を呼び出しています</string>
+  <plurals name="WebRtcCallView__ringing_s_s_and_d_others">
+    <item quantity="other">%1$s, %2$s ほか%3$d名を呼び出しています</item>
+  </plurals>
+  <string name="WebRtcCallView__s_is_calling_you">%1$s があなたを呼び出しています</string>
+  <string name="WebRtcCallView__s_is_calling_you_and_s">%1$s があなたと %2$s を呼び出しています</string>
+  <string name="WebRtcCallView__s_is_calling_you_s_and_s">%1$s があなた, %2$s および %3$s を呼び出しています</string>
+  <plurals name="WebRtcCallView__s_is_calling_you_s_s_and_d_others">
+    <item quantity="other">%1$s があなた, %2$s, %3$s ほか%4$d名を呼び出しています</item>
+  </plurals>
   <string name="WebRtcCallView__no_one_else_is_here">誰も参加していません</string>
   <string name="WebRtcCallView__s_is_in_this_call">%1$s が参加中</string>
+  <string name="WebRtcCallView__s_are_in_this_call">%1$s が参加中</string>
   <string name="WebRtcCallView__s_and_s_are_in_this_call">%1$s と %2$s が参加中</string>
   <string name="WebRtcCallView__s_is_presenting">%1$s が画面を共有しています</string>
   <plurals name="WebRtcCallView__s_s_and_d_others_are_in_this_call">
     <item quantity="other">%1$s, %2$s ほか%3$d人が参加中</item>
   </plurals>
+  <string name="WebRtcCallView__flip">切り替え</string>
+  <string name="WebRtcCallView__speaker">スピーカー</string>
+  <string name="WebRtcCallView__camera">カメラ</string>
+  <string name="WebRtcCallView__mute">ミュート</string>
+  <string name="WebRtcCallView__ring">呼び出し</string>
+  <string name="WebRtcCallView__end_call">通話終了</string>
   <!--CallParticipantsListDialog-->
   <plurals name="CallParticipantsListDialog_in_this_call_d_people">
     <item quantity="other">参加者 · %1$d人</item>
@@ -1699,10 +1742,10 @@
   <!--recipients_panel-->
   <string name="recipients_panel__to"><small>名前または番号を入力して下さい</small></string>
   <!--verify_display_fragment-->
-  <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[%s に対する暗号化を検証するには、上記の番号が相手の端末のものと一致するか確認してください。相手の端末上のコードをスキャンするか、あなたのコードをスキャンしてもらうことでも可能です。<a href="https://signal.org/redirect/safety-numbers">詳細</a>]]></string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__if_you_wish_to_verify_the_security_of_your_end_to_end_encryption_with_s"><![CDATA[%s に対する暗号化を検証するには、上記の番号が相手の端末のものと一致するか確認してください。相手の端末上のコードをスキャンするか、あなたのコードをスキャンしてもらうことでも可能です。<a href="https://signal.org/redirect/safety-numbers">詳細</a>]]></string> -->
   <string name="verify_display_fragment__tap_to_scan">タップしてスキャンする</string>
   <string name="verify_display_fragment__loading">読み込んでいます…</string>
-  <string name="verify_display_fragment__verified">検証済み</string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__verified">検証済み</string> -->
   <!--verify_identity-->
   <string name="verify_identity__share_safety_number">安全番号を共有する</string>
   <!--webrtc_answer_decline_button-->
@@ -2579,8 +2622,8 @@
   <!--VoiceNotePlaybackPreparer-->
   <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">音声メッセージを再生できませんでした。</string>
   <!--VoiceNoteMediaDescriptionCompatFactory-->
-  <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">音声メッセージ · %1$s</string>
-  <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s から %2$s</string>
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__voice_message">音声メッセージ · %1$s</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="VoiceNoteMediaDescriptionCompatFactory__s_to_s">%1$s から %2$s</string> -->
   <!--StorageUtil-->
   <string name="StorageUtil__s_s">%1$s/%2$s</string>
   <string name="BlockedUsersActivity__s_has_been_blocked">「%1$s」はブロックされました。</string>
@@ -2940,10 +2983,12 @@
   <!--PermissionsSettingsFragment-->
   <string name="PermissionsSettingsFragment__add_members">メンバーの追加</string>
   <string name="PermissionsSettingsFragment__edit_group_info">グループ情報を編集</string>
+  <string name="PermissionsSettingsFragment__send_messages">メッセージ送信</string>
   <string name="PermissionsSettingsFragment__all_members">すべてのメンバー</string>
   <string name="PermissionsSettingsFragment__only_admins">管理者のみ</string>
   <string name="PermissionsSettingsFragment__who_can_add_new_members">メンバーを追加できるユーザーは？</string>
   <string name="PermissionsSettingsFragment__who_can_edit_this_groups_info">グループ情報を編集できるユーザーは？</string>
+  <string name="PermissionsSettingsFragment__who_can_send_messages">メッセージを送信可能なユーザー</string>
   <!--SoundsAndNotificationsSettingsFragment-->
   <string name="SoundsAndNotificationsSettingsFragment__mute_notifications">通知をミュート</string>
   <string name="SoundsAndNotificationsSettingsFragment__not_muted">ミュートしていません</string>
@@ -2966,6 +3011,11 @@
   <string name="ContactFilterView__search_name_or_number">名前か電話番号で検索</string>
   <!--VoiceNotePlayerView-->
   <string name="VoiceNotePlayerView__s_dot_s">%1$s · %2$s</string>
+  <string name="VoiceNotePlayerView__stop_voice_message">音声メッセージを停止</string>
+  <string name="VoiceNotePlayerView__change_voice_message_speed">音声メッセージの再生速度を変更</string>
+  <string name="VoiceNotePlayerView__pause_voice_message">音声メッセージを一時停止</string>
+  <string name="VoiceNotePlayerView__play_voice_message">音声メッセージを再生</string>
+  <string name="VoiceNotePlayerView__navigate_to_voice_message">音声メッセージへ</string>
   <!--AvatarPickerFragment-->
   <string name="AvatarPickerFragment__avatar_preview">アバターのプレビュー</string>
   <string name="AvatarPickerFragment__camera">カメラ</string>
@@ -2988,5 +3038,24 @@
   <!--ContactSelectionListItem-->
   <string name="ContactSelectionListItem__sms">SMS</string>
   <string name="ContactSelectionListItem__dot_s">· %1$s</string>
+  <!--DSLSettingsToolbar-->
+  <string name="DSLSettingsToolbar__navigate_up">上へ</string>
+  <string name="MultiselectForwardFragment__forward_to">転送先</string>
+  <string name="MultiselectForwardFragment__add_a_message">メッセージを追加してください</string>
+  <string name="MultiselectForwardFragment__faster_forwards">より速い転送</string>
+  <string name="MultiselectForwardFragment__forwarded_messages_are_now">転送メッセージがすぐに送信されるようになりました。</string>
+  <plurals name="MultiselectForwardFragment_send_d_messages">
+    <item quantity="other">%1$d件のメッセージを送信</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment_messages_sent">
+    <item quantity="other">メッセージを送信しました</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment_messages_failed_to_send">
+    <item quantity="other">メッセージの送信に失敗しました</item>
+  </plurals>
+  <plurals name="MultiselectForwardFragment__couldnt_forward_messages">
+    <item quantity="other">すでにメッセージがないため、転送できませんでした。</item>
+  </plurals>
+  <string name="MultiselectForwardFragment__limit_reached">制限に達しました</string>
   <!--EOF-->
 </resources>

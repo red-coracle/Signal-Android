@@ -106,13 +106,12 @@ import org.thoughtcrime.securesms.insights.InsightsLauncher;
 import org.thoughtcrime.securesms.jobs.ServiceOutageDetectionJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.lock.v2.CreateKbsPinActivity;
-import org.thoughtcrime.securesms.mediasend.MediaSendActivity;
+import org.thoughtcrime.securesms.mediasend.v2.MediaSelectionActivity;
 import org.thoughtcrime.securesms.megaphone.Megaphone;
 import org.thoughtcrime.securesms.megaphone.MegaphoneActionController;
 import org.thoughtcrime.securesms.megaphone.MegaphoneViewBuilder;
 import org.thoughtcrime.securesms.megaphone.Megaphones;
 import org.thoughtcrime.securesms.mms.GlideApp;
-import org.thoughtcrime.securesms.net.PipeConnectivityListener;
 import org.thoughtcrime.securesms.notifications.MarkReadReceiver;
 import org.thoughtcrime.securesms.payments.preferences.PaymentsActivity;
 import org.thoughtcrime.securesms.payments.preferences.details.PaymentDetailsFragmentArgs;
@@ -131,6 +130,7 @@ import org.thoughtcrime.securesms.util.AppStartup;
 import org.thoughtcrime.securesms.util.AvatarUtil;
 import org.thoughtcrime.securesms.util.PlayStoreUtil;
 import org.thoughtcrime.securesms.util.ServiceUtil;
+import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.thoughtcrime.securesms.util.SignalProxyUtil;
 import org.thoughtcrime.securesms.util.SnapToTopDataObserver;
 import org.thoughtcrime.securesms.util.StickyHeaderDecoration;
@@ -143,6 +143,7 @@ import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.thoughtcrime.securesms.util.task.SnackbarAsyncTask;
 import org.thoughtcrime.securesms.util.views.Stub;
 import org.whispersystems.libsignal.util.guava.Optional;
+import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -268,7 +269,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
                  .ifNecessary()
                  .withRationaleDialog(getString(R.string.ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera), R.drawable.ic_camera_24)
                  .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video))
-                 .onAllGranted(() -> startActivity(MediaSendActivity.buildCameraFirstIntent(requireActivity())))
+                 .onAllGranted(() -> startActivity(MediaSelectionActivity.camera(requireContext())))
                  .onAnyDenied(() -> Toast.makeText(requireContext(), R.string.ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video, Toast.LENGTH_LONG).show())
                  .execute();
     });
@@ -560,6 +561,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
       @Override
       public void onItemRangeInserted(int positionStart, int itemCount) {
         startupStopwatch.split("data-set");
+        SignalLocalMetrics.ColdStart.onConversationListDataLoaded();
         defaultAdapter.unregisterAdapterDataObserver(this);
         list.post(() -> {
           AppStartup.getInstance().onCriticalRenderEventEnd();
@@ -851,7 +853,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     alert.setCancelable(true);
 
     alert.setPositiveButton(R.string.delete, (dialog, which) -> {
-      final Set<Long> selectedConversations = defaultAdapter.getBatchSelectionIds();
+      final Set<Long> selectedConversations = new HashSet<>(defaultAdapter.getBatchSelectionIds());
 
       if (!selectedConversations.isEmpty()) {
         new AsyncTask<Void, Void, Void>() {
@@ -968,19 +970,21 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     }
   }
 
-  private void updateProxyStatus(@NonNull PipeConnectivityListener.State state) {
+  private void updateProxyStatus(@NonNull WebSocketConnectionState state) {
     if (SignalStore.proxy().isProxyEnabled()) {
       proxyStatus.setVisibility(View.VISIBLE);
 
       switch (state) {
         case CONNECTING:
+        case DISCONNECTING:
         case DISCONNECTED:
           proxyStatus.setImageResource(R.drawable.ic_proxy_connecting_24);
           break;
         case CONNECTED:
           proxyStatus.setImageResource(R.drawable.ic_proxy_connected_24);
           break;
-        case FAILURE:
+        case AUTHENTICATION_FAILED:
+        case FAILED:
           proxyStatus.setImageResource(R.drawable.ic_proxy_failed_24);
           break;
       }

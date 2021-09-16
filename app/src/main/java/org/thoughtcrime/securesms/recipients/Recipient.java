@@ -111,6 +111,7 @@ public class Recipient {
   private final Capability             groupsV2Capability;
   private final Capability             groupsV1MigrationCapability;
   private final Capability             senderKeyCapability;
+  private final Capability             announcementGroupCapability;
   private final InsightsBannerTier     insightsBannerTier;
   private final byte[]                 storageId;
   private final MentionSetting         mentionSetting;
@@ -173,7 +174,7 @@ public class Recipient {
    */
   @WorkerThread
   public static @NonNull Recipient externalPush(@NonNull Context context, @NonNull SignalServiceAddress signalServiceAddress) {
-    return externalPush(context, signalServiceAddress.getUuid().orNull(), signalServiceAddress.getNumber().orNull(), false);
+    return externalPush(context, signalServiceAddress.getUuid(), signalServiceAddress.getNumber().orNull(), false);
   }
 
   /**
@@ -186,7 +187,7 @@ public class Recipient {
     if (address.getNumber().isPresent()) {
       return externalPush(context, null, address.getNumber().get(), false);
     } else {
-      return externalPush(context, address.getUuid().orNull(), null, false);
+      return externalPush(context, address.getUuid(), null, false);
     }
   }
 
@@ -201,7 +202,7 @@ public class Recipient {
    */
   @WorkerThread
   public static @NonNull Recipient externalHighTrustPush(@NonNull Context context, @NonNull SignalServiceAddress signalServiceAddress) {
-    return externalPush(context, signalServiceAddress.getUuid().orNull(), signalServiceAddress.getNumber().orNull(), true);
+    return externalPush(context, signalServiceAddress.getUuid(), signalServiceAddress.getNumber().orNull(), true);
   }
 
   /**
@@ -227,9 +228,11 @@ public class Recipient {
 
     Recipient resolved = resolved(recipientId);
 
-    if (highTrust && !resolved.isRegistered()) {
+    if (highTrust && !resolved.isRegistered() && uuid != null) {
       Log.w(TAG, "External high-trust push was locally marked unregistered. Marking as registered.");
-      db.markRegistered(recipientId);
+      db.markRegistered(recipientId, uuid);
+    } else if (highTrust && !resolved.isRegistered()) {
+      Log.w(TAG, "External high-trust push was locally marked unregistered, but we don't have a UUID, so we can't do anything.", new Throwable());
     }
 
     return resolved;
@@ -360,6 +363,7 @@ public class Recipient {
     this.groupsV2Capability          = Capability.UNKNOWN;
     this.groupsV1MigrationCapability = Capability.UNKNOWN;
     this.senderKeyCapability         = Capability.UNKNOWN;
+    this.announcementGroupCapability = Capability.UNKNOWN;
     this.storageId                   = null;
     this.mentionSetting              = MentionSetting.ALWAYS_NOTIFY;
     this.wallpaper                   = null;
@@ -411,6 +415,7 @@ public class Recipient {
     this.groupsV2Capability          = details.groupsV2Capability;
     this.groupsV1MigrationCapability = details.groupsV1MigrationCapability;
     this.senderKeyCapability         = details.senderKeyCapability;
+    this.announcementGroupCapability = details.announcementGroupCapability;
     this.storageId                   = details.storageId;
     this.mentionSetting              = details.mentionSetting;
     this.wallpaper                   = details.wallpaper;
@@ -860,7 +865,7 @@ public class Recipient {
     return callVibrate;
   }
 
-  public int getExpireMessages() {
+  public int getExpiresInSeconds() {
     return expireMessages;
   }
 
@@ -883,6 +888,14 @@ public class Recipient {
     return registered == RegisteredState.REGISTERED || isPushGroup();
   }
 
+  public boolean isMaybeRegistered() {
+    return registered != RegisteredState.NOT_REGISTERED || isPushGroup();
+  }
+
+  public boolean isUnregistered() {
+    return registered == RegisteredState.NOT_REGISTERED && !isPushGroup();
+  }
+
   public @Nullable String getNotificationChannel() {
     return !NotificationChannels.supported() ? null : notificationChannel;
   }
@@ -901,6 +914,10 @@ public class Recipient {
 
   public @NonNull Capability getSenderKeyCapability() {
     return senderKeyCapability;
+  }
+
+  public @NonNull Capability getAnnouncementGroupCapability() {
+    return announcementGroupCapability;
   }
 
   /**
@@ -1170,7 +1187,8 @@ public class Recipient {
            Objects.equals(avatarColor, other.avatarColor) &&
            Objects.equals(about, other.about) &&
            Objects.equals(aboutEmoji, other.aboutEmoji) &&
-           Objects.equals(extras, other.extras);
+           Objects.equals(extras, other.extras) &&
+           hasGroupsInCommon == other.hasGroupsInCommon;
   }
 
   private static boolean allContentsAreTheSame(@NonNull List<Recipient> a, @NonNull List<Recipient> b) {
