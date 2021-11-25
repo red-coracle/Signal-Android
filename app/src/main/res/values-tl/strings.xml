@@ -170,7 +170,7 @@
   <!--ConversationActivity-->
   <!-- Removed by excludeNonTranslatables <string name="ConversationActivity_reset_secure_session_question">I-reset ang secure na sesyon?</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ConversationActivity_this_may_help_if_youre_having_encryption_problems">Maaari itong makatulong kung ika\'y nagkakaproblema sa encryption ng pag-uusap na ito. Ang iyong mga mensahe ay pananatilihin.</string> -->
-  <string name="ConversationActivity_reset">I-reset</string>
+  <!-- Removed by excludeNonTranslatables <string name="ConversationActivity_reset">I-reset</string> -->
   <string name="ConversationActivity_add_attachment">Magdagdag ng kalakip</string>
   <string name="ConversationActivity_select_contact_info">Pumili ng impormasyon ng kontak</string>
   <string name="ConversationActivity_compose_message">Magsulat ng mensahe</string>
@@ -484,14 +484,14 @@
   <string name="MediaOverviewActivity_Grid_view_description">Grid na view</string>
   <string name="MediaOverviewActivity_List_view_description">List na view</string>
   <string name="MediaOverviewActivity_Selected_description">Pinili</string>
-  <plurals name="MediaOverviewActivity_d_items_s">
+  <!-- Removed by excludeNonTranslatables <plurals name="MediaOverviewActivity_d_items_s">
     <item quantity="one">%1$d item %2$s</item>
     <item quantity="other">%1$d item %2$s</item>
-  </plurals>
-  <plurals name="MediaOverviewActivity_d_items">
+  </plurals> -->
+  <!-- Removed by excludeNonTranslatables <plurals name="MediaOverviewActivity_d_items">
     <item quantity="one">%1$d item</item>
     <item quantity="other">%1$d item</item>
-  </plurals>
+  </plurals> -->
   <string name="MediaOverviewActivity_file">File</string>
   <string name="MediaOverviewActivity_audio">Audio</string>
   <string name="MediaOverviewActivity_video">Video</string>
@@ -1557,7 +1557,7 @@
   <string name="Insights__title">Insights</string>
   <string name="InsightsDashboardFragment__title">Insights</string>
   <string name="InsightsDashboardFragment__signal_protocol_automatically_protected">Awtomatikong pinrotektahan ng Signal Protocol ang %1$d%% sa iyong mga ipinapadalang mensahe sa nakalipas na %2$d araw. Ang mga pag-uusap sa pagitan ng mga gumagamit ng Signal ay palaging end-to-end encrypted.</string>
-  <string name="InsightsDashboardFragment__boost_your_signal">Palakasin ang Signal</string>
+  <!-- Removed by excludeNonTranslatables <string name="InsightsDashboardFragment__boost_your_signal">Palakasin ang Signal</string> -->
   <string name="InsightsDashboardFragment__not_enough_data">Hindi sapat ang data</string>
   <string name="InsightsDashboardFragment__your_insights_percentage_is_calculated_based_on">Ang porsyento ng iyong Insights ay kalkulado batay sa mga ipinapadalang mensahe sa loob ng nakaraang %1$d araw na hindi naglaho o hindi binura.</string>
   <string name="InsightsDashboardFragment__start_a_conversation">Magsimula ng pag-uusap</string>

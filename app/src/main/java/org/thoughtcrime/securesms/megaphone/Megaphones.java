@@ -13,6 +13,7 @@ import com.annimon.stream.Stream;
 import org.signal.core.util.TranslationDetection;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.badges.models.Badge;
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity;
 import org.thoughtcrime.securesms.conversationlist.ConversationListFragment;
 import org.thoughtcrime.securesms.database.model.MegaphoneRecord;
@@ -102,12 +103,12 @@ public final class Megaphones {
       put(Event.LINK_PREVIEWS, shouldShowLinkPreviewsMegaphone(context) ? ALWAYS : NEVER);
       put(Event.CLIENT_DEPRECATED, SignalStore.misc().isClientDeprecated() ? ALWAYS : NEVER);
       put(Event.RESEARCH, shouldShowResearchMegaphone(context) ? ShowForDurationSchedule.showForDays(7) : NEVER);
-      put(Event.DONATE, shouldShowDonateMegaphone(context) ? ShowForDurationSchedule.showForDays(7) : NEVER);
       put(Event.GROUP_CALLING, shouldShowGroupCallingMegaphone() ? ALWAYS : NEVER);
       put(Event.ONBOARDING, shouldShowOnboardingMegaphone(context) ? ALWAYS : NEVER);
       put(Event.NOTIFICATIONS, shouldShowNotificationsMegaphone(context) ? RecurringSchedule.every(TimeUnit.DAYS.toMillis(30)) : NEVER);
       put(Event.CHAT_COLORS, ALWAYS);
       put(Event.ADD_A_PROFILE_PHOTO, shouldShowAddAProfilePhotoMegaphone(context) ? ALWAYS : NEVER);
+      put(Event.BECOME_A_SUSTAINER, shouldShowDonateMegaphone(context) ? ShowForDurationSchedule.showForDays(7) : NEVER);
     }};
   }
 
@@ -127,8 +128,6 @@ public final class Megaphones {
         return buildClientDeprecatedMegaphone(context);
       case RESEARCH:
         return buildResearchMegaphone(context);
-      case DONATE:
-        return buildDonateMegaphone(context);
       case GROUP_CALLING:
         return buildGroupCallingMegaphone(context);
       case ONBOARDING:
@@ -139,6 +138,8 @@ public final class Megaphones {
         return buildChatColorsMegaphone(context);
       case ADD_A_PROFILE_PHOTO:
         return buildAddAProfilePhotoMegaphone(context);
+      case BECOME_A_SUSTAINER:
+        return buildBecomeASustainerMegaphone(context);
       default:
         throw new IllegalArgumentException("Event not handled!");
     }
@@ -250,21 +251,6 @@ public final class Megaphones {
                         .build();
   }
 
-  private static @NonNull Megaphone buildDonateMegaphone(@NonNull Context context) {
-    return new Megaphone.Builder(Event.DONATE, Megaphone.Style.BASIC)
-                        .disableSnooze()
-                        .setTitle(R.string.DonateMegaphone_donate_to_signal)
-                        .setBody(R.string.DonateMegaphone_Signal_is_powered_by_people_like_you_show_your_support_today)
-                        .setImage(R.drawable.ic_donate_megaphone)
-                        .setActionButton(R.string.DonateMegaphone_donate, (megaphone, controller) -> {
-                          controller.onMegaphoneCompleted(megaphone.getEvent());
-                          CommunicationActions.openBrowserLink(controller.getMegaphoneActivity(), context.getString(R.string.donate_url));
-                        })
-                        .setSecondaryButton(R.string.DonateMegaphone_no_thanks, (megaphone, controller) -> controller.onMegaphoneCompleted(megaphone.getEvent()))
-                        .setPriority(Megaphone.Priority.DEFAULT)
-                        .build();
-  }
-
   private static @NonNull Megaphone buildGroupCallingMegaphone(@NonNull Context context) {
     return new Megaphone.Builder(Event.GROUP_CALLING, Megaphone.Style.BASIC)
                         .disableSnooze()
@@ -340,6 +326,22 @@ public final class Megaphones {
                         .build();
   }
 
+  private static @NonNull Megaphone buildBecomeASustainerMegaphone(@NonNull Context context) {
+    return new Megaphone.Builder(Event.BECOME_A_SUSTAINER, Megaphone.Style.BASIC)
+        .setTitle(R.string.BecomeASustainerMegaphone__become_a_sustainer)
+        .setImage(R.drawable.ic_become_a_sustainer_megaphone)
+        .setBody(R.string.BecomeASustainerMegaphone__signal_is_powered)
+        .setActionButton(R.string.BecomeASustainerMegaphone__contribute, (megaphone, listener) -> {
+          listener.onMegaphoneNavigationRequested(AppSettingsActivity.subscriptions(context));
+          listener.onMegaphoneCompleted(Event.BECOME_A_SUSTAINER);
+        })
+        .setSecondaryButton(R.string.BecomeASustainerMegaphone__no_thanks, (megaphone, listener) -> {
+          listener.onMegaphoneCompleted(Event.BECOME_A_SUSTAINER);
+        })
+        .build();
+  }
+
+
   private static boolean shouldShowMessageRequestsMegaphone() {
     return Recipient.self().getProfileName() == ProfileName.EMPTY;
   }
@@ -349,7 +351,12 @@ public final class Megaphones {
   }
 
   private static boolean shouldShowDonateMegaphone(@NonNull Context context) {
-    return VersionTracker.getDaysSinceFirstInstalled(context) > 7 && LocaleFeatureFlags.isInDonateMegaphone();
+    return VersionTracker.getDaysSinceFirstInstalled(context) > 7 && LocaleFeatureFlags.isInDonateMegaphone() &&
+           Recipient.self()
+                     .getBadges()
+                     .stream()
+                     .filter(Objects::nonNull)
+                     .noneMatch(badge -> badge.getCategory() == Badge.Category.Donor);
   }
 
   private static boolean shouldShowLinkPreviewsMegaphone(@NonNull Context context) {
@@ -405,12 +412,12 @@ public final class Megaphones {
     LINK_PREVIEWS("link_previews"),
     CLIENT_DEPRECATED("client_deprecated"),
     RESEARCH("research"),
-    DONATE("donate"),
     GROUP_CALLING("group_calling"),
     ONBOARDING("onboarding"),
     NOTIFICATIONS("notifications"),
     CHAT_COLORS("chat_colors"),
-    ADD_A_PROFILE_PHOTO("add_a_profile_photo");
+    ADD_A_PROFILE_PHOTO("add_a_profile_photo"),
+    BECOME_A_SUSTAINER("become_a_sustainer");
 
     private final String key;
 

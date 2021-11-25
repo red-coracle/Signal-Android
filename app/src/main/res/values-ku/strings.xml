@@ -177,9 +177,9 @@
   <string name="ConversationItem_this_message_was_deleted">Ev peyam hat jêbirin.</string>
   <string name="ConversationItem_you_deleted_this_message">Te ev peyam jê bir.</string>
   <!--ConversationActivity-->
-  <string name="ConversationActivity_reset_secure_session_question">Rûniştina parastî reset bike?</string>
-  <string name="ConversationActivity_this_may_help_if_youre_having_encryption_problems">Heke tu di vê axiftinê de li rastî pirsgirêkên şîfrekirinê tê, dibe ku ev alîkariya te bike. Ew ê peyamên te bên hilanîn.</string>
-  <string name="ConversationActivity_reset">Reset bike</string>
+  <!-- Removed by excludeNonTranslatables <string name="ConversationActivity_reset_secure_session_question">Rûniştina parastî reset bike?</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ConversationActivity_this_may_help_if_youre_having_encryption_problems">Heke tu di vê axiftinê de li rastî pirsgirêkên şîfrekirinê tê, dibe ku ev alîkariya te bike. Ew ê peyamên te bên hilanîn.</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ConversationActivity_reset">Reset bike</string> -->
   <string name="ConversationActivity_add_attachment">Pêvekê tevlî bike</string>
   <string name="ConversationActivity_select_contact_info">Agahiya kesî hilbijêre</string>
   <string name="ConversationActivity_compose_message">Peyamê binivîse</string>
@@ -380,10 +380,10 @@
   <!--DocumentView-->
   <string name="DocumentView_unnamed_file">Dosyeya bênav</string>
   <!--DonateMegaphone-->
-  <string name="DonateMegaphone_donate_to_signal">Bexşê bide Sîgnalê</string>
-  <string name="DonateMegaphone_Signal_is_powered_by_people_like_you_show_your_support_today">Signal ji aliyê kesên wekî te ve tê piştgirîkirin. Îro, piştgiriya xwe nîşan bide!</string>
-  <string name="DonateMegaphone_donate">Bexş bike</string>
-  <string name="DonateMegaphone_no_thanks">Na, spas</string>
+  <!-- Removed by excludeNonTranslatables <string name="DonateMegaphone_donate_to_signal">Bexşê bide Sîgnalê</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="DonateMegaphone_Signal_is_powered_by_people_like_you_show_your_support_today">Signal ji aliyê kesên wekî te ve tê piştgirîkirin. Îro, piştgiriya xwe nîşan bide!</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="DonateMegaphone_donate">Bexş bike</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="DonateMegaphone_no_thanks">Na, spas</string> -->
   <!--GroupCallingMegaphone-->
   <string name="GroupCallingMegaphone__introducing_group_calls">Danasîna Gerînên Komî</string>
   <string name="GroupCallingMegaphone__open_a_new_group_to_start">Ji bo tu dest bi gerîna komî ya şîfrekirî û belaş bikî, Komeke Nû vekî.</string>
@@ -754,14 +754,14 @@
   <string name="MediaOverviewActivity_Grid_view_description">Xuyanga grîdî</string>
   <string name="MediaOverviewActivity_List_view_description">Xuyanga lîsteyî</string>
   <string name="MediaOverviewActivity_Selected_description">Bijartî</string>
-  <plurals name="MediaOverviewActivity_d_items_s">
+  <!-- Removed by excludeNonTranslatables <plurals name="MediaOverviewActivity_d_items_s">
     <item quantity="one">%1$d hêman %2$s</item>
     <item quantity="other">%1$d hêman %2$s</item>
-  </plurals>
-  <plurals name="MediaOverviewActivity_d_items">
+  </plurals> -->
+  <!-- Removed by excludeNonTranslatables <plurals name="MediaOverviewActivity_d_items">
     <item quantity="one">%1$d hêman</item>
     <item quantity="other">%1$d hêman</item>
-  </plurals>
+  </plurals> -->
   <string name="MediaOverviewActivity_file">Dosye</string>
   <string name="MediaOverviewActivity_audio">Deng</string>
   <string name="MediaOverviewActivity_video">Vîdyo</string>
@@ -2023,7 +2023,7 @@
   <string name="Insights__percent">%</string>
   <string name="Insights__title">Kûrbîn</string>
   <string name="InsightsDashboardFragment__title">Kûrbîn</string>
-  <string name="InsightsDashboardFragment__boost_your_signal">Signalê bihêz bike</string>
+  <!-- Removed by excludeNonTranslatables <string name="InsightsDashboardFragment__boost_your_signal">Signalê bihêz bike</string> -->
   <string name="InsightsDashboardFragment__not_enough_data">Dane têrê nake</string>
   <string name="InsightsDashboardFragment__start_a_conversation">Dest bi axiftinekê bike</string>
   <string name="InsightsDashboardFragment__encrypted_messages">Peyamên şîfrekirî</string>

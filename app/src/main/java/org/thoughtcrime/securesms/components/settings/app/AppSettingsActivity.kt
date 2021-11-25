@@ -4,9 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.navigation.NavDirections
+import io.reactivex.rxjava3.subjects.PublishSubject
+import io.reactivex.rxjava3.subjects.Subject
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.DSLSettingsActivity
+import org.thoughtcrime.securesms.components.settings.app.subscription.DonationPaymentComponent
+import org.thoughtcrime.securesms.components.settings.app.subscription.DonationPaymentRepository
 import org.thoughtcrime.securesms.help.HelpFragment
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -18,9 +22,12 @@ private const val START_LOCATION = "app.settings.start.location"
 private const val NOTIFICATION_CATEGORY = "android.intent.category.NOTIFICATION_PREFERENCES"
 private const val STATE_WAS_CONFIGURATION_UPDATED = "app.settings.state.configuration.updated"
 
-class AppSettingsActivity : DSLSettingsActivity() {
+class AppSettingsActivity : DSLSettingsActivity(), DonationPaymentComponent {
 
   private var wasConfigurationUpdated = false
+
+  override val donationPaymentRepository: DonationPaymentRepository by lazy { DonationPaymentRepository(this) }
+  override val googlePayResultPublisher: Subject<DonationPaymentComponent.GooglePayResult> = PublishSubject.create()
 
   override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
     if (intent?.hasExtra(ARG_NAV_GRAPH) != true) {
@@ -40,6 +47,9 @@ class AppSettingsActivity : DSLSettingsActivity() {
         StartLocation.PROXY -> AppSettingsFragmentDirections.actionDirectToEditProxyFragment()
         StartLocation.NOTIFICATIONS -> AppSettingsFragmentDirections.actionDirectToNotificationsSettingsFragment()
         StartLocation.CHANGE_NUMBER -> AppSettingsFragmentDirections.actionDirectToChangeNumberFragment()
+        StartLocation.SUBSCRIPTIONS -> AppSettingsFragmentDirections.actionDirectToSubscriptions()
+        StartLocation.BOOST -> AppSettingsFragmentDirections.actionAppSettingsFragmentToBoostsFragment()
+        StartLocation.MANAGE_SUBSCRIPTIONS -> AppSettingsFragmentDirections.actionDirectToManageDonations()
       }
     }
 
@@ -66,6 +76,12 @@ class AppSettingsActivity : DSLSettingsActivity() {
     }
   }
 
+  override fun onNewIntent(intent: Intent?) {
+    super.onNewIntent(intent)
+    finish()
+    startActivity(intent)
+  }
+
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
     outState.putBoolean(STATE_WAS_CONFIGURATION_UPDATED, wasConfigurationUpdated)
@@ -79,8 +95,12 @@ class AppSettingsActivity : DSLSettingsActivity() {
     }
   }
 
-  companion object {
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+    googlePayResultPublisher.onNext(DonationPaymentComponent.GooglePayResult(requestCode, resultCode, data))
+  }
 
+  companion object {
     @JvmStatic
     fun home(context: Context): Intent = getIntentForStartLocation(context, StartLocation.HOME)
 
@@ -102,6 +122,15 @@ class AppSettingsActivity : DSLSettingsActivity() {
     @JvmStatic
     fun changeNumber(context: Context): Intent = getIntentForStartLocation(context, StartLocation.CHANGE_NUMBER)
 
+    @JvmStatic
+    fun subscriptions(context: Context): Intent = getIntentForStartLocation(context, StartLocation.SUBSCRIPTIONS)
+
+    @JvmStatic
+    fun boost(context: Context): Intent = getIntentForStartLocation(context, StartLocation.BOOST)
+
+    @JvmStatic
+    fun manageSubscriptions(context: Context): Intent = getIntentForStartLocation(context, StartLocation.MANAGE_SUBSCRIPTIONS)
+
     private fun getIntentForStartLocation(context: Context, startLocation: StartLocation): Intent {
       return Intent(context, AppSettingsActivity::class.java)
         .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings)
@@ -115,7 +144,10 @@ class AppSettingsActivity : DSLSettingsActivity() {
     HELP(2),
     PROXY(3),
     NOTIFICATIONS(4),
-    CHANGE_NUMBER(5);
+    CHANGE_NUMBER(5),
+    SUBSCRIPTIONS(6),
+    BOOST(7),
+    MANAGE_SUBSCRIPTIONS(8);
 
     companion object {
       fun fromCode(code: Int?): StartLocation {

@@ -61,7 +61,7 @@ public final class FeatureFlags {
   private static final String VERIFY_V2                         = "android.verifyV2";
   private static final String PHONE_NUMBER_PRIVACY_VERSION      = "android.phoneNumberPrivacyVersion";
   private static final String CLIENT_EXPIRATION                 = "android.clientExpiration";
-  public  static final String DONATE_MEGAPHONE                  = "android.donate";
+  public  static final String DONATE_MEGAPHONE                  = "android.donate.2";
   private static final String CUSTOM_VIDEO_MUXER                = "android.customVideoMuxer";
   private static final String CDS_REFRESH_INTERVAL              = "cds.syncInterval.seconds";
   private static final String AUTOMATIC_SESSION_RESET           = "android.automaticSessionReset.2";
@@ -78,12 +78,14 @@ public final class FeatureFlags {
   private static final String RETRY_RECEIPT_LIFESPAN            = "android.retryReceiptLifespan";
   private static final String RETRY_RESPOND_MAX_AGE             = "android.retryRespondMaxAge";
   private static final String SENDER_KEY                        = "android.senderKey.5";
+  private static final String SENDER_KEY_MAX_AGE                = "android.senderKeyMaxAge";
   private static final String RETRY_RECEIPTS                    = "android.retryReceipts";
   private static final String SUGGEST_SMS_BLACKLIST             = "android.suggestSmsBlacklist";
   private static final String MAX_GROUP_CALL_RING_SIZE          = "global.calling.maxGroupCallRingSize";
   private static final String GROUP_CALL_RINGING                = "android.calling.groupCallRinging";
   private static final String CHANGE_NUMBER_ENABLED             = "android.changeNumber";
-  private static final String DONOR_BADGES                      = "android.donorBadges";
+  private static final String DONOR_BADGES                      = "android.donorBadges.6";
+  private static final String DONOR_BADGES_DISPLAY              = "android.donorBadges.display.4";
   private static final String CDSH                              = "android.cdsh";
 
   /**
@@ -121,14 +123,16 @@ public final class FeatureFlags {
       SUGGEST_SMS_BLACKLIST,
       MAX_GROUP_CALL_RING_SIZE,
       GROUP_CALL_RINGING,
-      CDSH
+      CDSH,
+      SENDER_KEY_MAX_AGE,
+      DONOR_BADGES,
+      DONOR_BADGES_DISPLAY
   );
 
   @VisibleForTesting
   static final Set<String> NOT_REMOTE_CAPABLE = SetUtil.newHashSet(
       PHONE_NUMBER_PRIVACY_VERSION,
-      CHANGE_NUMBER_ENABLED,
-      DONOR_BADGES
+      CHANGE_NUMBER_ENABLED
   );
 
   /**
@@ -174,7 +178,9 @@ public final class FeatureFlags {
       SENDER_KEY,
       MAX_GROUP_CALL_RING_SIZE,
       GROUP_CALL_RINGING,
-      CDSH
+      CDSH,
+      SENDER_KEY_MAX_AGE,
+      DONOR_BADGES_DISPLAY
   );
 
   /**
@@ -372,9 +378,9 @@ public final class FeatureFlags {
     return getLong(RETRY_RESPOND_MAX_AGE, TimeUnit.DAYS.toMillis(14));
   }
 
-  /** Whether or not sending using sender key is enabled. */
-  public static boolean senderKey() {
-    return getBoolean(SENDER_KEY, true);
+  /** How long a sender key can live before it needs to be rotated. */
+  public static long senderKeyMaxAge() {
+    return Math.min(getLong(SENDER_KEY_MAX_AGE, TimeUnit.DAYS.toMillis(14)), TimeUnit.DAYS.toMillis(90));
   }
 
   /** A comma-delimited list of country codes that should not be told about SMS during onboarding. */
@@ -397,13 +403,25 @@ public final class FeatureFlags {
     return getBoolean(CHANGE_NUMBER_ENABLED, false);
   }
 
-  /** Whether or not to show donor badges in the UI. */
+  /** Whether or not to show donor badges in the UI.
+   *
+   * WARNING: Donor Badges is an unfinished feature and should not be enabled in production builds.
+   *    Enabling this flag in a custom build can result in crashes and could result in your Google Pay
+   *    account being charged real money.
+   */
   public static boolean donorBadges() {
     if (Environment.IS_STAGING) {
-      return  true;
+      return true;
     } else {
-      return getBoolean(DONOR_BADGES, false);
+      return getBoolean(DONOR_BADGES, true) || SignalStore.donationsValues().getSubscriber() != null;
     }
+  }
+
+  /**
+   * Whether or not donor badges should be displayed throughout the app.
+   */
+  public static boolean displayDonorBadges() {
+    return getBoolean(DONOR_BADGES_DISPLAY, true);
   }
 
   public static boolean cdsh() {

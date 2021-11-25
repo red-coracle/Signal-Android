@@ -32,7 +32,7 @@ import androidx.navigation.Navigation;
 
 import com.dd.CircularProgressButton;
 
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -45,8 +45,8 @@ import org.thoughtcrime.securesms.backup.BackupPassphrase;
 import org.thoughtcrime.securesms.backup.FullBackupBase;
 import org.thoughtcrime.securesms.backup.FullBackupImporter;
 import org.thoughtcrime.securesms.crypto.AttachmentSecretProvider;
-import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.NoExternalStorageException;
+import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.registration.viewmodel.RegistrationViewModel;
@@ -256,7 +256,7 @@ public final class RestoreBackupFragment extends LoggingFragment {
         try {
           Log.i(TAG, "Starting backup restore.");
 
-          SQLiteDatabase database = DatabaseFactory.getBackupDatabase(context);
+          SQLiteDatabase database = SignalDatabase.getBackupDatabase();
 
           BackupPassphrase.set(context, passphrase);
           FullBackupImporter.importFile(context,
@@ -265,7 +265,7 @@ public final class RestoreBackupFragment extends LoggingFragment {
                                         backup.getUri(),
                                         passphrase);
 
-          DatabaseFactory.upgradeRestored(context, database);
+          SignalDatabase.upgradeRestored(database);
           NotificationChannels.restoreContactNotificationChannels(context);
 
           enableBackups(context);

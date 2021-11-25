@@ -4,7 +4,10 @@ import android.app.Application;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
+import org.signal.core.util.concurrent.DeadlockDetector;
+import org.signal.zkgroup.receipts.ClientZkReceiptOperations;
 import org.thoughtcrime.securesms.KbsEnclave;
 import org.thoughtcrime.securesms.components.TypingStatusRepository;
 import org.thoughtcrime.securesms.components.TypingStatusSender;
@@ -48,6 +51,7 @@ import org.whispersystems.signalservice.api.SignalServiceMessageReceiver;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.SignalWebSocket;
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2Operations;
+import org.whispersystems.signalservice.api.services.DonationsService;
 
 import okhttp3.OkHttpClient;
 
@@ -104,6 +108,9 @@ public class ApplicationDependencies {
   private static volatile GiphyMp4Cache                giphyMp4Cache;
   private static volatile SimpleExoPlayerPool          exoPlayerPool;
   private static volatile AudioManagerCompat           audioManagerCompat;
+  private static volatile DonationsService             donationsService;
+  private static volatile DeadlockDetector             deadlockDetector;
+  private static volatile ClientZkReceiptOperations    clientZkReceiptOperations;
 
   @MainThread
   public static void init(@NonNull Application application, @NonNull Provider provider) {
@@ -118,6 +125,11 @@ public class ApplicationDependencies {
 
       ApplicationDependencies.appForegroundObserver.begin();
     }
+  }
+
+  @VisibleForTesting
+  public static boolean isInitialized() {
+    return ApplicationDependencies.application != null;
   }
 
   public static @NonNull Application getApplication() {
@@ -590,6 +602,39 @@ public class ApplicationDependencies {
     return audioManagerCompat;
   }
 
+  public static @NonNull DonationsService getDonationsService() {
+    if (donationsService == null) {
+      synchronized (LOCK) {
+        if (donationsService == null) {
+          donationsService = provider.provideDonationsService();
+        }
+      }
+    }
+    return donationsService;
+  }
+
+  public static @NonNull ClientZkReceiptOperations getClientZkReceiptOperations() {
+    if (clientZkReceiptOperations == null) {
+      synchronized (LOCK) {
+        if (clientZkReceiptOperations == null) {
+          clientZkReceiptOperations = provider.provideClientZkReceiptOperations();
+        }
+      }
+    }
+    return clientZkReceiptOperations;
+  }
+
+  public static @NonNull DeadlockDetector getDeadlockDetector() {
+    if (deadlockDetector == null) {
+      synchronized (LOCK) {
+        if (deadlockDetector == null) {
+          deadlockDetector = provider.provideDeadlockDetector();
+        }
+      }
+    }
+    return deadlockDetector;
+  }
+
   public interface Provider {
     @NonNull GroupsV2Operations provideGroupsV2Operations();
     @NonNull SignalServiceAccountManager provideSignalServiceAccountManager();
@@ -625,5 +670,8 @@ public class ApplicationDependencies {
     @NonNull GiphyMp4Cache provideGiphyMp4Cache();
     @NonNull SimpleExoPlayerPool provideExoPlayerPool();
     @NonNull AudioManagerCompat provideAndroidCallAudioManager();
+    @NonNull DonationsService provideDonationsService();
+    @NonNull DeadlockDetector provideDeadlockDetector();
+    @NonNull ClientZkReceiptOperations provideClientZkReceiptOperations();
   }
 }

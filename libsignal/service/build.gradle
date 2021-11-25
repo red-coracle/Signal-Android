@@ -38,15 +38,15 @@ dependencies {
 
     implementation libs.signal.client.java
     api libs.square.okhttp3
+    api libs.square.okio
     implementation libs.threeten.threetenbp
 
     api libs.rxjava3.rxjava
 
-    api libs.signal.zkgroup.java
-
     testImplementation testLibs.junit.junit
     testImplementation testLibs.assertj.core
     testImplementation testLibs.conscrypt.openjdk.uber
+    testImplementation testLibs.mockito.core
 
     testFixturesImplementation libs.signal.client.java
     testFixturesImplementation testLibs.junit.junit

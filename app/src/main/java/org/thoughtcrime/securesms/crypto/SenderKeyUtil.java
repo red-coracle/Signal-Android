@@ -5,9 +5,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.thoughtcrime.securesms.crypto.storage.SignalSenderKeyStore;
-import org.thoughtcrime.securesms.database.DatabaseFactory;
+import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.recipients.Recipient;
+import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.signalservice.api.SignalSessionLock;
 import org.whispersystems.signalservice.api.push.DistributionId;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
@@ -20,8 +21,8 @@ public final class SenderKeyUtil {
    */
   public static void rotateOurKey(@NonNull Context context, @NonNull DistributionId distributionId) {
     try (SignalSessionLock.Lock unused = ReentrantSessionLock.INSTANCE.acquire()) {
-      ApplicationDependencies.getSenderKeyStore().deleteAllFor(Recipient.self().getId(), distributionId);
-      DatabaseFactory.getSenderKeySharedDatabase(context).deleteAllFor(distributionId);
+      ApplicationDependencies.getSenderKeyStore().deleteAllFor(Recipient.self().requireServiceId(), distributionId);
+      SignalDatabase.senderKeyShared().deleteAllFor(distributionId);
     }
   }
 
@@ -29,7 +30,8 @@ public final class SenderKeyUtil {
    * Gets when the sender key session was created, or -1 if it doesn't exist.
    */
   public static long getCreateTimeForOurKey(@NonNull Context context, @NonNull DistributionId distributionId) {
-    return DatabaseFactory.getSenderKeyDatabase(context).getCreatedTime(Recipient.self().getId(), SignalServiceAddress.DEFAULT_DEVICE_ID, distributionId);
+    SignalProtocolAddress address = new SignalProtocolAddress(Recipient.self().requireServiceId(), SignalServiceAddress.DEFAULT_DEVICE_ID);
+    return SignalDatabase.senderKeys().getCreatedTime(address, distributionId);
   }
 
   /**
@@ -38,7 +40,7 @@ public final class SenderKeyUtil {
   public static void clearAllState(@NonNull Context context) {
     try (SignalSessionLock.Lock unused = ReentrantSessionLock.INSTANCE.acquire()) {
       ApplicationDependencies.getSenderKeyStore().deleteAll();
-      DatabaseFactory.getSenderKeySharedDatabase(context).deleteAll();
+      SignalDatabase.senderKeyShared().deleteAll();
     }
   }
 }

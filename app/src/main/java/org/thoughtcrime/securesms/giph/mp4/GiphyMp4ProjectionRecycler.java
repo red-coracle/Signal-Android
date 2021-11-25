@@ -1,7 +1,6 @@
 package org.thoughtcrime.securesms.giph.mp4;
 
 import android.util.SparseArray;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -50,18 +49,12 @@ public final class GiphyMp4ProjectionRecycler implements GiphyMp4PlaybackControl
     }
   }
 
+  @Override
   public void updateVideoDisplayPositionAndSize(@NonNull RecyclerView recyclerView, @NonNull GiphyMp4Playable holder) {
     GiphyMp4ProjectionPlayerHolder playerHolder = getCurrentHolder(holder.getAdapterPosition());
     if (playerHolder != null) {
       updateVideoDisplayPositionAndSize(recyclerView, playerHolder, holder);
     }
-  }
-
-  public @Nullable View getVideoPlayerAtAdapterPosition(int adapterPosition) {
-    GiphyMp4ProjectionPlayerHolder holder = getCurrentHolder(adapterPosition);
-
-    if (holder != null) return holder.getContainer();
-    else                return null;
   }
 
   private void stopAndReleaseAssignedVideos(@NonNull Set<Integer> playbackSet) {
@@ -105,6 +98,8 @@ public final class GiphyMp4ProjectionRecycler implements GiphyMp4PlaybackControl
     }
 
     holder.setCorners(projection.getCorners());
+
+    projection.release();
   }
 
   private void startPlayback(@NonNull RecyclerView parent, @NonNull GiphyMp4ProjectionPlayerHolder holder, @NonNull GiphyMp4Playable giphyMp4Playable) {
@@ -115,13 +110,13 @@ public final class GiphyMp4ProjectionRecycler implements GiphyMp4PlaybackControl
       holder.show();
       holder.setOnPlaybackReady(() -> {
         giphyMp4Playable.hideProjectionArea();
-        parent.invalidateItemDecorations();
+        parent.invalidate();
       });
       holder.playContent(giphyMp4Playable.getMediaItem(), giphyMp4Playable.getPlaybackPolicyEnforcer());
     } else {
       holder.setOnPlaybackReady(() -> {
         giphyMp4Playable.hideProjectionArea();
-        parent.invalidateItemDecorations();
+        parent.invalidate();
       });
     }
   }

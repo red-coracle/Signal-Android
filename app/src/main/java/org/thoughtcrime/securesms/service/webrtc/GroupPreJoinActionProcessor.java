@@ -9,6 +9,7 @@ import org.signal.ringrtc.CallException;
 import org.signal.ringrtc.GroupCall;
 import org.signal.ringrtc.PeekInfo;
 import org.thoughtcrime.securesms.components.webrtc.BroadcastVideoSink;
+import org.thoughtcrime.securesms.components.webrtc.EglBaseWrapper;
 import org.thoughtcrime.securesms.events.CallParticipant;
 import org.thoughtcrime.securesms.events.CallParticipantId;
 import org.thoughtcrime.securesms.events.WebRtcViewModel;
@@ -19,6 +20,7 @@ import org.thoughtcrime.securesms.service.webrtc.state.WebRtcServiceState;
 import org.thoughtcrime.securesms.service.webrtc.state.WebRtcServiceStateBuilder;
 import org.thoughtcrime.securesms.util.NetworkUtil;
 import org.whispersystems.signalservice.api.messages.calls.OfferMessage;
+import org.whispersystems.signalservice.api.push.ACI;
 
 import java.util.List;
 
@@ -61,6 +63,7 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
                        .changeCallInfoState()
                        .groupCall(groupCall)
                        .groupCallState(WebRtcViewModel.GroupCallState.DISCONNECTED)
+                       .activePeer(new RemotePeer(currentState.getCallInfoState().getCallRecipient().getId(), RemotePeer.GROUP_CALL_ID))
                        .build();
   }
 
@@ -76,6 +79,7 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
     }
 
     WebRtcVideoUtil.deinitializeVideo(currentState);
+    EglBaseWrapper.releaseEglBase(RemotePeer.GROUP_CALL_ID.longValue());
 
     return new WebRtcServiceState(new IdleActionProcessor(webRtcInteractor));
   }
@@ -108,7 +112,7 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
     }
 
     List<Recipient> callParticipants = Stream.of(peekInfo.getJoinedMembers())
-                                             .map(uuid -> Recipient.externalPush(context, uuid, null, false))
+                                             .map(uuid -> Recipient.externalPush(context, ACI.from(uuid), null, false))
                                              .toList();
 
     WebRtcServiceStateBuilder.CallInfoStateBuilder builder = currentState.builder()
@@ -176,7 +180,7 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
 
     currentState.getVideoState().requireCamera().setEnabled(enable);
     return currentState.builder()
-                       .changeCallSetupState()
+                       .changeCallSetupState(RemotePeer.GROUP_CALL_ID)
                        .enableVideoOnCreate(enable)
                        .commit()
                        .changeLocalDeviceState()

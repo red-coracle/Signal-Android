@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceDataStore;
 
+import org.thoughtcrime.securesms.database.KeyValueDatabase;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.util.SignalUncaughtExceptionHandler;
 
@@ -15,9 +16,9 @@ import java.util.List;
  */
 public final class SignalStore {
 
-  private static final SignalStore INSTANCE = new SignalStore();
+  private KeyValueStore store;
 
-  private final KeyValueStore            store;
+  private final AccountValues            accountValues;
   private final KbsValues                kbsValues;
   private final RegistrationValues       registrationValues;
   private final PinValues                pinValues;
@@ -34,13 +35,29 @@ public final class SignalStore {
   private final OnboardingValues         onboardingValues;
   private final WallpaperValues          wallpaperValues;
   private final PaymentsValues           paymentsValues;
+  private final DonationsValues          donationsValues;
   private final ProxyValues              proxyValues;
   private final RateLimitValues          rateLimitValues;
   private final ChatColorsValues         chatColorsValues;
   private final ImageEditorValues        imageEditorValues;
 
-  private SignalStore() {
-    this.store                    = new KeyValueStore(ApplicationDependencies.getApplication());
+  private static volatile SignalStore instance;
+
+  private static @NonNull SignalStore getInstance() {
+    if (instance == null) {
+      synchronized (SignalStore.class) {
+        if (instance == null) {
+          instance = new SignalStore(new KeyValueStore(KeyValueDatabase.getInstance(ApplicationDependencies.getApplication())));
+        }
+      }
+    }
+
+    return instance;
+  }
+
+  private SignalStore(@NonNull KeyValueStore store) {
+    this.store                    = store;
+    this.accountValues            = new AccountValues(store);
     this.kbsValues                = new KbsValues(store);
     this.registrationValues       = new RegistrationValues(store);
     this.pinValues                = new PinValues(store);
@@ -57,6 +74,7 @@ public final class SignalStore {
     this.onboardingValues         = new OnboardingValues(store);
     this.wallpaperValues          = new WallpaperValues(store);
     this.paymentsValues           = new PaymentsValues(store);
+    this.donationsValues          = new DonationsValues(store);
     this.proxyValues              = new ProxyValues(store);
     this.rateLimitValues          = new RateLimitValues(store);
     this.chatColorsValues         = new ChatColorsValues(store);
@@ -64,6 +82,7 @@ public final class SignalStore {
   }
 
   public static void onFirstEverAppLaunch() {
+    account().onFirstEverAppLaunch();
     kbsValues().onFirstEverAppLaunch();
     registrationValues().onFirstEverAppLaunch();
     pinValues().onFirstEverAppLaunch();
@@ -80,6 +99,7 @@ public final class SignalStore {
     onboarding().onFirstEverAppLaunch();
     wallpaper().onFirstEverAppLaunch();
     paymentsValues().onFirstEverAppLaunch();
+    donationsValues().onFirstEverAppLaunch();
     proxy().onFirstEverAppLaunch();
     rateLimit().onFirstEverAppLaunch();
     chatColorsValues().onFirstEverAppLaunch();
@@ -88,6 +108,7 @@ public final class SignalStore {
 
   public static List<String> getKeysToIncludeInBackup() {
     List<String> keys = new ArrayList<>();
+    keys.addAll(account().getKeysToIncludeInBackup());
     keys.addAll(kbsValues().getKeysToIncludeInBackup());
     keys.addAll(registrationValues().getKeysToIncludeInBackup());
     keys.addAll(pinValues().getKeysToIncludeInBackup());
@@ -104,6 +125,7 @@ public final class SignalStore {
     keys.addAll(onboarding().getKeysToIncludeInBackup());
     keys.addAll(wallpaper().getKeysToIncludeInBackup());
     keys.addAll(paymentsValues().getKeysToIncludeInBackup());
+    keys.addAll(donationsValues().getKeysToIncludeInBackup());
     keys.addAll(proxy().getKeysToIncludeInBackup());
     keys.addAll(rateLimit().getKeysToIncludeInBackup());
     keys.addAll(chatColorsValues().getKeysToIncludeInBackup());
@@ -117,87 +139,95 @@ public final class SignalStore {
    */
   @VisibleForTesting
   public static void resetCache() {
-    INSTANCE.store.resetCache();
+    getInstance().store.resetCache();
+  }
+
+  public static @NonNull AccountValues account() {
+    return getInstance().accountValues;
   }
 
   public static @NonNull KbsValues kbsValues() {
-    return INSTANCE.kbsValues;
+    return getInstance().kbsValues;
   }
 
   public static @NonNull RegistrationValues registrationValues() {
-    return INSTANCE.registrationValues;
+    return getInstance().registrationValues;
   }
 
   public static @NonNull PinValues pinValues() {
-    return INSTANCE.pinValues;
+    return getInstance().pinValues;
   }
 
   public static @NonNull RemoteConfigValues remoteConfigValues() {
-    return INSTANCE.remoteConfigValues;
+    return getInstance().remoteConfigValues;
   }
 
   public static @NonNull StorageServiceValues storageService() {
-    return INSTANCE.storageServiceValues;
+    return getInstance().storageServiceValues;
   }
 
   public static @NonNull UiHints uiHints() {
-    return INSTANCE.uiHints;
+    return getInstance().uiHints;
   }
 
   public static @NonNull TooltipValues tooltips() {
-    return INSTANCE.tooltipValues;
+    return getInstance().tooltipValues;
   }
 
   public static @NonNull MiscellaneousValues misc() {
-    return INSTANCE.misc;
+    return getInstance().misc;
   }
 
   public static @NonNull InternalValues internalValues() {
-    return INSTANCE.internalValues;
+    return getInstance().internalValues;
   }
 
   public static @NonNull EmojiValues emojiValues() {
-    return INSTANCE.emojiValues;
+    return getInstance().emojiValues;
   }
 
   public static @NonNull SettingsValues settings() {
-    return INSTANCE.settingsValues;
+    return getInstance().settingsValues;
   }
 
   public static @NonNull CertificateValues certificateValues() {
-    return INSTANCE.certificateValues;
+    return getInstance().certificateValues;
   }
 
   public static @NonNull PhoneNumberPrivacyValues phoneNumberPrivacy() {
-    return INSTANCE.phoneNumberPrivacyValues;
+    return getInstance().phoneNumberPrivacyValues;
   }
 
   public static @NonNull OnboardingValues onboarding() {
-    return INSTANCE.onboardingValues;
+    return getInstance().onboardingValues;
   }
 
   public static @NonNull WallpaperValues wallpaper() {
-    return INSTANCE.wallpaperValues;
+    return getInstance().wallpaperValues;
   }
 
   public static @NonNull PaymentsValues paymentsValues() {
-    return INSTANCE.paymentsValues;
+    return getInstance().paymentsValues;
+  }
+
+  public static @NonNull DonationsValues donationsValues() {
+    return getInstance().donationsValues;
   }
 
   public static @NonNull ProxyValues proxy() {
-    return INSTANCE.proxyValues;
+    return getInstance().proxyValues;
   }
 
   public static @NonNull RateLimitValues rateLimit() {
-    return INSTANCE.rateLimitValues;
+    return getInstance().rateLimitValues;
   }
 
   public static @NonNull ChatColorsValues chatColorsValues() {
-    return INSTANCE.chatColorsValues;
+    return getInstance().chatColorsValues;
   }
 
   public static @NonNull ImageEditorValues imageEditorValues() {
-    return INSTANCE.imageEditorValues;
+    return getInstance().imageEditorValues;
   }
 
   public static @NonNull GroupsV2AuthorizationSignalStoreCache groupsV2AuthorizationCache() {
@@ -217,6 +247,14 @@ public final class SignalStore {
   }
 
   private static @NonNull KeyValueStore getStore() {
-    return INSTANCE.store;
+    return getInstance().store;
+  }
+
+  /**
+   * Allows you to set a custom KeyValueStore to read from. Only for testing!
+   */
+  @VisibleForTesting
+  public static void inject(@NonNull KeyValueStore store) {
+    instance = new SignalStore(store);
   }
 }

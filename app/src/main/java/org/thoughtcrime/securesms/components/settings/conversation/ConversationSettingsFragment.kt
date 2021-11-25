@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
@@ -30,6 +31,7 @@ import org.thoughtcrime.securesms.MuteDialog
 import org.thoughtcrime.securesms.PushContactSelectionActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.VerifyIdentityActivity
+import org.thoughtcrime.securesms.badges.BadgeImageView
 import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.badges.Badges.displayBadges
 import org.thoughtcrime.securesms.badges.models.Badge
@@ -77,6 +79,7 @@ import org.thoughtcrime.securesms.recipients.ui.sharablegrouplink.ShareableGroup
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.ContextUtil
 import org.thoughtcrime.securesms.util.ExpirationUtil
+import org.thoughtcrime.securesms.util.FeatureFlags
 import org.thoughtcrime.securesms.util.ThemeUtil
 import org.thoughtcrime.securesms.util.ViewUtil
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog
@@ -126,7 +129,9 @@ class ConversationSettingsFragment : DSLSettingsFragment(
   private lateinit var callback: Callback
 
   private lateinit var toolbar: Toolbar
+  private lateinit var toolbarAvatarContainer: FrameLayout
   private lateinit var toolbarAvatar: AvatarImageView
+  private lateinit var toolbarBadge: BadgeImageView
   private lateinit var toolbarTitle: TextView
   private lateinit var toolbarBackground: View
 
@@ -140,7 +145,9 @@ class ConversationSettingsFragment : DSLSettingsFragment(
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     toolbar = view.findViewById(R.id.toolbar)
+    toolbarAvatarContainer = view.findViewById(R.id.toolbar_avatar_container)
     toolbarAvatar = view.findViewById(R.id.toolbar_avatar)
+    toolbarBadge = view.findViewById(R.id.toolbar_badge)
     toolbarTitle = view.findViewById(R.id.toolbar_title)
     toolbarBackground = view.findViewById(R.id.toolbar_background)
 
@@ -164,7 +171,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
   }
 
   override fun getOnScrollAnimationHelper(toolbarShadow: View): OnScrollAnimationHelper {
-    return ConversationSettingsOnUserScrolledAnimationHelper(toolbarAvatar, toolbarTitle, toolbarBackground, toolbarShadow)
+    return ConversationSettingsOnUserScrolledAnimationHelper(toolbarAvatarContainer, toolbarTitle, toolbarBackground, toolbarShadow)
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -194,7 +201,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
 
     val recipientId = args.recipientId
     if (recipientId != null) {
-      Badge.register(adapter) { badge, _ ->
+      Badge.register(adapter) { badge, _, _ ->
         ViewBadgeBottomSheetDialogFragment.show(parentFragmentManager, recipientId, badge)
       }
     }
@@ -207,6 +214,10 @@ class ConversationSettingsFragment : DSLSettingsFragment(
           .withUseSelfProfileAvatar(false)
           .withFixedSize(ViewUtil.dpToPx(80))
           .load(state.recipient)
+
+        if (FeatureFlags.displayDonorBadges() && !state.recipient.isSelf) {
+          toolbarBadge.setBadgeFromRecipient(state.recipient)
+        }
 
         state.withRecipientSettingsState {
           toolbarTitle.text = state.recipient.getDisplayName(requireContext())
@@ -314,18 +325,16 @@ class ConversationSettingsFragment : DSLSettingsFragment(
         }
       }
 
-      state.withRecipientSettingsState { recipientState ->
-        if (recipientState.displayInternalRecipientDetails) {
-          customPref(
-            InternalPreference.Model(
-              recipient = state.recipient,
-              onInternalDetailsClicked = {
-                val action = ConversationSettingsFragmentDirections.actionConversationSettingsFragmentToInternalDetailsSettingsFragment(state.recipient.id)
-                navController.navigate(action)
-              }
-            )
+      if (state.displayInternalRecipientDetails) {
+        customPref(
+          InternalPreference.Model(
+            recipient = state.recipient,
+            onInternalDetailsClicked = {
+              val action = ConversationSettingsFragmentDirections.actionConversationSettingsFragmentToInternalDetailsSettingsFragment(state.recipient.id)
+              navController.navigate(action)
+            }
           )
-        }
+        )
       }
 
       customPref(
@@ -489,7 +498,13 @@ class ConversationSettingsFragment : DSLSettingsFragment(
 
           sectionHeaderPref(R.string.ManageProfileFragment_badges)
 
-          displayBadges(state.recipient.badges)
+          displayBadges(requireContext(), state.recipient.badges)
+
+          textPref(
+            summary = DSLSettingsText.from(
+              R.string.ConversationSettingsFragment__get_badges
+            )
+          )
         }
 
         if (recipientSettingsState.selfHasGroups) {
@@ -662,7 +677,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
         val blockUnblockIcon = if (isBlocked) unblockIcon else blockIcon
 
         clickPref(
-          title = DSLSettingsText.from(title, titleTint),
+          title = if (titleTint != null) DSLSettingsText.from(title, titleTint) else DSLSettingsText.from(title),
           icon = DSLSettingsIcon.from(blockUnblockIcon),
           onClick = {
             if (state.recipient.isBlocked) {
@@ -717,7 +732,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
   }
 
   private fun showGroupInvitesSentDialog(showGroupInvitesSentDialog: ConversationSettingsEvent.ShowGroupInvitesSentDialog) {
-    GroupInviteSentDialog.showInvitesSent(requireContext(), showGroupInvitesSentDialog.invitesSentTo)
+    GroupInviteSentDialog.showInvitesSent(requireContext(), viewLifecycleOwner, showGroupInvitesSentDialog.invitesSentTo)
   }
 
   private fun showMembersAdded(showMembersAdded: ConversationSettingsEvent.ShowMembersAdded) {
