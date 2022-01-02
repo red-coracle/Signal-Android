@@ -74,7 +74,7 @@ class AppSettingsFragment : DSLSettingsFragment(R.string.text_secure_normal__men
         }
       )
 
-      if (SignalStore.paymentsValues().paymentsAvailability.showPaymentsMenu()) {
+      /*if (SignalStore.paymentsValues().paymentsAvailability.showPaymentsMenu()) {
         customPref(
           PaymentsPreference(
             unreadCount = state.unreadPaymentsCount
@@ -82,7 +82,7 @@ class AppSettingsFragment : DSLSettingsFragment(R.string.text_secure_normal__men
             Navigation.findNavController(requireView()).navigate(R.id.action_appSettingsFragment_to_paymentsActivity)
           }
         )
-      }
+      }*/
 
       dividerPref()
 
@@ -144,7 +144,7 @@ class AppSettingsFragment : DSLSettingsFragment(R.string.text_secure_normal__men
         }
       )
 
-      if (FeatureFlags.donorBadges() && PlayServicesUtil.getPlayServicesStatus(requireContext()) == PlayServicesUtil.PlayServicesStatus.SUCCESS) {
+      /*if (FeatureFlags.donorBadges() && PlayServicesUtil.getPlayServicesStatus(requireContext()) == PlayServicesUtil.PlayServicesStatus.SUCCESS) {
         customPref(
           SubscriptionPreference(
             title = DSLSettingsText.from(
@@ -178,9 +178,9 @@ class AppSettingsFragment : DSLSettingsFragment(R.string.text_secure_normal__men
           icon = DSLSettingsIcon.from(R.drawable.ic_heart_24),
           linkId = R.string.donate_url
         )
-      }
+      }*/
 
-      if (FeatureFlags.internalUser()) {
+      //if (FeatureFlags.internalUser()) {
         dividerPref()
 
         clickPref(
@@ -189,7 +189,7 @@ class AppSettingsFragment : DSLSettingsFragment(R.string.text_secure_normal__men
             Navigation.findNavController(requireView()).navigate(R.id.action_appSettingsFragment_to_internalSettingsFragment)
           }
         )
-      }
+      //}
     }
   }
 
