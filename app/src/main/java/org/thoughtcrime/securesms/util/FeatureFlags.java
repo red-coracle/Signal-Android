@@ -87,6 +87,7 @@ public final class FeatureFlags {
   private static final String DONOR_BADGES                      = "android.donorBadges.6";
   private static final String DONOR_BADGES_DISPLAY              = "android.donorBadges.display.4";
   private static final String CDSH                              = "android.cdsh";
+  private static final String VOICE_NOTE_RECORDING_V2           = "android.voiceNoteRecordingV2";
 
   /**
    * We will only store remote values for flags in this set. If you want a flag to be controllable
@@ -126,13 +127,14 @@ public final class FeatureFlags {
       CDSH,
       SENDER_KEY_MAX_AGE,
       DONOR_BADGES,
-      DONOR_BADGES_DISPLAY
+      DONOR_BADGES_DISPLAY,
+      CHANGE_NUMBER_ENABLED,
+      VOICE_NOTE_RECORDING_V2
   );
 
   @VisibleForTesting
   static final Set<String> NOT_REMOTE_CAPABLE = SetUtil.newHashSet(
-      PHONE_NUMBER_PRIVACY_VERSION,
-      CHANGE_NUMBER_ENABLED
+      PHONE_NUMBER_PRIVACY_VERSION
   );
 
   /**
@@ -180,7 +182,9 @@ public final class FeatureFlags {
       GROUP_CALL_RINGING,
       CDSH,
       SENDER_KEY_MAX_AGE,
-      DONOR_BADGES_DISPLAY
+      DONOR_BADGES_DISPLAY,
+      DONATE_MEGAPHONE,
+      VOICE_NOTE_RECORDING_V2
   );
 
   /**
@@ -205,6 +209,7 @@ public final class FeatureFlags {
   private static final Map<String, OnFlagChange> FLAG_CHANGE_LISTENERS = new HashMap<String, OnFlagChange>() {{
     put(MESSAGE_PROCESSOR_ALARM_INTERVAL, change -> MessageProcessReceiver.startOrUpdateAlarm(ApplicationDependencies.getApplication()));
     put(SENDER_KEY, change -> ApplicationDependencies.getJobManager().add(new RefreshAttributesJob()));
+    put(CHANGE_NUMBER_ENABLED, change -> ApplicationDependencies.getJobManager().add(new RefreshAttributesJob()));
   }};
 
   private static final Map<String, Object> REMOTE_VALUES = new TreeMap<>();
@@ -404,11 +409,8 @@ public final class FeatureFlags {
     return getBoolean(CHANGE_NUMBER_ENABLED, false);
   }
 
-  /** Whether or not to show donor badges in the UI.
-   *
-   * WARNING: Donor Badges is an unfinished feature and should not be enabled in production builds.
-   *    Enabling this flag in a custom build can result in crashes and could result in your Google Pay
-   *    account being charged real money.
+  /**
+   * Whether or not to show donor badges in the UI.
    */
   public static boolean donorBadges() {
     if (Environment.IS_STAGING) {
@@ -427,6 +429,11 @@ public final class FeatureFlags {
 
   public static boolean cdsh() {
     return Environment.IS_STAGING && getBoolean(CDSH, false);
+  }
+
+  /** Whether or not to use the new voice note recorder backed by MediaRecorder. */
+  public static boolean voiceNoteRecordingV2() {
+    return getBoolean(VOICE_NOTE_RECORDING_V2, true);
   }
 
   /** Only for rendering debug info. */

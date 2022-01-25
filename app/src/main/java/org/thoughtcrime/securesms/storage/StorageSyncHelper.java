@@ -11,7 +11,7 @@ import com.annimon.stream.Stream;
 
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
-import org.thoughtcrime.securesms.database.RecipientDatabase.RecipientSettings;
+import org.thoughtcrime.securesms.database.model.RecipientRecord;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.jobs.RetrieveProfileAvatarJob;
@@ -105,20 +105,20 @@ public final class StorageSyncHelper {
   }
 
   public static SignalStorageRecord buildAccountRecord(@NonNull Context context, @NonNull Recipient self) {
-    RecipientDatabase       recipientDatabase = SignalDatabase.recipients();
-    RecipientSettings       settings          = recipientDatabase.getRecipientSettingsForSync(self.getId());
-    List<RecipientSettings> pinned            = Stream.of(SignalDatabase.threads().getPinnedRecipientIds())
-                                                      .map(recipientDatabase::getRecipientSettingsForSync)
-                                                      .toList();
+    RecipientDatabase     recipientDatabase = SignalDatabase.recipients();
+    RecipientRecord       record            = recipientDatabase.getRecordForSync(self.getId());
+    List<RecipientRecord> pinned            = Stream.of(SignalDatabase.threads().getPinnedRecipientIds())
+                                                    .map(recipientDatabase::getRecordForSync)
+                                                    .toList();
 
     SignalAccountRecord account = new SignalAccountRecord.Builder(self.getStorageServiceId())
-                                                         .setUnknownFields(settings != null ? settings.getSyncExtras().getStorageProto() : null)
+                                                         .setUnknownFields(record != null ? record.getSyncExtras().getStorageProto() : null)
                                                          .setProfileKey(self.getProfileKey())
                                                          .setGivenName(self.getProfileName().getGivenName())
                                                          .setFamilyName(self.getProfileName().getFamilyName())
                                                          .setAvatarUrlPath(self.getProfileAvatar())
-                                                         .setNoteToSelfArchived(settings != null && settings.getSyncExtras().isArchived())
-                                                         .setNoteToSelfForcedUnread(settings != null && settings.getSyncExtras().isForcedUnread())
+                                                         .setNoteToSelfArchived(record != null && record.getSyncExtras().isArchived())
+                                                         .setNoteToSelfForcedUnread(record != null && record.getSyncExtras().isForcedUnread())
                                                          .setTypingIndicatorsEnabled(TextSecurePreferences.isTypingIndicatorsEnabled(context))
                                                          .setReadReceiptsEnabled(TextSecurePreferences.isReadReceiptsEnabled(context))
                                                          .setSealedSenderIndicatorsEnabled(TextSecurePreferences.isShowUnidentifiedDeliveryIndicatorsEnabled(context))
@@ -134,6 +134,7 @@ public final class StorageSyncHelper {
                                                          .setDefaultReactions(SignalStore.emojiValues().getReactions())
                                                          .setSubscriber(StorageSyncModels.localToRemoteSubscriber(SignalStore.donationsValues().getSubscriber()))
                                                          .setDisplayBadgesOnProfile(SignalStore.donationsValues().getDisplayBadgesOnProfile())
+                                                         .setSubscriptionManuallyCancelled(SignalStore.donationsValues().isUserManuallyCancelled())
                                                          .build();
 
     return SignalStorageRecord.forAccount(account);
@@ -158,6 +159,12 @@ public final class StorageSyncHelper {
     SignalStore.settings().setUniversalExpireTimer(update.getNew().getUniversalExpireTimer());
     SignalStore.emojiValues().setReactions(update.getNew().getDefaultReactions());
     SignalStore.donationsValues().setDisplayBadgesOnProfile(update.getNew().isDisplayBadgesOnProfile());
+
+    if (update.getNew().isSubscriptionManuallyCancelled()) {
+      SignalStore.donationsValues().markUserManuallyCancelled();
+    } else {
+      SignalStore.donationsValues().clearUserManuallyCancelled();
+    }
 
     Subscriber subscriber = StorageSyncModels.remoteToLocalSubscriber(update.getNew().getSubscriber());
     if (subscriber != null) {
