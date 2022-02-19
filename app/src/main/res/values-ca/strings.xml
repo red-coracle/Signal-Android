@@ -448,9 +448,6 @@
   <string name="DeviceListItem_today">Avui</string>
   <!--DocumentView-->
   <string name="DocumentView_unnamed_file">Fitxer sense nom</string>
-  <!--GroupCallingMegaphone-->
-  <string name="GroupCallingMegaphone__introducing_group_calls">S\'introdueixen les trucades de grup</string>
-  <string name="GroupCallingMegaphone__open_a_new_group_to_start">Obriu un grup nou per iniciar una trucada de grup encriptada</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">Optimitza per a la no presència dels Play Services</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">El dispositiu no és compatible amb Play Services. Toqueu per desactivar les optimitzacions de la bateria que impedeixen que el Signal rebi missatges quan estigui inactiu.</string>
@@ -568,10 +565,6 @@
   <string name="LeaveGroupDialog_choose_new_admin">Trieu un administrador nou</string>
   <string name="LeaveGroupDialog_before_you_leave_you_must_choose_at_least_one_new_admin_for_this_group">Abans d\'abandonar-lo, heu de triar almenys un administrador nou per a aquest grup.</string>
   <string name="LeaveGroupDialog_choose_admin">Trieu un administrador</string>
-  <!--LinkPreviewsMegaphone-->
-  <string name="LinkPreviewsMegaphone_disable">Desactiva</string>
-  <string name="LinkPreviewsMegaphone_preview_any_link">Previsualitza qualsevol enllaç</string>
-  <string name="LinkPreviewsMegaphone_you_can_now_retrieve_link_previews_directly_from_any_website">Ara podeu recuperar les previsualitzacions d’enllaços directament des de qualsevol lloc web per als missatges que envieu.</string>
   <!--LinkPreviewView-->
   <string name="LinkPreviewView_no_link_preview_available">No hi ha previsualització d\'enllaç disponible.</string>
   <string name="LinkPreviewView_this_group_link_is_not_active">Aquest enllaç de grup no està actiu.</string>
@@ -796,7 +789,7 @@
   <!--InviteActivity-->
   <string name="InviteActivity_share">Comparteix</string>
   <string name="InviteActivity_share_with_contacts">Comparteix amb els contactes</string>
-  <string name="InviteActivity_share_via">Comparteix via…</string>
+  <string name="InviteActivity_share_via">Comparteix mitjançant…</string>
   <string name="InviteActivity_cancel">Cancel·la</string>
   <string name="InviteActivity_sending">S\'envia…</string>
   <string name="InviteActivity_invitations_sent">Invitacions enviades!</string>
@@ -868,8 +861,6 @@
   <string name="MediaOverviewActivity_sent_by_s_to_s">Enviat per %1$s a %2$s</string>
   <string name="MediaOverviewActivity_sent_by_you_to_s">Ho heu enviat a %1$s</string>
   <!--Megaphones-->
-  <string name="Megaphones_introducing_reactions">S\'introdueixen les reaccions</string>
-  <string name="Megaphones_tap_and_hold_any_message_to_quicky_share_how_you_feel">Mantingueu un toc sobre qualsevol missatge per compartir com us sentiu.</string>
   <string name="Megaphones_remind_me_later">Recorda-m\'ho més tard.</string>
   <string name="Megaphones_verify_your_signal_pin">Verifiqueu el PIN del Signal</string>
   <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">De tant en tant us demanarem de verificar el PIN perquè el recordeu.</string>
@@ -1093,7 +1084,7 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">Heu tret la verificació del número de seguretat amb %s</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">Heu tret la verificació del número de seguretat amb %s des d\'un altre dispositiu</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">No s\'ha pogut lliurar un missatge de %s.</string>
-  <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s ha canviat el número.</string>
+  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s ha canviat el número.</string> -->
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s ha iniciat una trucada de grup · %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s és a la trucada de grup · %2$s</string>
@@ -1276,18 +1267,18 @@
     <item quantity="one">%1$s, %2$s i %3$d més rebran una notificació</item>
     <item quantity="other">%1$s, %2$s i %3$d més rebran una notificació</item>
   </plurals>
-  <string name="WebRtcCallView__ringing_s">S\'està trucant a %1$s</string>
-  <string name="WebRtcCallView__ringing_s_and_s">S\'està trucant a %1$s i %2$s</string>
+  <string name="WebRtcCallView__ringing_s">Es truca a %1$s</string>
+  <string name="WebRtcCallView__ringing_s_and_s">Es truca a %1$s i %2$s</string>
   <plurals name="WebRtcCallView__ringing_s_s_and_d_others">
-    <item quantity="one">S\'està trucant a %1$s, %2$s i %3$d més</item>
-    <item quantity="other">S\'està trucant a %1$s, %2$s i %3$d més</item>
+    <item quantity="one">Es truca a %1$s, %2$s i %3$d més</item>
+    <item quantity="other">Es truca a %1$s, %2$s i %3$d més</item>
   </plurals>
   <string name="WebRtcCallView__s_is_calling_you">%1$s us està trucant</string>
-  <string name="WebRtcCallView__s_is_calling_you_and_s">%1$sus està trucat a vós i a %2$s</string>
-  <string name="WebRtcCallView__s_is_calling_you_s_and_s">%1$s us està trucant a vòs, %2$s i %3$s</string>
+  <string name="WebRtcCallView__s_is_calling_you_and_s">%1$sus truca a vós i a %2$s</string>
+  <string name="WebRtcCallView__s_is_calling_you_s_and_s">%1$s us truca a vós, %2$s i %3$s</string>
   <plurals name="WebRtcCallView__s_is_calling_you_s_s_and_d_others">
-    <item quantity="one">%1$s us està trucant a vós, a %2$s, a %3$s i a %4$d més</item>
-    <item quantity="other">%1$s us està trucant a vós, a %2$s, a %3$s i a %4$d més</item>
+    <item quantity="one">%1$s us truca a vós, a %2$s, a %3$s i a %4$d més</item>
+    <item quantity="other">%1$s us truca a vós, a %2$s, a %3$s i a %4$d més</item>
   </plurals>
   <string name="WebRtcCallView__no_one_else_is_here">Aquí no hi ha ningú més.</string>
   <string name="WebRtcCallView__s_is_in_this_call">%1$s és en aquesta trucada.</string>
@@ -1780,7 +1771,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <!--device_link_fragment-->
   <string name="device_link_fragment__link_device">Enllaça un dispositiu</string>
   <!--device_list_fragment-->
-  <string name="device_list_fragment__no_devices_linked">No hi ha cap dispositiu enllaçat</string>
+  <string name="device_list_fragment__no_devices_linked">No hi ha cap dispositiu enllaçat.</string>
   <string name="device_list_fragment__link_new_device">Enllaça un dispositiu nou</string>
   <!--expiration-->
   <string name="expiration_off">Inactiu</string>
@@ -1827,7 +1818,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <!--giphy_activity-->
   <string name="giphy_activity_toolbar__search_gifs">Cerca de GIF</string>
   <!--giphy_fragment-->
-  <string name="giphy_fragment__nothing_found">No s\'ha trobat res</string>
+  <string name="giphy_fragment__nothing_found">No s\'ha trobat res.</string>
   <!--database_migration_activity-->
   <string name="database_migration_activity__would_you_like_to_import_your_existing_text_messages">Voleu importar els missatges de text existents a la base de dades encriptada del Signal?</string>
   <string name="database_migration_activity__the_default_system_database_will_not_be_modified">La base de dades predeterminada del sistema no es modificarà ni  s\'alterarà de cap manera.</string>
@@ -2328,18 +2319,44 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="conversation_callable_secure__menu_call">Trucada del Signal</string>
   <string name="conversation_callable_secure__menu_video">Trucada de vídeo del Signal</string>
   <!--conversation_context-->
-  <string name="conversation_context__menu_message_details">Detalls del missatge</string>
-  <string name="conversation_context__menu_copy_text">Copia el text</string>
-  <string name="conversation_context__menu_delete_message">Suprimeix el missatge</string>
-  <string name="conversation_context__menu_forward_message">Reenvia el missatge</string>
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_context__menu_message_details">Informació</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_context__menu_copy_text">Copia</string>
+  <!--Button to delete a message-->
+  <string name="conversation_context__menu_delete_message">Suprimits</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_context__menu_forward_message">Reenvia</string>
+  <!--Button to retry sending a message-->
   <string name="conversation_context__menu_resend_message">Torna a enviar el missatge</string>
-  <string name="conversation_context__menu_reply_to_message">Respon el missatge</string>
-  <!--conversation_context_reacction-->
+  <!--Button to reply to a message-->
+  <string name="conversation_context__menu_reply_to_message">Respon</string>
+  <!--conversation_context_reaction-->
+  <!--Button to select a message and enter selection mode-->
   <string name="conversation_context__reaction_multi_select">Selecció múltiple</string>
+  <!--Heading which shows how many messages are currently selected-->
+  <plurals name="conversation_context__s_selected">
+    <item quantity="one">%d de seleccionat</item>
+    <item quantity="other">%d de seleccionats</item>
+  </plurals>
   <!--conversation_context_image-->
-  <string name="conversation_context_image__save_attachment">Desa l\'adjunt</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_context_image__save_attachment">Desats</string>
   <!--conversation_expiring_off-->
   <string name="conversation_expiring_off__disappearing_messages">Missatges efímers</string>
+  <!--conversation_selection-->
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_selection__menu_message_details">Informació</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_selection__menu_copy">Copia</string>
+  <!--Button to delete a message-->
+  <string name="conversation_selection__menu_delete">Suprimits</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_selection__menu_forward">Reenvia</string>
+  <!--Button to reply to a message-->
+  <string name="conversation_selection__menu_reply">Respon</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_selection__menu_save">Desats</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">Convida</string>
@@ -2523,16 +2540,6 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <string name="KbsMegaphone__create_a_pin">Crea un PIN</string>
   <string name="KbsMegaphone__pins_keep_information_thats_stored_with_signal_encrytped">Els PIN mantenen encriptada la informació desada amb el Signal.</string>
   <string name="KbsMegaphone__create_pin">Crea un PIN</string>
-  <!--Research Megaphone-->
-  <string name="ResearchMegaphone_tell_signal_what_you_think">Expliqueu a Signal què en penseu</string>
-  <string name="ResearchMegaphone_to_make_signal_the_best_messaging_app_on_the_planet">Per fer del Signal la millor aplicació de missatgeria del planeta, ens agradaria rebre\'n els vostres comentaris.</string>
-  <string name="ResearchMegaphone_learn_more">Més informació</string>
-  <string name="ResearchMegaphone_dismiss">Descarta</string>
-  <string name="ResearchMegaphoneDialog_signal_research">Recerca del Signal</string>
-  <string name="ResearchMegaphoneDialog_we_believe_in_privacy"><![CDATA[ <p><b>Creiem en la privadesa.</b></p><p> El Signal no us fa un seguiment ni recopila les vostres dades. Per millorar el Signal per a tothom, confiem en els comentaris dels usuaris i <b>ens encantaria rebre el vostre.</b></p><p> Estem fent una enquesta per entendre com useu el Signal. La nostra enquesta no recull cap dada que us identifiqui. Si esteu interessats a compartir comentaris addicionals, podreu proporcionar la informació de contacte.</p><p> Si teniu uns quants minuts i comentaris a oferir, ens encantaria rebre notícies vostres.</p>]]></string>
-  <string name="ResearchMegaphoneDialog_take_the_survey">Feu l\'enquesta</string>
-  <string name="ResearchMegaphoneDialog_no_thanks">No, gràcies.</string>
-  <string name="ResearchMegaphoneDialog_the_survey_is_hosted_by_alchemer_at_the_secure_domain">Alchemer en fa el seguiment al domini segur surveys.signalusers.org.</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Icona de trànsit</string>
   <string name="ConversationListFragment_loading">Es carrega…</string>
@@ -3028,7 +3035,7 @@ S\'ha rebut un missatge d\'intercanvi de claus per a una versió del protocol no
   <!--ChangeNumberFragment-->
   <string name="ChangeNumberFragment__use_this_to_change_your_current_phone_number_to_a_new_phone_number">Useu-ho per canviar el número de telèfon actual per un número nou. No podeu desfer aquest canvi. \n\nAbans de continuar, assegureu-vos que el número nou pugui rebre SMS o trucades.</string>
   <string name="ChangeNumberFragment__continue">Continua</string>
-  <string name="ChangeNumber__your_phone_number_has_been_changed">S\'ha canviat el número de telèfon.</string>
+  <!-- Removed by excludeNonTranslatables <string name="ChangeNumber__your_phone_number_has_been_changed">S\'ha canviat el número de telèfon.</string> -->
   <!--ChangeNumberEnterPhoneNumberFragment-->
   <string name="ChangeNumberEnterPhoneNumberFragment__change_number">Canvia el número</string>
   <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">El número antic</string>

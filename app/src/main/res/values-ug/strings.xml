@@ -403,9 +403,6 @@
   <string name="DeviceListItem_today">بۈگۈن</string>
   <!--DocumentView-->
   <string name="DocumentView_unnamed_file">ئىسىمسىز ھۆججەت</string>
-  <!--GroupCallingMegaphone-->
-  <string name="GroupCallingMegaphone__introducing_group_calls">«گۇرۇپپا چاقىرىشلىرى»نى تونۇشتۇرۇش</string>
-  <string name="GroupCallingMegaphone__open_a_new_group_to_start">ھەقسىز شىفىرلانغان گۇرۇپپا چاقىرىشنى باشلاش ئۈچۈن «يېڭى گۇرۇپپا»نى ئېچىڭ</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">يۈتكەن Google Play مۇلازىمەتلىرىگە ئەلالاشتۇرۇش</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">بۇ ئۈسكۈنە Google Play مۇلازىمەتلىرىنى قوللىمايدۇ. Signalنىڭ ھەرىكەتسىز ھالەتتىمۇ ئۇچۇر ئېلىشىنى توسۇپ قويىدىغان «سىستېما باتارېيەسىنى ئەلالاشتۇرۇش»نى چەكلەڭ.</string>
@@ -524,10 +521,6 @@
   <string name="LeaveGroupDialog_choose_new_admin">يېڭى باشقۇرغۇچى تاللاڭ</string>
   <string name="LeaveGroupDialog_before_you_leave_you_must_choose_at_least_one_new_admin_for_this_group">ئايرىلىشتىن بۇرۇن چوقۇم بۇ گۇرۇپپىغا كەم دېگەندە بىر يېڭى باشقۇرغۇچىنى تاللىشىڭىز كېرەك.</string>
   <string name="LeaveGroupDialog_choose_admin">باشقۇرغۇچى تاللاڭ</string>
-  <!--LinkPreviewsMegaphone-->
-  <string name="LinkPreviewsMegaphone_disable">تاقاش</string>
-  <string name="LinkPreviewsMegaphone_preview_any_link">ھەر قانداق ئۇلانمىنى ئالدىن كۆزەت</string>
-  <string name="LinkPreviewsMegaphone_you_can_now_retrieve_link_previews_directly_from_any_website">سىز يوللىغان ھەر قانداق تور بېكەت ئۇلانمىسىدىن بىۋاسىتە ئالدىن كۆزىتىشنى شەكىللەندۈرەلەيسىز.</string>
   <!--LinkPreviewView-->
   <string name="LinkPreviewView_no_link_preview_available">ئىشلىتىلىشچان ئۇلانما ئالدىن كۆزىتىشى يوق</string>
   <string name="LinkPreviewView_this_group_link_is_not_active">بۇ گۇرۇپپىنىڭ ئۇلانمىسى ئاكتىپ ئەمەس</string>
@@ -810,8 +803,6 @@
   <string name="MediaOverviewActivity_sent_by_s_to_s">%1$s دىن %2$s غا يوللانغان</string>
   <string name="MediaOverviewActivity_sent_by_you_to_s">سىز %1$s غا يوللىغان</string>
   <!--Megaphones-->
-  <string name="Megaphones_introducing_reactions">ئىنكاس تونۇشتۇرۇش</string>
-  <string name="Megaphones_tap_and_hold_any_message_to_quicky_share_how_you_feel">ھەر قانداق ئۇچۇرنى چېكىپ تۇرۇپ تېزلىكتە كەيپىياتىڭىزنى ھەمبەھىرلىيەلەيسىز.</string>
   <string name="Megaphones_remind_me_later">كېيىنچە ئەسكەرت</string>
   <string name="Megaphones_verify_your_signal_pin">Signal PIN نى دەلىللەڭ</string>
   <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">ئەستە تۇتۇشىڭىز ئۈچۈن بەزىدە PIN دەلىللىشىڭىزنى سورايمىز.</string>
@@ -1035,7 +1026,7 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">سىز %s بىلەن بولغان بىخەتەرلىك نومۇرىڭىزغا دەلىللەنمىدى بەلگىسى سالدىڭىز.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">باشقا بىر ئۈسكۈنىدە  %s بىلەن بولغان بىخەتەرلىك نومۇرىڭىزغا دەلىللەنمىدى بەلگىسى سالدىڭىز.</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">%s نىڭ بىر ئۇچۇرىنى يەتكۈزەلمىدى</string>
-  <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s لارنىڭ نومۇرىنى يېڭى نومۇرغا ئۆزگەرتىش</string>
+  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s لارنىڭ نومۇرىنى يېڭى نومۇرغا ئۆزگەرتىش</string> -->
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s گۇرۇپپىغا چاقىرىشىنى باشلىدى. %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s گۇرۇپپا چاقىرىقىدا. %2$s</string>
@@ -2254,18 +2245,40 @@
   <string name="conversation_callable_secure__menu_call">Signal چاقىرىقى</string>
   <string name="conversation_callable_secure__menu_video">Signal سىنلىق چاقىرىق</string>
   <!--conversation_context-->
-  <string name="conversation_context__menu_message_details">ئۇچۇر تەپسىلاتى</string>
-  <string name="conversation_context__menu_copy_text">تېكىست كۆچۈر</string>
-  <string name="conversation_context__menu_delete_message">ئۇچۇر ئۆچۈر</string>
-  <string name="conversation_context__menu_forward_message">ئۇچۇرنى ئۇلاپ يوللا</string>
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_context__menu_message_details">ئۇچۇر</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_context__menu_copy_text">كۆچۈر</string>
+  <!--Button to delete a message-->
+  <string name="conversation_context__menu_delete_message">ئۆچۈر</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_context__menu_forward_message">ئۇلاپ يوللا</string>
+  <!--Button to retry sending a message-->
   <string name="conversation_context__menu_resend_message">ئۇچۇرنى قايتا يوللا</string>
-  <string name="conversation_context__menu_reply_to_message">ئۇچۇرغا جاۋاب</string>
-  <!--conversation_context_reacction-->
+  <!--Button to reply to a message-->
+  <string name="conversation_context__menu_reply_to_message">جاۋاب</string>
+  <!--conversation_context_reaction-->
+  <!--Button to select a message and enter selection mode-->
   <string name="conversation_context__reaction_multi_select">كۆپ تاللا</string>
+  <!--Heading which shows how many messages are currently selected-->
   <!--conversation_context_image-->
-  <string name="conversation_context_image__save_attachment">قوشۇمچە ساقلا</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_context_image__save_attachment">ساقلا</string>
   <!--conversation_expiring_off-->
   <string name="conversation_expiring_off__disappearing_messages">غايىب ئۇچۇرلار</string>
+  <!--conversation_selection-->
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_selection__menu_message_details">ئۇچۇر</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_selection__menu_copy">كۆچۈر</string>
+  <!--Button to delete a message-->
+  <string name="conversation_selection__menu_delete">ئۆچۈر</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_selection__menu_forward">ئۇلاپ يوللا</string>
+  <!--Button to reply to a message-->
+  <string name="conversation_selection__menu_reply">جاۋاب</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_selection__menu_save">ساقلا</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">تەكلىپ</string>
@@ -2448,16 +2461,6 @@
   <string name="KbsMegaphone__create_a_pin">بىر PIN قۇرۇڭ</string>
   <string name="KbsMegaphone__pins_keep_information_thats_stored_with_signal_encrytped">Signal ئۇچۇر ساقلىغاندا PIN ئارقىلىق شىفىرلايدۇ.</string>
   <string name="KbsMegaphone__create_pin">PIN قۇر</string>
-  <!--Research Megaphone-->
-  <string name="ResearchMegaphone_tell_signal_what_you_think">Signal ھەققىدە ئويلىغانلىرىڭىزنى سۆزلەڭ</string>
-  <string name="ResearchMegaphone_to_make_signal_the_best_messaging_app_on_the_planet">Signal نى بۇ پلانېتتىكى ئەڭ ياخشى ئۇچۇرلىشىش ئەپ يۇمتالى قىلىپ چىقىش ئۈچۈن، سىزنىڭ تەكلىپ-پىكىرلىرىڭىزنى ئاڭلىساق سۆيۈنىمىز.</string>
-  <string name="ResearchMegaphone_learn_more">كۆپرەك ئۆگىنىش</string>
-  <string name="ResearchMegaphone_dismiss">تارقىتىۋېتىش</string>
-  <string name="ResearchMegaphoneDialog_signal_research">Signal تەتقىقاتى</string>
-  <string name="ResearchMegaphoneDialog_we_believe_in_privacy"><![CDATA[<p><b>مەخپىيەتلىكىڭىزگە ئىشىنىمىز.</b></p><p> Signal سىزنىڭ ئىزىڭىزغا چۈشمەيدۇ ياكى سانلىق مەلۇماتلىرىڭىزنى توپلىمايدۇ. Signal نى ھەممەيلەن ئۈچۈن ياخشىلاش ئۈچۈن، ئىشلەتكۈچىلەرنىڭ پىكىر-تەكلىلىرىگە ئېھتىياجلىقمىز. <b>ھەم سىلەرنى ياىشى كۆرىمىز</b></p><p> Signal نى قانداق ئىشلەتكىنىڭلارنى بىلىش ئۈچۈن بىز بىر راي-سىناش قىلىۋاتىمىز. بىز سىزنىڭ كىملىگىڭىزنى ئايرىغۇدەك ھېچقانداق مەلۇمات تەلەپ قىلمايمىز. ئەگەر سىزنىڭ قوشۇمچە پىكىر-تەكلىپ بەرگۈڭىز بولسا، ئالاقە ئۇچۇرلىرىرىڭىزنى تەمىنلىگۈدەك تاللاش بىلەن تەمىنلەيمىز.</p><p>ئەگەر بىرنەچچە مىنۇت ۋاقىت چىقىرىپ پىكىر-تەكلىپ بەرسىڭىز، بىز سىزنىڭ پىكىرلىرىڭىزنى ئاڭلاشقا تەشنامىز. ]]></string>
-  <string name="ResearchMegaphoneDialog_take_the_survey">راي سىناشقا قاتنىشىش</string>
-  <string name="ResearchMegaphoneDialog_no_thanks">ياق، رەھمەت</string>
-  <string name="ResearchMegaphoneDialog_the_survey_is_hosted_by_alchemer_at_the_secure_domain">راي سىناش, Alchemer تەرىپىدىن بىخەتەر رايون نامى surveys.signalusers.org غا قويۇلغان. </string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">قاتناش سىنبەلگىسى</string>
   <string name="ConversationListFragment_loading">قاچىلىنىۋاتىدۇ…</string>
@@ -2944,7 +2947,7 @@
   <!--ChangeNumberFragment-->
   <string name="ChangeNumberFragment__use_this_to_change_your_current_phone_number_to_a_new_phone_number">بۇنى ئىشلىتىپ ھازىرقى نومۇرڭىزنى يېڭى تېلېفون نومۇرىغا ئۆزگەرتىڭ..\n\nباشلاشتىن بۇرۇن، يېڭى نومۇرىڭىز بىلەن SMS قوبۇل قىلىپ، چاقىرىق قىلالايدىغىنىڭىزنى جەزم قىلىڭ.</string>
   <string name="ChangeNumberFragment__continue">داۋاملاشتۇر</string>
-  <string name="ChangeNumber__your_phone_number_has_been_changed">تېلېفون نومۇرىڭىز ئۆزگەردى</string>
+  <!-- Removed by excludeNonTranslatables <string name="ChangeNumber__your_phone_number_has_been_changed">تېلېفون نومۇرىڭىز ئۆزگەردى</string> -->
   <!--ChangeNumberEnterPhoneNumberFragment-->
   <string name="ChangeNumberEnterPhoneNumberFragment__change_number">نومۇرنى ئۆزگەرت</string>
   <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">كونا نومۇرىڭىز</string>

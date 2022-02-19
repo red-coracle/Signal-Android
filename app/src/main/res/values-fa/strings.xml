@@ -209,7 +209,7 @@
   <string name="ConversationActivity_admins">مدیران</string>
   <string name="ConversationActivity_message_an_admin">به یک مدیر پیام دهید</string>
   <string name="ConversationActivity_cant_start_group_call">امکان آغاز تماس گروهی وجود ندارد</string>
-  <string name="ConversationActivity_only_admins_of_this_group_can_start_a_call">فقط مدیران این گروه می‌توانند یک تماس آغاز کنند.</string>
+  <string name="ConversationActivity_only_admins_of_this_group_can_start_a_call">فقط مدیران این گروه می‌توانند یک تماس شروع کنند.</string>
   <string name="ConversationActivity_there_is_no_app_available_to_handle_this_link_on_your_device">هیچ برنامه‌‌ای برای باز کردن این پیوند بر روی دستگاه شما وجود ندارد.</string>
   <string name="ConversationActivity_your_request_to_join_has_been_sent_to_the_group_admin">درخواست شما برای پیوستن به مدیر گروه ارسال شد. هنگامی که اقدامی انجام دهند مطلع خواهید شد.</string>
   <string name="ConversationActivity_cancel_request">لغو درخواست</string>
@@ -332,15 +332,15 @@
   </plurals>
   <plurals name="ConversationListFragment_unpin_plural">
     <item quantity="one">برداشتن سنجاق</item>
-    <item quantity="other">برداشتن سنجاق</item>
+    <item quantity="other">حذف سنجاق</item>
   </plurals>
   <plurals name="ConversationListFragment_mute_plural">
     <item quantity="one">بستن</item>
-    <item quantity="other">بستن</item>
+    <item quantity="other">بی‌صدا</item>
   </plurals>
   <plurals name="ConversationListFragment_unmute_plural">
     <item quantity="one">باز کردن</item>
-    <item quantity="other">باز کردن</item>
+    <item quantity="other">صدادار</item>
   </plurals>
   <string name="ConversationListFragment_select">انتخاب</string>
   <plurals name="ConversationListFragment_archive_plural">
@@ -361,9 +361,9 @@
     <item quantity="other">%d انتخاب شد</item>
   </plurals>
   <!--Show in conversation list overflow menu to open selection bottom sheet-->
-  <string name="ConversationListFragment__notification_profile">پروفایل اعلان</string>
+  <string name="ConversationListFragment__notification_profile">پروفایل اعلانات</string>
   <!--Tooltip shown after you have created your first notification profile-->
-  <string name="ConversationListFragment__turn_your_notification_profile_on_or_off_here">پروفایل اعلان خود را اینجا خاموش یا روشن کنید.</string>
+  <string name="ConversationListFragment__turn_your_notification_profile_on_or_off_here">پروفایل اعلانات خود را اینجا روشن یا خاموش کنید.</string>
   <!--Message shown in top toast to indicate the named profile is on-->
   <string name="ConversationListFragment__s_on">%1$s روشن</string>
   <!--ConversationListItem-->
@@ -409,9 +409,10 @@
   <string name="BackupsPreferenceFragment__turn_off">خاموش</string>
   <string name="BackupsPreferenceFragment__to_restore_a_backup">برای بازگردانی یک پشتیبان، یک نسخهٔ جدید سیگنال را نصب کنید. برنامه را باز کرده و روی «بازگردانی پشتیبان» ضربه بزنید، سپس فایل پشتیبان را مشخص کنید. %1$s</string>
   <string name="BackupsPreferenceFragment__learn_more">بیشتر یاد بگیرید</string>
-  <string name="BackupsPreferenceFragment__in_progress">در حال پیشرفت…</string>
+  <string name="BackupsPreferenceFragment__in_progress">در حال پیشروی…</string>
   <string name="BackupsPreferenceFragment__d_so_far">%1$d تا بحال…</string>
   <!--Show percentage of completion of backup-->
+  <string name="BackupsPreferenceFragment__s_so_far">%1$s%% تا کنون…</string>
   <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">سیگنال برای پشتیبان‌گیری نیاز به مجوز حافظه دارد، اما اجازه آن داده نشده است. لطفاً به تنظیمات برنامه رفته، «مجوزها» را انتخاب کنید و «ذخیره‌سازی» را فعال کنید.</string>
   <!--CustomDefaultPreference-->
   <string name="CustomDefaultPreference_using_custom">استفاده از سفارشی: %s</string>
@@ -447,9 +448,6 @@
   <string name="DeviceListItem_today">امروز</string>
   <!--DocumentView-->
   <string name="DocumentView_unnamed_file">فایل بدون نام</string>
-  <!--GroupCallingMegaphone-->
-  <string name="GroupCallingMegaphone__introducing_group_calls">معرفی تماس‌های گروهی</string>
-  <string name="GroupCallingMegaphone__open_a_new_group_to_start">برای شروع تماس گروهی رایگان و رمزگذاری شده یک گروه جدید باز کنید</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">بهینه‌سازی به علت ناموجود بودن خدمات Play</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">این دستگاه از خدمات Play پشتیبانی نمی‌کند. برای غیرفعال کردن بهینه‌سازی باتری سیستم که از دریافت پیام‌ها هنگامی که سیگنال غیرفعال است ممانعت می‌کند، ضربه بزنید.</string>
@@ -497,7 +495,7 @@
   <!--GV2 invites sent-->
   <plurals name="GroupManagement_invitation_sent">
     <item quantity="one">دعوت‌نامه ارسال شد</item>
-    <item quantity="other">%d دعوت‌نامه ارسال شدند</item>
+    <item quantity="other">%d دعوت‌نامه ها ارسال شدند</item>
   </plurals>
   <string name="GroupManagement_invite_single_user">«%1$s» نمی‌تواند به صورت خودکار توسط شما به این گروه اضافه شود.\n\nآن‌ها برای پیوستن دعوت شده‌اند و پیام‌های گروهی را تا زمانی که دعوت را نپذیرند، نخواهند دید.</string>
   <string name="GroupManagement_invite_multiple_users">این کاربران نمی‌توانند به صورت خودکار توسط شما به این گروه اضافه شوند.\n\nآن‌ها برای پیوستن به گروه دعوت شده‌اند و پیام‌های گروهی را تا زمانی که دعوت را بپذیرند، نخواهند دید.</string>
@@ -567,10 +565,6 @@
   <string name="LeaveGroupDialog_choose_new_admin">انتخاب مدیر جدید</string>
   <string name="LeaveGroupDialog_before_you_leave_you_must_choose_at_least_one_new_admin_for_this_group">قبل از ترک کردن، باید حداقل یک مدیر جدید برای این گروه انتخاب کنید.</string>
   <string name="LeaveGroupDialog_choose_admin">انتخاب مدیر</string>
-  <!--LinkPreviewsMegaphone-->
-  <string name="LinkPreviewsMegaphone_disable">غیرفعال کردن</string>
-  <string name="LinkPreviewsMegaphone_preview_any_link">پیش‌نمایش هر پیوند</string>
-  <string name="LinkPreviewsMegaphone_you_can_now_retrieve_link_previews_directly_from_any_website">شما حالا می‌توانید پیش‌نمایش‌ پیوندها را به صورت مستقیم از هر وب‌سایتی برای پیام‌هایی که ارسال می‌کنید، دریافت کنید.</string>
   <!--LinkPreviewView-->
   <string name="LinkPreviewView_no_link_preview_available">هیچ پیش‌نمایش پیوند‌ی در دسترس نیست</string>
   <string name="LinkPreviewView_this_group_link_is_not_active">این پیوند گروه فعال نیست</string>
@@ -867,8 +861,6 @@
   <string name="MediaOverviewActivity_sent_by_s_to_s">ارسال شد از %1$s به %2$s</string>
   <string name="MediaOverviewActivity_sent_by_you_to_s">ارسال شد از شما به %1$s</string>
   <!--Megaphones-->
-  <string name="Megaphones_introducing_reactions">معرفی واکنش‌ها</string>
-  <string name="Megaphones_tap_and_hold_any_message_to_quicky_share_how_you_feel">با نگاه داشتن دست خود بر روی هر پیام‌ احساستان را به‌ اشتراک بگذارید.</string>
   <string name="Megaphones_remind_me_later">بعداً به من یادآوری کن</string>
   <string name="Megaphones_verify_your_signal_pin">پین سیگنال خود را وارسی کنید</string>
   <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">هرازچندگاهی از شما می‌خواهیم که پین خود را وارسی کنید تا آن را بخاطر داشته باشید.</string>
@@ -959,7 +951,7 @@
   <string name="MessageRecord_changed_their_profile">%1$s پروفایل خود را تغییر داد.</string>
   <!--GV2 specific-->
   <string name="MessageRecord_you_created_the_group">شما گروه را ایجاد کردید.</string>
-  <string name="MessageRecord_group_updated">گروه ، به روز رسانی شده است.</string>
+  <string name="MessageRecord_group_updated">گروه به‌روزرسانی شد.</string>
   <string name="MessageRecord_invite_friends_to_this_group">دوستان را به این گروه از طریق یک پیوند گروه دعوت کنید</string>
   <!--GV2 member additions-->
   <string name="MessageRecord_you_added_s">شما %1$s را اضافه کردید.</string>
@@ -1092,7 +1084,7 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">شما شمارهٔ ایمنی خود را با %s وارسی نشده علامت زدید</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">شما شمارهٔ ایمنی خود را با %s از طریق دستگاه یک دستگاه دیگر وارسی نشده علامت زدید</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">یک پیام از %s نتوانست تحویل داده شود</string>
-  <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s شمارهٔ خود را به یک شمارهٔ جدید تغییر دادند.</string>
+  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s شمارهٔ خود را به یک شمارهٔ جدید تغییر دادند.</string> -->
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s یک تماس گروهی آغاز کرد · %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s در تماس گروهی است · %2$s</string>
@@ -1630,6 +1622,7 @@
   <string name="UnauthorizedReminder_device_no_longer_registered">این دستگاه دیگر ثبت‌نام شده نیست</string>
   <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">این احتمالاً به این خاطر است که شما ثبت‌نام شماره‌تلفن خود را با دستگاهی دیگر در سیگنال انجام داده‌اید. برای ثبت‌نام دوباره ضربه بزنید.</string>
   <!--WebRtcCallActivity-->
+  <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone">برای پاسخ به تماس، به سیگنال دسترسی به میکروفون خود را بدهید.</string>
   <string name="WebRtcCallActivity_to_answer_the_call_from_s_give_signal_access_to_your_microphone">برای پاسخ به تماس %s، به سیگنال اجازهٔ دسترسی به میکروفون خود را بدهید.</string>
   <string name="WebRtcCallActivity_signal_requires_microphone_and_camera_permissions_in_order_to_make_or_receive_calls">سیگنال برای برقراری و دریافت تماس نیاز مجوزها‌ی میکروفون و دوربین دارد، اما دسترسی به آن‌ها به طور دائم رد شده است. لطفاً به تنظیمات برنامه رفته، در قسمت «مجوزها»، «میکروفون» و «دوربین» را فعال کنید.</string>
   <string name="WebRtcCallActivity__answered_on_a_linked_device">برروی دستگاه پیوند داده شده پاسخ داده شد.</string>
@@ -2330,18 +2323,44 @@
   <string name="conversation_callable_secure__menu_call">تماس سیگنال</string>
   <string name="conversation_callable_secure__menu_video">تماس تصویری سیگنال</string>
   <!--conversation_context-->
-  <string name="conversation_context__menu_message_details">جزئیات پیام</string>
-  <string name="conversation_context__menu_copy_text">کپی متن</string>
-  <string name="conversation_context__menu_delete_message">حذف پیام</string>
-  <string name="conversation_context__menu_forward_message">بازارسال پیام</string>
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_context__menu_message_details">اطلاعات</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_context__menu_copy_text">کپی</string>
+  <!--Button to delete a message-->
+  <string name="conversation_context__menu_delete_message">حذف</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_context__menu_forward_message">بازارسال</string>
+  <!--Button to retry sending a message-->
   <string name="conversation_context__menu_resend_message">ارسال مجدد پیام</string>
-  <string name="conversation_context__menu_reply_to_message">پاسخ به پیام</string>
-  <!--conversation_context_reacction-->
+  <!--Button to reply to a message-->
+  <string name="conversation_context__menu_reply_to_message">پاسخ</string>
+  <!--conversation_context_reaction-->
+  <!--Button to select a message and enter selection mode-->
   <string name="conversation_context__reaction_multi_select">انتخاب چندگانه</string>
+  <!--Heading which shows how many messages are currently selected-->
+  <plurals name="conversation_context__s_selected">
+    <item quantity="one">%d انتخاب شد</item>
+    <item quantity="other">%d انتخاب شد</item>
+  </plurals>
   <!--conversation_context_image-->
-  <string name="conversation_context_image__save_attachment">ذخیره‌سازی پیوست</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_context_image__save_attachment">ذخیره</string>
   <!--conversation_expiring_off-->
   <string name="conversation_expiring_off__disappearing_messages">پیام‌های ناپدید شونده</string>
+  <!--conversation_selection-->
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_selection__menu_message_details">اطلاعات</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_selection__menu_copy">کپی</string>
+  <!--Button to delete a message-->
+  <string name="conversation_selection__menu_delete">حذف</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_selection__menu_forward">بازارسال</string>
+  <!--Button to reply to a message-->
+  <string name="conversation_selection__menu_reply">پاسخ</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_selection__menu_save">ذخیره</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">دعوت</string>
@@ -2366,7 +2385,7 @@
   <!--conversation_list_fragment-->
   <string name="conversation_list_fragment__fab_content_description">مکالمهٔ جدید</string>
   <string name="conversation_list_fragment__open_camera_description">باز کردن دوربین</string>
-  <string name="conversation_list_fragment__no_chats_yet_get_started_by_messaging_a_friend">هنوز هیچ گفتگویی وجود ندارد.\n با پیام دادن به یک دوست آغاز کنید.</string>
+  <string name="conversation_list_fragment__no_chats_yet_get_started_by_messaging_a_friend">هنوز هیچ گفتگویی وجود ندارد.\n با پیام دادن به یک دوست شروع کنید.</string>
   <!--conversation_secure_verified-->
   <string name="conversation_secure_verified__menu_reset_secure_session">بازنشانی نشست امن</string>
   <!--conversation_muted-->
@@ -2525,16 +2544,6 @@
   <string name="KbsMegaphone__create_a_pin">یک پین جدید ایجاد کنید</string>
   <string name="KbsMegaphone__pins_keep_information_thats_stored_with_signal_encrytped">پین‌ها اطلاعات ذخیره شده در سیگنال را رمزگذاری می‌کنند.</string>
   <string name="KbsMegaphone__create_pin">ایجاد پین</string>
-  <!--Research Megaphone-->
-  <string name="ResearchMegaphone_tell_signal_what_you_think">به سیگنال بگویید چه فکر می‌کنید</string>
-  <string name="ResearchMegaphone_to_make_signal_the_best_messaging_app_on_the_planet">برای تبدیل سیگنال به بهترین برنامه‌ٔ پیام‌رسانی بر روی سیاره، دوست داریم تا بازخورد شما را بشنویم.</string>
-  <string name="ResearchMegaphone_learn_more">بیشتر یاد بگیرید</string>
-  <string name="ResearchMegaphone_dismiss">نادیده گرفتن</string>
-  <string name="ResearchMegaphoneDialog_signal_research">تحقیقات سیگنال</string>
-  <string name="ResearchMegaphoneDialog_we_believe_in_privacy"><![CDATA[<p><b>ما به حریم خصوصی باور داریم.</b></p><p>سیگنال شما را دنبال و اطلاعات شما را جمع‌آوری نمی‌کند. برای بهبود سیگنال برای همه، ما به بازخورد کاربران متکی هستیم، <b>و دوست داریم بازخورد شما را داشته باشیم.</b></p><p>ما در حال انجام یک نظرسنجی برای فهمیدن اینکه شما چگونه از سیگنال استفاده می‌کنید هستیم. نظرسنجی ما هیچ‌گونه اطلاعاتی را که موجب شناسایی شما بشود، جمع‌آوری نمی‌کند. اگر مایل به اشتراک بازخورد بیشتری هستید، گزینهٔ افزودن اطلاعات تماس خود را خواهید داشت.</p><p>اگر چند دقیقه فرصت و بازخوردی برای ارائه دارید، ما دوست داریم که از شما بشنویم.</p>]]></string>
-  <string name="ResearchMegaphoneDialog_take_the_survey">شرکت در نظرسنجی</string>
-  <string name="ResearchMegaphoneDialog_no_thanks">نه ممنون</string>
-  <string name="ResearchMegaphoneDialog_the_survey_is_hosted_by_alchemer_at_the_secure_domain">این نظرسنجی بوسیلهٔ Alchemer در دامنهٔ امن surveys.signalusers.org ‌میزبانی می‌شود.</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">آیکون انتقال</string>
   <string name="ConversationListFragment_loading">در حال بارگذاری…</string>
@@ -2584,6 +2593,7 @@
   <string name="BackupDialog_verify">وارسی</string>
   <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">گذرواژهٔ پشتیبان با موفقیت وارد شد</string>
   <string name="BackupDialog_passphrase_was_not_correct">گذرواژه نادرست بود</string>
+  <string name="LocalBackupJob_creating_signal_backup">در حال ایجاد پشتیبان سیگنال…</string>
   <string name="LocalBackupJobApi29_backup_failed">پشتیبان‌گیری ناموفق بود</string>
   <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">آدرس ذخیره‌سازی پشتیبان شما حذف شده یا به جای دیگری انتقال یافته است.</string>
   <string name="LocalBackupJobApi29_your_backup_file_is_too_large">حجم فایل پشتیبان شما برای نگهداری در این محل زیاد است.</string>
@@ -2594,7 +2604,7 @@
   <string name="RegistrationActivity_call_me_instead_available_in">در عوض با من تماس بگیر \n (موجود در %1$02d:%2$02d)</string>
   <string name="RegistrationActivity_contact_signal_support">تماس با پشتیبانی سیگنال</string>
   <string name="RegistrationActivity_code_support_subject">ثبت‌نام سیگنال - کد وارسی برای اندروید</string>
-  <string name="RegistrationActivity_incorrect_code">پیش‌شماره نادرست</string>
+  <string name="RegistrationActivity_incorrect_code">کد نادرست</string>
   <string name="BackupUtil_never">هرگز</string>
   <string name="BackupUtil_unknown">ناشناخته</string>
   <string name="preferences_app_protection__see_my_phone_number">دیدن شماره‌تلفن من</string>
@@ -2706,6 +2716,7 @@
   <string name="DeviceTransfer__keep_both_devices_near_each_other">هر دو دستگاه را نزدیک به یکدیگر نگه دارید. دستگاه‌ها را خاموش نکنید و سیگنال را باز نگه دارید. انتقال‌ها سرتاسر رمزگذاری شده هستند.</string>
   <string name="DeviceTransfer__d_messages_so_far">%1$d پیام تا کنون…</string>
   <!--Filled in with total percentage of messages transferred-->
+  <string name="DeviceTransfer__s_of_messages_so_far">%1$s%% از پیام‌ها تا کنون…</string>
   <string name="DeviceTransfer__cancel">لغو</string>
   <string name="DeviceTransfer__try_again">دوباره امتحان کنید</string>
   <string name="DeviceTransfer__stop_transfer_question">توقف انتقال؟</string>
@@ -2929,7 +2940,7 @@
   <string name="payment_info_card_about_mobilecoin">دربارهٔ MobileCoin</string>
   <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">MobileCoin یک ارز دیجیتال متمرکز بر حریم خصوصی است.</string>
   <string name="payment_info_card_adding_funds">افزودن اعتبار</string>
-  <string name="payment_info_card_you_can_add_funds_for_use_in">شما می‌توانید با ارسال MobileCoin به نشانی کیف پول خود اعتبار برای استفاده در سیگنال اضافه کنید.</string>
+  <string name="payment_info_card_you_can_add_funds_for_use_in">شما با ارسال MobileCoin به نشانی کیف پول خود، می‌توانید اعتبار برای استفاده در سیگنال اضافه کنید.</string>
   <string name="payment_info_card_cashing_out">نقدینه کردن</string>
   <string name="payment_info_card_you_can_cash_out_mobilecoin">می‌توانید MobileCoin را هر زمانی در یک صرافی که از MobileCoin پشتیبانی می‌کند، نقدینه کنید. فقط یک انتقال به حساب خود در آن صرافی انجام دهید.</string>
   <string name="payment_info_card_hide_this_card">پنهان کردن این کارت؟</string>
@@ -3028,7 +3039,7 @@
   <!--ChangeNumberFragment-->
   <string name="ChangeNumberFragment__use_this_to_change_your_current_phone_number_to_a_new_phone_number">از این گزینه برای تغییر شماره‌تلفن فعلی خود به یک شماره‌تلفن جدید استفاده کنید. شما نمی‌توانید این تغییر را بازگردانی کنید.\n\n قبل از ادامه، مطمئن شوید که شمارهٔ جدید شما می‌تواند پیامک یا تماس دریافت کند.</string>
   <string name="ChangeNumberFragment__continue">ادامه</string>
-  <string name="ChangeNumber__your_phone_number_has_been_changed">شماره‌تلفن شما تغییر یافت.</string>
+  <!-- Removed by excludeNonTranslatables <string name="ChangeNumber__your_phone_number_has_been_changed">شماره‌تلفن شما تغییر یافت.</string> -->
   <!--ChangeNumberEnterPhoneNumberFragment-->
   <string name="ChangeNumberEnterPhoneNumberFragment__change_number">تغییر شماره</string>
   <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">شمارهٔ قدیمی شما</string>
@@ -3360,7 +3371,7 @@
   <string name="SubscribeFragment__confirm_cancellation">تأیید لغو اشتراک؟</string>
   <string name="SubscribeFragment__you_wont_be_charged_again">از شما دیگر هزینه‌ای کسر نخواهد شد. نشان شما از پروفایل شما در انتهای دورهٔ پرداخت شما حذف خواهد شد.</string>
   <string name="SubscribeFragment__not_now">حالا نه</string>
-  <string name="SubscribeFragment__confirm">تأیید کنید</string>
+  <string name="SubscribeFragment__confirm">تأیید</string>
   <string name="SubscribeFragment__update_subscription">به‌روزرسانی اشتراک</string>
   <string name="SubscribeFragment__your_subscription_has_been_cancelled">اشتراک شما لغو شد.</string>
   <string name="SubscribeFragment__update_subscription_question">به‌روزرسانی اشتراک؟</string>
@@ -3518,7 +3529,7 @@
   <!--Label for showing the start time for the schedule-->
   <string name="EditNotificationProfileSchedule__start">شروع</string>
   <!--Label for showing the end time for the schedule-->
-  <string name="EditNotificationProfileSchedule__end">قطع تماس</string>
+  <string name="EditNotificationProfileSchedule__end">قطع</string>
   <!--First letter of Sunday-->
   <string name="EditNotificationProfileSchedule__sunday_first_letter">ی</string>
   <!--First letter of Monday-->

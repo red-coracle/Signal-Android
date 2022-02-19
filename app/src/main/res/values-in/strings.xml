@@ -391,6 +391,7 @@
   <string name="BackupsPreferenceFragment__in_progress">Sedang berjalan…</string>
   <string name="BackupsPreferenceFragment__d_so_far">%1$d sejauh ini…</string>
   <!--Show percentage of completion of backup-->
+  <string name="BackupsPreferenceFragment__s_so_far">%1$s%% sejauh ini…</string>
   <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Signal memerlukan izin penyimpanan eksternal untuk membuat cadangan, tetapi saat ini izin ditolak secara permanen. Harap lanjutkan ke menu pengaturan aplikasi, pilih \"Izin\", dan aktifkan \"Penyimpanan\".</string>
   <!--CustomDefaultPreference-->
   <string name="CustomDefaultPreference_using_custom">Gunakan pilihan khusus: %s</string>
@@ -426,9 +427,6 @@
   <string name="DeviceListItem_today">Hari ini</string>
   <!--DocumentView-->
   <string name="DocumentView_unnamed_file">Berkas tanpa nama</string>
-  <!--GroupCallingMegaphone-->
-  <string name="GroupCallingMegaphone__introducing_group_calls">Memperkenalkan Panggilan Grup</string>
-  <string name="GroupCallingMegaphone__open_a_new_group_to_start">Buka sebuah Grup Baru untuk memulai panggilan grup gratis yang terenkripsi.</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">Optimalkan untuk mengabaikan Play Services</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Perangkat ini tidak mendukung Play Services. Ketuk untuk menonaktifkan pengoptimalan baterai sistem yang mencegah Signal untuk mengambil pesan saat tidak aktif.</string>
@@ -533,10 +531,6 @@
   <string name="LeaveGroupDialog_choose_new_admin">Pilih admin baru</string>
   <string name="LeaveGroupDialog_before_you_leave_you_must_choose_at_least_one_new_admin_for_this_group">Sebelum Anda keluar, pilih admin baru untuk grup ini.</string>
   <string name="LeaveGroupDialog_choose_admin">Pilih admin</string>
-  <!--LinkPreviewsMegaphone-->
-  <string name="LinkPreviewsMegaphone_disable">Nonaktifkan</string>
-  <string name="LinkPreviewsMegaphone_preview_any_link">Pratinjau tautan apapun</string>
-  <string name="LinkPreviewsMegaphone_you_can_now_retrieve_link_previews_directly_from_any_website">Anda sekarang dapat menerima pratinjau tautan secara langsung dari situs apapun untuk pesan yang Anda kirim.</string>
   <!--LinkPreviewView-->
   <string name="LinkPreviewView_no_link_preview_available">Pratinjau tautan tidak tersedia</string>
   <string name="LinkPreviewView_this_group_link_is_not_active">Tautan grup ini tidak aktif</string>
@@ -814,8 +808,6 @@
   <string name="MediaOverviewActivity_sent_by_s_to_s">Dikirim oleh %1$s untuk %2$s</string>
   <string name="MediaOverviewActivity_sent_by_you_to_s">Dikirim oleh Anda untuk %1$s</string>
   <!--Megaphones-->
-  <string name="Megaphones_introducing_reactions">Memperkenalkan Reaksi</string>
-  <string name="Megaphones_tap_and_hold_any_message_to_quicky_share_how_you_feel">Ketuk dan tahan pada pesan manapun untuk langsung membagikan perasaanmu.</string>
   <string name="Megaphones_remind_me_later">Ingatkan saya nanti</string>
   <string name="Megaphones_verify_your_signal_pin">Verifikasi PIN Signal Anda</string>
   <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">Kami sesekali akan meminta Anda untuk melakukan verifikasi PIN agar Anda dapat mengingatnya.</string>
@@ -1031,7 +1023,7 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">Anda menandai nomor keamanan anda dengan %s tidak terverifikasi</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">Anda menandai nomor keamanan anda dengan %s tidak terverifikasi dari perangkat lain</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">Sebuah pesan dari %s tidak dapat diterima</string>
-  <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s mengubah nomornya ke nomor baru.</string>
+  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s mengubah nomornya ke nomor baru.</string> -->
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s memulai panggilan grup. %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s berada di panggilan grup. %2$s</string>
@@ -1555,6 +1547,7 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <string name="UnauthorizedReminder_device_no_longer_registered">Perangkat tidak lagi terdaftar</string>
   <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Hal ini mungkin karena Anda telah mendaftarkan nomor telepon Anda untuk Signal pada perangkat yang berbeda. Ketuk untuk mendaftar ulang.</string>
   <!--WebRtcCallActivity-->
+  <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone">Untuk menjawab panggilan, berikan Signal akses ke mikrofon Anda.</string>
   <string name="WebRtcCallActivity_to_answer_the_call_from_s_give_signal_access_to_your_microphone">Untuk menjawab panggilan dari %s, berikan Signal akses ke mikrofon Anda.</string>
   <string name="WebRtcCallActivity_signal_requires_microphone_and_camera_permissions_in_order_to_make_or_receive_calls">Signal memerlukan izin Mikrofon dan Kamera untuk menerima atau melakukan panggilan, tetapi saat ini izin ditolak secara permanen. Mohon lanjutkan ke pengatuaran aplikasi, pilih \"Izin\" lalu aktifkan \"Mikrofon\" serta \"Kamera\". </string>
   <string name="WebRtcCallActivity__answered_on_a_linked_device">Jawab di perangkat terhubung.</string>
@@ -2245,18 +2238,43 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <string name="conversation_callable_secure__menu_call">Panggilan Signal</string>
   <string name="conversation_callable_secure__menu_video">Panggilan video Signal</string>
   <!--conversation_context-->
-  <string name="conversation_context__menu_message_details">Rincian pesan</string>
-  <string name="conversation_context__menu_copy_text">Salin teks</string>
-  <string name="conversation_context__menu_delete_message">Hapus pesan</string>
-  <string name="conversation_context__menu_forward_message">Teruskan pesan</string>
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_context__menu_message_details">Info</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_context__menu_copy_text">Salin</string>
+  <!--Button to delete a message-->
+  <string name="conversation_context__menu_delete_message">Hapus</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_context__menu_forward_message">Teruskan</string>
+  <!--Button to retry sending a message-->
   <string name="conversation_context__menu_resend_message">Kirim ulang pesan</string>
-  <string name="conversation_context__menu_reply_to_message">Balas pesan</string>
-  <!--conversation_context_reacction-->
+  <!--Button to reply to a message-->
+  <string name="conversation_context__menu_reply_to_message">Balas</string>
+  <!--conversation_context_reaction-->
+  <!--Button to select a message and enter selection mode-->
   <string name="conversation_context__reaction_multi_select">Pilih beberapa</string>
+  <!--Heading which shows how many messages are currently selected-->
+  <plurals name="conversation_context__s_selected">
+    <item quantity="other">%d dipilih</item>
+  </plurals>
   <!--conversation_context_image-->
-  <string name="conversation_context_image__save_attachment">Simpan lampiran</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_context_image__save_attachment">Simpan</string>
   <!--conversation_expiring_off-->
   <string name="conversation_expiring_off__disappearing_messages">Penghilangan pesan</string>
+  <!--conversation_selection-->
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_selection__menu_message_details">Info</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_selection__menu_copy">Salin</string>
+  <!--Button to delete a message-->
+  <string name="conversation_selection__menu_delete">Hapus</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_selection__menu_forward">Teruskan</string>
+  <!--Button to reply to a message-->
+  <string name="conversation_selection__menu_reply">Balas</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_selection__menu_save">Simpan</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">Undang</string>
@@ -2433,16 +2451,6 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <string name="KbsMegaphone__create_a_pin">Buat PIN</string>
   <string name="KbsMegaphone__pins_keep_information_thats_stored_with_signal_encrytped">PIN menjaga informasi yang telah disimpan oleh Signal dengan enkripsi.</string>
   <string name="KbsMegaphone__create_pin">Buat PIN</string>
-  <!--Research Megaphone-->
-  <string name="ResearchMegaphone_tell_signal_what_you_think">Berikan Signal pendapat Anda </string>
-  <string name="ResearchMegaphone_to_make_signal_the_best_messaging_app_on_the_planet">Untuk menjadikan Signal aplikasi pesan terbaik di planet ini, kami ingin mendengar pendapat Anda.</string>
-  <string name="ResearchMegaphone_learn_more">Pelajari lebih lanjut</string>
-  <string name="ResearchMegaphone_dismiss">Batalkan</string>
-  <string name="ResearchMegaphoneDialog_signal_research">Riset Signal</string>
-  <string name="ResearchMegaphoneDialog_we_believe_in_privacy"><![CDATA[<p><b> Kami percaya pada privasi. </b></p><p> Signal tidak akan merekam atau mengoleksi data. Untuk meningkatkan Signal, kami bergantung pada umpan balik dari pengguna, <b> kami menyayangi kamu.</b></p><p> Kami melakukan sebuah survei untuk mengerti bagaimana kamu menggunakan Signal, kami tidak akan mengoleksi data apapun melalui data survei yang akan mengidentifikasi anda. Jika kamu tertarik untuk membagikan umpan balik, kamu memiliki opsi untuk memberikan informasi kontak.</p><p> Jika kamu memiliki beberapa waktu dan juga umpan balik untuk ditawarkan, kami akan senang mendengarkan itu.</p>]]></string>
-  <string name="ResearchMegaphoneDialog_take_the_survey">Ikuti survei</string>
-  <string name="ResearchMegaphoneDialog_no_thanks">Tidak, terima kasih</string>
-  <string name="ResearchMegaphoneDialog_the_survey_is_hosted_by_alchemer_at_the_secure_domain">Survei ini dibuat oleh Alchemer pada domain terproteksi surveys.signalusers.org</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Pindahkan ikon</string>
   <string name="ConversationListFragment_loading">Memuat…</string>
@@ -2492,6 +2500,7 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <string name="BackupDialog_verify">Memeriksa</string>
   <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">Anda sukses memasukkan frasa sandi cadangan</string>
   <string name="BackupDialog_passphrase_was_not_correct">Frasa sandi salah</string>
+  <string name="LocalBackupJob_creating_signal_backup">Membuat cadangan Signal…</string>
   <string name="LocalBackupJobApi29_backup_failed">Cadangan gagal</string>
   <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">Direktori berkas cadangan telah terhapus atau dipindahkan.</string>
   <string name="LocalBackupJobApi29_your_backup_file_is_too_large">Berkas cadangan kamu terlalu besar untuk disimpan pada lokasi ini.</string>
@@ -2614,6 +2623,7 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <string name="DeviceTransfer__keep_both_devices_near_each_other">Letakkan kedua perangkat berdekatan satu sama lain. Jangan matikan perangkat dan biarkan Signal terbuka. Proses transfer dienkripsi ujung-ke-ujung.</string>
   <string name="DeviceTransfer__d_messages_so_far">%1$d pesan sejauh ini…</string>
   <!--Filled in with total percentage of messages transferred-->
+  <string name="DeviceTransfer__s_of_messages_so_far">%1$s%% pesan sejauh ini…</string>
   <string name="DeviceTransfer__cancel">Batal</string>
   <string name="DeviceTransfer__try_again">Coba Lagi</string>
   <string name="DeviceTransfer__stop_transfer_question">Hentikan transfer?</string>
@@ -2933,7 +2943,7 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <!--ChangeNumberFragment-->
   <string name="ChangeNumberFragment__use_this_to_change_your_current_phone_number_to_a_new_phone_number">Gunakan ini untuk mengubah nomor telepon Anda saat ini ke nomor telepon yang baru. Anda tidak dapat membatalkannya.\n\nSebelum melanjutkan, pastikan nomor baru Anda dapat menerima SMS atau panggilan telepon.</string>
   <string name="ChangeNumberFragment__continue">Lanjut</string>
-  <string name="ChangeNumber__your_phone_number_has_been_changed">Nomor telepon Anda telah diganti</string>
+  <!-- Removed by excludeNonTranslatables <string name="ChangeNumber__your_phone_number_has_been_changed">Nomor telepon Anda telah diganti</string> -->
   <!--ChangeNumberEnterPhoneNumberFragment-->
   <string name="ChangeNumberEnterPhoneNumberFragment__change_number">Ubah Nomor</string>
   <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">Nomor lama Anda</string>
@@ -3403,6 +3413,7 @@ Menerima pesan pertukaran kunci untuk versi protokol yang tidak valid.
   <!--Profile exception to allow all calls through the profile restrictions-->
   <string name="NotificationProfileDetails__allow_all_calls">Izinkan semua panggilan</string>
   <!--Profile exception to allow all @mentions through the profile restrictions-->
+  <string name="NotificationProfileDetails__notify_for_all_mentions">Beritahukan seluruh penyebutan</string>
   <!--Section header for showing schedule information-->
   <string name="NotificationProfileDetails__schedule">Jadwal</string>
   <!--If member list is long, will truncate the list and show an option to then see all when tapped-->

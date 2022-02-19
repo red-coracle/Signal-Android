@@ -427,9 +427,6 @@
   <string name="DeviceListItem_today">今日</string>
   <!--DocumentView-->
   <string name="DocumentView_unnamed_file">無名のファイル</string>
-  <!--GroupCallingMegaphone-->
-  <string name="GroupCallingMegaphone__introducing_group_calls">グループ通話のご紹介</string>
-  <string name="GroupCallingMegaphone__open_a_new_group_to_start">新しいグループで暗号化されたグループ通話を始めましょう</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">Google Play開発者サービスの不在に対応する</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">この端末はGoogle Play開発者サービスをサポートしていません。Signalがいつでもメッセージを受信できるよう、タップしてバッテリー最適化機能を無効にしてください。</string>
@@ -534,10 +531,6 @@
   <string name="LeaveGroupDialog_choose_new_admin">新しい管理者を選択してください</string>
   <string name="LeaveGroupDialog_before_you_leave_you_must_choose_at_least_one_new_admin_for_this_group">グループから抜ける前に、新しい管理者を1人以上選択する必要があります。</string>
   <string name="LeaveGroupDialog_choose_admin">管理者を選択する</string>
-  <!--LinkPreviewsMegaphone-->
-  <string name="LinkPreviewsMegaphone_disable">無効にする</string>
-  <string name="LinkPreviewsMegaphone_preview_any_link">どんなリンクもプレビュー</string>
-  <string name="LinkPreviewsMegaphone_you_can_now_retrieve_link_previews_directly_from_any_website">送信メッセージにて、どのウェヴサイトからでも直接リンクプレビューを取得できるようになりました。</string>
   <!--LinkPreviewView-->
   <string name="LinkPreviewView_no_link_preview_available">リンクプレビューは使用できません</string>
   <string name="LinkPreviewView_this_group_link_is_not_active">このグループリンクは利用できません</string>
@@ -815,8 +808,6 @@
   <string name="MediaOverviewActivity_sent_by_s_to_s">%1$s が %2$s に送信</string>
   <string name="MediaOverviewActivity_sent_by_you_to_s">あなたが %1$s に送信</string>
   <!--Megaphones-->
-  <string name="Megaphones_introducing_reactions">リアクションのご紹介</string>
-  <string name="Megaphones_tap_and_hold_any_message_to_quicky_share_how_you_feel">メッセージを長押しして、手軽にリアクションできます。</string>
   <string name="Megaphones_remind_me_later">あとで通知</string>
   <string name="Megaphones_verify_your_signal_pin">Signal PINの確認</string>
   <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">PINを忘れないよう、確認をお願いします。</string>
@@ -1032,7 +1023,7 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">%s に対する安全番号を未検証にしました</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">%s に対する安全番号を他の端末で未検証にしました</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">%s からのメッセージを配信できませんでした</string>
-  <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s が電話番号を変更しました。</string>
+  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s が電話番号を変更しました。</string> -->
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s がグループ通話を開始しました · %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s はグループ通話中です · %2$s</string>
@@ -2237,18 +2228,43 @@
   <string name="conversation_callable_secure__menu_call">Signal通話</string>
   <string name="conversation_callable_secure__menu_video">Signalビデオ通話</string>
   <!--conversation_context-->
-  <string name="conversation_context__menu_message_details">メッセージの詳細</string>
-  <string name="conversation_context__menu_copy_text">テキストをコピー</string>
-  <string name="conversation_context__menu_delete_message">メッセージの削除</string>
-  <string name="conversation_context__menu_forward_message">メッセージの転送</string>
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_context__menu_message_details">詳細</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_context__menu_copy_text">コピー</string>
+  <!--Button to delete a message-->
+  <string name="conversation_context__menu_delete_message">削除</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_context__menu_forward_message">転送</string>
+  <!--Button to retry sending a message-->
   <string name="conversation_context__menu_resend_message">メッセージの再送信</string>
-  <string name="conversation_context__menu_reply_to_message">メッセージに返信</string>
-  <!--conversation_context_reacction-->
+  <!--Button to reply to a message-->
+  <string name="conversation_context__menu_reply_to_message">返信</string>
+  <!--conversation_context_reaction-->
+  <!--Button to select a message and enter selection mode-->
   <string name="conversation_context__reaction_multi_select">複数を選択</string>
+  <!--Heading which shows how many messages are currently selected-->
+  <plurals name="conversation_context__s_selected">
+    <item quantity="other">%d件選択済み</item>
+  </plurals>
   <!--conversation_context_image-->
-  <string name="conversation_context_image__save_attachment">添付ファイルを保存</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_context_image__save_attachment">保存</string>
   <!--conversation_expiring_off-->
   <string name="conversation_expiring_off__disappearing_messages">消えるメッセージ</string>
+  <!--conversation_selection-->
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_selection__menu_message_details">詳細</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_selection__menu_copy">コピー</string>
+  <!--Button to delete a message-->
+  <string name="conversation_selection__menu_delete">削除</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_selection__menu_forward">転送</string>
+  <!--Button to reply to a message-->
+  <string name="conversation_selection__menu_reply">返信</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_selection__menu_save">保存</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">招待</string>
@@ -2425,16 +2441,6 @@
   <string name="KbsMegaphone__create_a_pin">PINを作成</string>
   <string name="KbsMegaphone__pins_keep_information_thats_stored_with_signal_encrytped">Signalで保管される情報はPINで暗号化されます。</string>
   <string name="KbsMegaphone__create_pin">PINを作成</string>
-  <!--Research Megaphone-->
-  <string name="ResearchMegaphone_tell_signal_what_you_think">Signalへご意見ください</string>
-  <string name="ResearchMegaphone_to_make_signal_the_best_messaging_app_on_the_planet">Signalを地上最高のメッセージアプリにするため、皆様からのフィードバックをお待ちしています。</string>
-  <string name="ResearchMegaphone_learn_more">詳しく見る</string>
-  <string name="ResearchMegaphone_dismiss">キャンセル</string>
-  <string name="ResearchMegaphoneDialog_signal_research">Signalリサーチ</string>
-  <string name="ResearchMegaphoneDialog_we_believe_in_privacy"><![CDATA[<p><b>私たちはプライバシーを尊重しています。</b></p><p>Signalはあなたのデータを収集したり追跡することはありません。Signalをより良いものにするために、ユーザーの皆様からのフィードバックを<b>お待ちしています。</b></p><p>私たちは、あなたのSignalの使用方法についてアンケート調査を行っています。この調査では、あなたを特定するデータを収集することはありません。追加のフィードバックを共有されたい場合は、連絡先情報を提供することもできます。</p><p>お時間とご意見をお持ちの方は、ぜひご連絡ください。</p>]]></string>
-  <string name="ResearchMegaphoneDialog_take_the_survey">アンケートに参加する</string>
-  <string name="ResearchMegaphoneDialog_no_thanks">参加しない</string>
-  <string name="ResearchMegaphoneDialog_the_survey_is_hosted_by_alchemer_at_the_secure_domain">このアンケートは、Alchemerが安全なドメイン (surveys.signalusers.org) でホストしています。</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">転送アイコン</string>
   <string name="ConversationListFragment_loading">読み込んでいます…</string>
@@ -2927,7 +2933,7 @@
   <!--ChangeNumberFragment-->
   <string name="ChangeNumberFragment__use_this_to_change_your_current_phone_number_to_a_new_phone_number">現在使用している電話番号を、新しい電話番号に変更する際に使用してください。この変更を元に戻すことはできません。続ける前に、新しい電話番号がSMSや通話を受信できることを確認してください。</string>
   <string name="ChangeNumberFragment__continue">続ける</string>
-  <string name="ChangeNumber__your_phone_number_has_been_changed">電話番号を変更しました。</string>
+  <!-- Removed by excludeNonTranslatables <string name="ChangeNumber__your_phone_number_has_been_changed">電話番号を変更しました。</string> -->
   <!--ChangeNumberEnterPhoneNumberFragment-->
   <string name="ChangeNumberEnterPhoneNumberFragment__change_number">電話番号の変更</string>
   <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">変更前の電話番号</string>

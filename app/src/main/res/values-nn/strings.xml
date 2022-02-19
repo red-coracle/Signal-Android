@@ -449,9 +449,6 @@ Viss kontoen din har lenka einingar, så vil nye notat bli synkroniserte.</strin
   <string name="DeviceListItem_today">I dag</string>
   <!--DocumentView-->
   <string name="DocumentView_unnamed_file">Fil utan namn</string>
-  <!--GroupCallingMegaphone-->
-  <string name="GroupCallingMegaphone__introducing_group_calls">Her kjem gruppesamtalar</string>
-  <string name="GroupCallingMegaphone__open_a_new_group_to_start">Opna ei Ny gruppe for å starta ein kryptert gruppesamtale</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">Optimaliser for manglande Play-tenester</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Denne eininga støttar ikkje Play-tenester. Trykk for å skru av batterioptimaliseringane i systemet som hindrar Signal frå å henta meldingar når programmet ikkje er aktivt. </string>
@@ -573,10 +570,6 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="LeaveGroupDialog_choose_new_admin">Vel ny administrator.</string>
   <string name="LeaveGroupDialog_before_you_leave_you_must_choose_at_least_one_new_admin_for_this_group">Før du forlèt gruppa, må du velja minst éin ny administrator.</string>
   <string name="LeaveGroupDialog_choose_admin">Vel administrator.</string>
-  <!--LinkPreviewsMegaphone-->
-  <string name="LinkPreviewsMegaphone_disable">Slå av</string>
-  <string name="LinkPreviewsMegaphone_preview_any_link">Førehandsvis alle lenker</string>
-  <string name="LinkPreviewsMegaphone_you_can_now_retrieve_link_previews_directly_from_any_website">Du kan no henta lenkesniktittar direkte frå nettstader for meldingar du sender.</string>
   <!--LinkPreviewView-->
   <string name="LinkPreviewView_no_link_preview_available">Inga lenkesniktitt tilgjengeleg</string>
   <string name="LinkPreviewView_this_group_link_is_not_active">Denne gruppelenka er ikkje aktiv</string>
@@ -873,8 +866,6 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="MediaOverviewActivity_sent_by_s_to_s">Sent frå %1$s til %2$s</string>
   <string name="MediaOverviewActivity_sent_by_you_to_s">Sent frå deg til %1$s</string>
   <!--Megaphones-->
-  <string name="Megaphones_introducing_reactions">Her kjem Reaksjonar</string>
-  <string name="Megaphones_tap_and_hold_any_message_to_quicky_share_how_you_feel">Trykk og hold på ei melding for å raskt visa korleis du kjenner deg.</string>
   <string name="Megaphones_remind_me_later">Minn meg på det seinare</string>
   <string name="Megaphones_verify_your_signal_pin">Godkjenn Signal-PIN-koden din</string>
   <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">Me vil innimellom be deg om å stadfesta PIN-koden din slik at du hugsar han.</string>
@@ -1098,7 +1089,7 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">Du markerte at tryggleiksnummeret ditt med %s ikkje er stadfesta.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">Du markerte at tryggleiksnummeret ditt med %s ikkje er stadfesta frå ei anna eining</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">Klarte ikkje å levera ei melding frå %s</string>
-  <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s har endra nummeret sitt til eit nytt nummer.</string>
+  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s har endra nummeret sitt til eit nytt nummer.</string> -->
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s starta ein gruppesamtale · %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s er i gruppesamtalen · %2$s</string>
@@ -2340,18 +2331,44 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <string name="conversation_callable_secure__menu_call">Signal-samtale</string>
   <string name="conversation_callable_secure__menu_video">Signal-videosamtale</string>
   <!--conversation_context-->
-  <string name="conversation_context__menu_message_details">Meldingsdetaljar</string>
-  <string name="conversation_context__menu_copy_text">Kopier tekst</string>
-  <string name="conversation_context__menu_delete_message">Slett melding</string>
-  <string name="conversation_context__menu_forward_message">Vidaresend melding</string>
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_context__menu_message_details">Info</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_context__menu_copy_text">Kopier</string>
+  <!--Button to delete a message-->
+  <string name="conversation_context__menu_delete_message">Slett</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_context__menu_forward_message">Vidaresend</string>
+  <!--Button to retry sending a message-->
   <string name="conversation_context__menu_resend_message">Send melding på nytt</string>
-  <string name="conversation_context__menu_reply_to_message">Svar på meldinga</string>
-  <!--conversation_context_reacction-->
+  <!--Button to reply to a message-->
+  <string name="conversation_context__menu_reply_to_message">Svar</string>
+  <!--conversation_context_reaction-->
+  <!--Button to select a message and enter selection mode-->
   <string name="conversation_context__reaction_multi_select">Vel fleire</string>
+  <!--Heading which shows how many messages are currently selected-->
+  <plurals name="conversation_context__s_selected">
+    <item quantity="one">%d vald</item>
+    <item quantity="other">%d valde</item>
+  </plurals>
   <!--conversation_context_image-->
-  <string name="conversation_context_image__save_attachment">Lagra vedlegg</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_context_image__save_attachment">Lagra</string>
   <!--conversation_expiring_off-->
   <string name="conversation_expiring_off__disappearing_messages">Forsvinnande meldingar</string>
+  <!--conversation_selection-->
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_selection__menu_message_details">Info</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_selection__menu_copy">Kopier</string>
+  <!--Button to delete a message-->
+  <string name="conversation_selection__menu_delete">Slett</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_selection__menu_forward">Vidaresend</string>
+  <!--Button to reply to a message-->
+  <string name="conversation_selection__menu_reply">Svar</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_selection__menu_save">Lagra</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">Inviter</string>
@@ -2536,16 +2553,6 @@ Kom i gang ved å senda ei melding til ein venn.</string>
   <string name="KbsMegaphone__create_a_pin">Opprett PIN</string>
   <string name="KbsMegaphone__pins_keep_information_thats_stored_with_signal_encrytped">PIN-ar held informasjonen som signal Signal lagrar kryptert.</string>
   <string name="KbsMegaphone__create_pin">Opprett PIN</string>
-  <!--Research Megaphone-->
-  <string name="ResearchMegaphone_tell_signal_what_you_think">Fortel Signal kva du synst</string>
-  <string name="ResearchMegaphone_to_make_signal_the_best_messaging_app_on_the_planet">For at me skal gjera Signal til den beste meldingsappen på planeten vil me gjerne høyra kva du synst.</string>
-  <string name="ResearchMegaphone_learn_more">Lær meir</string>
-  <string name="ResearchMegaphone_dismiss">Avslå</string>
-  <string name="ResearchMegaphoneDialog_signal_research">Signal-undersøking</string>
-  <string name="ResearchMegaphoneDialog_we_believe_in_privacy"><![CDATA[<p><b>Me trur på personvern.</b></p><p>Signal sporer deg ikkje og hentar ikkje data om deg. For å gjera Signal betre for alle, er me avhengig av at brukarar vel å fortelja kva dei synst, <b>og me vil gjerne høyra kva nettopp du synst.</b></p><p>Me har ei spørreundersøking på gang for å forstå korleis du bruker Signal. Undersøkinga hentar ikkje data som vil identifisera deg. Viss du vil gi tilleggsinformasjon, så har du moglegheita til å oppgi kontaktinfo.</p><p>Om du har eit par minutt til overs og litt tilbakemelding å gi, så vil me gjerne høyra frå deg.</p>]]></string>
-  <string name="ResearchMegaphoneDialog_take_the_survey">Ta undersøkinga</string>
-  <string name="ResearchMegaphoneDialog_no_thanks">Nei takk</string>
-  <string name="ResearchMegaphoneDialog_the_survey_is_hosted_by_alchemer_at_the_secure_domain">Denne undersøkinga er administrert av Alchemer på det trygge domenet surveys.signalusers.org</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">Transport-ikon</string>
   <string name="ConversationListFragment_loading">Lastar …</string>
@@ -3044,7 +3051,7 @@ Kom i gang ved å senda ei melding til ein venn.</string>
 
 Før du går vidare, må du sørgja for at det nye nummeret kan ta i mot SMS eller samtalar.</string>
   <string name="ChangeNumberFragment__continue">Hald fram</string>
-  <string name="ChangeNumber__your_phone_number_has_been_changed">Telefonnummeret ditt er endra.</string>
+  <!-- Removed by excludeNonTranslatables <string name="ChangeNumber__your_phone_number_has_been_changed">Telefonnummeret ditt er endra.</string> -->
   <!--ChangeNumberEnterPhoneNumberFragment-->
   <string name="ChangeNumberEnterPhoneNumberFragment__change_number">Endra nummer</string>
   <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">Det gamle nummeret ditt</string>

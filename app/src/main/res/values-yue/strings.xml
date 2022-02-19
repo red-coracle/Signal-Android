@@ -427,9 +427,6 @@
   <string name="DeviceListItem_today">今日</string>
   <!--DocumentView-->
   <string name="DocumentView_unnamed_file">無名嘅檔案</string>
-  <!--GroupCallingMegaphone-->
-  <string name="GroupCallingMegaphone__introducing_group_calls">同您介紹成谷通話</string>
-  <string name="GroupCallingMegaphone__open_a_new_group_to_start">開一個新版嘅谷，開始免費嘅加密成谷通話</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">針對無 Play 服務嘅優化</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">呢部機唔支援 Play 服務。撳一下以停用系統嘅電量優化，以免 Signal 喺部機閒置嘅時候冇得去攞訊息。</string>
@@ -534,10 +531,6 @@
   <string name="LeaveGroupDialog_choose_new_admin">揀選新嘅話事人</string>
   <string name="LeaveGroupDialog_before_you_leave_you_must_choose_at_least_one_new_admin_for_this_group">您退谷之前，必須為呢個谷揀定至少一個新嘅話事人接您手。</string>
   <string name="LeaveGroupDialog_choose_admin">揀選話事人</string>
-  <!--LinkPreviewsMegaphone-->
-  <string name="LinkPreviewsMegaphone_disable">停用</string>
-  <string name="LinkPreviewsMegaphone_preview_any_link">連結而家有預覽喇</string>
-  <string name="LinkPreviewsMegaphone_you_can_now_retrieve_link_previews_directly_from_any_website">而家您傳送嘅訊息如果有條拎，可以幫您直接喺網站度攞嗰條拎嘅預覽。</string>
   <!--LinkPreviewView-->
   <string name="LinkPreviewView_no_link_preview_available">條拎未有預覽</string>
   <string name="LinkPreviewView_this_group_link_is_not_active">呢條谷拎未有生效</string>
@@ -815,8 +808,6 @@
   <string name="MediaOverviewActivity_sent_by_s_to_s">由 %1$s 傳送畀 %2$s</string>
   <string name="MediaOverviewActivity_sent_by_you_to_s">由您傳送畀 %1$s</string>
   <!--Megaphones-->
-  <string name="Megaphones_introducing_reactions">推介心情</string>
-  <string name="Megaphones_tap_and_hold_any_message_to_quicky_share_how_you_feel">撳住任何訊息可快速分享您嘅心情。</string>
   <string name="Megaphones_remind_me_later">遲啲先提醒我</string>
   <string name="Megaphones_verify_your_signal_pin">驗證您嘅 Signal PIN 碼</string>
   <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">我哋間唔中會問下您個 PIN 碼，等您唔使唔記得。</string>
@@ -1032,7 +1023,7 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">您已剔低話您同 %s 之間嘅安全碼未驗證</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">您喺另一部機度已剔低話您同 %s 之間嘅安全碼未驗證</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">有一則 %s 發出嘅訊息送達唔到</string>
-  <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s 已轉咗新冧把。</string>
+  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s 已轉咗新冧把。</string> -->
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s 已發起成谷通話 · %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s 嚟到成谷通話 · %2$s</string>
@@ -2247,18 +2238,43 @@
   <string name="conversation_callable_secure__menu_call">Signal 通話</string>
   <string name="conversation_callable_secure__menu_video">Signal 視像通話</string>
   <!--conversation_context-->
-  <string name="conversation_context__menu_message_details">訊息詳情</string>
-  <string name="conversation_context__menu_copy_text">複製文字</string>
-  <string name="conversation_context__menu_delete_message">刪除訊息</string>
-  <string name="conversation_context__menu_forward_message">轉寄訊息</string>
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_context__menu_message_details">資訊</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_context__menu_copy_text">複製</string>
+  <!--Button to delete a message-->
+  <string name="conversation_context__menu_delete_message">刪除</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_context__menu_forward_message">轉寄</string>
+  <!--Button to retry sending a message-->
   <string name="conversation_context__menu_resend_message">重新傳送訊息</string>
-  <string name="conversation_context__menu_reply_to_message">回覆訊息</string>
-  <!--conversation_context_reacction-->
+  <!--Button to reply to a message-->
+  <string name="conversation_context__menu_reply_to_message">回覆</string>
+  <!--conversation_context_reaction-->
+  <!--Button to select a message and enter selection mode-->
   <string name="conversation_context__reaction_multi_select">揀選多個</string>
+  <!--Heading which shows how many messages are currently selected-->
+  <plurals name="conversation_context__s_selected">
+    <item quantity="other">揀選咗 %d 個</item>
+  </plurals>
   <!--conversation_context_image-->
-  <string name="conversation_context_image__save_attachment">儲存附件</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_context_image__save_attachment">儲存</string>
   <!--conversation_expiring_off-->
   <string name="conversation_expiring_off__disappearing_messages">過眼雲煙訊息</string>
+  <!--conversation_selection-->
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_selection__menu_message_details">資訊</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_selection__menu_copy">複製</string>
+  <!--Button to delete a message-->
+  <string name="conversation_selection__menu_delete">刪除</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_selection__menu_forward">轉寄</string>
+  <!--Button to reply to a message-->
+  <string name="conversation_selection__menu_reply">回覆</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_selection__menu_save">儲存</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">邀請</string>
@@ -2435,16 +2451,6 @@
   <string name="KbsMegaphone__create_a_pin">建立一個 PIN 碼</string>
   <string name="KbsMegaphone__pins_keep_information_thats_stored_with_signal_encrytped">有 PIN 碼，儲存喺 Signal 嘅資訊就安心加密。</string>
   <string name="KbsMegaphone__create_pin">建立 PIN 碼</string>
-  <!--Research Megaphone-->
-  <string name="ResearchMegaphone_tell_signal_what_you_think">您點諗，同 Signal 有得 say</string>
-  <string name="ResearchMegaphone_to_make_signal_the_best_messaging_app_on_the_planet">抱歉我要話你知，Signal 想做宇宙最強嘅通訊軟件。所以想想你都講我聽，聽聽您嘅意見反映。</string>
-  <string name="ResearchMegaphone_learn_more">講多啲畀我聽</string>
-  <string name="ResearchMegaphone_dismiss">收到</string>
-  <string name="ResearchMegaphoneDialog_signal_research">Signal 問卷調查</string>
-  <string name="ResearchMegaphoneDialog_we_believe_in_privacy"><![CDATA[<p><b>我哋篤信私隱。</b></p><p>Signal 唔會追蹤您或者收集您嘅資料。為咗改進 Signal 造福人群，我哋依賴使用者嘅意見反映，<b>因此想想您都講我聽。</b></p><p>我哋而家做緊一項問卷調查，想了解下您係點樣使用 Signal。我哋嘅問卷調查唔會收集任何識別您嘅資料。若果您有興趣反映進一步嘅意見，喺之後可以揀留低您嘅聯絡資訊。</p><p>假如您有幾分鐘嘅時間，亦都有意見想反映，當我哋徹夜去諗，想想您都講我哋聽。</p>]]></string>
-  <string name="ResearchMegaphoneDialog_take_the_survey">做問卷</string>
-  <string name="ResearchMegaphoneDialog_no_thanks">唔使住喇</string>
-  <string name="ResearchMegaphoneDialog_the_survey_is_hosted_by_alchemer_at_the_secure_domain">是次問卷調查，係由 Alchemer 喺安全網域 surveys.signalusers.org 架構</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">物流公仔</string>
   <string name="ConversationListFragment_loading">載入緊…</string>
@@ -2937,7 +2943,7 @@
   <!--ChangeNumberFragment-->
   <string name="ChangeNumberFragment__use_this_to_change_your_current_phone_number_to_a_new_phone_number">呢度係俾您將您而家用緊個電話冧把轉做一個新嘅電話冧把。一轉咗您就冇得返轉頭㗎喇。\n\n咁喺繼續之前，請確定您個新冧把而家可以收到短訊或者聽到電話。</string>
   <string name="ChangeNumberFragment__continue">繼續</string>
-  <string name="ChangeNumber__your_phone_number_has_been_changed">您嘅電話冧把而家已改咗。</string>
+  <!-- Removed by excludeNonTranslatables <string name="ChangeNumber__your_phone_number_has_been_changed">您嘅電話冧把而家已改咗。</string> -->
   <!--ChangeNumberEnterPhoneNumberFragment-->
   <string name="ChangeNumberEnterPhoneNumberFragment__change_number">轉冧把</string>
   <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">您個舊冧把</string>
@@ -3403,11 +3409,11 @@
   <!--Description of hours for schedule (start to end) times-->
   <string name="NotificationProfileDetails__s_to_s">由 %1$s 到 %2$s</string>
   <!--Section header for exceptions to the notification profile-->
-  <string name="NotificationProfileDetails__exceptions">唔係清一色</string>
+  <string name="NotificationProfileDetails__exceptions">吾系青一色</string>
   <!--Profile exception to allow all calls through the profile restrictions-->
   <string name="NotificationProfileDetails__allow_all_calls">批准所有通話入閘</string>
   <!--Profile exception to allow all @mentions through the profile restrictions-->
-  <string name="NotificationProfileDetails__notify_for_all_mentions">點名講嘅時候一律都要通知</string>
+  <string name="NotificationProfileDetails__notify_for_all_mentions">點名講嘅時候點都要通知</string>
   <!--Section header for showing schedule information-->
   <string name="NotificationProfileDetails__schedule">時間表</string>
   <!--If member list is long, will truncate the list and show an option to then see all when tapped-->

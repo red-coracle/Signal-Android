@@ -409,9 +409,6 @@
   <string name="DeviceListItem_today">இன்று</string>
   <!--DocumentView-->
   <string name="DocumentView_unnamed_file">பெயரிடப்படாத கோப்பு</string>
-  <!--GroupCallingMegaphone-->
-  <string name="GroupCallingMegaphone__introducing_group_calls">அறிமுகப்படுத்துகிறது குழு அழைப்புகள்</string>
-  <string name="GroupCallingMegaphone__open_a_new_group_to_start">திற a புதிய குழு இலவசமாக தொடங்க மறையாக்கப்பட்ட குழு அழைப்பு</string>
   <!--DozeReminder-->
   <string name="DozeReminder_optimize_for_missing_play_services">காணாமல் போன விளையாட்டு சேவைகளை மேம்படுத்தவும்</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">இந்த சாதனம் Play சேவைகளை ஆதரிக்காது. செயலற்ற நிலையில் செய்திகளை மீட்டெடுப்பதில் இருந்து Signal லைத் தடுக்கும் கணினி பேட்டரி மேம்படுத்தல்களை முடக்க தட்டவும்.</string>
@@ -529,10 +526,6 @@
   <string name="LeaveGroupDialog_choose_new_admin">புதிய நிர்வாகியைத் தேர்வுசெய்க</string>
   <string name="LeaveGroupDialog_before_you_leave_you_must_choose_at_least_one_new_admin_for_this_group">நீங்கள் வெளியேறுவதற்கு முன், இந்த குழுவிற்கு குறைந்தபட்சம் ஒரு புதிய new admin நிர்வாகியையாவது தேர்வு செய்ய வேண்டும்.</string>
   <string name="LeaveGroupDialog_choose_admin">நிர்வாகியைத் admin தேர்வுசெய்க</string>
-  <!--LinkPreviewsMegaphone-->
-  <string name="LinkPreviewsMegaphone_disable">முடக்கு</string>
-  <string name="LinkPreviewsMegaphone_preview_any_link">எந்த இணைப்பையும் முன்னோட்டமிடுங்கள்</string>
-  <string name="LinkPreviewsMegaphone_you_can_now_retrieve_link_previews_directly_from_any_website">நீங்கள் அனுப்பும் செய்திகளுக்கு எந்தவொரு வலைத்தளத்திலிருந்தும் இணைப்பு முன்னோட்டங்களை நேரடியாக மீட்டெடுக்கலாம்.</string>
   <!--LinkPreviewView-->
   <string name="LinkPreviewView_no_link_preview_available">இணைப்பு முன்னோட்டம் எதுவும் கிடைக்கவில்லை</string>
   <string name="LinkPreviewView_this_group_link_is_not_active">இந்த குழு இணைப்பு செயலில் இல்லை</string>
@@ -816,8 +809,6 @@
   <string name="MediaOverviewActivity_sent_by_s_to_s">அனுப்பியது %1$s க்கு%2$s</string>
   <string name="MediaOverviewActivity_sent_by_you_to_s">%1$sக்கு நீங்கள் அனுப்பியது </string>
   <!--Megaphones-->
-  <string name="Megaphones_introducing_reactions">எதிர்வினைகளை அறிமுகப்படுத்துகிறது</string>
-  <string name="Megaphones_tap_and_hold_any_message_to_quicky_share_how_you_feel">நீங்கள் எப்படி உணர்கிறீர்கள் என்பதை விரைவாகப் பகிர எந்த செய்தியையும் தட்டிப் பிடிக்கவும்.</string>
   <string name="Megaphones_remind_me_later">பிறகு என்னிடம் ஞாபகபடுத்து</string>
   <string name="Megaphones_verify_your_signal_pin">உங்கள் Signal PIN-ஐ சரிபார்க்கவும்</string>
   <string name="Megaphones_well_occasionally_ask_you_to_verify_your_pin">உங்கள் PIN-ஐ நினைவில் வைத்துக் கொள்ளும்படி நாங்கள் எப்போதாவது உங்களிடம் கேட்போம்.</string>
@@ -1041,7 +1032,7 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">%s உடனான உங்கள் பாதுகாப்பு எண்ணை சரிபார்க்கப்படாததாக குறித்தீர்கள்</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">%s உடனான உங்கள் பாதுகாப்பு எண்ணை சரிபார்க்கப்படாததாக வேறொரு சாதனத்திலிருந்து குறித்தீர்கள்</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">இருந்து ஒரு செய்தி %s வழங்க முடியவில்லை</string>
-  <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s அவர்களின் எண்ணை புதிய எண்ணுக்கு மாற்றி விட்டார்கள்</string>
+  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s அவர்களின் எண்ணை புதிய எண்ணுக்கு மாற்றி விட்டார்கள்</string> -->
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$sகுழு அழைப்பைத் தொடங்கினார்%2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s குழு அழைப்பில் உள்ளார் %2$s</string>
@@ -1654,7 +1645,7 @@
   <string name="ConversationUpdateItem_no_groups_in_common_review_requests_carefully">இல்லை குழுக்கள்பொதுவாக. கோரிக்கைகளை கவனமாக மதிப்பாய்வு செய்யவும்.</string>
   <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">இல்லை இதில் தொடர்புகள் குழு. கோரிக்கைகளை கவனமாக மதிப்பாய்வு செய்யவும்.</string>
   <string name="ConversationUpdateItem_view">காண்க</string>
-  <string name="ConversationUpdateItem_the_disappearing_message_time_will_be_set_to_s_when_you_message_them">தி மறைந்து வரும் செய்தி நேரம் இருக்கும் அமை க்கு %1$s நீங்கள் அவர்களுக்கு செய்தி அனுப்பும்போது.</string>
+  <string name="ConversationUpdateItem_the_disappearing_message_time_will_be_set_to_s_when_you_message_them">நீங்கள் அவர்களுக்கு செய்தி அனுப்பும் போது காணாமல் போகும் செய்திகள் நேரம் %1$s ஆக அமைக்கப்படும்.</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">விளையாடு … இடைநிறுத்து</string>
   <string name="audio_view__download_accessibility_description">பதிவிறக்க</string>
@@ -2236,18 +2227,40 @@
   <string name="conversation_callable_secure__menu_call">Signal அழைப்பு</string>
   <string name="conversation_callable_secure__menu_video">Signal காணொளி அழைப்பு</string>
   <!--conversation_context-->
-  <string name="conversation_context__menu_message_details">செய்தி விவரங்கள்</string>
-  <string name="conversation_context__menu_copy_text">உரை நகலெடு</string>
-  <string name="conversation_context__menu_delete_message">செய்தியை நீக்கு</string>
-  <string name="conversation_context__menu_forward_message">செய்தியை முன்னனுப்புக</string>
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_context__menu_message_details">தகவல்</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_context__menu_copy_text">நகல்</string>
+  <!--Button to delete a message-->
+  <string name="conversation_context__menu_delete_message">நீக்கு</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_context__menu_forward_message">முன்னனுப்புக</string>
+  <!--Button to retry sending a message-->
   <string name="conversation_context__menu_resend_message">செய்தியை மீண்டும் அனுப்பு</string>
-  <string name="conversation_context__menu_reply_to_message">செய்திக்கு பதில்</string>
-  <!--conversation_context_reacction-->
+  <!--Button to reply to a message-->
+  <string name="conversation_context__menu_reply_to_message">பதில்</string>
+  <!--conversation_context_reaction-->
+  <!--Button to select a message and enter selection mode-->
   <string name="conversation_context__reaction_multi_select">பலவற்றை தேர்வு செய்க</string>
+  <!--Heading which shows how many messages are currently selected-->
   <!--conversation_context_image-->
-  <string name="conversation_context_image__save_attachment">இணைப்பைச் சேமி</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_context_image__save_attachment">சேமி</string>
   <!--conversation_expiring_off-->
   <string name="conversation_expiring_off__disappearing_messages">காணாமல் போகும் செய்திகள்</string>
+  <!--conversation_selection-->
+  <!--Button to view detailed information for a message-->
+  <string name="conversation_selection__menu_message_details">தகவல்</string>
+  <!--Button to copy a message\'s text to the clipboard-->
+  <string name="conversation_selection__menu_copy">நகல்</string>
+  <!--Button to delete a message-->
+  <string name="conversation_selection__menu_delete">நீக்கு</string>
+  <!--Button to forward a message to another person or group chat-->
+  <string name="conversation_selection__menu_forward">முன்னனுப்புக</string>
+  <!--Button to reply to a message-->
+  <string name="conversation_selection__menu_reply">பதில்</string>
+  <!--Button to save a message attachment (image, file etc.)-->
+  <string name="conversation_selection__menu_save">சேமி</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">அழை</string>
@@ -2431,16 +2444,6 @@
   <string name="KbsMegaphone__create_a_pin">பின்னை உருவாக்கவும்</string>
   <string name="KbsMegaphone__pins_keep_information_thats_stored_with_signal_encrytped">Signal இடம் சேமிக்கப்படும் தகவல்களை மறையாக்கி நீங்கள் மட்டும் அணுகும் வகையில் PIN-கள் வைக்கும்.</string>
   <string name="KbsMegaphone__create_pin">பின் உருவாக்கவும்</string>
-  <!--Research Megaphone-->
-  <string name="ResearchMegaphone_tell_signal_what_you_think">நீங்கள் என்ன நினைக்கிறீர்கள் என்று Signal லிடம் சொல்லுங்கள்</string>
-  <string name="ResearchMegaphone_to_make_signal_the_best_messaging_app_on_the_planet">சிக்னலை உலகின் சிறந்த செய்தியிடல் பயன்பாடாக மாற்ற, உங்கள் கருத்தைக் கேட்க நாங்கள் விரும்புகிறோம்.</string>
-  <string name="ResearchMegaphone_learn_more">மேலும் அறிக</string>
-  <string name="ResearchMegaphone_dismiss">நிராகரி</string>
-  <string name="ResearchMegaphoneDialog_signal_research">சிக்னல் ஆராய்ச்சி</string>
-  <string name="ResearchMegaphoneDialog_we_believe_in_privacy">&lt;p&gt;&lt;b&gt;நாங்கள் தனியுரிமையை நம்புகிறோம்.&lt;/b&gt;&lt;/p&gt;&lt;p&gt;சிக்னல் உங்கள் செயல்பாட்டைக் கண்காணிக்காது அல்லது உங்கள் தரவை சேகரிக்காது. அனைவருக்கும் சிக்னலை மேம்படுத்த, பயனர் கருத்தை நாங்கள் நம்புகிறோம்&lt;b&gt; உங்கள் கருத்தை நாங்கள் விரும்புகிறோம்! &lt;/b&gt;&lt;/p&gt;&lt;p&gt;நீங்கள் சிக்னலை எவ்வாறு பயன்படுத்துகிறீர்கள் என்பதைப் புரிந்துகொள்ள நாங்கள் ஒரு கணக்கெடுப்பை நடத்துகிறோம். உங்களை அடையாளம் காணும் எந்த தரவையும் எங்கள் கணக்கெடுப்பு சேகரிக்கவில்லை. கூடுதல் கருத்துகளைப் பகிர ஆர்வமாக இருந்தால், உங்கள் தொடர்பு தகவலை வழங்கவும்.&lt;/p&gt;&lt;p&gt;உங்களிடமிருந்து கருத்துக்களைக் கேட்க நாங்கள் விரும்புகிறோம்.</string>
-  <string name="ResearchMegaphoneDialog_take_the_survey">கணக்கெடுப்பில் பங்கேற்கவும்</string>
-  <string name="ResearchMegaphoneDialog_no_thanks">தேவையில்லை,நன்றி</string>
-  <string name="ResearchMegaphoneDialog_the_survey_is_hosted_by_alchemer_at_the_secure_domain">surveys.signalusers.org என்ற பாதுகாப்பான களத்தில் கணக்கெடுப்பை ஆல்கமீர் வழங்கியுள்ளது</string>
   <!--transport_selection_list_item-->
   <string name="transport_selection_list_item__transport_icon">போக்குவரத்து குறும்படம்</string>
   <string name="ConversationListFragment_loading">ஏற்றுதல் …</string>
@@ -2962,7 +2965,7 @@
   <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">அண்மை பட்டியல் மற்றும் மென்பொருளுக்கு உள்ளே திரையை படம் எடுப்பதை தடுக்கவும்</string>
   <string name="PrivacySettingsFragment__signal_message_and_calls">Signal செய்திகள் மற்றும் அழைப்புகள், எப்போதும் ரிலே அழைப்புகள் மற்றும் சீல் அனுப்பியவர்</string>
   <string name="PrivacySettingsFragment__default_timer_for_new_changes">இயல்புநிலை நேரக்குறிப்பான் புதிய அரட்டைகளுக்கு</string>
-  <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">அமை இயல்புநிலை மறைந்து வரும் செய்தி டைமர் நீங்கள் தொடங்கிய அனைத்து புதிய அரட்டைகளுக்கும்.</string>
+  <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">நீங்கள் தொடங்கும் அனைத்து புதிய அரட்டைகளுக்கும் இயல்புநிலை காணாமல் போகும் செய்திகள் நேரக்குறிப்பானை அமைக்கவும்.</string>
   <!--AdvancedPrivacySettingsFragment-->
   <string name="AdvancedPrivacySettingsFragment__show_status_icon">நிலை ஐகானைக் காட்டு</string>
   <string name="AdvancedPrivacySettingsFragment__show_an_icon">செய்தியில் ஒரு ஐகானைக் காட்டு விவரங்கள் அவை பயன்படுத்தி வழங்கப்பட்டபோது சீல் அனுப்பியவர்.</string>
