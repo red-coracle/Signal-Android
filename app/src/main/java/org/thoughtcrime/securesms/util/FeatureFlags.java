@@ -63,6 +63,7 @@ public final class FeatureFlags {
   private static final String PHONE_NUMBER_PRIVACY_VERSION      = "android.phoneNumberPrivacyVersion";
   private static final String CLIENT_EXPIRATION                 = "android.clientExpiration";
   public  static final String DONATE_MEGAPHONE                  = "android.donate.2";
+  public  static final String VALENTINES_DONATE_MEGAPHONE       = "android.donate.valentines.2022";
   private static final String CUSTOM_VIDEO_MUXER                = "android.customVideoMuxer";
   private static final String CDS_REFRESH_INTERVAL              = "cds.syncInterval.seconds";
   private static final String AUTOMATIC_SESSION_RESET           = "android.automaticSessionReset.2";
@@ -84,12 +85,10 @@ public final class FeatureFlags {
   private static final String SUGGEST_SMS_BLACKLIST             = "android.suggestSmsBlacklist";
   private static final String MAX_GROUP_CALL_RING_SIZE          = "global.calling.maxGroupCallRingSize";
   private static final String GROUP_CALL_RINGING                = "android.calling.groupCallRinging";
-  private static final String CHANGE_NUMBER_ENABLED             = "android.changeNumber.2";
+  private static final String CHANGE_NUMBER_ENABLED             = "android.changeNumber.3";
   private static final String DONOR_BADGES                      = "android.donorBadges.6";
   private static final String DONOR_BADGES_DISPLAY              = "android.donorBadges.display.4";
   private static final String CDSH                              = "android.cdsh";
-  private static final String VOICE_NOTE_RECORDING_V2           = "android.voiceNoteRecordingV2.2";
-  private static final String GROUPS_V2_UPDATE_PAGING           = "android.groupsv2.updatePaging";
   private static final String HARDWARE_AEC_MODELS               = "android.calling.hardwareAecModels";
   private static final String FORCE_DEFAULT_AEC                 = "android.calling.forceDefaultAec";
 
@@ -133,10 +132,9 @@ public final class FeatureFlags {
       DONOR_BADGES,
       DONOR_BADGES_DISPLAY,
       CHANGE_NUMBER_ENABLED,
-      VOICE_NOTE_RECORDING_V2,
-      GROUPS_V2_UPDATE_PAGING,
       HARDWARE_AEC_MODELS,
-      FORCE_DEFAULT_AEC
+      FORCE_DEFAULT_AEC,
+      VALENTINES_DONATE_MEGAPHONE
   );
 
   @VisibleForTesting
@@ -191,9 +189,8 @@ public final class FeatureFlags {
       SENDER_KEY_MAX_AGE,
       DONOR_BADGES_DISPLAY,
       DONATE_MEGAPHONE,
-      VOICE_NOTE_RECORDING_V2,
-      GROUPS_V2_UPDATE_PAGING,
-      FORCE_DEFAULT_AEC
+      FORCE_DEFAULT_AEC,
+      VALENTINES_DONATE_MEGAPHONE
   );
 
   /**
@@ -308,6 +305,11 @@ public final class FeatureFlags {
   /** The raw donate megaphone CSV string */
   public static String donateMegaphone() {
     return getString(DONATE_MEGAPHONE, "");
+  }
+
+  /** The raw valentine's day donate megaphone CSV string */
+  public static String valentinesDonateMegaphone() {
+    return getString(VALENTINES_DONATE_MEGAPHONE, "");
   }
 
   /**
@@ -437,16 +439,6 @@ public final class FeatureFlags {
 
   public static boolean cdsh() {
     return Environment.IS_STAGING && getBoolean(CDSH, false);
-  }
-
-  /** Whether or not to use the new voice note recorder backed by MediaRecorder. */
-  public static boolean voiceNoteRecordingV2() {
-    return getBoolean(VOICE_NOTE_RECORDING_V2, false);
-  }
-
-  /** Whether or not to use the proper paging when updating group state. */
-  public static boolean groupsV2UpdatePaging() {
-    return getBoolean(GROUPS_V2_UPDATE_PAGING, false);
   }
 
   /** A comma-separated list of models that should use hardware AEC for calling. */

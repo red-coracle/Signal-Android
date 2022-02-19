@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.cash.exhaustive.Exhaustive
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -92,8 +93,7 @@ private const val REQUEST_CODE_RETURN_FROM_MEDIA = 4
 
 class ConversationSettingsFragment : DSLSettingsFragment(
   layoutId = R.layout.conversation_settings_fragment,
-  menuId = R.menu.conversation_settings,
-  layoutManagerProducer = Badges::createLayoutManagerForGridWithBadges
+  menuId = R.menu.conversation_settings
 ) {
 
   private val alertTint by lazy { ContextCompat.getColor(requireContext(), R.color.signal_alert_primary) }
@@ -150,6 +150,11 @@ class ConversationSettingsFragment : DSLSettingsFragment(
     toolbarBadge = view.findViewById(R.id.toolbar_badge)
     toolbarTitle = view.findViewById(R.id.toolbar_title)
     toolbarBackground = view.findViewById(R.id.toolbar_background)
+
+    val args: ConversationSettingsFragmentArgs = ConversationSettingsFragmentArgs.fromBundle(requireArguments())
+    if (args.recipientId != null) {
+      layoutManagerProducer = Badges::createLayoutManagerForGridWithBadges
+    }
 
     super.onViewCreated(view, savedInstanceState)
   }
@@ -393,28 +398,32 @@ class ConversationSettingsFragment : DSLSettingsFragment(
         enabled = it.canEditGroupAttributes
       }
 
-      clickPref(
-        title = DSLSettingsText.from(R.string.ConversationSettingsFragment__disappearing_messages),
-        summary = summary,
-        icon = DSLSettingsIcon.from(icon),
-        isEnabled = enabled,
-        onClick = {
-          val action = ConversationSettingsFragmentDirections.actionConversationSettingsFragmentToAppSettingsExpireTimer()
-            .setInitialValue(state.disappearingMessagesLifespan)
-            .setRecipientId(state.recipient.id)
-            .setForResultMode(false)
+      if (!state.recipient.isReleaseNotes) {
+        clickPref(
+          title = DSLSettingsText.from(R.string.ConversationSettingsFragment__disappearing_messages),
+          summary = summary,
+          icon = DSLSettingsIcon.from(icon),
+          isEnabled = enabled,
+          onClick = {
+            val action = ConversationSettingsFragmentDirections.actionConversationSettingsFragmentToAppSettingsExpireTimer()
+              .setInitialValue(state.disappearingMessagesLifespan)
+              .setRecipientId(state.recipient.id)
+              .setForResultMode(false)
 
-          navController.safeNavigate(action)
-        }
-      )
+            navController.safeNavigate(action)
+          }
+        )
+      }
 
-      clickPref(
-        title = DSLSettingsText.from(R.string.preferences__chat_color_and_wallpaper),
-        icon = DSLSettingsIcon.from(R.drawable.ic_color_24),
-        onClick = {
-          startActivity(ChatWallpaperActivity.createIntent(requireContext(), state.recipient.id))
-        }
-      )
+      if (!state.recipient.isReleaseNotes) {
+        clickPref(
+          title = DSLSettingsText.from(R.string.preferences__chat_color_and_wallpaper),
+          icon = DSLSettingsIcon.from(R.drawable.ic_color_24),
+          onClick = {
+            startActivity(ChatWallpaperActivity.createIntent(requireContext(), state.recipient.id))
+          }
+        )
+      }
 
       if (!state.recipient.isSelf) {
         clickPref(
@@ -507,7 +516,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
           )
         }
 
-        if (recipientSettingsState.selfHasGroups) {
+        if (recipientSettingsState.selfHasGroups && !state.recipient.isReleaseNotes) {
 
           dividerPref()
 
@@ -758,9 +767,14 @@ class ConversationSettingsFragment : DSLSettingsFragment(
     private val rect = Rect()
 
     override fun getAnimationState(recyclerView: RecyclerView): AnimationState {
-      val layoutManager = recyclerView.layoutManager as FlexboxLayoutManager
+      val layoutManager = recyclerView.layoutManager!!
+      val firstVisibleItemPosition = if (layoutManager is FlexboxLayoutManager) {
+        layoutManager.findFirstVisibleItemPosition()
+      } else {
+        (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+      }
 
-      return if (layoutManager.findFirstVisibleItemPosition() == 0) {
+      return if (firstVisibleItemPosition == 0) {
         val firstChild = requireNotNull(layoutManager.getChildAt(0))
         firstChild.getLocalVisibleRect(rect)
 

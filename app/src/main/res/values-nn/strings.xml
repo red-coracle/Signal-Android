@@ -90,6 +90,10 @@
   <string name="BlockUnblockDialog_group_members_will_be_able_to_add_you">Gruppemedlemmar vil kunna legga deg til i gruppa igjen.</string>
   <string name="BlockUnblockDialog_you_will_be_able_to_call_and_message_each_other">Dokker vil kunna senda meldingar og ringa til kvarandre, og namnet og bildet ditt blir delt med dei.</string>
   <string name="BlockUnblockDialog_blocked_people_wont_be_able_to_call_you_or_send_you_messages">Blokkerte kontaktar vil ikkje kunna ringa deg eller senda deg meldingar.</string>
+  <!--Message shown on block dialog when blocking the Signal release notes recipient-->
+  <string name="BlockUnblockDialog_block_getting_signal_updates_and_news">Blokker oppdateringar og nyheiter frå Signal.</string>
+  <!--Message shown on unblock dialog when unblocking the Signal release notes recipient-->
+  <string name="BlockUnblockDialog_resume_getting_signal_updates_and_news">Få oppdateringar og nyheiter frå Signal igjen.</string>
   <string name="BlockUnblockDialog_unblock_s">Ikkje blokker %1$s?</string>
   <string name="BlockUnblockDialog_block">Blokker</string>
   <string name="BlockUnblockDialog_block_and_leave">Blokker og forlat</string>
@@ -1089,7 +1093,11 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">Du markerte at tryggleiksnummeret ditt med %s ikkje er stadfesta.</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">Du markerte at tryggleiksnummeret ditt med %s ikkje er stadfesta frå ei anna eining</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">Klarte ikkje å levera ei melding frå %s</string>
-  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s har endra nummeret sitt til eit nytt nummer.</string> -->
+  <string name="MessageRecord_s_changed_their_phone_number">%1$s har endra telefonnummeret sitt.</string>
+  <!--Update item message shown in the release channel when someone is already a sustainer so we ask them if they want to boost.-->
+  <string name="MessageRecord_like_this_new_feature_say_thanks_with_a_boost">Liker du denne nye funksjonen? Sei takk med ein Auke.</string>
+  <!--Update item message shown in the release channel when someone is not a sustainer so we ask them to consider becoming one-->
+  <string name="MessageRecord_signal_is_powered_by_people_like_you_become_a_sustainer_today">Signal er drive av folk som deg. Bli ein bidragsytar i dag.</string>
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s starta ein gruppesamtale · %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s er i gruppesamtalen · %2$s</string>
@@ -1118,6 +1126,7 @@ Dei er invitert inn, og ser inga gruppemeldingar før dei godtek.</string>
   <string name="MessageRequestBottomView_unblock">Fjern blokkering</string>
   <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_they_wont_know_youve_seen_their_messages_until_you_accept">Vil du la %1$s senda deg meldingar og dela namnet og bildet ditt med dei? Dei får ikkje vita at du har sett meldinga deira før du godkjenner.</string>
   <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_wont_receive_any_messages_until_you_unblock_them">Vil du la %1$s senda deg meldingar og dela namnet og bildet ditt med dei? Du får inga meldingar før du avblokkerer dei.</string>
+  <string name="MessageRequestBottomView_get_updates_and_news_from_s_you_wont_receive_any_updates_until_you_unblock_them">Få oppdateringar og nyheiter frå %1$s? Du får ingen oppdateringar før du avblokkerer dei.</string>
   <string name="MessageRequestBottomView_continue_your_conversation_with_this_group_and_share_your_name_and_photo">Fortset samtalen din med denne gruppa og del namnet og bildet ditt med medlemmane?</string>
   <string name="MessageRequestBottomView_upgrade_this_group_to_activate_new_features">Oppgrader denne gruppa for å få nye funksjonar som @nemningar og administratorar. Medlemmar som ikkje har delt namn eller profilbilde med denne gruppa blir inviterte inn.</string>
   <string name="MessageRequestBottomView_this_legacy_group_can_no_longer_be_used">Denne Eldre gruppa kan ikkje lenger brukast sidan ho er for stor. Maksimal gruppestorleik er %1$d.</string>
@@ -1244,6 +1253,11 @@ Viss du ikkje klarer å hugsa PIN-en, kan du oppretta ein ny ein. Du kan registr
   <string name="RedPhone_number_not_registered">Nummer ikkje registrert</string>
   <string name="RedPhone_the_number_you_dialed_does_not_support_secure_voice">Nummeret du ringte støttar ikkje sikker stemme!</string>
   <string name="RedPhone_got_it">Ålreit</string>
+  <!--Valentine\'s Day Megaphone-->
+  <!--Title text for the Valentine\'s Day donation megaphone. The placeholder will always be a heart emoji. Needs to be a placeholder for Android reasons.-->
+  <string name="ValentinesDayMegaphone_happy_heart_day">Gledeleg 💜-dag!</string>
+  <!--Body text for the Valentine\'s Day donation megaphone.-->
+  <string name="ValentinesDayMegaphone_show_your_affection">Del kjærleiken – bli Signal-bidragsytar.</string>
   <!--WebRtcCallActivity-->
   <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Trykk her for å skru på videoen din</string>
   <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">Signal treng tilgang til kameraet ditt for å ringa %1$s</string>
@@ -1299,6 +1313,7 @@ Viss du ikkje klarer å hugsa PIN-en, kan du oppretta ein ny ein. Du kan registr
   <string name="WebRtcCallView__flip">Vend</string>
   <string name="WebRtcCallView__speaker">Høgtalar</string>
   <string name="WebRtcCallView__camera">Kamera</string>
+  <string name="WebRtcCallView__unmute">Ikkje demp</string>
   <string name="WebRtcCallView__mute">Demp</string>
   <string name="WebRtcCallView__ring">Ring</string>
   <string name="WebRtcCallView__end_call">Avslutt samtale</string>
@@ -1601,6 +1616,10 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <string name="NotificationChannel_voice_notes">Talenotat</string>
   <string name="NotificationChannel_contact_joined_signal">Ein kontakt tok i bruk Signal!</string>
   <string name="NotificationChannels__no_activity_available_to_open_notification_channel_settings">Ingen aktivitet tilgjengeleg for å opna innstillingane for varselkanalen.</string>
+  <!--Notification channel name for showing persistent background connection on devices without push notifications-->
+  <string name="NotificationChannel_background_connection">Bakgrunnstilkopling</string>
+  <!--Notification channel name for showing call status information (like connection, ongoing, etc.) Not ringing.-->
+  <string name="NotificationChannel_call_status">Samtalestatus</string>
   <!--ProfileEditNameFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Hurtigsvar er utilgjengeleg når Signal er låst.</string>
@@ -1730,6 +1749,10 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">Ingen kontaktar i denne gruppa. Sjå nøye gjennom førespurnader.</string>
   <string name="ConversationUpdateItem_view">Vis</string>
   <string name="ConversationUpdateItem_the_disappearing_message_time_will_be_set_to_s_when_you_message_them">Utløpstida for meldingar blir endra til %1$s når du sender dei ei melding.</string>
+  <!--Update item button text to show to boost a feature-->
+  <string name="ConversationUpdateItem_signal_boost">Signal-auke</string>
+  <!--Update item button text to show to become a sustainer in the release notes channel-->
+  <string name="ConversationUpdateItem_become_a_sustainer">Bli ein bidragsytar</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">Spel … pause</string>
   <string name="audio_view__download_accessibility_description">Last ned</string>
@@ -2331,21 +2354,6 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <string name="conversation_callable_secure__menu_call">Signal-samtale</string>
   <string name="conversation_callable_secure__menu_video">Signal-videosamtale</string>
   <!--conversation_context-->
-  <!--Button to view detailed information for a message-->
-  <string name="conversation_context__menu_message_details">Info</string>
-  <!--Button to copy a message\'s text to the clipboard-->
-  <string name="conversation_context__menu_copy_text">Kopier</string>
-  <!--Button to delete a message-->
-  <string name="conversation_context__menu_delete_message">Slett</string>
-  <!--Button to forward a message to another person or group chat-->
-  <string name="conversation_context__menu_forward_message">Vidaresend</string>
-  <!--Button to retry sending a message-->
-  <string name="conversation_context__menu_resend_message">Send melding på nytt</string>
-  <!--Button to reply to a message-->
-  <string name="conversation_context__menu_reply_to_message">Svar</string>
-  <!--conversation_context_reaction-->
-  <!--Button to select a message and enter selection mode-->
-  <string name="conversation_context__reaction_multi_select">Vel fleire</string>
   <!--Heading which shows how many messages are currently selected-->
   <plurals name="conversation_context__s_selected">
     <item quantity="one">%d vald</item>
@@ -2369,6 +2377,10 @@ Mottok nøkkelutvekslingsmelding for ugyldig protokollversjon.</string>
   <string name="conversation_selection__menu_reply">Svar</string>
   <!--Button to save a message attachment (image, file etc.)-->
   <string name="conversation_selection__menu_save">Lagra</string>
+  <!--Button to retry sending a message-->
+  <string name="conversation_selection__menu_resend_message">Send på nytt</string>
+  <!--Button to select a message and enter selection mode-->
+  <string name="conversation_selection__menu_multi_select">Vel</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">Inviter</string>
@@ -3051,7 +3063,10 @@ Kom i gang ved å senda ei melding til ein venn.</string>
 
 Før du går vidare, må du sørgja for at det nye nummeret kan ta i mot SMS eller samtalar.</string>
   <string name="ChangeNumberFragment__continue">Hald fram</string>
-  <!-- Removed by excludeNonTranslatables <string name="ChangeNumber__your_phone_number_has_been_changed">Telefonnummeret ditt er endra.</string> -->
+  <!--Message shown on dialog after your number has been changed successfully.-->
+  <string name="ChangeNumber__your_phone_number_has_changed_to_s">Telefonnummeret ditt er endra til %1$s.</string>
+  <!--Confirmation button to dismiss number changed dialog-->
+  <string name="ChangeNumber__okay">Greitt</string>
   <!--ChangeNumberEnterPhoneNumberFragment-->
   <string name="ChangeNumberEnterPhoneNumberFragment__change_number">Endra nummer</string>
   <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">Det gamle nummeret ditt</string>
@@ -3082,16 +3097,23 @@ Stadfest at nummeret under er korrekt før du går vidare.</string>
   <string name="ChangeNumberPinDiffersFragment__update_pin">Oppdater PIN</string>
   <string name="ChangeNumberPinDiffersFragment__keep_old_pin_question">Ta vare på gammal PIN?</string>
   <!--ChangeNumberLockActivity-->
+  <!--Info message shown to user if something crashed the app during the change number attempt and we were unable to confirm the change so we force them into this screen to check before letting them use the app-->
   <string name="ChangeNumberLockActivity__it_looks_like_you_tried_to_change_your_number_but_we_were_unable_to_determine_if_it_was_successful_rechecking_now">Det ser ut som om du prøvde å endra nummeret ditt, men me klarte ikkje å stadfesta om det fungerte.
 
 Sjekkar igjen no …</string>
+  <!--Dialog title shown if we were able to confirm your change number status (meaning we now know what the server thinks our number is) after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__change_status_confirmed">Stadfesta statusendring</string>
+  <!--Dialog message shown if we were able to confirm your change number status (meaning we now know what the server thinks our number is) after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__your_number_has_been_confirmed_as_s">Nummeret ditt er stadfesta som %1$s. Køyr nummerendringa på nytt viss dette ikkje er det nye nummeret ditt.</string>
+  <!--Dialog title shown if we were not able to confirm your phone number with the server and thus cannot let leave the change flow yet after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__change_status_unconfirmed">Endringsstatus ikkje stadfesta</string>
+  <!--Dialog message shown when we can\'t verify the phone number on the server, only shown if there was a network error communicating with the server after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__we_could_not_determine_the_status_of_your_change_number_request">Me klarte ikkje å stadfesta status på nummerendringa di.
 
 (Feil: %1$s)</string>
+  <!--Dialog button to retry confirming the number on the server-->
   <string name="ChangeNumberLockActivity__retry">Prøv igjen</string>
+  <!--Dialog button shown to leave the app when in the unconfirmed change status after a crash in the regular flow-->
   <string name="ChangeNumberLockActivity__leave">Forlat</string>
   <string name="ChangeNumberLockActivity__submit_debug_log">Send feilsøkingslogg</string>
   <!--ChatsSettingsFragment-->
@@ -3440,9 +3462,15 @@ Sjekkar igjen no …</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__become_a_sustainer">Bli ein bidragsytar</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__add_a_boost">Få ein Signal-auke</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__not_now">Ikkje no</string>
-  <string name="ExpiredBadgeBottomSheetDialogFragment__your_sustainer">Bidragsytar-abonnementet ditt blei automatisk avslutta sidan du var inaktiv for lenge. %1$s-merket ditt er ikkje lenger synleg på profilen din.</string>
+  <!--Copy displayed when badge expires after user inactivity-->
+  <string name="ExpiredBadgeBottomSheetDialogFragment__your_sustainer_subscription_was_automatically">Bidragsytar-abonnementet ditt blei automatisk avslutta sidan du var inaktiv for lenge. %1$s-merket ditt er ikkje lenger synleg på profilen din.</string>
+  <!--Copy displayed when badge expires after payment failure-->
+  <string name="ExpiredBadgeBottomSheetDialogFragment__your_sustainer_subscription_was_canceled">Bidragsytar-abonnementet ditt vart automatisk avslutta sidan me ikkje kunne behandla betalinga di. Merket ditt er ikkje lenger synleg på profilen din.</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__you_can">Du kan halda fram med å bruka Signal, men du må fornya for å fortsetja å støtta appen og gjenaktivera merket.</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__renew_subscription">Forny abonnement</string>
+  <string name="CantProcessSubscriptionPaymentBottomSheetDialogFragment__cant_process_subscription_payment">Klarte ikkje behandla abonnementsbetalinga</string>
+  <string name="CantProcessSubscriptionPaymentBottomSheetDialogFragment__were_having_trouble">Me har problem med å henta Signal Bidragsytar-betalinga di. Sjekk at betalingsmetoden din er oppdatert. Oppdater han eventuelt i Google Pay. Signal vil prøva å behandla betalinga igjen om nokre dagar.</string>
+  <string name="CantProcessSubscriptionPaymentBottomSheetDialogFragment__dont_show_this_again">Ikkje vis dette igjen</string>
   <string name="Subscription__please_contact_support_for_more_information">Ta kontakt med brukarstøtte for meir informasjon.</string>
   <string name="Subscription__contact_support">Kontakt brukarstøtte</string>
   <string name="Subscription__earn_a_s_badge">Få eit %1$s-merke</string>
@@ -3464,6 +3492,34 @@ Sjekkar igjen no …</string>
   <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support_google_pay_so_you_can_t_subscribe_to_earn_a_badge_you_can_still_support_signal_by_making_a_donation_on_our_website">Eininga di støttar ikkje Google Pay, så du kan ikkje abonnera for å få eit merke. Du kan likevel støtta Signal ved å donera via nettsidene våre.</string>
   <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Nettverksfeil. Sjekk tilkoplinga di og prøv igjen.</string>
   <string name="NetworkFailure__retry">Prøv igjen</string>
+  <!--Stripe decline code generic_failure-->
+  <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">Prøv ein annan betalingsmetode eller ta kontakt med banken din for meir informasjon.</string>
+  <!--Stripe decline code verify on Google Pay and try again-->
+  <string name="DeclineCode__verify_your_payment_method_is_up_to_date_in_google_pay_and_try_again">Stadfest at betalingsmetoden din er oppdatert i Google Pay og prøv igjen.</string>
+  <!--Stripe decline code learn more action label-->
+  <string name="DeclineCode__learn_more">Lær meir</string>
+  <!--Stripe decline code contact issuer-->
+  <string name="DeclineCode__verify_your_payment_method_is_up_to_date_in_google_pay_and_try_again_if_the_problem">Stadfest at betalingsmetoden din er oppdatert i Google Pay og prøv igjen. Ta kontakt med banken din viss problemet held fram.</string>
+  <!--Stripe decline code purchase not supported-->
+  <string name="DeclineCode__your_card_does_not_support_this_type_of_purchase">Kortet ditt støttar ikkje denne typen betaling. Prøv ein annan betalingsmetode.</string>
+  <!--Stripe decline code your card has expired-->
+  <string name="DeclineCode__your_card_has_expired">Kortet ditt er utløpt. Oppdater betalingsmetoden i Google Pay og prøv igjen.</string>
+  <!--Stripe decline code go to google pay action label-->
+  <string name="DeclineCode__go_to_google_pay">Gå til Google Pay</string>
+  <!--Stripe decline code incorrect card number-->
+  <string name="DeclineCode__your_card_number_is_incorrect">Kortnummeret ditt er feil. Oppdater det i Google Pay og prøv igjen.</string>
+  <!--Stripe decline code incorrect cvc-->
+  <string name="DeclineCode__your_cards_cvc_number_is_incorrect">CVC-nummeret på kortet ditt er feil. Oppdater det i Google Pay og prøv igjen.</string>
+  <!--Stripe decline code insufficient funds-->
+  <string name="DeclineCode__your_card_does_not_have_sufficient_funds">Kortet ditt har for låg saldo for å fullføra denne betalinga. Prøv ein annan betalingsmetode.</string>
+  <!--Stripe decline code incorrect expiration month-->
+  <string name="DeclineCode__the_expiration_month">Utløpsmånaden på betalingsmetoden din er feil. Oppdater det i Google Pay og prøv igjen.</string>
+  <!--Stripe decline code incorrect expiration year-->
+  <string name="DeclineCode__the_expiration_year">Utløpsåret på betalingsmetoden din er feil. Oppdater det i Google Pay og prøv igjen.</string>
+  <!--Stripe decline code issuer not available-->
+  <string name="DeclineCode__try_completing_the_payment_again">Prøv å betala ferdig igjen eller ta kontakt med banken din for meir informasjon.</string>
+  <!--Stripe decline code processing error-->
+  <string name="DeclineCode__try_again">Prøv igjen eller ta kontakt med banken din for meir informasjon.</string>
   <!--Title of create notification profile screen-->
   <string name="EditNotificationProfileFragment__name_your_profile">Gje namn til profilen</string>
   <!--Hint text for create/edit notification profile name-->
@@ -3604,5 +3660,7 @@ Sjekkar igjen no …</string>
   <string name="NotificationProfilesMegaphone__not_now">Ikkje no</string>
   <!--Displayed in a toast when we fail to open the ringtone picker-->
   <string name="NotificationSettingsFragment__failed_to_open_picker">Klarte ikkje opna veljar.</string>
+  <!--Description shown for the Signal Release Notes channel-->
+  <string name="ReleaseNotes__signal_release_notes_and_news">Signal versjonsnotat og nyheiter</string>
   <!--EOF-->
 </resources>

@@ -22,6 +22,7 @@ final class MenuState {
   private final boolean resend;
   private final boolean copy;
   private final boolean delete;
+  private final boolean reactions;
 
   private MenuState(@NonNull Builder builder) {
     forward        = builder.forward;
@@ -31,6 +32,7 @@ final class MenuState {
     resend         = builder.resend;
     copy           = builder.copy;
     delete         = builder.delete;
+    reactions      = builder.reactions;
   }
 
   boolean shouldShowForwardAction() {
@@ -59,6 +61,10 @@ final class MenuState {
 
   boolean shouldShowDeleteAction() {
     return delete;
+  }
+
+  boolean shouldShowReactions() {
+    return reactions;
   }
 
   static MenuState getMenuState(@NonNull Recipient conversationRecipient,
@@ -142,12 +148,13 @@ final class MenuState {
                                              ((MediaMmsMessageRecord)messageRecord).containsMediaSlide() &&
                                              ((MediaMmsMessageRecord)messageRecord).getSlideDeck().getStickerSlide() == null)
              .shouldShowForwardAction(shouldShowForwardAction)
-             .shouldShowDetailsAction(!actionMessage)
+             .shouldShowDetailsAction(!actionMessage && !conversationRecipient.isReleaseNotes())
              .shouldShowReplyAction(canReplyToMessage(conversationRecipient, actionMessage, messageRecord, shouldShowMessageRequest, isNonAdminInAnnouncementGroup));
     }
 
     return builder.shouldShowCopyAction(!actionMessage && !remoteDelete && hasText)
                   .shouldShowDeleteAction(!hasInMemory && onlyContainsCompleteMessages(selectedParts))
+                  .shouldShowReactions(!conversationRecipient.isReleaseNotes())
                   .build();
   }
 
@@ -172,7 +179,8 @@ final class MenuState {
            !isDisplayingMessageRequest                                                 &&
            messageRecord.isSecure()                                                    &&
            (!conversationRecipient.isGroup() || conversationRecipient.isActiveGroup()) &&
-           !messageRecord.getRecipient().isBlocked();
+           !messageRecord.getRecipient().isBlocked()                                   &&
+           !conversationRecipient.isReleaseNotes();
   }
 
   static boolean isActionMessage(@NonNull MessageRecord messageRecord) {
@@ -188,7 +196,8 @@ final class MenuState {
            messageRecord.isGroupV1MigrationEvent() ||
            messageRecord.isChatSessionRefresh() ||
            messageRecord.isInMemoryMessageRecord() ||
-           messageRecord.isChangeNumber();
+           messageRecord.isChangeNumber() ||
+           messageRecord.isBoostRequest();
   }
 
   private final static class Builder {
@@ -200,6 +209,7 @@ final class MenuState {
     private boolean resend;
     private boolean copy;
     private boolean delete;
+    private boolean reactions;
 
     @NonNull Builder shouldShowForwardAction(boolean forward) {
       this.forward = forward;
@@ -233,6 +243,11 @@ final class MenuState {
 
     @NonNull Builder shouldShowDeleteAction(boolean delete) {
       this.delete = delete;
+      return this;
+    }
+
+    @NonNull Builder shouldShowReactions(boolean reactions) {
+      this.reactions = reactions;
       return this;
     }
 

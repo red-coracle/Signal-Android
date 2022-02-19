@@ -75,7 +75,7 @@ class MultiDeviceContactSyncJob(parameters: Parameters, private val attachmentPo
 
     var contact: DeviceContact? = deviceContacts.read()
     while (contact != null) {
-      val recipient = Recipient.externalPush(context, contact.address.aci, contact.address.number.orNull(), true)
+      val recipient = Recipient.externalPush(contact.address.serviceId, contact.address.number.orNull(), true)
 
       if (recipient.isSelf) {
         contact = deviceContacts.read()
@@ -102,7 +102,7 @@ class MultiDeviceContactSyncJob(parameters: Parameters, private val attachmentPo
           else -> VerifiedStatus.DEFAULT
         }
 
-        ApplicationDependencies.getIdentityStore().saveIdentityWithoutSideEffects(
+        ApplicationDependencies.getProtocolStore().aci().identities().saveIdentityWithoutSideEffects(
           recipient.id,
           contact.verified.get().identityKey,
           verifiedStatus,

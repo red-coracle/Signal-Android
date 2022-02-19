@@ -25,6 +25,7 @@ import org.thoughtcrime.securesms.wallpaper.ChatWallpaper;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.push.ACI;
 import org.whispersystems.signalservice.api.push.PNI;
+import org.whispersystems.signalservice.api.push.ServiceId;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -32,7 +33,7 @@ import java.util.List;
 
 public class RecipientDetails {
 
-  final ACI                        aci;
+  final ServiceId                  serviceId;
   final PNI                        pni;
   final String                     username;
   final String                     e164;
@@ -83,6 +84,7 @@ public class RecipientDetails {
   final Optional<Recipient.Extras> extras;
   final boolean                    hasGroupsInCommon;
   final List<Badge>                badges;
+  final boolean                    isReleaseChannel;
 
   public RecipientDetails(@Nullable String groupName,
                           @Nullable String systemContactName,
@@ -91,13 +93,14 @@ public class RecipientDetails {
                           boolean isSelf,
                           @NonNull RegisteredState registeredState,
                           @NonNull RecipientRecord record,
-                          @Nullable List<Recipient> participants)
+                          @Nullable List<Recipient> participants,
+                          boolean isReleaseChannel)
   {
     this.groupAvatarId               = groupAvatarId;
     this.systemContactPhoto          = Util.uri(record.getSystemContactPhotoUri());
     this.customLabel                 = record.getSystemPhoneLabel();
     this.contactUri                  = Util.uri(record.getSystemContactUri());
-    this.aci                         = record.getAci();
+    this.serviceId                   = record.getServiceId();
     this.pni                         = record.getPni();
     this.username                    = record.getUsername();
     this.e164                        = record.getE164();
@@ -144,6 +147,7 @@ public class RecipientDetails {
     this.extras                      = Optional.fromNullable(record.getExtras());
     this.hasGroupsInCommon           = record.hasGroupsInCommon();
     this.badges                      = record.getBadges();
+    this.isReleaseChannel            = isReleaseChannel;
   }
 
   /**
@@ -153,9 +157,9 @@ public class RecipientDetails {
     this.groupAvatarId               = null;
     this.systemContactPhoto          = null;
     this.customLabel                 = null;
-    this.contactUri                  = null;
-    this.aci                         = null;
-    this.pni                         = null;
+    this.contactUri = null;
+    this.serviceId  = null;
+    this.pni        = null;
     this.username                    = null;
     this.e164                        = null;
     this.email                       = null;
@@ -201,12 +205,14 @@ public class RecipientDetails {
     this.extras                      = Optional.absent();
     this.hasGroupsInCommon           = false;
     this.badges                      = Collections.emptyList();
+    this.isReleaseChannel            = false;
   }
 
   public static @NonNull RecipientDetails forIndividual(@NonNull Context context, @NonNull RecipientRecord settings) {
-    boolean systemContact = !settings.getSystemProfileName().isEmpty();
-    boolean isSelf        = (settings.getE164() != null && settings.getE164().equals(SignalStore.account().getE164())) ||
-                            (settings.getAci() != null && settings.getAci().equals(SignalStore.account().getAci()));
+    boolean systemContact    = !settings.getSystemProfileName().isEmpty();
+    boolean isSelf           = (settings.getE164() != null && settings.getE164().equals(SignalStore.account().getE164())) ||
+                               (settings.getServiceId() != null && settings.getServiceId().equals(SignalStore.account().getAci()));
+    boolean isReleaseChannel = settings.getId().equals(SignalStore.releaseChannelValues().getReleaseChannelRecipientId());
 
     RegisteredState registeredState = settings.getRegistered();
 
@@ -218,6 +224,6 @@ public class RecipientDetails {
       }
     }
 
-    return new RecipientDetails(null, settings.getSystemDisplayName(), Optional.absent(), systemContact, isSelf, registeredState, settings, null);
+    return new RecipientDetails(null, settings.getSystemDisplayName(), Optional.absent(), systemContact, isSelf, registeredState, settings, null, isReleaseChannel);
   }
 }

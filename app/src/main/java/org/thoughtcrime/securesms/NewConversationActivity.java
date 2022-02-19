@@ -67,7 +67,7 @@ public class NewConversationActivity extends ContactSelectionActivity
     } else {
       Log.i(TAG, "[onContactSelected] Maybe creating a new recipient.");
 
-      if (SignalStore.account().isRegistered() && NetworkConstraint.isMet(this)) {
+      if (SignalStore.account().isRegistered() && NetworkConstraint.isMet(getApplication())) {
         Log.i(TAG, "[onContactSelected] Doing contact refresh.");
 
         AlertDialog progress = SimpleProgressDialog.show(this);
@@ -75,7 +75,7 @@ public class NewConversationActivity extends ContactSelectionActivity
         SimpleTask.run(getLifecycle(), () -> {
           Recipient resolved = Recipient.external(this, number);
 
-          if (!resolved.isRegistered() || !resolved.hasAci()) {
+          if (!resolved.isRegistered() || !resolved.hasServiceId()) {
             Log.i(TAG, "[onContactSelected] Not registered or no UUID. Doing a directory refresh.");
             try {
               DirectoryHelper.refreshDirectoryFor(this, resolved, false);

@@ -158,10 +158,10 @@ public class ResendMessageJob extends BaseJob {
       List<SignalProtocolAddress> addresses = result.getSuccess()
                                                     .getDevices()
                                                     .stream()
-                                                    .map(device -> new SignalProtocolAddress(recipient.requireServiceId(), device))
+                                                    .map(device -> recipient.requireServiceId().toProtocolAddress(device))
                                                     .collect(Collectors.toList());
 
-      ApplicationDependencies.getSenderKeyStore().markSenderKeySharedWith(distributionId, addresses);
+      ApplicationDependencies.getProtocolStore().aci().markSenderKeySharedWith(distributionId, addresses);
     }
   }
 

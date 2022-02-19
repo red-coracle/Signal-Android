@@ -89,6 +89,10 @@
   <string name="BlockUnblockDialog_group_members_will_be_able_to_add_you">群組成員將能夠再把您加入此群組。</string>
   <string name="BlockUnblockDialog_you_will_be_able_to_call_and_message_each_other">您將能夠再互相傳送訊息和通話，您的名稱和照片也會與對方分享。</string>
   <string name="BlockUnblockDialog_blocked_people_wont_be_able_to_call_you_or_send_you_messages">已封鎖的人將無法撥打或傳送訊息給您。</string>
+  <!--Message shown on block dialog when blocking the Signal release notes recipient-->
+  <string name="BlockUnblockDialog_block_getting_signal_updates_and_news">封鎖收取 Signal 更新資訊及最新消息。</string>
+  <!--Message shown on unblock dialog when unblocking the Signal release notes recipient-->
+  <string name="BlockUnblockDialog_resume_getting_signal_updates_and_news">恢復收取 Signal 更新資訊及最新消息。</string>
   <string name="BlockUnblockDialog_unblock_s">要解除封鎖 %1$s 嗎？</string>
   <string name="BlockUnblockDialog_block">封鎖</string>
   <string name="BlockUnblockDialog_block_and_leave">封鎖並退出</string>
@@ -1023,7 +1027,11 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">您與 %s 之間的安全碼已標記為未驗證</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">您與 %s 之間的安全碼已在另一台裝置上標記為未驗證</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">來自 %s 的一則訊息無法送達</string>
-  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s 已將電話號碼變更為新的號碼。</string> -->
+  <string name="MessageRecord_s_changed_their_phone_number">%1$s 已變更電話號碼。</string>
+  <!--Update item message shown in the release channel when someone is already a sustainer so we ask them if they want to boost.-->
+  <string name="MessageRecord_like_this_new_feature_say_thanks_with_a_boost">喜歡此新功能嗎？何妨集結小小心意，為 Signal 加一加油。</string>
+  <!--Update item message shown in the release channel when someone is not a sustainer so we ask them to consider becoming one-->
+  <string name="MessageRecord_signal_is_powered_by_people_like_you_become_a_sustainer_today">萬家燈火照，將點點光輝，放進 Signal。今日就成為延續人吧。</string>
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s 開展了群組通話 · %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s 加入了群組通話 · %2$s</string>
@@ -1050,6 +1058,7 @@
   <string name="MessageRequestBottomView_unblock">解除封鎖</string>
   <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_they_wont_know_youve_seen_their_messages_until_you_accept">要讓 %1$s 傳訊給您，並向對方分享您的名稱和照片嗎？在您接受之前，對方不會知道您看過其訊息。</string>
   <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_wont_receive_any_messages_until_you_unblock_them">要讓 %1$s 傳訊給您，並向對方分享您的名稱和照片嗎？在您解除封鎖之前，您不會收到對方任何訊息。</string>
+  <string name="MessageRequestBottomView_get_updates_and_news_from_s_you_wont_receive_any_updates_until_you_unblock_them">要收取 %1$s 的更新資訊及最新消息嗎？在您解除封鎖之前，您不會收到任何近況。</string>
   <string name="MessageRequestBottomView_continue_your_conversation_with_this_group_and_share_your_name_and_photo">要繼續與此群組的對話，並與其成員分享您的名稱和照片嗎？</string>
   <string name="MessageRequestBottomView_upgrade_this_group_to_activate_new_features">升級此群組以啟用新功能，諸如 @提及 和管理員。此群組中未有分享名稱或照片的成員將會獲邀加入。</string>
   <string name="MessageRequestBottomView_this_legacy_group_can_no_longer_be_used">此「舊版群組」現已不再可用，因為人數太多。群組人數上限為 %1$d 人。</string>
@@ -1170,6 +1179,11 @@
   <string name="RedPhone_number_not_registered">號碼尚未註冊！</string>
   <string name="RedPhone_the_number_you_dialed_does_not_support_secure_voice">您所撥打的號碼不支援安全語音！</string>
   <string name="RedPhone_got_it">我知道了</string>
+  <!--Valentine\'s Day Megaphone-->
+  <!--Title text for the Valentine\'s Day donation megaphone. The placeholder will always be a heart emoji. Needs to be a placeholder for Android reasons.-->
+  <string name="ValentinesDayMegaphone_happy_heart_day">💜 人節快樂！</string>
+  <!--Body text for the Valentine\'s Day donation megaphone.-->
+  <string name="ValentinesDayMegaphone_show_your_affection">成為 Signal 延續人，盡訴延綿心意。</string>
   <!--WebRtcCallActivity-->
   <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">輕觸此處以開啟您的視像</string>
   <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">Signal 需要存取您的相機，以便與 %1$s 通話。</string>
@@ -1220,6 +1234,7 @@
   <string name="WebRtcCallView__flip">翻轉</string>
   <string name="WebRtcCallView__speaker">揚聲器</string>
   <string name="WebRtcCallView__camera">相機</string>
+  <string name="WebRtcCallView__unmute">取消靜音</string>
   <string name="WebRtcCallView__mute">靜音</string>
   <string name="WebRtcCallView__ring">響鈴</string>
   <string name="WebRtcCallView__end_call">結束通話</string>
@@ -1518,6 +1533,10 @@
   <string name="NotificationChannel_voice_notes">語音備忘</string>
   <string name="NotificationChannel_contact_joined_signal">聯絡人已加入 Signal</string>
   <string name="NotificationChannels__no_activity_available_to_open_notification_channel_settings">無可用的活動以開啟通知通道設定。</string>
+  <!--Notification channel name for showing persistent background connection on devices without push notifications-->
+  <string name="NotificationChannel_background_connection">背景連線</string>
+  <!--Notification channel name for showing call status information (like connection, ongoing, etc.) Not ringing.-->
+  <string name="NotificationChannel_call_status">通話狀態</string>
   <!--ProfileEditNameFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Signal 在鎖定時無法使用快速回應！</string>
@@ -1644,6 +1663,10 @@
   <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">無聯絡人在此群組中。請仔細檢閱請求。</string>
   <string name="ConversationUpdateItem_view">檢視</string>
   <string name="ConversationUpdateItem_the_disappearing_message_time_will_be_set_to_s_when_you_message_them">當您發送訊息時，將會設置時效為 %1$s。</string>
+  <!--Update item button text to show to boost a feature-->
+  <string name="ConversationUpdateItem_signal_boost">Signal 有團伙</string>
+  <!--Update item button text to show to become a sustainer in the release notes channel-->
+  <string name="ConversationUpdateItem_become_a_sustainer">成為延續人</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">播放 … 暫停</string>
   <string name="audio_view__download_accessibility_description">下載</string>
@@ -1871,7 +1894,7 @@
     <item>意見回饋</item>
     <item>其他</item>
     <item>付款 (MobileCoin)</item>
-    <item>力撐派及 Signal 集氣</item>
+    <item>延續人及 Signal 集氣</item>
   </string-array>
   <!--ReactWithAnyEmojiBottomSheetDialogFragment-->
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__this_message">此訊息</string>
@@ -1969,7 +1992,7 @@
   <string name="preferences__advanced">進階</string>
   <string name="preferences__donate_to_signal">捐款給 Signal</string>
   <string name="preferences__subscription">訂閱</string>
-  <string name="preferences__become_a_signal_sustainer">成為 Signal 力撐派</string>
+  <string name="preferences__become_a_signal_sustainer">成為 Signal 延續人</string>
   <string name="preferences__signal_boost">Signal 有團伙</string>
   <string name="preferences__privacy">私隱</string>
   <string name="preferences__mms_user_agent">MMS 使用者代理</string>
@@ -2237,21 +2260,6 @@
   <string name="conversation_callable_secure__menu_call">Signal 通話</string>
   <string name="conversation_callable_secure__menu_video">Signal 視像通話</string>
   <!--conversation_context-->
-  <!--Button to view detailed information for a message-->
-  <string name="conversation_context__menu_message_details">資訊</string>
-  <!--Button to copy a message\'s text to the clipboard-->
-  <string name="conversation_context__menu_copy_text">複製</string>
-  <!--Button to delete a message-->
-  <string name="conversation_context__menu_delete_message">刪除</string>
-  <!--Button to forward a message to another person or group chat-->
-  <string name="conversation_context__menu_forward_message">轉發</string>
-  <!--Button to retry sending a message-->
-  <string name="conversation_context__menu_resend_message">重新傳送訊息</string>
-  <!--Button to reply to a message-->
-  <string name="conversation_context__menu_reply_to_message">回覆</string>
-  <!--conversation_context_reaction-->
-  <!--Button to select a message and enter selection mode-->
-  <string name="conversation_context__reaction_multi_select">選取多個項目</string>
   <!--Heading which shows how many messages are currently selected-->
   <plurals name="conversation_context__s_selected">
     <item quantity="other">%d 個已選取</item>
@@ -2274,6 +2282,10 @@
   <string name="conversation_selection__menu_reply">回覆</string>
   <!--Button to save a message attachment (image, file etc.)-->
   <string name="conversation_selection__menu_save">儲存</string>
+  <!--Button to retry sending a message-->
+  <string name="conversation_selection__menu_resend_message">重新傳送</string>
+  <!--Button to select a message and enter selection mode-->
+  <string name="conversation_selection__menu_multi_select">選取</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">邀請</string>
@@ -2940,9 +2952,12 @@
   <string name="AccountSettingsFragment__require_your_signal_pin">要求輸入您的 Signal PIN 碼才可再次在 Signal 註冊您的電話號碼</string>
   <string name="AccountSettingsFragment__change_phone_number">變更電話號碼</string>
   <!--ChangeNumberFragment-->
-  <string name="ChangeNumberFragment__use_this_to_change_your_current_phone_number_to_a_new_phone_number">以此將您目前的電話號碼變更為新的電話號碼。您將無法復原此變更。\n\n在繼續之前，請確定您的新號碼可以接收短訊或來電。</string>
+  <string name="ChangeNumberFragment__use_this_to_change_your_current_phone_number_to_a_new_phone_number">藉此將您現用的電話號碼變更為新的電話號碼。您將無法復原此變更。\n\n在繼續之前，請確定您的新號碼可以接收短訊或來電。</string>
   <string name="ChangeNumberFragment__continue">繼續</string>
-  <!-- Removed by excludeNonTranslatables <string name="ChangeNumber__your_phone_number_has_been_changed">您的電話號碼已變更。</string> -->
+  <!--Message shown on dialog after your number has been changed successfully.-->
+  <string name="ChangeNumber__your_phone_number_has_changed_to_s">您的電話號碼現已變更為 %1$s</string>
+  <!--Confirmation button to dismiss number changed dialog-->
+  <string name="ChangeNumber__okay">好</string>
   <!--ChangeNumberEnterPhoneNumberFragment-->
   <string name="ChangeNumberEnterPhoneNumberFragment__change_number">變更號碼</string>
   <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">您的舊號碼</string>
@@ -2971,12 +2986,19 @@
   <string name="ChangeNumberPinDiffersFragment__update_pin">更新 PIN 碼</string>
   <string name="ChangeNumberPinDiffersFragment__keep_old_pin_question">要保留舊 PIN 碼嗎？</string>
   <!--ChangeNumberLockActivity-->
+  <!--Info message shown to user if something crashed the app during the change number attempt and we were unable to confirm the change so we force them into this screen to check before letting them use the app-->
   <string name="ChangeNumberLockActivity__it_looks_like_you_tried_to_change_your_number_but_we_were_unable_to_determine_if_it_was_successful_rechecking_now">您似乎曾嘗試變更您的號碼，惟我們未能判斷是否成功。\n\n現正重新檢查…</string>
+  <!--Dialog title shown if we were able to confirm your change number status (meaning we now know what the server thinks our number is) after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__change_status_confirmed">變更狀態已確認</string>
+  <!--Dialog message shown if we were able to confirm your change number status (meaning we now know what the server thinks our number is) after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__your_number_has_been_confirmed_as_s">您的號碼已確認為 %1$s。若這不是您的新號碼，請重新開始變更號碼過程。</string>
+  <!--Dialog title shown if we were not able to confirm your phone number with the server and thus cannot let leave the change flow yet after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__change_status_unconfirmed">變更狀態未確認</string>
+  <!--Dialog message shown when we can\'t verify the phone number on the server, only shown if there was a network error communicating with the server after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__we_could_not_determine_the_status_of_your_change_number_request">我們無法判斷您變更號碼的請求狀態。\n\n(錯誤：%1$s)</string>
+  <!--Dialog button to retry confirming the number on the server-->
   <string name="ChangeNumberLockActivity__retry">重試</string>
+  <!--Dialog button shown to leave the app when in the unconfirmed change status after a crash in the regular flow-->
   <string name="ChangeNumberLockActivity__leave">離開</string>
   <string name="ChangeNumberLockActivity__submit_debug_log">提交除錯記錄檔</string>
   <!--ChatsSettingsFragment-->
@@ -3091,8 +3113,8 @@
   <string name="AddAProfilePhotoMegaphone__not_now">現在不要</string>
   <string name="AddAProfilePhotoMegaphone__add_photo">新增照片</string>
   <!--BecomeASustainerMegaphone-->
-  <string name="BecomeASustainerMegaphone__become_a_sustainer">成為力撐派</string>
-  <string name="BecomeASustainerMegaphone__signal_is_powered">不論一表人才，還是年輕有為，唯獨這麼三個字撈起 Signal 的位位多麼似您。請隨心捐款，並在個人資料中笑納一枚徽章聊以致謝。</string>
+  <string name="BecomeASustainerMegaphone__become_a_sustainer">成為延續人</string>
+  <string name="BecomeASustainerMegaphone__signal_is_powered">萬家燈火照，將點點光輝，放進 Signal。凡捐獻即獲贈個人資料徽章。</string>
   <string name="BecomeASustainerMegaphone__no_thanks">在心中</string>
   <string name="BecomeASustainerMegaphone__contribute">我捐款</string>
   <!--KeyboardPagerFragment-->
@@ -3257,11 +3279,11 @@
   <string name="SelectFeaturedBadgeFragment__select_a_badge">請選擇一個徽章</string>
   <string name="SelectFeaturedBadgeFragment__you_must_select_a_badge">您必須選取一個徽章</string>
   <string name="SelectFeaturedBadgeFragment__failed_to_update_profile">更新個人資料失敗</string>
-  <string name="ViewBadgeBottomSheetDialogFragment__become_a_sustainer">成為力撐派</string>
+  <string name="ViewBadgeBottomSheetDialogFragment__become_a_sustainer">成為延續人</string>
   <string name="ImageView__badge">徽章</string>
   <string name="SubscribeFragment__signal_is_powered_by_people_like_you">Signal 由您這樣的人提供動力。</string>
-  <string name="SubscribeFragment__support_technology_that_is_built_for_you">支持為您而設—而非為您的資料而造—的科技，擔起力撐派，成為延續爐火的一分子。</string>
-  <string name="SubscribeFragment__support_technology_that_is_built_for_you_not">支持為您而設、而非為您的資料而造的科技，擔起力撐派，成為延續 Signal 爐火的一分子。</string>
+  <string name="SubscribeFragment__support_technology_that_is_built_for_you">支持為您而設—而非為您的資料而造—的科技，擔起延續人，成為延續爐火的一分子。</string>
+  <string name="SubscribeFragment__support_technology_that_is_built_for_you_not">支持為您而設、而非為您的資料而造的科技，擔起延續人，成為延續 Signal 爐火的一分子。</string>
   <string name="SubscribeFragment__currency">貨幣</string>
   <string name="SubscribeFragment__more_payment_options">更多付款選項</string>
   <string name="SubscribeFragment__cancel_subscription">取消訂閱</string>
@@ -3287,7 +3309,7 @@
   <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_s_badge_help_signal">您已獲贈一枚「%s」徽章！不妨在您的個人資料中展覽徽章，讓人一呼百應撐起 Signal。</string>
   <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_boost_badge_help_signal">您已獲贈一枚集氣徽章！不妨在您的個人資料中展覽徽章，讓人一呼百應撐起 Signal。</string>
   <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">您亦可考慮</string>
-  <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">成為月供力撐派。</string>
+  <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">成為月供延續人。</string>
   <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">在個人資料中展現</string>
   <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">設為別注徽章</string>
   <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__done">完成</string>
@@ -3315,13 +3337,19 @@
   <string name="ExpiredBadgeBottomSheetDialogFragment__subscription_cancelled">訂閱已取消</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__your_boost_badge_has_expired">您的集氣徽章已到時限，不再在您的個人資料中讓別人看見。</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__you_can_reactivate">您可憑單次捐款，將您的「集氣」徽章再延續 30 天。</string>
-  <string name="ExpiredBadgeBottomSheetDialogFragment__to_continue_supporting_technology">如欲繼續支持為您而設的科技，請考慮成為月供力撐派。</string>
-  <string name="ExpiredBadgeBottomSheetDialogFragment__become_a_sustainer">成為力撐派</string>
+  <string name="ExpiredBadgeBottomSheetDialogFragment__to_continue_supporting_technology">如欲繼續支持為您而設的科技，請考慮成為月供延續人。</string>
+  <string name="ExpiredBadgeBottomSheetDialogFragment__become_a_sustainer">成為延續人</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__add_a_boost">新增集氣</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__not_now">現在不要</string>
-  <string name="ExpiredBadgeBottomSheetDialogFragment__your_sustainer">有見您已有好一段日子未曾使用，您的力撐派訂閱已自動取消。您的「%1$s」徽章不再在您的個人資料中讓別人看見。</string>
+  <!--Copy displayed when badge expires after user inactivity-->
+  <string name="ExpiredBadgeBottomSheetDialogFragment__your_sustainer_subscription_was_automatically">有見您已有好一段日子未曾使用，您的延續人訂閱已自動取消。您的「%1$s」徽章不再在您的個人資料中讓別人看見。</string>
+  <!--Copy displayed when badge expires after payment failure-->
+  <string name="ExpiredBadgeBottomSheetDialogFragment__your_sustainer_subscription_was_canceled">我們未能處理您的付款，因此您的延續人訂閱已取消。您的徽章不再在您的個人資料中讓別人看見。</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__you_can">您可如常使用 Signal，沒有關係。假如您希望支持此應用程式並延續您的徽章，請立即續期。</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__renew_subscription">為訂閱續期</string>
+  <string name="CantProcessSubscriptionPaymentBottomSheetDialogFragment__cant_process_subscription_payment">未能處理訂閱付款</string>
+  <string name="CantProcessSubscriptionPaymentBottomSheetDialogFragment__were_having_trouble">我們在收取您的 Signal 延續人付款時遇到問題。請確定您的付款方法仍然有效。若已失效，請到 Google Pay 更新過時的資訊。Signal 將於數天內再次嘗試處理付款。</string>
+  <string name="CantProcessSubscriptionPaymentBottomSheetDialogFragment__dont_show_this_again">不要再顯示此訊息</string>
   <string name="Subscription__please_contact_support_for_more_information">請聯絡支援團隊以取得更多資訊。</string>
   <string name="Subscription__contact_support">聯絡支援</string>
   <string name="Subscription__earn_a_s_badge">獲取一枚「%1$s」徽章</string>
@@ -3343,6 +3371,34 @@
   <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support_google_pay_so_you_can_t_subscribe_to_earn_a_badge_you_can_still_support_signal_by_making_a_donation_on_our_website">您的裝置不支援 Google Pay，故抱歉未能讓您訂閱並贈予徽章。您仍可在我們的網站上捐款以支持 Signal。</string>
   <string name="NetworkFailure__network_error_check_your_connection_and_try_again">網絡錯誤。請檢查您的連線，然後再試一次。</string>
   <string name="NetworkFailure__retry">重試</string>
+  <!--Stripe decline code generic_failure-->
+  <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">試試換另一個付款方法，又或者聯絡您的銀行取得更多資訊。</string>
+  <!--Stripe decline code verify on Google Pay and try again-->
+  <string name="DeclineCode__verify_your_payment_method_is_up_to_date_in_google_pay_and_try_again">請到 Google Pay 驗證您的付款方法仍然有效，然後再試一次。</string>
+  <!--Stripe decline code learn more action label-->
+  <string name="DeclineCode__learn_more">了解更多</string>
+  <!--Stripe decline code contact issuer-->
+  <string name="DeclineCode__verify_your_payment_method_is_up_to_date_in_google_pay_and_try_again_if_the_problem">請到 Google Pay 驗證您的付款方法仍然有效，然後再試一次。若然問題持續，請聯絡您的銀行。</string>
+  <!--Stripe decline code purchase not supported-->
+  <string name="DeclineCode__your_card_does_not_support_this_type_of_purchase">您的信用卡不支援此類型的購買。請換另一個付款方法試試看。</string>
+  <!--Stripe decline code your card has expired-->
+  <string name="DeclineCode__your_card_has_expired">您的信用卡已過期。請到 Google Pay 更新您的付款方法，然後再試一次。</string>
+  <!--Stripe decline code go to google pay action label-->
+  <string name="DeclineCode__go_to_google_pay">前往 Google Pay</string>
+  <!--Stripe decline code incorrect card number-->
+  <string name="DeclineCode__your_card_number_is_incorrect">您的信用卡號碼不正確。請到 Google Pay 更新此資訊，然後再試一次。</string>
+  <!--Stripe decline code incorrect cvc-->
+  <string name="DeclineCode__your_cards_cvc_number_is_incorrect">您的信用卡驗證碼 (CVC) 不正確。請到 Google Pay 更新此資訊，然後再試一次。</string>
+  <!--Stripe decline code insufficient funds-->
+  <string name="DeclineCode__your_card_does_not_have_sufficient_funds">您的信用卡款項不足以完成此次購買。請換另一個付款方法試試看。</string>
+  <!--Stripe decline code incorrect expiration month-->
+  <string name="DeclineCode__the_expiration_month">您的付款方法所指的到期月份不正確。請到 Google Pay 更新此資訊，然後再試一次。</string>
+  <!--Stripe decline code incorrect expiration year-->
+  <string name="DeclineCode__the_expiration_year">您的付款方法所指的到期年份不正確。請到 Google Pay 更新此資訊，然後再試一次。</string>
+  <!--Stripe decline code issuer not available-->
+  <string name="DeclineCode__try_completing_the_payment_again">再試試完成付款，又或者聯絡您的銀行取得更多資訊。</string>
+  <!--Stripe decline code processing error-->
+  <string name="DeclineCode__try_again">請再試一次，又或者聯絡您的銀行取得更多資訊。</string>
   <!--Title of create notification profile screen-->
   <string name="EditNotificationProfileFragment__name_your_profile">為您的情景命名</string>
   <!--Hint text for create/edit notification profile name-->
@@ -3483,5 +3539,7 @@
   <string name="NotificationProfilesMegaphone__not_now">現在不要</string>
   <!--Displayed in a toast when we fail to open the ringtone picker-->
   <string name="NotificationSettingsFragment__failed_to_open_picker">無法開啟挑選器。</string>
+  <!--Description shown for the Signal Release Notes channel-->
+  <string name="ReleaseNotes__signal_release_notes_and_news">Signal 版本資訊暨最新消息</string>
   <!--EOF-->
 </resources>

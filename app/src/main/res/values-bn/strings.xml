@@ -90,6 +90,8 @@
   <string name="BlockUnblockDialog_group_members_will_be_able_to_add_you">গ্রুপের সদস্যরা আপনাকে আবার এই গ্রুপে যুক্ত করতে পারবে।</string>
   <string name="BlockUnblockDialog_you_will_be_able_to_call_and_message_each_other">তোমরা একে অপরকে বার্তা পাঠাতে ও কল করতে পারবে এবং তোমার নাম ও ছবি তাদের সাথে শেয়ার করা হবে।</string>
   <string name="BlockUnblockDialog_blocked_people_wont_be_able_to_call_you_or_send_you_messages">অবরুদ্ধ লোকেরা আপনাকে কল করতে বা আপনাকে বার্তা প্রেরণ করতে পারবে না।</string>
+  <!--Message shown on block dialog when blocking the Signal release notes recipient-->
+  <!--Message shown on unblock dialog when unblocking the Signal release notes recipient-->
   <string name="BlockUnblockDialog_unblock_s">%1$s কে আনব্লক করুন?</string>
   <string name="BlockUnblockDialog_block">অবরূদ্ধ</string>
   <string name="BlockUnblockDialog_block_and_leave">ব্লক করুন ও ছেড়ে যান</string>
@@ -1079,7 +1081,8 @@
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified">আপনি %sএর নিরাপত্তা নাম্বার অযাচিত নির্বাচন করেছেন</string>
   <string name="MessageRecord_you_marked_your_safety_number_with_s_unverified_from_another_device">আপনি অন্য একটি ডিভাইস থেকে  %s এর নিরাপত্তা নাম্বার অযাচিত নির্বাচন করেছেন</string>
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">%s এর থেকে একটি বার্তা সরবরাহ করা যায়নি</string>
-  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_s_changed_their_number_to_a_new_number">%1$s একটি নতুন নম্বরে তাদের নম্বর পরিবর্তন করেছে।</string> -->
+  <!--Update item message shown in the release channel when someone is already a sustainer so we ask them if they want to boost.-->
+  <!--Update item message shown in the release channel when someone is not a sustainer so we ask them to consider becoming one-->
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s একটি গ্রুপ কল শুরু করেছে । %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s গ্রুপ কল এ আছেন। %2$s</string>
@@ -1232,6 +1235,9 @@
   <string name="RedPhone_number_not_registered">নাম্বারটি নিবন্ধিত নয়!</string>
   <string name="RedPhone_the_number_you_dialed_does_not_support_secure_voice">আপনার ডায়াল করা নাম্বার সুরক্ষিত ভয়েস সমর্থন করে না!</string>
   <string name="RedPhone_got_it">বুঝতে পেরেছি</string>
+  <!--Valentine\'s Day Megaphone-->
+  <!--Title text for the Valentine\'s Day donation megaphone. The placeholder will always be a heart emoji. Needs to be a placeholder for Android reasons.-->
+  <!--Body text for the Valentine\'s Day donation megaphone.-->
   <!--WebRtcCallActivity-->
   <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">আপনার ভিডিও চালু করতে এখানে আলতো চাপুন</string>
   <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">%1$s কে ফোন করতে Signal কে আপনার ক্যামেরা ব্যাবহার করতে হবে।</string>
@@ -1287,6 +1293,7 @@
   <string name="WebRtcCallView__flip">ফ্লিপ</string>
   <string name="WebRtcCallView__speaker">স্পিকার</string>
   <string name="WebRtcCallView__camera">ক্যামেরা</string>
+  <string name="WebRtcCallView__unmute">আনমিউট করুন</string>
   <string name="WebRtcCallView__mute">নিরব</string>
   <string name="WebRtcCallView__ring">রিং</string>
   <string name="WebRtcCallView__end_call">কল শেষ করুন</string>
@@ -1584,6 +1591,8 @@
   <string name="NotificationChannel_voice_notes">ভয়েস নোট</string>
   <string name="NotificationChannel_contact_joined_signal">পরিচিতি Signal এ যোগ দিয়েছে</string>
   <string name="NotificationChannels__no_activity_available_to_open_notification_channel_settings">নোটিফিকেশন চ্যানেল সেটিংস খোলার কোন কার্যকলাপ উপলভ্য নেই।</string>
+  <!--Notification channel name for showing persistent background connection on devices without push notifications-->
+  <!--Notification channel name for showing call status information (like connection, ongoing, etc.) Not ringing.-->
   <!--ProfileEditNameFragment-->
   <!--QuickResponseService-->
   <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Signal লক্ করা থাকলে দ্রুত প্রত্যুত্তর দেওয়া সম্ভব নয়!</string>
@@ -1712,6 +1721,10 @@
   <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">এই গ্রুপে কোনও কন্ট্যাক্ট নেই। অনুরোধগুলি সতর্কতার সাথে পর্যালোচনা করুন।</string>
   <string name="ConversationUpdateItem_view">দেখান</string>
   <string name="ConversationUpdateItem_the_disappearing_message_time_will_be_set_to_s_when_you_message_them">আপনি তাদের মেসেজ পাঠালে মেসেজ অদৃশ্য হওয়ার সময় %1$s-এ সেট করা হবে।</string>
+  <!--Update item button text to show to boost a feature-->
+  <string name="ConversationUpdateItem_signal_boost">সিগন্যাল বুস্ট</string>
+  <!--Update item button text to show to become a sustainer in the release notes channel-->
+  <string name="ConversationUpdateItem_become_a_sustainer">একজন সাসটেইনার হয়ে উঠুন</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">চালু…. বিরতি</string>
   <string name="audio_view__download_accessibility_description">ডাউনলোড</string>
@@ -2302,21 +2315,6 @@
   <string name="conversation_callable_secure__menu_call">Signal কল</string>
   <string name="conversation_callable_secure__menu_video">Signal ভিডিও কল</string>
   <!--conversation_context-->
-  <!--Button to view detailed information for a message-->
-  <string name="conversation_context__menu_message_details">তথ্য</string>
-  <!--Button to copy a message\'s text to the clipboard-->
-  <string name="conversation_context__menu_copy_text">কপি করুন</string>
-  <!--Button to delete a message-->
-  <string name="conversation_context__menu_delete_message">মুছুন</string>
-  <!--Button to forward a message to another person or group chat-->
-  <string name="conversation_context__menu_forward_message">ফরওয়ার্ড</string>
-  <!--Button to retry sending a message-->
-  <string name="conversation_context__menu_resend_message">বার্তা পুনরায় পাঠান</string>
-  <!--Button to reply to a message-->
-  <string name="conversation_context__menu_reply_to_message">প্রত্যুত্তর</string>
-  <!--conversation_context_reaction-->
-  <!--Button to select a message and enter selection mode-->
-  <string name="conversation_context__reaction_multi_select">একাধিক নির্বাচন করুন</string>
   <!--Heading which shows how many messages are currently selected-->
   <!--conversation_context_image-->
   <!--Button to save a message attachment (image, file etc.)-->
@@ -2336,6 +2334,10 @@
   <string name="conversation_selection__menu_reply">প্রত্যুত্তর</string>
   <!--Button to save a message attachment (image, file etc.)-->
   <string name="conversation_selection__menu_save">সংরক্ষণ করুন</string>
+  <!--Button to retry sending a message-->
+  <string name="conversation_selection__menu_resend_message">পুনরায় পাঠান</string>
+  <!--Button to select a message and enter selection mode-->
+  <string name="conversation_selection__menu_multi_select">নির্বাচন</string>
   <!--conversation_expiring_on-->
   <!--conversation_insecure-->
   <string name="conversation_insecure__invite">আমন্ত্রণ</string>
@@ -3005,7 +3007,9 @@
   <!--ChangeNumberFragment-->
   <string name="ChangeNumberFragment__use_this_to_change_your_current_phone_number_to_a_new_phone_number">আপনার বর্তমান ফোন নম্বরটি একটি নতুন ফোন নম্বরে পরিবর্তন করতে এটি ব্যবহার করুন। আপনি এই পরিবর্তনটি পূর্বাবস্থায় ফেরাতে পারবেন না।\n\nচালিয়ে যাওয়ার আগে, নিশ্চিত করুন যে আপনার নতুন নম্বরটি SMS বা কল পেতে পারে।</string>
   <string name="ChangeNumberFragment__continue">চালিয়ে যান</string>
-  <!-- Removed by excludeNonTranslatables <string name="ChangeNumber__your_phone_number_has_been_changed">আপনার ফোন নম্বর পরিবর্তন করা হয়েছে।</string> -->
+  <!--Message shown on dialog after your number has been changed successfully.-->
+  <!--Confirmation button to dismiss number changed dialog-->
+  <string name="ChangeNumber__okay">ঠিক আছে</string>
   <!--ChangeNumberEnterPhoneNumberFragment-->
   <string name="ChangeNumberEnterPhoneNumberFragment__change_number">নম্বর পরিবর্তন করুন</string>
   <string name="ChangeNumberEnterPhoneNumberFragment__your_old_number">আপনার পুরাতন নাম্বার</string>
@@ -3034,12 +3038,19 @@
   <string name="ChangeNumberPinDiffersFragment__update_pin">পিন আপডেট করুন</string>
   <string name="ChangeNumberPinDiffersFragment__keep_old_pin_question">পুরাতন পিন রাখবেন?</string>
   <!--ChangeNumberLockActivity-->
+  <!--Info message shown to user if something crashed the app during the change number attempt and we were unable to confirm the change so we force them into this screen to check before letting them use the app-->
   <string name="ChangeNumberLockActivity__it_looks_like_you_tried_to_change_your_number_but_we_were_unable_to_determine_if_it_was_successful_rechecking_now">দেখে মনে হচ্ছে আপনি আপনার নম্বর পরিবর্তন করার চেষ্টা করেছেন কিন্তু এটি সফল হয়েছে কিনা তা আমরা নির্ধারণ করতে অক্ষম। \n\nএখন পুনরায় পরীক্ষা করা হচ্ছে</string>
+  <!--Dialog title shown if we were able to confirm your change number status (meaning we now know what the server thinks our number is) after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__change_status_confirmed">অবস্থা পরিবর্তন নিশ্চিত করা হয়েছে</string>
+  <!--Dialog message shown if we were able to confirm your change number status (meaning we now know what the server thinks our number is) after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__your_number_has_been_confirmed_as_s">আপনার নম্বরটি %1$s হিসাবে নিশ্চিত করা হয়েছে৷ যদি এটি আপনার নতুন নম্বর না হয়, অনুগ্রহ করে নম্বর পরিবর্তনের প্রক্রিয়াটি পুনরায় শুরু করুন।</string>
+  <!--Dialog title shown if we were not able to confirm your phone number with the server and thus cannot let leave the change flow yet after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__change_status_unconfirmed">অবস্থা পরিবর্তন নিশ্চিত করা হয়নি</string>
+  <!--Dialog message shown when we can\'t verify the phone number on the server, only shown if there was a network error communicating with the server after a crash during the regular flow-->
   <string name="ChangeNumberLockActivity__we_could_not_determine_the_status_of_your_change_number_request">আমরা আপনার নম্বর পরিবর্তন অনুরোধের অবস্থা নির্ধারণ করতে পারিনি।\n\n(ত্রুটি: %1$s)</string>
+  <!--Dialog button to retry confirming the number on the server-->
   <string name="ChangeNumberLockActivity__retry">পুনরায় চেষ্টা করুন</string>
+  <!--Dialog button shown to leave the app when in the unconfirmed change status after a crash in the regular flow-->
   <string name="ChangeNumberLockActivity__leave">ছেড়ে চলে যান</string>
   <string name="ChangeNumberLockActivity__submit_debug_log">ডিবাগ লগ সাবমিট করুন</string>
   <!--ChatsSettingsFragment-->
@@ -3384,7 +3395,9 @@
   <string name="ExpiredBadgeBottomSheetDialogFragment__become_a_sustainer">একজন সাসটেইনার হোন</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__add_a_boost">একটি বুস্ট যোগ করুন</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__not_now">এখন না</string>
-  <string name="ExpiredBadgeBottomSheetDialogFragment__your_sustainer">আপনার সাসটেইনার সাবস্ক্রিপশন স্বয়ংক্রিয়ভাবে বাতিল হয়ে গেছে কারণ আপনি অনেক দিন ধরে নিষ্ক্রিয় ছিলেন। আপনার %1$s ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়।</string>
+  <!--Copy displayed when badge expires after user inactivity-->
+  <string name="ExpiredBadgeBottomSheetDialogFragment__your_sustainer_subscription_was_automatically">আপনার সাসটেইনার সাবস্ক্রিপশন স্বয়ংক্রিয়ভাবে বাতিল হয়ে গেছে কারণ আপনি অনেক দিন ধরে নিষ্ক্রিয় ছিলেন। আপনার %1$s ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়।</string>
+  <!--Copy displayed when badge expires after payment failure-->
   <string name="ExpiredBadgeBottomSheetDialogFragment__you_can">আপনি সিগন্যাল ব্যবহার চালিয়ে যেতে পারেন তবে অ্যাপটিকে সমর্থন করতে এবং আপনার ব্যাজ পুনরায় সক্রিয় করতে, এখনই নবায়ন করুন।</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__renew_subscription">সদস্যতা নবায়ন করুন</string>
   <string name="Subscription__please_contact_support_for_more_information">আরও তথ্যের জন্য সাপোর্টে যোগাযোগ করুন।</string>
@@ -3408,6 +3421,21 @@
   <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support_google_pay_so_you_can_t_subscribe_to_earn_a_badge_you_can_still_support_signal_by_making_a_donation_on_our_website">আপনার ডিভাইস গুগল পে সমর্থন করে না, তাই আপনি ব্যাজ অর্জন করতে সদস্যতা নিতে পারবেন না। আপনি এখনও আমাদের ওয়েবসাইটে অনুদান দিয়ে সিগন্যাল সমর্থন করতে পারেন।</string>
   <string name="NetworkFailure__network_error_check_your_connection_and_try_again">নেটওয়ার্ক ত্রুটি। আপনার সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।</string>
   <string name="NetworkFailure__retry">পুনরায় চেষ্টা করুন</string>
+  <!--Stripe decline code generic_failure-->
+  <!--Stripe decline code verify on Google Pay and try again-->
+  <!--Stripe decline code learn more action label-->
+  <string name="DeclineCode__learn_more">আরও জানুন</string>
+  <!--Stripe decline code contact issuer-->
+  <!--Stripe decline code purchase not supported-->
+  <!--Stripe decline code your card has expired-->
+  <!--Stripe decline code go to google pay action label-->
+  <!--Stripe decline code incorrect card number-->
+  <!--Stripe decline code incorrect cvc-->
+  <!--Stripe decline code insufficient funds-->
+  <!--Stripe decline code incorrect expiration month-->
+  <!--Stripe decline code incorrect expiration year-->
+  <!--Stripe decline code issuer not available-->
+  <!--Stripe decline code processing error-->
   <!--Title of create notification profile screen-->
   <!--Hint text for create/edit notification profile name-->
   <string name="EditNotificationProfileFragment__profile_name">প্রোফাইল নাম</string>
@@ -3500,5 +3528,6 @@
   <string name="NotificationProfilesMegaphone__not_now">এখন না</string>
   <!--Displayed in a toast when we fail to open the ringtone picker-->
   <string name="NotificationSettingsFragment__failed_to_open_picker">পিকার খুলতে ব্যর্থ হয়েছে।</string>
+  <!--Description shown for the Signal Release Notes channel-->
   <!--EOF-->
 </resources>

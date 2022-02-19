@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -23,6 +24,9 @@ import com.google.common.collect.Sets;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.BindableConversationItem;
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.keyvalue.SignalStore;
+import org.thoughtcrime.securesms.util.views.AutoRounder;
+import org.thoughtcrime.securesms.util.views.Stub;
 import org.thoughtcrime.securesms.verify.VerifyIdentityActivity;
 import org.thoughtcrime.securesms.conversation.colors.Colorizer;
 import org.thoughtcrime.securesms.conversation.mutiselect.MultiselectPart;
@@ -47,6 +51,7 @@ import org.thoughtcrime.securesms.util.concurrent.ListenableFuture;
 import org.thoughtcrime.securesms.util.livedata.LiveDataUtil;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.push.ACI;
+import org.whispersystems.signalservice.api.push.ServiceId;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -65,6 +70,7 @@ public final class ConversationUpdateItem extends FrameLayout
 
   private TextView                  body;
   private MaterialButton            actionButton;
+  private Stub<CardView>            donateButtonStub;
   private View                      background;
   private ConversationMessage       conversationMessage;
   private Recipient                 conversationRecipient;
@@ -92,9 +98,10 @@ public final class ConversationUpdateItem extends FrameLayout
   @Override
   public void onFinishInflate() {
     super.onFinishInflate();
-    this.body         = findViewById(R.id.conversation_update_body);
-    this.actionButton = findViewById(R.id.conversation_update_action);
-    this.background   = findViewById(R.id.conversation_update_background);
+    this.body             = findViewById(R.id.conversation_update_body);
+    this.actionButton     = findViewById(R.id.conversation_update_action);
+    this.donateButtonStub = ViewUtil.findStubById(this, R.id.conversation_update_donate_action);
+    this.background       = findViewById(R.id.conversation_update_background);
 
     this.setOnClickListener(new InternalClickListener(null));
   }
@@ -221,6 +228,11 @@ public final class ConversationUpdateItem extends FrameLayout
   }
 
   @Override
+  public boolean shouldProjectContent() {
+    return false;
+  }
+
+  @Override
   public @NonNull ProjectionList getColorizerProjections(@NonNull ViewGroup coordinateRoot) {
     return EMPTY_PROJECTION_LIST;
   }
@@ -339,12 +351,12 @@ public final class ConversationUpdateItem extends FrameLayout
         }
       });
     } else if (conversationMessage.getMessageRecord().isGroupCall()) {
-      UpdateDescription updateDescription = MessageRecord.getGroupCallUpdateDescription(getContext(), conversationMessage.getMessageRecord().getBody(), true);
-      Collection<ACI>   acis              = updateDescription.getMentioned();
+      UpdateDescription     updateDescription = MessageRecord.getGroupCallUpdateDescription(getContext(), conversationMessage.getMessageRecord().getBody(), true);
+      Collection<ServiceId> acis              = updateDescription.getMentioned();
 
       int text = 0;
       if (Util.hasItems(acis)) {
-        if (acis.contains(Recipient.self().requireAci())) {
+        if (acis.contains(Recipient.self().requireServiceId())) {
           text = R.string.ConversationUpdateItem_return_to_call;
         } else if (GroupCallUpdateDetailsUtil.parse(conversationMessage.getMessageRecord().getBody()).getIsCallFull()) {
           text = R.string.ConversationUpdateItem_call_is_full;
@@ -419,6 +431,34 @@ public final class ConversationUpdateItem extends FrameLayout
     } else {
       actionButton.setVisibility(GONE);
       actionButton.setOnClickListener(null);
+    }
+
+    if (conversationMessage.getMessageRecord().isBoostRequest()) {
+      actionButton.setVisibility(GONE);
+
+      CardView donateButton = donateButtonStub.get();
+      TextView buttonText   = donateButton.findViewById(R.id.conversation_update_donate_action_button);
+      boolean  isSustainer  = SignalStore.donationsValues().isLikelyASustainer();
+
+      donateButton.setVisibility(VISIBLE);
+      donateButton.setOnClickListener(v -> {
+        if (batchSelected.isEmpty() && eventListener != null) {
+          eventListener.onDonateClicked();
+        }
+      });
+
+      if (isSustainer) {
+        buttonText.setText(R.string.ConversationUpdateItem_signal_boost);
+        buttonText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_boost_outline_16, 0, 0, 0);
+      } else {
+        buttonText.setText(R.string.ConversationUpdateItem_become_a_sustainer);
+        buttonText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+      }
+
+      AutoRounder.autoSetCorners(donateButton, donateButton::setRadius);
+
+    } else if (donateButtonStub.resolved()) {
+      donateButtonStub.get().setVisibility(GONE);
     }
   }
 

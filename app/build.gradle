@@ -62,8 +62,8 @@ ktlint {
     version = "0.43.2"
 }
 
-def canonicalVersionCode = 991
-def canonicalVersionName = "5.30.0"
+def canonicalVersionCode = 1012
+def canonicalVersionName = "5.32.9"
 
 def postFixSize = 100
 def abiPostFix = ['universal'   : 0,
@@ -75,18 +75,18 @@ def abiPostFix = ['universal'   : 0,
 def keystores = [ 'debug'  : loadKeystoreProperties('keystore.debug.properties') ]
 
 def selectableVariants = [
-        'nightlyProdFlipper',
+        'nightlyProdSpinner',
         'nightlyProdPerf',
         'nightlyProdRelease',
         'playProdDebug',
-        'playProdFlipper',
+        'playProdSpinner',
         'playProdPerf',
         'playProdRelease',
         'playStagingDebug',
-        'playStagingFlipper',
+        'playStagingSpinner',
         'playStagingPerf',
         'playStagingRelease',
-        'websiteProdFlipper',
+        'websiteProdSpinner',
         'websiteProdRelease',
 ]
 
@@ -116,6 +116,48 @@ android {
             }
         }
     }
+
+    testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError true
+        baseline file("lint-baseline.xml")
+        disable "LintError"
+    }
+
+    sourceSets {
+        test {
+            java.srcDirs += "$projectDir/src/testShared"
+        }
+
+        androidTest {
+            java.srcDirs += "$projectDir/src/testShared"
+        }
+    }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JAVA_VERSION
+        targetCompatibility JAVA_VERSION
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'LICENSE'
+        exclude 'NOTICE'
+        exclude 'asm-license.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
+
 
     defaultConfig {
         versionCode canonicalVersionCode * postFixSize
@@ -185,40 +227,6 @@ android {
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
 
-    testOptions {
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
-    }
-
-    sourceSets {
-        test {
-            java.srcDirs += "$projectDir/src/testShared"
-        }
-
-        androidTest {
-            java.srcDirs += "$projectDir/src/testShared"
-        }
-    }
-
-    compileOptions {
-        coreLibraryDesugaringEnabled true
-        sourceCompatibility JAVA_VERSION
-        targetCompatibility JAVA_VERSION
-    }
-
-    packagingOptions {
-        exclude 'LICENSE.txt'
-        exclude 'LICENSE'
-        exclude 'NOTICE'
-        exclude 'asm-license.txt'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/proguard/androidx-annotations.pro'
-        exclude '/org/spongycastle/x509/CertPathReviewerMessages.properties'
-        exclude '/org/spongycastle/x509/CertPathReviewerMessages_de.properties'
-        //pickFirst 'lib/arm64-v8a/libnative-utils.so'
-        //exclude 'lib/*/libzkgroup.so' // TODO: GV2 Remove line to include .so when used
-    }
-
     buildTypes {
         debug {
             if (keystores['debug'] != null) {
@@ -234,7 +242,6 @@ android {
                     'proguard/proguard-appcompat-v7.pro',
                     'proguard/proguard-square-okhttp.pro',
                     'proguard/proguard-square-okio.pro',
-                    'proguard/proguard-spongycastle.pro',
                     'proguard/proguard-rounded-image-view.pro',
                     'proguard/proguard-glide.pro',
                     'proguard/proguard-shortcutbadger.pro',
@@ -250,12 +257,12 @@ android {
 
             buildConfigField "String", "BUILD_VARIANT_TYPE", "\"Debug\""
         }
-        flipper {
+        spinner {
             initWith debug
             isDefault false
             minifyEnabled false
             matchingFallbacks = ['debug']
-            buildConfigField "String", "BUILD_VARIANT_TYPE", "\"Flipper\""
+            buildConfigField "String", "BUILD_VARIANT_TYPE", "\"Spinner\""
         }
         release {
             minifyEnabled true
@@ -351,6 +358,9 @@ android {
                 output.versionCodeOverride = canonicalVersionCode * postFixSize + 5
                 def tag = getCurrentGitTag()
                 if (tag != null && tag.length() > 0) {
+                    if (tag.startsWith("v")) {
+                        tag = tag.substring(1)
+                    }
                     output.versionNameOverride = tag
                 }
             } else {
@@ -373,19 +383,6 @@ android {
 
         if (!selectableVariants.contains(fullName)) {
             variant.setIgnore(true)
-        }
-    }
-
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError true
-        baseline file("lint-baseline.xml")
-        disable "LintError"
-    }
-
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
         }
     }
 
@@ -541,9 +538,8 @@ dependencies {
     }
     implementation libs.dnsjava
 
-    flipperImplementation libs.facebook.flipper
-    flipperImplementation libs.facebook.soloader
-    flipperImplementation libs.square.leakcanary
+    spinnerImplementation project(":spinner")
+    spinnerImplementation libs.square.leakcanary
 
     testImplementation testLibs.junit.junit
     testImplementation testLibs.assertj.core
@@ -558,6 +554,9 @@ dependencies {
         exclude group: 'com.google.protobuf', module: 'protobuf-java'
     }
     testImplementation testLibs.robolectric.shadows.multidex
+    testImplementation (testLibs.bouncycastle.bcprov.jdk15on) {
+        force = true
+    }
     testImplementation testLibs.hamcrest.hamcrest
 
     testImplementation(testFixtures(project(":libsignal-service")))

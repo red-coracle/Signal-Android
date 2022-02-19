@@ -47,7 +47,7 @@ import org.whispersystems.signalservice.api.crypto.InvalidCiphertextException;
 import org.whispersystems.signalservice.api.crypto.ProfileCipher;
 import org.whispersystems.signalservice.api.profiles.ProfileAndCredential;
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfile;
-import org.whispersystems.signalservice.api.push.ACI;
+import org.whispersystems.signalservice.api.push.ServiceId;
 import org.whispersystems.signalservice.api.services.ProfileService;
 import org.whispersystems.signalservice.internal.ServiceResponse;
 
@@ -73,7 +73,8 @@ public class RetrieveProfileJob extends BaseJob {
 
   private static final String TAG = Log.tag(RetrieveProfileJob.class);
 
-  private static final String KEY_RECIPIENTS = "recipients";
+  private static final String KEY_RECIPIENTS             = "recipients";
+  private static final String DEDUPE_KEY_RETRIEVE_AVATAR = KEY + "_RETRIEVE_PROFILE_AVATAR";
 
   private final Set<RecipientId> recipientIds;
 
@@ -256,7 +257,7 @@ public class RetrieveProfileJob extends BaseJob {
                                                        ApplicationDependencies.getSignalWebSocket());
 
     List<Observable<Pair<Recipient, ServiceResponse<ProfileAndCredential>>>> requests = Stream.of(recipients)
-                                                                                              .filter(Recipient::hasServiceIdentifier)
+                                                                                              .filter(Recipient::hasServiceId)
                                                                                               .map(r -> ProfileUtil.retrieveProfile(context, r, getRequestType(r), profileService).toObservable())
                                                                                               .toList();
     stopwatch.split("requests");
@@ -285,27 +286,37 @@ public class RetrieveProfileJob extends BaseJob {
 
     stopwatch.split("responses");
 
-    for (Pair<Recipient, ProfileAndCredential> profile : operationState.profiles) {
-      process(profile.first(), profile.second());
-    }
-
-    stopwatch.split("process");
-
     Set<RecipientId> success = SetUtil.difference(recipientIds, operationState.retries);
+
+    Map<RecipientId, ServiceId> newlyRegistered = Stream.of(operationState.profiles)
+                                                        .map(Pair::first)
+                                                        .filterNot(Recipient::isRegistered)
+                                                        .collect(Collectors.toMap(Recipient::getId,
+                                                                                  r -> r.getServiceId().orNull()));
+
+
+    //noinspection SimplifyStreamApiCallChains
+    Util.chunk(operationState.profiles, 150).stream().forEach(list -> {
+      SignalDatabase.runInTransaction(() -> {
+        for (Pair<Recipient, ProfileAndCredential> profile : list) {
+          process(profile.first(), profile.second());
+        }
+      });
+    });
+
     recipientDatabase.markProfilesFetched(success, System.currentTimeMillis());
-
-    Map<RecipientId, ACI> newlyRegistered = Stream.of(operationState.profiles)
-                                                  .map(Pair::first)
-                                                  .filterNot(Recipient::isRegistered)
-                                                  .collect(Collectors.toMap(Recipient::getId,
-                                                                            r -> r.getAci().orNull()));
-
     if (operationState.unregistered.size() > 0 || newlyRegistered.size() > 0) {
       Log.i(TAG, "Marking " + newlyRegistered.size() + " users as registered and " + operationState.unregistered.size() + " users as unregistered.");
       recipientDatabase.bulkUpdatedRegisteredStatus(newlyRegistered, operationState.unregistered);
     }
 
     stopwatch.split("process");
+
+    for (Pair<Recipient, ProfileAndCredential> profile : operationState.profiles) {
+      setIdentityKey(profile.first(), profile.second().getProfile().getIdentityKey());
+    }
+
+    stopwatch.split("identityKeys");
 
     long keyCount = Stream.of(operationState.profiles).map(Pair::first).map(Recipient::getProfileKey).withoutNulls().count();
     Log.d(TAG, String.format(Locale.US, "Started with %d recipient(s). Found %d profile(s), and had keys for %d of them. Will retry %d.", recipients.size(), operationState.profiles.size(), keyCount, operationState.retries.size()));
@@ -338,7 +349,6 @@ public class RetrieveProfileJob extends BaseJob {
     setProfileBadges(recipient, profile.getBadges());
     clearUsername(recipient);
     setProfileCapabilities(recipient, profile.getCapabilities());
-    setIdentityKey(recipient, profile.getIdentityKey());
     setUnidentifiedAccessMode(recipient, profile.getUnidentifiedAccess(), profile.isUnrestrictedUnidentifiedAccess());
 
     if (recipientProfileKey != null) {
@@ -386,12 +396,12 @@ public class RetrieveProfileJob extends BaseJob {
 
       IdentityKey identityKey = new IdentityKey(Base64.decode(identityKeyValue), 0);
 
-      if (!ApplicationDependencies.getIdentityStore().getIdentityRecord(recipient.getId()).isPresent()) {
-        Log.w(TAG, "Still first use...");
+      if (!ApplicationDependencies.getProtocolStore().aci().identities().getIdentityRecord(recipient.getId()).isPresent()) {
+        Log.w(TAG, "Still first use for " + recipient.getId());
         return;
       }
 
-      IdentityUtil.saveIdentity(recipient.requireServiceId(), identityKey);
+      IdentityUtil.saveIdentity(recipient.requireServiceId().toString(), identityKey);
     } catch (InvalidKeyException | IOException e) {
       Log.w(TAG, e);
     }
@@ -454,7 +464,7 @@ public class RetrieveProfileJob extends BaseJob {
             !localDisplayName.isEmpty() &&
             !remoteDisplayName.equals(localDisplayName))
         {
-          Log.i(TAG, "Writing a profile name change event.");
+          Log.i(TAG, "Writing a profile name change event for " + recipient.getId());
           SignalDatabase.sms().insertProfileNameChangeMessages(recipient, remoteDisplayName, localDisplayName);
         } else {
           Log.i(TAG, String.format(Locale.US, "Name changed, but wasn't relevant to write an event. blocked: %s, group: %s, self: %s, firstSet: %s, displayChange: %s",
@@ -463,7 +473,7 @@ public class RetrieveProfileJob extends BaseJob {
       }
 
       if (TextUtils.isEmpty(plaintextProfileName)) {
-        Log.i(TAG, "No profile name set.");
+        Log.i(TAG, "No profile name set for " + recipient.getId());
       }
     } catch (InvalidCiphertextException e) {
       Log.w(TAG, "Bad profile key for " + recipient.getId());
@@ -488,9 +498,10 @@ public class RetrieveProfileJob extends BaseJob {
 
   private static void setProfileAvatar(Recipient recipient, String profileAvatar) {
     if (recipient.getProfileKey() == null) return;
-
     if (!Util.equals(profileAvatar, recipient.getProfileAvatar())) {
-      ApplicationDependencies.getJobManager().add(new RetrieveProfileAvatarJob(recipient, profileAvatar));
+      SignalDatabase.runPostSuccessfulTransaction(DEDUPE_KEY_RETRIEVE_AVATAR + recipient.getId(), () -> {
+        ApplicationDependencies.getJobManager().add(new RetrieveProfileAvatarJob(recipient, profileAvatar));
+      });
     }
   }
 

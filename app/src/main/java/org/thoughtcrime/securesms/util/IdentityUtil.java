@@ -10,7 +10,7 @@ import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.crypto.ReentrantSessionLock;
-import org.thoughtcrime.securesms.crypto.storage.TextSecureIdentityKeyStore;
+import org.thoughtcrime.securesms.crypto.storage.SignalIdentityKeyStore;
 import org.thoughtcrime.securesms.database.GroupDatabase;
 import org.thoughtcrime.securesms.database.IdentityDatabase;
 import org.thoughtcrime.securesms.database.MessageDatabase;
@@ -52,7 +52,7 @@ public final class IdentityUtil {
     final RecipientId                              recipientId = recipient.getId();
 
     SimpleTask.run(SignalExecutors.BOUNDED,
-                   () -> ApplicationDependencies.getIdentityStore().getIdentityRecord(recipientId),
+                   () -> ApplicationDependencies.getProtocolStore().aci().identities().getIdentityRecord(recipientId),
                    future::set);
 
     return future;
@@ -144,10 +144,10 @@ public final class IdentityUtil {
 
   public static void saveIdentity(String user, IdentityKey identityKey) {
     try(SignalSessionLock.Lock unused = ReentrantSessionLock.INSTANCE.acquire()) {
-      SessionStore          sessionStore     = ApplicationDependencies.getSessionStore();
+      SessionStore          sessionStore     = ApplicationDependencies.getProtocolStore().aci();
       SignalProtocolAddress address          = new SignalProtocolAddress(user, SignalServiceAddress.DEFAULT_DEVICE_ID);
 
-      if (ApplicationDependencies.getIdentityStore().saveIdentity(address, identityKey)) {
+      if (ApplicationDependencies.getProtocolStore().aci().identities().saveIdentity(address, identityKey)) {
         if (sessionStore.containsSession(address)) {
           SessionRecord sessionRecord = sessionStore.loadSession(address);
           sessionRecord.archiveCurrentState();
@@ -160,9 +160,9 @@ public final class IdentityUtil {
 
   public static void processVerifiedMessage(Context context, VerifiedMessage verifiedMessage) {
     try(SignalSessionLock.Lock unused = ReentrantSessionLock.INSTANCE.acquire()) {
-      TextSecureIdentityKeyStore identityStore  = ApplicationDependencies.getIdentityStore();
-      Recipient                  recipient      = Recipient.externalPush(context, verifiedMessage.getDestination());
-      Optional<IdentityRecord>   identityRecord = identityStore.getIdentityRecord(recipient.getId());
+      SignalIdentityKeyStore   identityStore  = ApplicationDependencies.getProtocolStore().aci().identities();
+      Recipient                recipient      = Recipient.externalPush(verifiedMessage.getDestination());
+      Optional<IdentityRecord> identityRecord = identityStore.getIdentityRecord(recipient.getId());
 
       if (!identityRecord.isPresent() && verifiedMessage.getVerified() == VerifiedMessage.VerifiedState.DEFAULT) {
         Log.w(TAG, "No existing record for default status");
