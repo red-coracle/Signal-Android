@@ -266,7 +266,7 @@ android {
         }
         release {
             minifyEnabled true
-            //shrinkResources true
+            shrinkResources true
             proguardFiles = buildTypes.debug.proguardFiles
             buildConfigField "String", "BUILD_VARIANT_TYPE", "\"Release\""
         }

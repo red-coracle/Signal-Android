@@ -129,10 +129,6 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
 
     long startTime = System.currentTimeMillis();
 
-    if (FeatureFlags.internalUser()) {
-      Tracer.getInstance().setMaxBufferSize(35_000);
-    }
-
     super.onCreate();
 
     AppStartup.getInstance().addBlocking("security-provider", this::initializeSecurityProvider)
