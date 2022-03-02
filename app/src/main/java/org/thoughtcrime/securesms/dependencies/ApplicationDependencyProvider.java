@@ -27,6 +27,7 @@ import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.jobmanager.JobMigrator;
 import org.thoughtcrime.securesms.jobmanager.impl.FactoryJobPredicate;
 import org.thoughtcrime.securesms.jobmanager.impl.JsonDataSerializer;
+import org.thoughtcrime.securesms.jobs.CreateSignedPreKeyJob;
 import org.thoughtcrime.securesms.jobs.FastJobStorage;
 import org.thoughtcrime.securesms.jobs.GroupCallUpdateSendJob;
 import org.thoughtcrime.securesms.jobs.JobManagerFactories;
@@ -126,7 +127,7 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
                                             Optional.of(new SecurityEventListener(context)),
                                             provideClientZkOperations().getProfileOperations(),
                                             SignalExecutors.newCachedBoundedExecutor("signal-messages", 1, 16, 30),
-                                            ByteUnit.KILOBYTES.toBytes(512),
+                                            ByteUnit.KILOBYTES.toBytes(256),
                                             FeatureFlags.okHttpAutomaticRetry());
   }
 
@@ -287,6 +288,11 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
 
     if (localPni == null) {
       throw new IllegalStateException("No PNI set!");
+    }
+
+    if (!SignalStore.account().hasPniIdentityKey()) {
+      SignalStore.account().generatePniIdentityKeyIfNecessary();
+      CreateSignedPreKeyJob.enqueueIfNeeded();
     }
 
     SignalBaseIdentityKeyStore baseIdentityStore = new SignalBaseIdentityKeyStore(context);

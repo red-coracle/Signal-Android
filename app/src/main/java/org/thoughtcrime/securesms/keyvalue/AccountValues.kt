@@ -151,38 +151,52 @@ internal class AccountValues internal constructor(store: KeyValueStore) : Signal
 
   /** Generates and saves an identity key pair for the ACI identity. Should only be done once. */
   fun generateAciIdentityKey() {
-    Log.i(TAG, "Generating a new ACI identity key pair.")
-    require(!store.containsKey(KEY_ACI_IDENTITY_PUBLIC_KEY)) { "Already generated!" }
+    synchronized(this) {
+      Log.i(TAG, "Generating a new ACI identity key pair.")
+      require(!store.containsKey(KEY_ACI_IDENTITY_PUBLIC_KEY)) { "Already generated!" }
 
-    val key: IdentityKeyPair = IdentityKeyUtil.generateIdentityKeyPair()
-    store
-      .beginWrite()
-      .putBlob(KEY_ACI_IDENTITY_PUBLIC_KEY, key.publicKey.serialize())
-      .putBlob(KEY_ACI_IDENTITY_PRIVATE_KEY, key.privateKey.serialize())
-      .commit()
+      val key: IdentityKeyPair = IdentityKeyUtil.generateIdentityKeyPair()
+      store
+        .beginWrite()
+        .putBlob(KEY_ACI_IDENTITY_PUBLIC_KEY, key.publicKey.serialize())
+        .putBlob(KEY_ACI_IDENTITY_PRIVATE_KEY, key.privateKey.serialize())
+        .commit()
+    }
   }
 
-  /** Generates and saves an identity key pair for the PNI identity. Should only be done once. */
-  fun generatePniIdentityKey() {
-    Log.i(TAG, "Generating a new PNI identity key pair.")
-    require(!store.containsKey(KEY_PNI_IDENTITY_PUBLIC_KEY)) { "Already generated!" }
+  fun hasPniIdentityKey(): Boolean {
+    return store.containsKey(KEY_PNI_IDENTITY_PUBLIC_KEY)
+  }
 
-    val key: IdentityKeyPair = IdentityKeyUtil.generateIdentityKeyPair()
-    store
-      .beginWrite()
-      .putBlob(KEY_PNI_IDENTITY_PUBLIC_KEY, key.publicKey.serialize())
-      .putBlob(KEY_PNI_IDENTITY_PRIVATE_KEY, key.privateKey.serialize())
-      .commit()
+  /** Generates and saves an identity key pair for the PNI identity if one doesn't already exist. */
+  fun generatePniIdentityKeyIfNecessary() {
+    synchronized(this) {
+      if (store.containsKey(KEY_PNI_IDENTITY_PUBLIC_KEY)) {
+        Log.w(TAG, "Tried to generate a PNI identity, but one was already set!", Throwable())
+        return
+      }
+
+      Log.i(TAG, "Generating a new PNI identity key pair.")
+
+      val key: IdentityKeyPair = IdentityKeyUtil.generateIdentityKeyPair()
+      store
+        .beginWrite()
+        .putBlob(KEY_PNI_IDENTITY_PUBLIC_KEY, key.publicKey.serialize())
+        .putBlob(KEY_PNI_IDENTITY_PRIVATE_KEY, key.privateKey.serialize())
+        .commit()
+    }
   }
 
   /** When acting as a linked device, this method lets you store the identity keys sent from the primary device */
   fun setIdentityKeysFromPrimaryDevice(aciKeys: IdentityKeyPair) {
-    require(isLinkedDevice) { "Must be a linked device!" }
-    store
-      .beginWrite()
-      .putBlob(KEY_ACI_IDENTITY_PUBLIC_KEY, aciKeys.publicKey.serialize())
-      .putBlob(KEY_ACI_IDENTITY_PRIVATE_KEY, aciKeys.privateKey.serialize())
-      .commit()
+    synchronized(this) {
+      require(isLinkedDevice) { "Must be a linked device!" }
+      store
+        .beginWrite()
+        .putBlob(KEY_ACI_IDENTITY_PUBLIC_KEY, aciKeys.publicKey.serialize())
+        .putBlob(KEY_ACI_IDENTITY_PRIVATE_KEY, aciKeys.privateKey.serialize())
+        .commit()
+    }
   }
 
   /** Only to be used when restoring an identity public key from an old backup */
