@@ -124,6 +124,7 @@ import org.whispersystems.signalservice.internal.util.Util;
 import org.whispersystems.signalservice.internal.util.concurrent.FutureTransformers;
 import org.whispersystems.signalservice.internal.util.concurrent.ListenableFuture;
 import org.whispersystems.signalservice.internal.util.concurrent.SettableFuture;
+import org.whispersystems.signalservice.internal.websocket.DefaultErrorMapper;
 import org.whispersystems.util.Base64;
 import org.whispersystems.util.Base64UrlSafe;
 
@@ -525,15 +526,6 @@ public class PushServiceSocket {
     } catch (NotFoundException nfe) {
       throw new UnregisteredUserException(bundle.getDestination(), nfe);
     }
-  }
-
-  public Future<SendMessageResponse> submitMessage(OutgoingPushMessageList bundle, Optional<UnidentifiedAccess> unidentifiedAccess) {
-    ListenableFuture<String> response = submitServiceRequest(String.format(MESSAGE_PATH, bundle.getDestination()), "PUT", JsonUtil.toJson(bundle), NO_HEADERS, unidentifiedAccess);
-
-    return FutureTransformers.map(response, body -> {
-      return body == null ? new SendMessageResponse(false, unidentifiedAccess.isPresent())
-          : JsonUtil.fromJson(body, SendMessageResponse.class);
-    });
   }
 
   public SignalServiceMessagesResult getMessages() throws IOException {
@@ -1345,6 +1337,7 @@ public class PushServiceSocket {
                                                         .newBuilder()
                                                         .connectTimeout(soTimeoutMillis, TimeUnit.MILLISECONDS)
                                                         .readTimeout(soTimeoutMillis, TimeUnit.MILLISECONDS)
+                                                        .eventListener(new LoggingOkhttpEventListener())
                                                         .build();
 
     Request.Builder request = new Request.Builder().url(buildConfiguredUrl(connectionHolder, signedUrl))
@@ -1686,7 +1679,11 @@ public class PushServiceSocket {
 
     switch (responseCode) {
       case 413:
-        throw new RateLimitException("Rate limit exceeded: " + responseCode);
+      case 429: {
+        long           retryAfterLong = Util.parseLong(response.header("Retry-After"), -1);
+        Optional<Long> retryAfter     = retryAfterLong != -1 ? Optional.of(TimeUnit.SECONDS.toMillis(retryAfterLong)) : Optional.absent();
+        throw new RateLimitException(responseCode, "Rate limit exceeded: " + responseCode, retryAfter);
+      }
       case 401:
       case 403:
         throw new AuthorizationFailedException(responseCode, "Authorization failed!");
@@ -1891,7 +1888,7 @@ public class PushServiceSocket {
       case 409:
         throw new RemoteAttestationResponseExpiredException("Remote attestation response expired");
       case 429:
-        throw new RateLimitException("Rate limit exceeded: " + response.code());
+        throw new RateLimitException(response.code(), "Rate limit exceeded: " + response.code());
     }
 
     throw new NonSuccessfulResponseCodeException(response.code(), "Response: " + response);
@@ -1988,7 +1985,7 @@ public class PushServiceSocket {
             throw new ConflictException();
           }
         case 429:
-          throw new RateLimitException("Rate limit exceeded: " + response.code());
+          throw new RateLimitException(response.code(), "Rate limit exceeded: " + response.code());
         case 499:
           throw new DeprecatedVersionException();
       }

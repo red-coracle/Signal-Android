@@ -108,6 +108,9 @@ import org.thoughtcrime.securesms.PromptMmsActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.ShortcutLauncherActivity;
 import org.thoughtcrime.securesms.TransportOption;
+import org.thoughtcrime.securesms.components.emoji.RecentEmojiPageModel;
+import org.thoughtcrime.securesms.database.model.StoryType;
+import org.thoughtcrime.securesms.verify.VerifyIdentityActivity;
 import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.attachments.TombstoneAttachment;
 import org.thoughtcrime.securesms.audio.AudioRecorder;
@@ -289,7 +292,6 @@ import org.thoughtcrime.securesms.util.concurrent.ListenableFuture;
 import org.thoughtcrime.securesms.util.concurrent.SettableFuture;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.thoughtcrime.securesms.util.views.Stub;
-import org.thoughtcrime.securesms.verify.VerifyIdentityActivity;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaperDimLevelUtil;
 import org.whispersystems.libsignal.InvalidMessageException;
@@ -439,8 +441,9 @@ public class ConversationParentFragment extends Fragment
 
   private volatile boolean screenInitialized = false;
 
-  private IdentityRecordList identityRecords = new IdentityRecordList(Collections.emptyList());
-  private Callback           callback;
+  private IdentityRecordList   identityRecords = new IdentityRecordList(Collections.emptyList());
+  private Callback             callback;
+  private RecentEmojiPageModel recentEmojis;
 
   @Override
   public @NonNull View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -548,6 +551,8 @@ public class ConversationParentFragment extends Fragment
     });
     initializeInsightObserver();
     initializeActionBar();
+
+    viewModel.getStoryViewState(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), titleView::setStoryRingFromState);
 
     requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
       @Override
@@ -2955,7 +2960,7 @@ public class ConversationParentFragment extends Fragment
     long                 expiresIn     = TimeUnit.SECONDS.toMillis(recipient.get().getExpiresInSeconds());
     QuoteModel           quote         = result.isViewOnce() ? null : inputPanel.getQuote().orNull();
     List<Mention>        mentions      = new ArrayList<>(result.getMentions());
-    OutgoingMediaMessage message       = new OutgoingMediaMessage(recipient.get(), new SlideDeck(), result.getBody(), System.currentTimeMillis(), -1, expiresIn, result.isViewOnce(), distributionType, quote, Collections.emptyList(), Collections.emptyList(), mentions);
+    OutgoingMediaMessage message       = new OutgoingMediaMessage(recipient.get(), new SlideDeck(), result.getBody(), System.currentTimeMillis(), -1, expiresIn, result.isViewOnce(), distributionType, result.getStoryType(), null, quote, Collections.emptyList(), Collections.emptyList(), mentions);
     OutgoingMediaMessage secureMessage = new OutgoingSecureMediaMessage(message);
 
     final Context context = requireContext().getApplicationContext();
@@ -3031,7 +3036,7 @@ public class ConversationParentFragment extends Fragment
       }
     }
 
-    OutgoingMediaMessage outgoingMessageCandidate = new OutgoingMediaMessage(Recipient.resolved(recipientId), slideDeck, body, System.currentTimeMillis(), subscriptionId, expiresIn, viewOnce, distributionType, quote, contacts, previews, mentions);
+    OutgoingMediaMessage outgoingMessageCandidate = new OutgoingMediaMessage(Recipient.resolved(recipientId), slideDeck, body, System.currentTimeMillis(), subscriptionId, expiresIn, viewOnce, distributionType, StoryType.NONE, null, quote, contacts, previews, mentions);
 
     final SettableFuture<Void> future  = new SettableFuture<>();
     final Context              context = requireContext().getApplicationContext();
@@ -3407,6 +3412,10 @@ public class ConversationParentFragment extends Fragment
   public void onEmojiSelected(String emoji) {
     if (inputPanel != null) {
       inputPanel.onEmojiSelected(emoji);
+      if (recentEmojis == null) {
+        recentEmojis = new RecentEmojiPageModel(ApplicationDependencies.getApplication(), TextSecurePreferences.RECENT_STORAGE_KEY);
+      }
+      recentEmojis.onCodePointSelected(emoji);
     }
   }
 

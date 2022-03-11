@@ -28,6 +28,7 @@ import androidx.core.app.RemoteInput;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.thoughtcrime.securesms.database.MessageDatabase.MarkedMessageInfo;
 import org.thoughtcrime.securesms.database.SignalDatabase;
+import org.thoughtcrime.securesms.database.model.StoryType;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
 import org.thoughtcrime.securesms.notifications.v2.MessageNotifierV2;
@@ -86,6 +87,8 @@ public class RemoteReplyReceiver extends BroadcastReceiver {
                                                                   expiresIn,
                                                                   false,
                                                                   0,
+                                                                  StoryType.NONE,
+                                                                  null,
                                                                   null,
                                                                   Collections.emptyList(),
                                                                   Collections.emptyList(),

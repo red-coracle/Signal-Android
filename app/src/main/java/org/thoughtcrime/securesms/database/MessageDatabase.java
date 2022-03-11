@@ -20,6 +20,7 @@ import org.thoughtcrime.securesms.database.documents.NetworkFailure;
 import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.SmsMessageRecord;
+import org.thoughtcrime.securesms.database.model.StoryViewState;
 import org.thoughtcrime.securesms.groups.GroupMigrationMembershipChange;
 import org.thoughtcrime.securesms.insights.InsightsConstants;
 import org.thoughtcrime.securesms.mms.IncomingMediaMessage;
@@ -179,6 +180,21 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
   public abstract SQLiteStatement createInsertStatement(SQLiteDatabase database);
 
   public abstract void ensureMigration();
+
+  public abstract boolean isStory(long messageId);
+  public abstract @NonNull Reader getOutgoingStoriesTo(@NonNull RecipientId recipientId);
+  public abstract @NonNull Reader getAllOutgoingStories();
+  public abstract @NonNull Reader getAllStories();
+  public abstract @NonNull List<RecipientId> getAllStoriesRecipientsList();
+  public abstract @NonNull Reader getAllStoriesFor(@NonNull RecipientId recipientId);
+  public abstract @NonNull MessageId getStoryId(@NonNull RecipientId authorId, long sentTimestamp) throws NoSuchMessageException;
+  public abstract int getNumberOfStoryReplies(long parentStoryId);
+  public abstract boolean hasSelfReplyInStory(long parentStoryId);
+  public abstract @NonNull Cursor getStoryReplies(long parentStoryId);
+  public abstract long getUnreadStoryCount();
+  public abstract @Nullable Long getOldestStorySendTimestamp();
+  public abstract int deleteStoriesOlderThan(long timestamp);
+  public abstract @NonNull StoryViewState getStoryViewState(@NonNull RecipientId recipientId);
 
   final @NonNull String getOutgoingTypeClause() {
     List<String> segments = new ArrayList<>(Types.OUTGOING_MESSAGE_TYPES.length);

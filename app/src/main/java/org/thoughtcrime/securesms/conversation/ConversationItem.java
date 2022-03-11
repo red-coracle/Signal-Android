@@ -808,6 +808,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
 
   private void startPulseOutlinerAnimation() {
     pulseOutlinerAlphaAnimator = ValueAnimator.ofInt(0, 0x66, 0).setDuration(600);
+    pulseOutlinerAlphaAnimator.setRepeatCount(1);
     pulseOutlinerAlphaAnimator.addUpdateListener(animator -> {
       pulseOutliner.setAlpha((Integer) animator.getAnimatedValue());
       bodyBubble.invalidate();
@@ -1399,6 +1400,13 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
         throw new AssertionError();
       }
       Quote quote = ((MediaMmsMessageRecord)current).getQuote();
+
+      if (((MediaMmsMessageRecord) current).getParentStoryId() != null) {
+        quoteView.setMessageType(QuoteView.MessageType.STORY_REPLY);
+      } else {
+        quoteView.setMessageType(current.isOutgoing() ? QuoteView.MessageType.OUTGOING : QuoteView.MessageType.INCOMING);
+      }
+
       //noinspection ConstantConditions
       quoteView.setQuote(glideRequests, quote.getId(), Recipient.live(quote.getAuthor()).get(), quote.getDisplayText(), quote.isOriginalMissing(), quote.getAttachment(), chatColors);
       quoteView.setVisibility(View.VISIBLE);

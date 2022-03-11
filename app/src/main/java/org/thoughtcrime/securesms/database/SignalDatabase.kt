@@ -24,7 +24,6 @@ import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.util.SqlUtil
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.File
-import java.lang.UnsupportedOperationException
 
 open class SignalDatabase(private val context: Application, databaseSecret: DatabaseSecret, attachmentSecret: AttachmentSecret) :
   SQLiteOpenHelper(
@@ -71,6 +70,8 @@ open class SignalDatabase(private val context: Application, databaseSecret: Data
   val groupCallRingDatabase: GroupCallRingDatabase = GroupCallRingDatabase(context, this)
   val reactionDatabase: ReactionDatabase = ReactionDatabase(context, this)
   val notificationProfileDatabase: NotificationProfileDatabase = NotificationProfileDatabase(context, this)
+  val donationReceiptDatabase: DonationReceiptDatabase = DonationReceiptDatabase(context, this)
+  val distributionListDatabase: DistributionListDatabase = DistributionListDatabase(context, this)
 
   override fun onOpen(db: net.zetetic.database.sqlcipher.SQLiteDatabase) {
     db.enableWriteAheadLogging()
@@ -103,10 +104,12 @@ open class SignalDatabase(private val context: Application, databaseSecret: Data
     db.execSQL(AvatarPickerDatabase.CREATE_TABLE)
     db.execSQL(GroupCallRingDatabase.CREATE_TABLE)
     db.execSQL(ReactionDatabase.CREATE_TABLE)
+    db.execSQL(DonationReceiptDatabase.CREATE_TABLE)
     executeStatements(db, SearchDatabase.CREATE_TABLE)
     executeStatements(db, RemappedRecordsDatabase.CREATE_TABLE)
     executeStatements(db, MessageSendLogDatabase.CREATE_TABLE)
     executeStatements(db, NotificationProfileDatabase.CREATE_TABLE)
+    executeStatements(db, DistributionListDatabase.CREATE_TABLE)
 
     executeStatements(db, RecipientDatabase.CREATE_INDEXS)
     executeStatements(db, SmsDatabase.CREATE_INDEXS)
@@ -123,9 +126,12 @@ open class SignalDatabase(private val context: Application, databaseSecret: Data
     executeStatements(db, MessageSendLogDatabase.CREATE_INDEXES)
     executeStatements(db, GroupCallRingDatabase.CREATE_INDEXES)
     executeStatements(db, NotificationProfileDatabase.CREATE_INDEXES)
+    executeStatements(db, DonationReceiptDatabase.CREATE_INDEXS)
 
     executeStatements(db, MessageSendLogDatabase.CREATE_TRIGGERS)
     executeStatements(db, ReactionDatabase.CREATE_TRIGGERS)
+
+    DistributionListDatabase.insertInitialDistributionListAtCreationTime(db)
 
     if (context.getDatabasePath(ClassicOpenHelper.NAME).exists()) {
       val legacyHelper = ClassicOpenHelper(context)
@@ -327,6 +333,11 @@ open class SignalDatabase(private val context: Application, databaseSecret: Data
       get() = instance!!.contactsDatabase
 
     @get:JvmStatic
+    @get:JvmName("distributionLists")
+    val distributionLists: DistributionListDatabase
+      get() = instance!!.distributionListDatabase
+
+    @get:JvmStatic
     @get:JvmName("drafts")
     val drafts: DraftDatabase
       get() = instance!!.draftDatabase
@@ -385,6 +396,11 @@ open class SignalDatabase(private val context: Application, databaseSecret: Data
     @get:JvmName("mmsSms")
     val mmsSms: MmsSmsDatabase
       get() = instance!!.mmsSmsDatabase
+
+    @get:JvmStatic
+    @get:JvmName("notificationProfiles")
+    val notificationProfiles: NotificationProfileDatabase
+      get() = instance!!.notificationProfileDatabase
 
     @get:JvmStatic
     @get:JvmName("payments")
@@ -463,8 +479,8 @@ open class SignalDatabase(private val context: Application, databaseSecret: Data
       get() = instance!!.storageIdDatabase
 
     @get:JvmStatic
-    @get:JvmName("notificationProfiles")
-    val notificationProfiles: NotificationProfileDatabase
-      get() = instance!!.notificationProfileDatabase
+    @get:JvmName("donationReceipts")
+    val donationReceipts: DonationReceiptDatabase
+      get() = instance!!.donationReceiptDatabase
   }
 }

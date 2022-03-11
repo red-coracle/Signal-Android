@@ -4,6 +4,8 @@ import org.thoughtcrime.securesms.attachments.Attachment
 import org.thoughtcrime.securesms.attachments.PointerAttachment
 import org.thoughtcrime.securesms.contactshare.Contact
 import org.thoughtcrime.securesms.database.model.Mention
+import org.thoughtcrime.securesms.database.model.ParentStoryId
+import org.thoughtcrime.securesms.database.model.StoryType
 import org.thoughtcrime.securesms.database.model.databaseprotos.BodyRangeList
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.linkpreview.LinkPreview
@@ -18,6 +20,8 @@ class IncomingMediaMessage(
   val groupId: GroupId? = null,
   val body: String? = null,
   val isPushMessage: Boolean = false,
+  val storyType: StoryType = StoryType.NONE,
+  val parentStoryId: ParentStoryId? = null,
   val sentTimeMillis: Long,
   val serverTimeMillis: Long,
   val receivedTimeMillis: Long,
@@ -80,6 +84,8 @@ class IncomingMediaMessage(
     sentTimeMillis: Long,
     serverTimeMillis: Long,
     receivedTimeMillis: Long,
+    storyType: StoryType,
+    parentStoryId: ParentStoryId?,
     subscriptionId: Int,
     expiresIn: Long,
     expirationUpdate: Boolean,
@@ -99,6 +105,8 @@ class IncomingMediaMessage(
     groupId = if (group.isPresent) GroupUtil.idFromGroupContextOrThrow(group.get()) else null,
     body = body.orNull(),
     isPushMessage = true,
+    storyType = storyType,
+    parentStoryId = parentStoryId,
     sentTimeMillis = sentTimeMillis,
     serverTimeMillis = serverTimeMillis,
     receivedTimeMillis = receivedTimeMillis,

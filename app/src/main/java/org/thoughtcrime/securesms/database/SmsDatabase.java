@@ -39,6 +39,7 @@ import org.thoughtcrime.securesms.database.model.GroupCallUpdateDetailsUtil;
 import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.SmsMessageRecord;
+import org.thoughtcrime.securesms.database.model.StoryViewState;
 import org.thoughtcrime.securesms.database.model.databaseprotos.GroupCallUpdateDetails;
 import org.thoughtcrime.securesms.database.model.databaseprotos.ProfileChangeDetails;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
@@ -849,7 +850,7 @@ public class SmsDatabase extends MessageDatabase {
       }
 
       GroupCallUpdateDetails groupCallUpdateDetails = GroupCallUpdateDetailsUtil.parse(record.getBody());
-      boolean                containsSelf           = peekJoinedUuids.contains(Recipient.self().requireServiceId().uuid());
+      boolean                containsSelf           = peekJoinedUuids.contains(SignalStore.account().requireAci().uuid());
 
       sameEraId = groupCallUpdateDetails.getEraId().equals(peekGroupCallEraId) && !Util.isEmpty(peekGroupCallEraId);
 
@@ -1369,6 +1370,76 @@ public class SmsDatabase extends MessageDatabase {
   @Override
   public void ensureMigration() {
     databaseHelper.getSignalWritableDatabase();
+  }
+
+  @Override
+  public boolean isStory(long messageId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull MessageDatabase.Reader getOutgoingStoriesTo(@NonNull RecipientId recipientId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull MessageDatabase.Reader getAllOutgoingStories() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull MessageDatabase.Reader getAllStories() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull List<RecipientId> getAllStoriesRecipientsList() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull MessageDatabase.Reader getAllStoriesFor(@NonNull RecipientId recipientId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull MessageId getStoryId(@NonNull RecipientId authorId, long sentTimestamp) throws NoSuchMessageException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public int getNumberOfStoryReplies(long parentStoryId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean hasSelfReplyInStory(long parentStoryId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull Cursor getStoryReplies(long parentStoryId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public long getUnreadStoryCount() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @Nullable Long getOldestStorySendTimestamp() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull StoryViewState getStoryViewState(@NonNull RecipientId recipientId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public int deleteStoriesOlderThan(long timestamp) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

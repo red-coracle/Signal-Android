@@ -14,8 +14,10 @@ import org.signal.core.util.ThreadUtil;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.TransportOption;
 import org.thoughtcrime.securesms.TransportOptions;
+import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.ThreadDatabase;
 import org.thoughtcrime.securesms.database.model.Mention;
+import org.thoughtcrime.securesms.database.model.StoryType;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.mediasend.Media;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
@@ -90,20 +92,23 @@ public final class MultiShareSender {
       boolean         needsSplit     = !transport.isSms() &&
                                        message != null    &&
                                        message.length() > transport.calculateCharacters(message).maxPrimaryMessageSize;
-      boolean         isMediaMessage = !multiShareArgs.getMedia().isEmpty()                                              ||
+      boolean         hasMmsMedia    = !multiShareArgs.getMedia().isEmpty()                                              ||
                                        (multiShareArgs.getDataUri() != null && multiShareArgs.getDataUri() != Uri.EMPTY) ||
                                        multiShareArgs.getStickerLocator() != null                                        ||
-                                       multiShareArgs.getLinkPreview() != null                                           ||
                                        recipient.isGroup()                                                               ||
-                                       recipient.getEmail().isPresent()                                                  ||
-                                       !mentions.isEmpty()                                                               ||
+                                       recipient.getEmail().isPresent();
+      boolean         hasPushMedia   = hasMmsMedia                             ||
+                                       multiShareArgs.getLinkPreview() != null ||
+                                       !mentions.isEmpty()                     ||
                                        needsSplit;
 
       if ((recipient.isMmsGroup() || recipient.getEmail().isPresent()) && !isMmsEnabled) {
         results.add(new MultiShareSendResult(shareContactAndThread, MultiShareSendResult.Type.MMS_NOT_ENABLED));
-      } else if (isMediaMessage) {
-        sendMediaMessage(context, multiShareArgs, recipient, slideDeck, transport, shareContactAndThread.getThreadId(), forceSms, expiresIn, multiShareArgs.isViewOnce(), subscriptionId, mentions);
+      } else if (hasMmsMedia && transport.isSms() || hasPushMedia && !transport.isSms()) {
+        sendMediaMessage(context, multiShareArgs, recipient, slideDeck, transport, shareContactAndThread.getThreadId(), forceSms, expiresIn, multiShareArgs.isViewOnce(), subscriptionId, mentions, shareContactAndThread.isStory());
         results.add(new MultiShareSendResult(shareContactAndThread, MultiShareSendResult.Type.SUCCESS));
+      } else if (shareContactAndThread.isStory()) {
+        results.add(new MultiShareSendResult(shareContactAndThread, MultiShareSendResult.Type.INVALID_SHARE_TO_STORY));
       } else {
         sendTextMessage(context, multiShareArgs, recipient, shareContactAndThread.getThreadId(), forceSms, expiresIn, subscriptionId);
         results.add(new MultiShareSendResult(shareContactAndThread, MultiShareSendResult.Type.SUCCESS));
@@ -152,7 +157,8 @@ public final class MultiShareSender {
                                        long expiresIn,
                                        boolean isViewOnce,
                                        int subscriptionId,
-                                       @NonNull List<Mention> validatedMentions)
+                                       @NonNull List<Mention> validatedMentions,
+                                       boolean isStory)
   {
     String body = multiShareArgs.getDraftText();
     if (transportOption.isType(TransportOption.Type.TEXTSECURE) && !forceSms && body != null) {
@@ -164,26 +170,75 @@ public final class MultiShareSender {
       }
     }
 
-    OutgoingMediaMessage outgoingMediaMessage = new OutgoingMediaMessage(recipient,
-                                                                         slideDeck,
-                                                                         body,
-                                                                         System.currentTimeMillis(),
-                                                                         subscriptionId,
-                                                                         expiresIn,
-                                                                         isViewOnce,
-                                                                         ThreadDatabase.DistributionTypes.DEFAULT,
-                                                                         null,
-                                                                         Collections.emptyList(),
-                                                                         multiShareArgs.getLinkPreview() != null ? Collections.singletonList(multiShareArgs.getLinkPreview())
-                                                                                                                 : Collections.emptyList(),
-                                                                         validatedMentions);
+    List<OutgoingMediaMessage> outgoingMessages = new ArrayList<>();
 
-    if (recipient.isRegistered() && !forceSms) {
-      MessageSender.send(context, new OutgoingSecureMediaMessage(outgoingMediaMessage), threadId, false, null, null);
+    if (isStory) {
+      final StoryType storyType;
+      if (recipient.isDistributionList()) {
+        storyType = SignalDatabase.distributionLists().getStoryType(recipient.requireDistributionListId());
+      } else {
+        storyType = StoryType.STORY_WITH_REPLIES;
+      }
+
+      if (recipient.isActiveGroup()) {
+        SignalDatabase.groups().markDisplayAsStory(recipient.requireGroupId());
+      }
+
+      for (final Slide slide : slideDeck.getSlides()) {
+        SlideDeck singletonDeck = new SlideDeck();
+        singletonDeck.addSlide(slide);
+
+        OutgoingMediaMessage outgoingMediaMessage = new OutgoingMediaMessage(recipient,
+                                                                             singletonDeck,
+                                                                             body,
+                                                                             System.currentTimeMillis(),
+                                                                             subscriptionId,
+                                                                             expiresIn,
+                                                                             isViewOnce,
+                                                                             ThreadDatabase.DistributionTypes.DEFAULT,
+                                                                             storyType,
+                                                                             null,
+                                                                             null,
+                                                                             Collections.emptyList(),
+                                                                             multiShareArgs.getLinkPreview() != null ? Collections.singletonList(multiShareArgs.getLinkPreview())
+                                                                                                                     : Collections.emptyList(),
+                                                                             validatedMentions);
+
+        outgoingMessages.add(outgoingMediaMessage);
+
+        // XXX We must do this to avoid sending out messages to the same recipient with the same
+        //     sentTimestamp. If we do this, they'll be considered dupes by the receiver.
+        ThreadUtil.sleep(5);
+      }
     } else {
-      MessageSender.send(context, outgoingMediaMessage, threadId, forceSms, null, null);
+      OutgoingMediaMessage outgoingMediaMessage = new OutgoingMediaMessage(recipient,
+                                                                           slideDeck,
+                                                                           body,
+                                                                           System.currentTimeMillis(),
+                                                                           subscriptionId,
+                                                                           expiresIn,
+                                                                           isViewOnce,
+                                                                           ThreadDatabase.DistributionTypes.DEFAULT,
+                                                                           StoryType.NONE,
+                                                                           null,
+                                                                           null,
+                                                                           Collections.emptyList(),
+                                                                           multiShareArgs.getLinkPreview() != null ? Collections.singletonList(multiShareArgs.getLinkPreview())
+                                                                                                                   : Collections.emptyList(),
+                                                                           validatedMentions);
+
+      outgoingMessages.add(outgoingMediaMessage);
     }
 
+    if (recipient.isRegistered() && !forceSms) {
+      for (final OutgoingMediaMessage outgoingMessage : outgoingMessages) {
+        MessageSender.send(context, new OutgoingSecureMediaMessage(outgoingMessage), threadId, false, null, null);
+      }
+    } else {
+      for (final OutgoingMediaMessage outgoingMessage : outgoingMessages) {
+        MessageSender.send(context, new OutgoingSecureMediaMessage(outgoingMessage), threadId, forceSms, null, null);
+      }
+    }
   }
 
   private static void sendTextMessage(@NonNull Context context,
@@ -280,6 +335,7 @@ public final class MultiShareSender {
 
     private enum Type {
       GENERIC_ERROR,
+      INVALID_SHARE_TO_STORY,
       MMS_NOT_ENABLED,
       SUCCESS
     }

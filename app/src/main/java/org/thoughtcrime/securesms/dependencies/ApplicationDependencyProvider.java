@@ -53,6 +53,7 @@ import org.thoughtcrime.securesms.push.SecurityEventListener;
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
 import org.thoughtcrime.securesms.recipients.LiveRecipientCache;
 import org.thoughtcrime.securesms.revealable.ViewOnceMessageManager;
+import org.thoughtcrime.securesms.service.ExpiringStoriesManager;
 import org.thoughtcrime.securesms.service.ExpiringMessageManager;
 import org.thoughtcrime.securesms.service.PendingRetryReceiptManager;
 import org.thoughtcrime.securesms.service.TrimThreadsByDateManager;
@@ -210,6 +211,11 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
   }
 
   @Override
+  public @NonNull ExpiringStoriesManager provideExpiringStoriesManager() {
+    return new ExpiringStoriesManager(context);
+  }
+
+  @Override
   public @NonNull ExpiringMessageManager provideExpiringMessageManager() {
     return new ExpiringMessageManager(context);
   }
@@ -290,8 +296,19 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
       throw new IllegalStateException("No PNI set!");
     }
 
+    boolean needsPreKeyJob = false;
+
+    if (!SignalStore.account().hasAciIdentityKey()) {
+      SignalStore.account().generateAciIdentityKeyIfNecessary();
+      needsPreKeyJob = true;
+    }
+
     if (!SignalStore.account().hasPniIdentityKey()) {
       SignalStore.account().generatePniIdentityKeyIfNecessary();
+      needsPreKeyJob = true;
+    }
+
+    if (needsPreKeyJob) {
       CreateSignedPreKeyJob.enqueueIfNeeded();
     }
 
