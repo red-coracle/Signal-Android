@@ -13,6 +13,8 @@ import com.google.android.mms.pdu_alt.NotificationInd;
 import net.zetetic.database.sqlcipher.SQLiteStatement;
 
 import org.signal.core.util.logging.Log;
+import org.signal.libsignal.protocol.IdentityKey;
+import org.signal.libsignal.protocol.util.Pair;
 import org.thoughtcrime.securesms.database.documents.Document;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatch;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatchSet;
@@ -31,13 +33,10 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.revealable.ViewOnceExpirationInfo;
 import org.thoughtcrime.securesms.sms.IncomingTextMessage;
 import org.thoughtcrime.securesms.sms.OutgoingTextMessage;
-import org.thoughtcrime.securesms.util.CursorUtil;
+import org.signal.core.util.CursorUtil;
 import org.thoughtcrime.securesms.util.JsonUtils;
-import org.thoughtcrime.securesms.util.SqlUtil;
+import org.signal.core.util.SqlUtil;
 import org.thoughtcrime.securesms.util.Util;
-import org.whispersystems.libsignal.IdentityKey;
-import org.whispersystems.libsignal.util.Pair;
-import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -48,6 +47,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -183,12 +183,13 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
 
   public abstract boolean isStory(long messageId);
   public abstract @NonNull Reader getOutgoingStoriesTo(@NonNull RecipientId recipientId);
-  public abstract @NonNull Reader getAllOutgoingStories();
+  public abstract @NonNull Reader getAllOutgoingStories(boolean reverse);
   public abstract @NonNull Reader getAllStories();
   public abstract @NonNull List<RecipientId> getAllStoriesRecipientsList();
   public abstract @NonNull Reader getAllStoriesFor(@NonNull RecipientId recipientId);
   public abstract @NonNull MessageId getStoryId(@NonNull RecipientId authorId, long sentTimestamp) throws NoSuchMessageException;
   public abstract int getNumberOfStoryReplies(long parentStoryId);
+  public abstract boolean containsStories(long threadId);
   public abstract boolean hasSelfReplyInStory(long parentStoryId);
   public abstract @NonNull Cursor getStoryReplies(long parentStoryId);
   public abstract long getUnreadStoryCount();

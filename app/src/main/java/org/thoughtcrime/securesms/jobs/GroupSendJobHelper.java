@@ -6,12 +6,10 @@ import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.RecipientAccessList;
-import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.signalservice.api.messages.SendMessageResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 final class GroupSendJobHelper {
@@ -38,8 +36,14 @@ final class GroupSendJobHelper {
         skipped.add(recipient.getId());
       }
 
-      if (sendMessageResult.getSuccess()         != null ||
-          sendMessageResult.getIdentityFailure() != null ||
+      if (sendMessageResult.getProofRequiredFailure() != null) {
+        Log.w(TAG, "Proof required failure for " + recipient.getId());
+        skipped.add(recipient.getId());
+      }
+
+      if (sendMessageResult.getSuccess()               != null ||
+          sendMessageResult.getIdentityFailure()       != null ||
+          sendMessageResult.getProofRequiredFailure()  != null ||
           sendMessageResult.isUnregisteredFailure())
       {
         completions.add(recipient);

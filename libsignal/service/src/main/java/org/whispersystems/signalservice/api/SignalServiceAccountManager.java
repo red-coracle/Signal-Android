@@ -9,17 +9,15 @@ package org.whispersystems.signalservice.api;
 
 import com.google.protobuf.ByteString;
 
-import org.signal.zkgroup.profiles.ProfileKey;
-import org.signal.zkgroup.profiles.ProfileKeyCredential;
-import org.whispersystems.libsignal.IdentityKey;
-import org.whispersystems.libsignal.IdentityKeyPair;
-import org.whispersystems.libsignal.InvalidKeyException;
-import org.whispersystems.libsignal.ecc.ECPublicKey;
-import org.whispersystems.libsignal.logging.Log;
-import org.whispersystems.libsignal.state.PreKeyRecord;
-import org.whispersystems.libsignal.state.SignedPreKeyRecord;
-import org.whispersystems.libsignal.util.guava.Optional;
-import org.whispersystems.libsignal.util.guava.Preconditions;
+import org.signal.libsignal.protocol.IdentityKey;
+import org.signal.libsignal.protocol.IdentityKeyPair;
+import org.signal.libsignal.protocol.InvalidKeyException;
+import org.signal.libsignal.protocol.ecc.ECPublicKey;
+import org.signal.libsignal.protocol.logging.Log;
+import org.signal.libsignal.protocol.state.PreKeyRecord;
+import org.signal.libsignal.protocol.state.SignedPreKeyRecord;
+import org.signal.libsignal.zkgroup.profiles.ProfileKey;
+import org.signal.libsignal.zkgroup.profiles.ProfileKeyCredential;
 import org.whispersystems.signalservice.api.account.AccountAttributes;
 import org.whispersystems.signalservice.api.crypto.InvalidCiphertextException;
 import org.whispersystems.signalservice.api.crypto.ProfileCipher;
@@ -32,18 +30,20 @@ import org.whispersystems.signalservice.api.messages.calls.TurnServerInfo;
 import org.whispersystems.signalservice.api.messages.multidevice.DeviceInfo;
 import org.whispersystems.signalservice.api.messages.multidevice.VerifyDeviceResponse;
 import org.whispersystems.signalservice.api.payments.CurrencyConversions;
+import org.whispersystems.signalservice.api.profiles.AvatarUploadParams;
 import org.whispersystems.signalservice.api.profiles.ProfileAndCredential;
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfileWrite;
 import org.whispersystems.signalservice.api.push.ACI;
-import org.whispersystems.signalservice.api.push.ServiceId;
 import org.whispersystems.signalservice.api.push.PNI;
+import org.whispersystems.signalservice.api.push.ServiceId;
 import org.whispersystems.signalservice.api.push.ServiceIdType;
 import org.whispersystems.signalservice.api.push.SignedPreKeyEntity;
 import org.whispersystems.signalservice.api.push.exceptions.NoContentException;
 import org.whispersystems.signalservice.api.push.exceptions.NonSuccessfulResponseCodeException;
 import org.whispersystems.signalservice.api.push.exceptions.NotFoundException;
 import org.whispersystems.signalservice.api.push.exceptions.PushNetworkException;
-import org.whispersystems.signalservice.api.services.CdshService;
+import org.whispersystems.signalservice.api.services.CdshV1Service;
+import org.whispersystems.signalservice.api.services.CdshV2Service;
 import org.whispersystems.signalservice.api.storage.SignalStorageCipher;
 import org.whispersystems.signalservice.api.storage.SignalStorageManifest;
 import org.whispersystems.signalservice.api.storage.SignalStorageModels;
@@ -52,7 +52,7 @@ import org.whispersystems.signalservice.api.storage.StorageId;
 import org.whispersystems.signalservice.api.storage.StorageKey;
 import org.whispersystems.signalservice.api.storage.StorageManifestKey;
 import org.whispersystems.signalservice.api.util.CredentialsProvider;
-import org.whispersystems.signalservice.api.util.StreamDetails;
+import org.whispersystems.signalservice.api.util.Preconditions;
 import org.whispersystems.signalservice.internal.ServiceResponse;
 import org.whispersystems.signalservice.internal.configuration.SignalServiceConfiguration;
 import org.whispersystems.signalservice.internal.contacts.crypto.ContactDiscoveryCipher;
@@ -99,6 +99,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -145,12 +146,13 @@ public class SignalServiceAccountManager {
                                      int deviceId,
                                      String password,
                                      String signalAgent,
-                                     boolean automaticNetworkRetry)
+                                     boolean automaticNetworkRetry,
+                                     int maxGroupSize)
   {
     this(configuration,
          new StaticCredentialsProvider(aci, pni, e164, deviceId, password),
          signalAgent,
-         new GroupsV2Operations(ClientZkOperations.create(configuration)),
+         new GroupsV2Operations(ClientZkOperations.create(configuration), maxGroupSize),
          automaticNetworkRetry);
   }
 
@@ -505,11 +507,11 @@ public class SignalServiceAccountManager {
     }
   }
 
-  public Map<String, ACI> getRegisteredUsersWithCdsh(Set<String> e164numbers, String hexPublicKey, String hexCodeHash)
+  public Map<String, ACI> getRegisteredUsersWithCdshV1(Set<String> e164numbers, String hexPublicKey, String hexCodeHash)
       throws IOException
   {
     CdshAuthResponse                          auth    = pushServiceSocket.getCdshAuth();
-    CdshService                               service = new CdshService(configuration, hexPublicKey, hexCodeHash);
+    CdshV1Service                             service = new CdshV1Service(configuration, hexPublicKey, hexCodeHash);
     Single<ServiceResponse<Map<String, ACI>>> result  = service.getRegisteredUsers(auth.getUsername(), auth.getPassword(), e164numbers);
 
     ServiceResponse<Map<String, ACI>> response;
@@ -530,6 +532,37 @@ public class SignalServiceAccountManager {
     }
   }
 
+  public CdshV2Service.Response getRegisteredUsersWithCdshV2(Set<String> previousE164s,
+                                                             Set<String> newE164s,
+                                                             Map<ServiceId, ProfileKey> serviceIds,
+                                                             Optional<byte[]> token,
+                                                             String hexPublicKey,
+                                                             String hexCodeHash)
+      throws IOException
+  {
+    CdshAuthResponse                                auth    = pushServiceSocket.getCdshAuth();
+    CdshV2Service                                   service = new CdshV2Service(configuration, hexPublicKey, hexCodeHash);
+    CdshV2Service.Request                           request = new CdshV2Service.Request(previousE164s, newE164s, serviceIds, token);
+    Single<ServiceResponse<CdshV2Service.Response>> single  = service.getRegisteredUsers(auth.getUsername(), auth.getPassword(), request);
+
+    ServiceResponse<CdshV2Service.Response> serviceResponse;
+    try {
+      serviceResponse = single.blockingGet();
+    } catch (Exception e) {
+      throw new RuntimeException("Unexpected exception when retrieving registered users!", e);
+    }
+
+    if (serviceResponse.getResult().isPresent()) {
+      return serviceResponse.getResult().get();
+    } else if (serviceResponse.getApplicationError().isPresent()) {
+      throw new IOException(serviceResponse.getApplicationError().get());
+    } else if (serviceResponse.getExecutionError().isPresent()) {
+      throw new IOException(serviceResponse.getExecutionError().get());
+    } else {
+      throw new IOException("Missing result!");
+    }
+  }
+
 
   public Optional<SignalStorageManifest> getStorageManifest(StorageKey storageKey) throws IOException {
     try {
@@ -539,7 +572,7 @@ public class SignalServiceAccountManager {
       return Optional.of(SignalStorageModels.remoteToLocalStorageManifest(storageManifest, storageKey));
     } catch (InvalidKeyException | NotFoundException e) {
       Log.w(TAG, "Error while fetching manifest.", e);
-      return Optional.absent();
+      return Optional.empty();
     }
   }
 
@@ -561,12 +594,12 @@ public class SignalServiceAccountManager {
 
       if (storageManifest.getValue().isEmpty()) {
         Log.w(TAG, "Got an empty storage manifest!");
-        return Optional.absent();
+        return Optional.empty();
       }
 
       return Optional.of(SignalStorageModels.remoteToLocalStorageManifest(storageManifest, storageKey));
     } catch (NoContentException e) {
-      return Optional.absent();
+      return Optional.empty();
     }
   }
 
@@ -698,7 +731,7 @@ public class SignalServiceAccountManager {
 
       return Optional.of(conflictManifest);
     } else {
-      return Optional.absent();
+      return Optional.empty();
     }
   }
 
@@ -785,7 +818,7 @@ public class SignalServiceAccountManager {
                                               String about,
                                               String aboutEmoji,
                                               Optional<SignalServiceProtos.PaymentAddress> paymentsAddress,
-                                              StreamDetails avatar,
+                                              AvatarUploadParams avatar,
                                               List<String> visibleBadgeIds)
       throws IOException
   {
@@ -795,14 +828,13 @@ public class SignalServiceAccountManager {
     byte[]            ciphertextName              = profileCipher.encryptString(name, ProfileCipher.getTargetNameLength(name));
     byte[]            ciphertextAbout             = profileCipher.encryptString(about, ProfileCipher.getTargetAboutLength(about));
     byte[]            ciphertextEmoji             = profileCipher.encryptString(aboutEmoji, ProfileCipher.EMOJI_PADDED_LENGTH);
-    byte[]            ciphertextMobileCoinAddress = paymentsAddress.transform(address -> profileCipher.encryptWithLength(address.toByteArray(), ProfileCipher.PAYMENTS_ADDRESS_CONTENT_SIZE)).orNull();
-    boolean           hasAvatar                   = avatar != null;
+    byte[]            ciphertextMobileCoinAddress = paymentsAddress.map(address -> profileCipher.encryptWithLength(address.toByteArray(), ProfileCipher.PAYMENTS_ADDRESS_CONTENT_SIZE)).orElse(null);
     ProfileAvatarData profileAvatarData           = null;
 
-    if (hasAvatar) {
-      profileAvatarData = new ProfileAvatarData(avatar.getStream(),
-                                                ProfileCipherOutputStream.getCiphertextLength(avatar.getLength()),
-                                                avatar.getContentType(),
+    if (avatar.stream != null && !avatar.keepTheSame) {
+      profileAvatarData = new ProfileAvatarData(avatar.stream.getStream(),
+                                                ProfileCipherOutputStream.getCiphertextLength(avatar.stream.getLength()),
+                                                avatar.stream.getContentType(),
                                                 new ProfileCipherOutputStreamFactory(profileKey));
     }
 
@@ -811,7 +843,8 @@ public class SignalServiceAccountManager {
                                                                              ciphertextAbout,
                                                                              ciphertextEmoji,
                                                                              ciphertextMobileCoinAddress,
-                                                                             hasAvatar,
+                                                                             avatar.hasAvatar,
+                                                                             avatar.keepTheSame,
                                                                              profileKey.getCommitment(aci.uuid()).serialize(),
                                                                              visibleBadgeIds),
                                                                              profileAvatarData);
@@ -821,7 +854,7 @@ public class SignalServiceAccountManager {
       throws NonSuccessfulResponseCodeException, PushNetworkException
   {
     try {
-      ProfileAndCredential credential = this.pushServiceSocket.retrieveVersionedProfileAndCredential(serviceId.uuid(), profileKey, Optional.absent(), locale).get(10, TimeUnit.SECONDS);
+      ProfileAndCredential credential = this.pushServiceSocket.retrieveVersionedProfileAndCredential(serviceId.uuid(), profileKey, Optional.empty(), locale).get(10, TimeUnit.SECONDS);
       return credential.getProfileKeyCredential();
     } catch (InterruptedException | TimeoutException e) {
       throw new PushNetworkException(e);

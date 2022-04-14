@@ -34,16 +34,17 @@ import org.thoughtcrime.securesms.mms.GlideRequests;
 import org.thoughtcrime.securesms.mms.Slide;
 import org.thoughtcrime.securesms.mms.SlideClickListener;
 import org.thoughtcrime.securesms.mms.SlidesClickedListener;
+import org.thoughtcrime.securesms.stories.StoryTextPostModel;
 import org.thoughtcrime.securesms.util.MediaUtil;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.ViewUtil;
 import org.thoughtcrime.securesms.util.concurrent.ListenableFuture;
 import org.thoughtcrime.securesms.util.concurrent.SettableFuture;
-import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
@@ -68,7 +69,7 @@ public class ThumbnailView extends FrameLayout {
   private final int[] bounds        = new int[4];
   private final int[] measureDimens = new int[2];
 
-  private Optional<TransferControlView> transferControls       = Optional.absent();
+  private Optional<TransferControlView> transferControls       = Optional.empty();
   private SlideClickListener            thumbnailClickListener = null;
   private SlidesClickedListener         downloadClickListener  = null;
   private Slide                         slide                  = null;
@@ -391,6 +392,32 @@ public class ThumbnailView extends FrameLayout {
     return future;
   }
 
+  public ListenableFuture<Boolean> setImageResource(@NonNull GlideRequests glideRequests, @NonNull StoryTextPostModel model, int width, int height) {
+    SettableFuture<Boolean> future = new SettableFuture<>();
+
+    if (transferControls.isPresent()) getTransferControls().setVisibility(View.GONE);
+
+    GlideRequest request = glideRequests.load(model)
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                        .placeholder(model.getPlaceholder())
+                                        .transition(withCrossFade());
+
+    if (width > 0 && height > 0) {
+      request = request.override(width, height);
+    }
+
+    if (radius > 0) {
+      request = request.transforms(new CenterCrop(), new RoundedCorners(radius));
+    } else {
+      request = request.transforms(new CenterCrop());
+    }
+
+    request.into(new GlideDrawableListeningTarget(image, future));
+    blurhash.setImageDrawable(null);
+
+    return future;
+  }
+
   public void setThumbnailClickListener(SlideClickListener listener) {
     this.thumbnailClickListener = listener;
   }
@@ -401,10 +428,14 @@ public class ThumbnailView extends FrameLayout {
 
   public void clear(GlideRequests glideRequests) {
     glideRequests.clear(image);
+    image.setImageDrawable(null);
 
     if (transferControls.isPresent()) {
       getTransferControls().clear();
     }
+
+    glideRequests.clear(blurhash);
+    blurhash.setImageDrawable(null);
 
     slide = null;
   }

@@ -15,7 +15,7 @@ import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.service.webrtc.AndroidTelecomUtil
 import org.thoughtcrime.securesms.util.safeUnregisterReceiver
-import org.whispersystems.libsignal.util.guava.Preconditions
+import org.whispersystems.signalservice.api.util.Preconditions
 
 private val TAG = Log.tag(SignalAudioManager::class.java)
 
@@ -413,6 +413,8 @@ class TelecomAwareSignalAudioManager(context: Context, eventListener: EventListe
     if (!focusedGained) {
       handler.postDelayed({ androidAudioManager.requestCallAudioFocus() }, 500)
     }
+
+    state = State.PREINITIALIZED
   }
 
   override fun start() {
@@ -423,11 +425,21 @@ class TelecomAwareSignalAudioManager(context: Context, eventListener: EventListe
     if (!focusedGained) {
       handler.postDelayed({ androidAudioManager.requestCallAudioFocus() }, 500)
     }
+
+    state = State.RUNNING
   }
 
   override fun stop(playDisconnect: Boolean) {
     incomingRinger.stop()
     outgoingRinger.stop()
+
+    if (playDisconnect && state != State.UNINITIALIZED) {
+      val volume: Float = androidAudioManager.ringVolumeWithMinimum()
+      soundPool.play(disconnectedSoundId, volume, volume, 0, 0, 1.0f)
+    }
+
+    state = State.UNINITIALIZED
+
     androidAudioManager.abandonCallAudioFocus()
   }
 

@@ -35,6 +35,7 @@ import org.signal.core.util.logging.AndroidLogger;
 import org.signal.core.util.logging.Log;
 import org.signal.core.util.tracing.Tracer;
 import org.signal.glide.SignalGlideCodecs;
+import org.signal.libsignal.protocol.logging.SignalProtocolLoggerProvider;
 import org.signal.ringrtc.CallManager;
 import org.thoughtcrime.securesms.avatar.AvatarPickerStorage;
 import org.thoughtcrime.securesms.crypto.AttachmentSecretProvider;
@@ -53,6 +54,7 @@ import org.thoughtcrime.securesms.jobs.DownloadLatestEmojiDataJob;
 import org.thoughtcrime.securesms.jobs.EmojiSearchIndexDownloadJob;
 import org.thoughtcrime.securesms.jobs.FcmRefreshJob;
 import org.thoughtcrime.securesms.jobs.FontDownloaderJob;
+import org.thoughtcrime.securesms.jobs.GroupV2UpdateSelfProfileKeyJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob;
 import org.thoughtcrime.securesms.jobs.ProfileUploadJob;
 import org.thoughtcrime.securesms.jobs.PushNotificationReceiveJob;
@@ -91,7 +93,6 @@ import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.VersionTracker;
 import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWrapper;
-import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
 
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -197,6 +198,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                             .addPostRender(() -> AndroidTelecomUtil.registerPhoneAccount())
                             .addPostRender(() -> ApplicationDependencies.getJobManager().add(new FontDownloaderJob()))
                             .addPostRender(CheckServiceReachabilityJob::enqueueIfNecessary)
+                            .addPostRender(GroupV2UpdateSelfProfileKeyJob::enqueueForGroupsIfNecessary)
                             .execute();
 
     Log.d(TAG, "onCreate() took " + (System.currentTimeMillis() - startTime) + " ms");

@@ -63,8 +63,8 @@ ktlint {
     version = "0.43.2"
 }
 
-def canonicalVersionCode = 1021
-def canonicalVersionName = "5.33.2"
+def canonicalVersionCode = 1036
+def canonicalVersionName = "5.34.10"
 
 def postFixSize = 100
 def abiPostFix = ['universal'   : 0,
@@ -485,8 +485,9 @@ dependencies {
     implementation project(':device-transfer')
     implementation project(':image-editor')
     implementation project(':donations')
+    implementation project(':contacts')
 
-    implementation libs.signal.client.android
+    implementation libs.libsignal.android
     implementation libs.google.protobuf.javalite
 
     implementation(libs.mobilecoin) {
@@ -554,10 +555,7 @@ dependencies {
     testImplementation testLibs.junit.junit
     testImplementation testLibs.assertj.core
     testImplementation testLibs.mockito.core
-    testImplementation testLibs.powermock.api.mockito
-    testImplementation testLibs.powermock.module.junit4.core
-    testImplementation testLibs.powermock.module.junit4.rule
-    testImplementation testLibs.powermock.classloading.xstream
+    testImplementation testLibs.mockito.kotlin
 
     testImplementation testLibs.androidx.test.core
     testImplementation (testLibs.robolectric.robolectric) {
@@ -584,7 +582,7 @@ dependencies {
     implementation libs.rxjava3.rxkotlin
     implementation libs.rxdogtag
 
-    androidTestUtil 'androidx.test:orchestrator:1.4.0'
+    androidTestUtil 'androidx.test:orchestrator:1.4.1'
 }
 
 def getLastCommitTimestamp() {

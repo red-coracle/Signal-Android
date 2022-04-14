@@ -1,19 +1,21 @@
 package org.thoughtcrime.securesms.stories.landing
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.avatar.view.AvatarView
+import org.thoughtcrime.securesms.badges.BadgeImageView
 import org.thoughtcrime.securesms.components.ThumbnailView
 import org.thoughtcrime.securesms.components.settings.PreferenceModel
 import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord
 import org.thoughtcrime.securesms.mms.GlideApp
 import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.stories.StoryTextPostModel
 import org.thoughtcrime.securesms.stories.dialogs.StoryContextMenu
 import org.thoughtcrime.securesms.util.DateUtils
+import org.thoughtcrime.securesms.util.SpanUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.LayoutFactory
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingViewHolder
@@ -24,13 +26,16 @@ import java.util.Locale
  * Items displaying a preview and metadata for a story from a user, allowing them to launch into the story viewer.
  */
 object StoriesLandingItem {
+
+  private const val STATUS_CHANGE = 0
+
   fun register(mappingAdapter: MappingAdapter) {
     mappingAdapter.registerFactory(Model::class.java, LayoutFactory(::ViewHolder, R.layout.stories_landing_item))
   }
 
   class Model(
     val data: StoriesLandingItemData,
-    val onRowClick: (Model) -> Unit,
+    val onRowClick: (Model, View) -> Unit,
     val onHideStory: (Model) -> Unit,
     val onForwardStory: (Model) -> Unit,
     val onShareStory: (Model) -> Unit,
@@ -45,13 +50,36 @@ object StoriesLandingItem {
     override fun areContentsTheSame(newItem: Model): Boolean {
       return data.storyRecipient.hasSameContent(newItem.data.storyRecipient) &&
         data == newItem.data &&
+        !hasStatusChange(newItem) &&
         super.areContentsTheSame(newItem)
+    }
+
+    override fun getChangePayload(newItem: Model): Any? {
+      return if (isSameRecord(newItem) && hasStatusChange(newItem)) {
+        STATUS_CHANGE
+      } else {
+        null
+      }
+    }
+
+    private fun isSameRecord(newItem: Model): Boolean {
+      return data.primaryStory.messageRecord.id == newItem.data.primaryStory.messageRecord.id
+    }
+
+    private fun hasStatusChange(newItem: Model): Boolean {
+      val oldRecord = data.primaryStory.messageRecord
+      val newRecord = newItem.data.primaryStory.messageRecord
+
+      return oldRecord.isOutgoing &&
+        newRecord.isOutgoing &&
+        (oldRecord.isPending != newRecord.isPending || oldRecord.isSent != newRecord.isSent || oldRecord.isFailed != newRecord.isFailed)
     }
   }
 
   private class ViewHolder(itemView: View) : MappingViewHolder<Model>(itemView) {
 
     private val avatarView: AvatarView = itemView.findViewById(R.id.avatar)
+    private val badgeView: BadgeImageView = itemView.findViewById(R.id.badge)
     private val storyPreview: ThumbnailView = itemView.findViewById<ThumbnailView>(R.id.story).apply {
       isClickable = false
     }
@@ -61,32 +89,54 @@ object StoriesLandingItem {
     private val sender: TextView = itemView.findViewById(R.id.sender)
     private val date: TextView = itemView.findViewById(R.id.date)
     private val icon: ImageView = itemView.findViewById(R.id.icon)
+    private val errorIndicator: View = itemView.findViewById(R.id.error_indicator)
 
     override fun bind(model: Model) {
-      itemView.setOnClickListener { model.onRowClick(model) }
+
+      presentDateOrStatus(model)
+      setUpClickListeners(model)
+
+      if (payload.contains(STATUS_CHANGE)) {
+        return
+      }
 
       if (model.data.storyRecipient.isMyStory) {
-        itemView.setOnLongClickListener(null)
         avatarView.displayProfileAvatar(Recipient.self())
+        badgeView.setBadgeFromRecipient(Recipient.self())
       } else {
-        itemView.setOnLongClickListener {
-          displayContext(model)
-          true
-        }
-
         avatarView.displayProfileAvatar(model.data.storyRecipient)
+        badgeView.setBadgeFromRecipient(model.data.storyRecipient)
       }
 
       val record = model.data.primaryStory.messageRecord as MediaMmsMessageRecord
 
       avatarView.setStoryRingFromState(model.data.storyViewState)
-      storyPreview.setImageResource(GlideApp.with(storyPreview), record.slideDeck.thumbnailSlide!!, false, true)
+
+      @Suppress("CascadeIf")
+      if (record.storyType.isTextStory) {
+        storyPreview.setImageResource(GlideApp.with(storyPreview), StoryTextPostModel.parseFrom(record), 0, 0)
+      } else if (record.slideDeck.thumbnailSlide != null) {
+        storyPreview.setImageResource(GlideApp.with(storyPreview), record.slideDeck.thumbnailSlide!!, false, true)
+      } else {
+        storyPreview.clear(GlideApp.with(storyPreview))
+      }
 
       if (model.data.secondaryStory != null) {
         val secondaryRecord = model.data.secondaryStory.messageRecord as MediaMmsMessageRecord
-        storyMulti.setImageResource(GlideApp.with(storyPreview), secondaryRecord.slideDeck.thumbnailSlide!!, false, true)
-        storyMulti.visible = true
+
+        @Suppress("CascadeIf")
+        if (secondaryRecord.storyType.isTextStory) {
+          storyMulti.setImageResource(GlideApp.with(storyPreview), StoryTextPostModel.parseFrom(secondaryRecord), 0, 0)
+          storyMulti.visible = true
+        } else if (secondaryRecord.slideDeck.thumbnailSlide != null) {
+          storyMulti.setImageResource(GlideApp.with(storyPreview), secondaryRecord.slideDeck.thumbnailSlide!!, false, true)
+          storyMulti.visible = true
+        } else {
+          storyMulti.clear(GlideApp.with(storyPreview))
+          storyMulti.visible = false
+        }
       } else {
+        storyMulti.clear(GlideApp.with(storyPreview))
         storyMulti.visible = false
       }
 
@@ -96,13 +146,36 @@ object StoriesLandingItem {
         else -> model.data.storyRecipient.getDisplayName(context)
       }
 
-      date.text = DateUtils.getBriefRelativeTimeSpanString(context, Locale.getDefault(), model.data.dateInMilliseconds)
       icon.visible = model.data.hasReplies || model.data.hasRepliesFromSelf
-      // TODO [stories] -- Set actual image resource
-      icon.setImageDrawable(ColorDrawable(Color.RED))
 
       listOf(avatarView, storyPreview, storyMulti, sender, date, icon).forEach {
         it.alpha = if (model.data.isHidden) 0.5f else 1f
+      }
+    }
+
+    private fun presentDateOrStatus(model: Model) {
+      if (model.data.primaryStory.messageRecord.isOutgoing && (model.data.primaryStory.messageRecord.isPending || model.data.primaryStory.messageRecord.isMediaPending)) {
+        errorIndicator.visible = false
+        date.setText(R.string.StoriesLandingItem__sending)
+      } else if (model.data.primaryStory.messageRecord.isOutgoing && model.data.primaryStory.messageRecord.isFailed) {
+        errorIndicator.visible = true
+        date.text = SpanUtil.color(ContextCompat.getColor(context, R.color.signal_alert_primary), context.getString(R.string.StoriesLandingItem__couldnt_send))
+      } else {
+        errorIndicator.visible = false
+        date.text = DateUtils.getBriefRelativeTimeSpanString(context, Locale.getDefault(), model.data.dateInMilliseconds)
+      }
+    }
+
+    private fun setUpClickListeners(model: Model) {
+      itemView.setOnClickListener { model.onRowClick(model, storyPreview) }
+
+      if (model.data.storyRecipient.isMyStory) {
+        itemView.setOnLongClickListener(null)
+      } else {
+        itemView.setOnLongClickListener {
+          displayContext(model)
+          true
+        }
       }
     }
 

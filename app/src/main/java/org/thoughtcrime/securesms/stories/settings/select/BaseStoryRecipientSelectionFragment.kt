@@ -20,7 +20,7 @@ import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.sharing.ShareContact
 import org.thoughtcrime.securesms.util.LifecycleDisposable
 import org.thoughtcrime.securesms.util.fragments.findListener
-import org.whispersystems.libsignal.util.guava.Optional
+import java.util.Optional
 import java.util.function.Consumer
 
 abstract class BaseStoryRecipientSelectionFragment : Fragment(R.layout.stories_base_recipient_selection_fragment), ContactSelectionListFragment.OnContactSelectedListener, ContactSelectionListFragment.HeaderActionProvider {
@@ -38,10 +38,12 @@ abstract class BaseStoryRecipientSelectionFragment : Fragment(R.layout.stories_b
   abstract val distributionListId: DistributionListId?
 
   private lateinit var toolbar: Toolbar
+  private lateinit var searchField: EditText
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    val searchField: EditText = view.findViewById(R.id.search_field)
     val actionButton: MaterialButton = view.findViewById(R.id.action_button)
+
+    searchField = view.findViewById(R.id.search_field)
 
     toolbar = view.findViewById(R.id.toolbar)
     toolbar.setNavigationOnClickListener {
@@ -114,6 +116,7 @@ abstract class BaseStoryRecipientSelectionFragment : Fragment(R.layout.stories_b
 
   override fun onBeforeContactSelected(recipientId: Optional<RecipientId>, number: String?, callback: Consumer<Boolean>) {
     viewModel.addRecipient(recipientId.get())
+    searchField.setText("")
     callback.accept(true)
   }
 
@@ -134,7 +137,7 @@ abstract class BaseStoryRecipientSelectionFragment : Fragment(R.layout.stories_b
   private fun initializeContactSelectionFragment() {
     val contactSelectionListFragment = ContactSelectionListFragment()
     val arguments = ContactSelectionArguments(
-      displayMode = ContactsCursorLoader.DisplayMode.FLAG_PUSH,
+      displayMode = ContactsCursorLoader.DisplayMode.FLAG_PUSH or ContactsCursorLoader.DisplayMode.FLAG_HIDE_NEW,
       isRefreshable = false,
       displayRecents = false,
       selectionLimits = SelectionLimits.NO_LIMITS,

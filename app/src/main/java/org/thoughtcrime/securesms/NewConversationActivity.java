@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import org.signal.core.util.logging.Log;
-import org.thoughtcrime.securesms.contacts.sync.DirectoryHelper;
+import org.thoughtcrime.securesms.contacts.sync.ContactDiscovery;
 import org.thoughtcrime.securesms.conversation.ConversationIntents;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.groups.ui.creategroup.CreateGroupActivity;
@@ -35,9 +35,9 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
-import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -79,7 +79,7 @@ public class NewConversationActivity extends ContactSelectionActivity
           if (!resolved.isRegistered() || !resolved.hasServiceId()) {
             Log.i(TAG, "[onContactSelected] Not registered or no UUID. Doing a directory refresh.");
             try {
-              DirectoryHelper.refreshDirectoryFor(this, resolved, false);
+              ContactDiscovery.refresh(this, resolved, false);
               resolved = Recipient.resolved(resolved.getId());
             } catch (IOException e) {
               Log.w(TAG, "[onContactSelected] Failed to refresh directory for new contact.");

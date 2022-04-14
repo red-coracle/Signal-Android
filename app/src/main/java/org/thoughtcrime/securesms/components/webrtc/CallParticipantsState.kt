@@ -130,7 +130,7 @@ data class CallParticipantsState(
       ringerRecipient.hasServiceId()
     ) {
       val ringerName = ringerRecipient.getShortDisplayName(context)
-      val membersWithoutYouOrRinger: List<GroupMemberEntry.FullMember> = groupMembers.filterNot { it.member.isSelf || ringerRecipient.requireServiceId() == it.member.serviceId.orNull() }
+      val membersWithoutYouOrRinger: List<GroupMemberEntry.FullMember> = groupMembers.filterNot { it.member.isSelf || ringerRecipient.requireServiceId() == it.member.serviceId.orElse(null) }
 
       return when (membersWithoutYouOrRinger.size) {
         0 -> context.getString(R.string.WebRtcCallView__s_is_calling_you, ringerName)
@@ -278,7 +278,7 @@ data class CallParticipantsState(
       if (isExpanded && (localParticipant.isVideoEnabled || isNonIdleGroupCall)) {
         return WebRtcLocalRenderState.EXPANDED
       } else if (displayLocal || showVideoForOutgoing) {
-        if (callState == WebRtcViewModel.State.CALL_CONNECTED) {
+        if (callState == WebRtcViewModel.State.CALL_CONNECTED || callState == WebRtcViewModel.State.CALL_RECONNECTING) {
           localRenderState = if (isViewingFocusedParticipant || numberOfRemoteParticipants > 1) {
             WebRtcLocalRenderState.SMALLER_RECTANGLE
           } else if (numberOfRemoteParticipants == 1) {

@@ -32,7 +32,6 @@ import org.thoughtcrime.securesms.transport.InsecureFallbackApprovalException;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 import org.thoughtcrime.securesms.transport.UndeliverableMessageException;
 import org.thoughtcrime.securesms.util.Util;
-import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender.IndividualSendEvents;
 import org.whispersystems.signalservice.api.crypto.ContentHint;
@@ -51,6 +50,7 @@ import org.whispersystems.signalservice.api.push.exceptions.UnregisteredUserExce
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class PushMediaSendJob extends PushSendJob {
@@ -217,8 +217,8 @@ public class PushMediaSendJob extends PushSendJob {
                                                                                                .withTimestamp(message.getSentTimeMillis())
                                                                                                .withExpiration((int)(message.getExpiresIn() / 1000))
                                                                                                .withViewOnce(message.isViewOnce())
-                                                                                               .withProfileKey(profileKey.orNull())
-                                                                                               .withSticker(sticker.orNull())
+                                                                                               .withProfileKey(profileKey.orElse(null))
+                                                                                               .withSticker(sticker.orElse(null))
                                                                                                .withSharedContacts(sharedContacts)
                                                                                                .withPreviews(previews)
                                                                                                .asExpirationUpdate(message.isExpirationUpdate());
@@ -226,14 +226,22 @@ public class PushMediaSendJob extends PushSendJob {
       if (message.getParentStoryId() != null) {
         try {
           MessageRecord storyRecord = SignalDatabase.mms().getMessageRecord(message.getParentStoryId().asMessageId().getId());
-          mediaMessageBuilder.withStoryContext(new SignalServiceDataMessage.StoryContext(address.getServiceId(), storyRecord.getDateSent()));
+
+          SignalServiceDataMessage.StoryContext storyContext = new SignalServiceDataMessage.StoryContext(address.getServiceId(), storyRecord.getDateSent());
+          mediaMessageBuilder.withStoryContext(storyContext);
+
+          Optional<SignalServiceDataMessage.Reaction> reaction = getStoryReactionFor(message, storyContext);
+          if (reaction.isPresent()) {
+            mediaMessageBuilder.withReaction(reaction.get());
+            mediaMessageBuilder.withBody(null);
+          }
         } catch (NoSuchMessageException e) {
           // The story has probably expired
           // TODO [stories] check what should happen in this case
           throw new UndeliverableMessageException(e);
         }
       } else {
-        mediaMessageBuilder.withQuote(getQuoteFor(message).orNull());
+        mediaMessageBuilder.withQuote(getQuoteFor(message).orElse(null));
       }
 
       SignalServiceDataMessage mediaMessage = mediaMessageBuilder.build();

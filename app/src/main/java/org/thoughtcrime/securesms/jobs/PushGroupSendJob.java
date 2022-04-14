@@ -11,6 +11,7 @@ import com.annimon.stream.Stream;
 import com.google.protobuf.ByteString;
 
 import org.signal.core.util.logging.Log;
+import org.signal.libsignal.protocol.util.Pair;
 import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.database.GroupDatabase;
 import org.thoughtcrime.securesms.database.GroupReceiptDatabase;
@@ -32,6 +33,7 @@ import org.thoughtcrime.securesms.jobmanager.JobLogger;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.messages.GroupSendUtil;
+import org.thoughtcrime.securesms.messages.StorySendUtil;
 import org.thoughtcrime.securesms.mms.MessageGroupContext;
 import org.thoughtcrime.securesms.mms.MmsException;
 import org.thoughtcrime.securesms.mms.OutgoingGroupUpdateMessage;
@@ -45,8 +47,6 @@ import org.thoughtcrime.securesms.util.GroupUtil;
 import org.thoughtcrime.securesms.util.RecipientAccessList;
 import org.thoughtcrime.securesms.util.SetUtil;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
-import org.whispersystems.libsignal.util.Pair;
-import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.crypto.ContentHint;
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException;
 import org.whispersystems.signalservice.api.messages.SendMessageResult;
@@ -65,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -229,9 +230,9 @@ public final class PushGroupSendJob extends PushSendJob {
     try {
       rotateSenderCertificateIfNecessary();
 
-      GroupId.Push                               groupId            = groupRecipient.requireGroupId().requirePush();
-      Optional<byte[]>                           profileKey         = getProfileKey(groupRecipient);
-      Optional<SignalServiceDataMessage.Sticker> sticker            = getStickerFor(message);
+      GroupId.Push                               groupId    = groupRecipient.requireGroupId().requirePush();
+      Optional<byte[]>                           profileKey = getProfileKey(groupRecipient);
+      Optional<SignalServiceDataMessage.Sticker> sticker    = getStickerFor(message);
       List<SharedContact>                        sharedContacts     = getSharedContactsFor(message);
       List<SignalServicePreview>                 previews           = getPreviewsFor(message);
       List<SignalServiceDataMessage.Mention>     mentions           = getMentionsFor(message.getMentions());
@@ -249,7 +250,14 @@ public final class PushGroupSendJob extends PushSendJob {
                                                                                   .withRevision(v2GroupProperties.getGroupRevision())
                                                                                   .build();
 
-          SignalServiceStoryMessage storyMessage = SignalServiceStoryMessage.forFileAttachment(Recipient.self().getProfileKey(), groupContext, attachmentPointers.get(0), message.getStoryType().isStoryWithReplies());
+          final SignalServiceStoryMessage storyMessage;
+          if (message.getStoryType().isTextStory()) {
+            storyMessage = SignalServiceStoryMessage.forTextAttachment(Recipient.self().getProfileKey(), groupContext, StorySendUtil.deserializeBodyToStoryTextAttachment(message, this::getPreviewsFor), message.getStoryType().isStoryWithReplies());
+          } else if (!attachmentPointers.isEmpty()) {
+            storyMessage = SignalServiceStoryMessage.forFileAttachment(Recipient.self().getProfileKey(), groupContext, attachmentPointers.get(0), message.getStoryType().isStoryWithReplies());
+          } else {
+            throw new UndeliverableMessageException("No attachment on non-text story.");
+          }
 
           return GroupSendUtil.sendGroupStoryMessage(context, groupId.requireV2(), destinations, isRecipientUpdate, new MessageId(messageId, true), message.getSentTimeMillis(), storyMessage);
         } else {
@@ -296,8 +304,8 @@ public final class PushGroupSendJob extends PushSendJob {
                                                                       .withExpiration((int)(message.getExpiresIn() / 1000))
                                                                       .withViewOnce(message.isViewOnce())
                                                                       .asExpirationUpdate(message.isExpirationUpdate())
-                                                                      .withProfileKey(profileKey.orNull())
-                                                                      .withSticker(sticker.orNull())
+                                                                      .withProfileKey(profileKey.orElse(null))
+                                                                      .withSticker(sticker.orElse(null))
                                                                       .withSharedContacts(sharedContacts)
                                                                       .withPreviews(previews)
                                                                       .withMentions(mentions);
@@ -311,20 +319,27 @@ public final class PushGroupSendJob extends PushSendJob {
                                        .filter(r -> r.getStoriesCapability() == Recipient.Capability.SUPPORTED)
                                        .collect(java.util.stream.Collectors.toList());
 
-            groupMessageBuilder.withStoryContext(new SignalServiceDataMessage.StoryContext(recipient.requireServiceId(), storyRecord.getDateSent()));
+            SignalServiceDataMessage.StoryContext storyContext = new SignalServiceDataMessage.StoryContext(recipient.requireServiceId(), storyRecord.getDateSent());
+            groupMessageBuilder.withStoryContext(storyContext);
+
+            Optional<SignalServiceDataMessage.Reaction> reaction = getStoryReactionFor(message, storyContext);
+            if (reaction.isPresent()) {
+              groupMessageBuilder.withReaction(reaction.get());
+              groupMessageBuilder.withBody(null);
+            }
           } catch (NoSuchMessageException e) {
             // The story has probably expired
             // TODO [stories] check what should happen in this case
             throw new UndeliverableMessageException(e);
           }
         } else {
-          groupMessageBuilder.withQuote(getQuoteFor(message).orNull());
+          groupMessageBuilder.withQuote(getQuoteFor(message).orElse(null));
         }
 
         Log.i(TAG, JobLogger.format(this, "Beginning message send."));
 
         return GroupSendUtil.sendResendableDataMessage(context,
-                                                       groupRecipient.getGroupId().transform(GroupId::requireV2).orNull(),
+                                                       groupRecipient.getGroupId().map(GroupId::requireV2).orElse(null),
                                                        destinations,
                                                        isRecipientUpdate,
                                                        ContentHint.RESENDABLE,
@@ -427,7 +442,7 @@ public final class PushGroupSendJob extends PushSendJob {
     } else if (!networkFailures.isEmpty()) {
       long retryAfter = results.stream()
                                .filter(r -> r.getRateLimitFailure() != null)
-                               .map(r -> r.getRateLimitFailure().getRetryAfterMilliseconds().or(-1L))
+                               .map(r -> r.getRateLimitFailure().getRetryAfterMilliseconds().orElse(-1L))
                                .max(Long::compare)
                                .orElse(-1L);
       Log.w(TAG, "Retrying because there were " + networkFailures.size() + " network failures. retryAfter: " + retryAfter);

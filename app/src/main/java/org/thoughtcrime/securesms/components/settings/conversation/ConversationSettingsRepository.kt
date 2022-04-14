@@ -10,7 +10,7 @@ import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
 import org.signal.storageservice.protos.groups.local.DecryptedGroup
 import org.signal.storageservice.protos.groups.local.DecryptedPendingMember
-import org.thoughtcrime.securesms.contacts.sync.DirectoryHelper
+import org.thoughtcrime.securesms.contacts.sync.ContactDiscovery
 import org.thoughtcrime.securesms.database.GroupDatabase
 import org.thoughtcrime.securesms.database.MediaDatabase
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -18,30 +18,29 @@ import org.thoughtcrime.securesms.database.model.IdentityRecord
 import org.thoughtcrime.securesms.database.model.StoryViewState
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.groups.GroupId
-import org.thoughtcrime.securesms.groups.GroupManager
 import org.thoughtcrime.securesms.groups.GroupProtoUtil
 import org.thoughtcrime.securesms.groups.LiveGroup
-import org.thoughtcrime.securesms.groups.ui.GroupChangeFailureReason
-import org.thoughtcrime.securesms.jobs.RetrieveProfileJob
+import org.thoughtcrime.securesms.groups.v2.GroupAddMembersResult
+import org.thoughtcrime.securesms.groups.v2.GroupManagementRepository
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.recipients.RecipientUtil
 import org.thoughtcrime.securesms.util.FeatureFlags
-import org.whispersystems.libsignal.util.guava.Optional
 import java.io.IOException
-import java.util.concurrent.TimeUnit
+import java.util.Optional
 
 private val TAG = Log.tag(ConversationSettingsRepository::class.java)
 
 class ConversationSettingsRepository(
-  private val context: Context
+  private val context: Context,
+  private val groupManagementRepository: GroupManagementRepository = GroupManagementRepository(context)
 ) {
 
   @WorkerThread
   fun getThreadMedia(threadId: Long): Optional<Cursor> {
     return if (threadId <= 0) {
-      Optional.absent()
+      Optional.empty()
     } else {
       Optional.of(SignalDatabase.media.getGalleryMediaForThread(threadId, MediaDatabase.Sorting.Newest))
     }
@@ -77,7 +76,7 @@ class ConversationSettingsRepository(
   fun getIdentity(recipientId: RecipientId, consumer: (IdentityRecord?) -> Unit) {
     SignalExecutors.BOUNDED.execute {
       if (SignalStore.account().aci != null && SignalStore.account().pni != null) {
-        consumer(ApplicationDependencies.getProtocolStore().aci().identities().getIdentityRecord(recipientId).orNull())
+        consumer(ApplicationDependencies.getProtocolStore().aci().identities().getIdentityRecord(recipientId).orElse(null))
       } else {
         consumer(null)
       }
@@ -115,7 +114,7 @@ class ConversationSettingsRepository(
   fun refreshRecipient(recipientId: RecipientId) {
     SignalExecutors.UNBOUNDED.execute {
       try {
-        DirectoryHelper.refreshDirectoryFor(context, Recipient.resolved(recipientId), false)
+        ContactDiscovery.refresh(context, Recipient.resolved(recipientId), false)
       } catch (e: IOException) {
         Log.w(TAG, "Failed to refresh user after adding to contacts.")
       }
@@ -152,35 +151,7 @@ class ConversationSettingsRepository(
   }
 
   fun addMembers(groupId: GroupId, selected: List<RecipientId>, consumer: (GroupAddMembersResult) -> Unit) {
-    SignalExecutors.BOUNDED.execute {
-      val record: GroupDatabase.GroupRecord = SignalDatabase.groups.getGroup(groupId).get()
-
-      if (record.isAnnouncementGroup) {
-        val needsResolve = selected
-          .map { Recipient.resolved(it) }
-          .filter { it.announcementGroupCapability != Recipient.Capability.SUPPORTED && !it.isSelf }
-          .map { it.id }
-          .toSet()
-
-        ApplicationDependencies.getJobManager().runSynchronously(RetrieveProfileJob(needsResolve), TimeUnit.SECONDS.toMillis(10))
-
-        val updatedWithCapabilities = needsResolve.map { Recipient.resolved(it) }
-
-        if (updatedWithCapabilities.any { it.announcementGroupCapability != Recipient.Capability.SUPPORTED }) {
-          consumer(GroupAddMembersResult.Failure(GroupChangeFailureReason.NOT_ANNOUNCEMENT_CAPABLE))
-          return@execute
-        }
-      }
-
-      consumer(
-        try {
-          val groupActionResult = GroupManager.addMembers(context, groupId.requirePush(), selected)
-          GroupAddMembersResult.Success(groupActionResult.addedMemberCount, Recipient.resolvedList(groupActionResult.invitedMembers))
-        } catch (e: Exception) {
-          GroupAddMembersResult.Failure(GroupChangeFailureReason.fromException(e))
-        }
-      )
-    }
+    groupManagementRepository.addMembers(groupId, selected, consumer)
   }
 
   fun setMuteUntil(groupId: GroupId, until: Long) {

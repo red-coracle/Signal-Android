@@ -46,15 +46,18 @@ import org.thoughtcrime.securesms.mediasend.v2.MediaAnimations;
 import org.thoughtcrime.securesms.mediasend.v2.MediaCountIndicatorButton;
 import org.thoughtcrime.securesms.mms.DecryptableStreamUriLoader.DecryptableUri;
 import org.thoughtcrime.securesms.mms.MediaConstraints;
+import org.thoughtcrime.securesms.stories.Stories;
+import org.thoughtcrime.securesms.stories.viewer.page.StoryDisplay;
+import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.MemoryFileDescriptor;
 import org.thoughtcrime.securesms.util.Stopwatch;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.thoughtcrime.securesms.video.VideoUtil;
-import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Camera captured implemented using the CameraX SDK, which uses Camera2 under the hood. Should be
@@ -252,6 +255,20 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
     View                   galleryButton          = requireView().findViewById(R.id.camera_gallery_button);
     View                   countButton            = requireView().findViewById(R.id.camera_review_button);
     CameraXFlashToggleView flashButton            = requireView().findViewById(R.id.camera_flash_button);
+    View                   toggleSpacer           = requireView().findViewById(R.id.toggle_spacer);
+
+    if (toggleSpacer != null) {
+      if ( Stories.isFeatureEnabled() && FeatureFlags.storiesTextPosts()) {
+        StoryDisplay storyDisplay = StoryDisplay.Companion.getStoryDisplay(getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
+        if (storyDisplay == StoryDisplay.SMALL) {
+          toggleSpacer.setVisibility(View.VISIBLE);
+        } else {
+          toggleSpacer.setVisibility(View.GONE);
+        }
+      } else {
+        toggleSpacer.setVisibility(View.GONE);
+      }
+    }
 
     selfieFlash = requireView().findViewById(R.id.camera_selfie_flash);
 

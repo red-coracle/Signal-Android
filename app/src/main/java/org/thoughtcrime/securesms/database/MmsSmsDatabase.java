@@ -28,6 +28,7 @@ import com.annimon.stream.Stream;
 import net.zetetic.database.sqlcipher.SQLiteQueryBuilder;
 
 import org.signal.core.util.logging.Log;
+import org.signal.libsignal.protocol.util.Pair;
 import org.thoughtcrime.securesms.database.MessageDatabase.MessageUpdate;
 import org.thoughtcrime.securesms.database.MessageDatabase.SyncMessageId;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
@@ -35,9 +36,8 @@ import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.notifications.v2.MessageNotifierV2;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
-import org.thoughtcrime.securesms.util.CursorUtil;
-import org.thoughtcrime.securesms.util.SqlUtil;
-import org.whispersystems.libsignal.util.Pair;
+import org.signal.core.util.CursorUtil;
+import org.signal.core.util.SqlUtil;
 import org.whispersystems.signalservice.api.messages.multidevice.ReadMessage;
 
 import java.io.Closeable;
@@ -157,7 +157,9 @@ public class MmsSmsDatabase extends Database {
 
   public int getMessagePositionOnOrAfterTimestamp(long threadId, long timestamp) {
     String[] projection = new String[] { "COUNT(*)" };
-    String   selection  = MmsSmsColumns.THREAD_ID + " = " + threadId + " AND " + MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " >= " + timestamp;
+    String   selection  = MmsSmsColumns.THREAD_ID + " = " + threadId + " AND " +
+                          MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " >= " + timestamp + " AND " +
+                          MmsDatabase.STORY_TYPE + " = 0 AND " + MmsDatabase.PARENT_STORY_ID + " <= 0";
 
     try (Cursor cursor = queryTables(projection, selection, null, null)) {
       if (cursor != null && cursor.moveToNext()) {
@@ -369,12 +371,12 @@ public class MmsSmsDatabase extends Database {
     else          return id;
   }
 
-  public void incrementDeliveryReceiptCounts(@NonNull List<SyncMessageId> syncMessageIds, long timestamp) {
-    incrementReceiptCounts(syncMessageIds, timestamp, MessageDatabase.ReceiptType.DELIVERY);
+  public Collection<SyncMessageId> incrementDeliveryReceiptCounts(@NonNull List<SyncMessageId> syncMessageIds, long timestamp) {
+    return incrementReceiptCounts(syncMessageIds, timestamp, MessageDatabase.ReceiptType.DELIVERY);
   }
 
-  public void incrementDeliveryReceiptCount(SyncMessageId syncMessageId, long timestamp) {
-    incrementReceiptCount(syncMessageId, timestamp, MessageDatabase.ReceiptType.DELIVERY);
+  public boolean incrementDeliveryReceiptCount(SyncMessageId syncMessageId, long timestamp) {
+    return incrementReceiptCount(syncMessageId, timestamp, MessageDatabase.ReceiptType.DELIVERY);
   }
 
   /**
@@ -454,13 +456,16 @@ public class MmsSmsDatabase extends Database {
 
       for (MessageUpdate update : messageUpdates) {
         threadDatabase.updateSilently(update.getThreadId(), false);
-        ApplicationDependencies.getDatabaseObserver().notifyMessageUpdateObservers(update.getMessageId());
-        ApplicationDependencies.getDatabaseObserver().notifyVerboseConversationListeners(Collections.singleton(update.getThreadId()));
       }
 
       db.setTransactionSuccessful();
     } finally {
       db.endTransaction();
+
+      for (MessageUpdate update : messageUpdates) {
+        ApplicationDependencies.getDatabaseObserver().notifyMessageUpdateObservers(update.getMessageId());
+        ApplicationDependencies.getDatabaseObserver().notifyVerboseConversationListeners(Collections.singleton(update.getThreadId()));
+      }
 
       if (messageUpdates.size() > 0) {
         notifyConversationListListeners();
@@ -595,7 +600,8 @@ public class MmsSmsDatabase extends Database {
   public int getMessagePositionInConversation(long threadId, long receivedTimestamp) {
     String order     = MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " DESC";
     String selection = MmsSmsColumns.THREAD_ID + " = " + threadId + " AND " +
-                       MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " > " + receivedTimestamp;
+                       MmsSmsColumns.NORMALIZED_DATE_RECEIVED + " > " + receivedTimestamp + " AND " +
+                       MmsDatabase.STORY_TYPE + " = 0 AND " + MmsDatabase.PARENT_STORY_ID + " <= 0";
 
     try (Cursor cursor = queryTables(new String[]{ "COUNT(*)" }, selection, order, null)) {
       if (cursor != null && cursor.moveToFirst()) {

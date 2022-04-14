@@ -9,13 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.signal.core.util.logging.Log;
+import org.signal.libsignal.protocol.InvalidMessageException;
+import org.signal.libsignal.protocol.SignalProtocolAddress;
+import org.signal.libsignal.protocol.groups.state.SenderKeyRecord;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.thoughtcrime.securesms.recipients.Recipient;
-import org.whispersystems.libsignal.SignalProtocolAddress;
+import org.signal.core.util.CursorUtil;
+import org.signal.core.util.SqlUtil;
 import org.whispersystems.signalservice.api.push.DistributionId;
-import org.thoughtcrime.securesms.util.CursorUtil;
-import org.thoughtcrime.securesms.util.SqlUtil;
-import org.whispersystems.libsignal.groups.state.SenderKeyRecord;
 
 import java.io.IOException;
 
@@ -90,7 +90,7 @@ public class SenderKeyDatabase extends Database {
       if (cursor.moveToFirst()) {
         try {
           return new SenderKeyRecord(CursorUtil.requireBlob(cursor, RECORD));
-        } catch (IOException e) {
+        } catch (InvalidMessageException e) {
           Log.w(TAG, e);
         }
       }

@@ -9,13 +9,16 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.signal.core.util.CursorUtil
+import org.signal.libsignal.protocol.IdentityKey
+import org.signal.libsignal.protocol.SignalProtocolAddress
+import org.signal.libsignal.protocol.state.SessionRecord
+import org.signal.libsignal.zkgroup.groups.GroupMasterKey
 import org.signal.storageservice.protos.groups.local.DecryptedGroup
 import org.signal.storageservice.protos.groups.local.DecryptedMember
-import org.signal.zkgroup.groups.GroupMasterKey
 import org.thoughtcrime.securesms.conversation.colors.AvatarColor
 import org.thoughtcrime.securesms.database.model.DistributionListId
 import org.thoughtcrime.securesms.database.model.DistributionListRecord
@@ -30,14 +33,10 @@ import org.thoughtcrime.securesms.notifications.profiles.NotificationProfile
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.sms.IncomingTextMessage
-import org.thoughtcrime.securesms.util.CursorUtil
-import org.whispersystems.libsignal.IdentityKey
-import org.whispersystems.libsignal.SignalProtocolAddress
-import org.whispersystems.libsignal.state.SessionRecord
-import org.whispersystems.libsignal.util.guava.Optional
 import org.whispersystems.signalservice.api.push.ACI
 import org.whispersystems.signalservice.api.push.PNI
 import org.whispersystems.signalservice.api.util.UuidUtil
+import java.util.Optional
 import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
@@ -76,8 +75,6 @@ class RecipientDatabaseTest_merges {
 
     SignalStore.account().setAci(localAci)
     SignalStore.account().setPni(localPni)
-
-    ensureDbEmpty()
   }
 
   /** High trust lets you merge two different users into one. You should prefer the ACI user. Not shown: merging threads, dropping e164 sessions, etc. */
@@ -217,19 +214,12 @@ class RecipientDatabaseTest_merges {
   private val context: Application
     get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
 
-  private fun ensureDbEmpty() {
-    SignalDatabase.rawDatabase.rawQuery("SELECT COUNT(*) FROM ${RecipientDatabase.TABLE_NAME}", null).use { cursor ->
-      assertTrue(cursor.moveToFirst())
-      assertEquals(0, cursor.getLong(0))
-    }
-  }
-
-  private fun smsMessage(sender: RecipientId, time: Long = 0, body: String = "", groupId: Optional<GroupId> = Optional.absent()): IncomingTextMessage {
+  private fun smsMessage(sender: RecipientId, time: Long = 0, body: String = "", groupId: Optional<GroupId> = Optional.empty()): IncomingTextMessage {
     return IncomingTextMessage(sender, 1, time, time, time, body, groupId, 0, true, null)
   }
 
-  private fun mmsMessage(sender: RecipientId, time: Long = 0, body: String = "", groupId: Optional<GroupId> = Optional.absent()): IncomingMediaMessage {
-    return IncomingMediaMessage(sender, groupId, body, time, time, time, emptyList(), 0, 0, false, false, true, Optional.absent())
+  private fun mmsMessage(sender: RecipientId, time: Long = 0, body: String = "", groupId: Optional<GroupId> = Optional.empty()): IncomingMediaMessage {
+    return IncomingMediaMessage(sender, groupId, body, time, time, time, emptyList(), 0, 0, false, false, true, Optional.empty())
   }
 
   private fun identityKey(value: Byte): IdentityKey {

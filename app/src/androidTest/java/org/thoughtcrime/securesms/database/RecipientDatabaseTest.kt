@@ -18,10 +18,9 @@ import org.thoughtcrime.securesms.keyvalue.MockKeyValuePersistentStorage
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
-import org.whispersystems.libsignal.util.guava.Optional
 import org.whispersystems.signalservice.api.push.ACI
 import org.whispersystems.signalservice.api.push.PNI
-import java.lang.IllegalArgumentException
+import java.util.Optional
 import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
@@ -523,7 +522,7 @@ class RecipientDatabaseTest {
   }
 
   private fun ensureDbEmpty() {
-    SignalDatabase.rawDatabase.rawQuery("SELECT COUNT(*) FROM ${RecipientDatabase.TABLE_NAME}", null).use { cursor ->
+    SignalDatabase.rawDatabase.rawQuery("SELECT COUNT(*) FROM ${RecipientDatabase.TABLE_NAME} WHERE ${RecipientDatabase.DISTRIBUTION_LIST_ID} IS NULL ", null).use { cursor ->
       assertTrue(cursor.moveToFirst())
       assertEquals(0, cursor.getLong(0))
     }

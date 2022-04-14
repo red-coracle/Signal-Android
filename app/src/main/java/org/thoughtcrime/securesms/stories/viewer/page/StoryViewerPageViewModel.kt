@@ -20,6 +20,7 @@ import kotlin.math.min
  */
 class StoryViewerPageViewModel(
   private val recipientId: RecipientId,
+  private val initialStoryId: Long,
   private val repository: StoryViewerPageRepository
 ) : ViewModel() {
 
@@ -44,10 +45,18 @@ class StoryViewerPageViewModel(
   fun refresh() {
     disposables.clear()
     disposables += repository.getStoryPostsFor(recipientId).subscribe { posts ->
-      store.update {
-        it.copy(
+      store.update { state ->
+        val startIndex = if (state.posts.isEmpty() && initialStoryId > 0) {
+          val initialIndex = posts.indexOfFirst { it.id == initialStoryId }
+          initialIndex.takeIf { it > -1 } ?: state.selectedPostIndex
+        } else {
+          state.selectedPostIndex
+        }
+
+        state.copy(
           posts = posts,
-          replyState = resolveSwipeToReplyState(it)
+          replyState = resolveSwipeToReplyState(state, startIndex),
+          selectedPostIndex = startIndex
         )
       }
     }
@@ -126,6 +135,10 @@ class StoryViewerPageViewModel(
     storyViewerPlaybackStore.update { it.copy(isSelectedPage = isSelectedPage) }
   }
 
+  fun setIsDisplayingReactionAnimation(isDisplayingReactionAnimation: Boolean) {
+    storyViewerPlaybackStore.update { it.copy(isDisplayingReactionAnimation = isDisplayingReactionAnimation) }
+  }
+
   fun setIsDisplayingContextMenu(isDisplayingContextMenu: Boolean) {
     storyViewerPlaybackStore.update { it.copy(isDisplayingContextMenu = isDisplayingContextMenu) }
   }
@@ -158,7 +171,11 @@ class StoryViewerPageViewModel(
     storyViewerPlaybackStore.update { it.copy(areSegmentsInitialized = areSegmentsInitialized) }
   }
 
-  private fun resolveSwipeToReplyState(state: StoryViewerPageState, index: Int = state.selectedPostIndex): StoryViewerPageState.ReplyState {
+  fun setIsDisplayingLinkPreviewTooltip(isDisplayingLinkPreviewTooltip: Boolean) {
+    storyViewerPlaybackStore.update { it.copy(isDisplayingLinkPreviewTooltip = isDisplayingLinkPreviewTooltip) }
+  }
+
+  private fun resolveSwipeToReplyState(state: StoryViewerPageState, index: Int): StoryViewerPageState.ReplyState {
     if (index !in state.posts.indices) {
       return StoryViewerPageState.ReplyState.NONE
     }
@@ -178,9 +195,9 @@ class StoryViewerPageViewModel(
     return store.state.posts.getOrNull(index)
   }
 
-  class Factory(private val recipientId: RecipientId, private val repository: StoryViewerPageRepository) : ViewModelProvider.Factory {
+  class Factory(private val recipientId: RecipientId, private val initialStoryId: Long, private val repository: StoryViewerPageRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-      return modelClass.cast(StoryViewerPageViewModel(recipientId, repository)) as T
+      return modelClass.cast(StoryViewerPageViewModel(recipientId, initialStoryId, repository)) as T
     }
   }
 }

@@ -15,7 +15,9 @@ import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.sms.MessageSender
 
-class StoryDirectReplyRepository {
+class StoryDirectReplyRepository(context: Context) {
+
+  private val context = context.applicationContext
 
   fun getStoryPost(storyId: Long): Single<MessageRecord> {
     return Single.fromCallable {
@@ -23,7 +25,7 @@ class StoryDirectReplyRepository {
     }.subscribeOn(Schedulers.io())
   }
 
-  fun send(context: Context, storyId: Long, groupDirectReplyRecipientId: RecipientId?, charSequence: CharSequence): Completable {
+  fun send(storyId: Long, groupDirectReplyRecipientId: RecipientId?, charSequence: CharSequence, isReaction: Boolean): Completable {
     return Completable.create { emitter ->
       val message = SignalDatabase.mms.getMessageRecord(storyId) as MediaMmsMessageRecord
       val (recipient, threadId) = if (groupDirectReplyRecipientId == null) {
@@ -33,14 +35,10 @@ class StoryDirectReplyRepository {
         resolved to SignalDatabase.threads.getOrCreateThreadIdFor(resolved)
       }
 
-      val quoteAuthor: Recipient = if (message.isOutgoing) {
-        Recipient.self()
-      } else {
-        message.individualRecipient
-      }
-
-      if (!quoteAuthor.serviceId.isPresent || !quoteAuthor.e164.isPresent) {
-        throw AssertionError("Bad quote author.")
+      val quoteAuthor: Recipient = when {
+        groupDirectReplyRecipientId != null -> message.recipient
+        message.isOutgoing -> Recipient.self()
+        else -> message.individualRecipient
       }
 
       MessageSender.send(
@@ -56,7 +54,8 @@ class StoryDirectReplyRepository {
           0,
           StoryType.NONE,
           ParentStoryId.DirectReply(storyId),
-          QuoteModel(message.dateSent, quoteAuthor.id, "", false, message.slideDeck.asAttachments(), null),
+          isReaction,
+          QuoteModel(message.dateSent, quoteAuthor.id, message.body, false, message.slideDeck.asAttachments(), null),
           emptyList(),
           emptyList(),
           emptyList(),

@@ -51,7 +51,6 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.ComposeText;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.mms.OutgoingLegacyMmsConnection;
-import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -64,6 +63,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class Util {
@@ -182,17 +182,6 @@ public class Util {
     return value != null ? value : "";
   }
 
-  public static <E> List<List<E>> chunk(@NonNull List<E> list, int chunkSize) {
-    List<List<E>> chunks = new ArrayList<>(list.size() / chunkSize);
-
-    for (int i = 0; i < list.size(); i += chunkSize) {
-      List<E> chunk = list.subList(i, Math.min(list.size(), i + chunkSize));
-      chunks.add(chunk);
-    }
-
-    return chunks;
-  }
-
   public static CharSequence getBoldedString(String value) {
     SpannableString spanned = new SpannableString(value);
     spanned.setSpan(new StyleSpan(Typeface.BOLD), 0,
@@ -245,19 +234,19 @@ public class Util {
       final String           localNumber = ((TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
       final Optional<String> countryIso  = getSimCountryIso(context);
 
-      if (TextUtils.isEmpty(localNumber)) return Optional.absent();
-      if (!countryIso.isPresent())        return Optional.absent();
+      if (TextUtils.isEmpty(localNumber)) return Optional.empty();
+      if (!countryIso.isPresent())        return Optional.empty();
 
-      return Optional.fromNullable(PhoneNumberUtil.getInstance().parse(localNumber, countryIso.get()));
+      return Optional.ofNullable(PhoneNumberUtil.getInstance().parse(localNumber, countryIso.get()));
     } catch (NumberParseException e) {
       Log.w(TAG, e);
-      return Optional.absent();
+      return Optional.empty();
     }
   }
 
   public static Optional<String> getSimCountryIso(Context context) {
     String simCountryIso = ((TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE)).getSimCountryIso();
-    return Optional.fromNullable(simCountryIso != null ? simCountryIso.toUpperCase() : null);
+    return Optional.ofNullable(simCountryIso != null ? simCountryIso.toUpperCase() : null);
   }
 
   public static @NonNull <T> T firstNonNull(@Nullable T optional, @NonNull T fallback) {
@@ -481,11 +470,6 @@ public class Util {
       throw new ArithmeticException("integer overflow");
     }
     return (int)value;
-  }
-
-  public static boolean isStringEquals(String first, String second) {
-    if (first == null) return second == null;
-    return first.equals(second);
   }
 
   public static boolean isEquals(@Nullable Long first, long second) {

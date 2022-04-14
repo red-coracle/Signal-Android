@@ -7,16 +7,20 @@ import android.widget.EditText
 import androidx.constraintlayout.widget.Group
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.KeyboardEntryDialogFragment
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewRepository
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewViewModel
 import org.thoughtcrime.securesms.stories.StoryLinkPreviewView
+import org.thoughtcrime.securesms.util.ViewUtil
 import org.thoughtcrime.securesms.util.visible
 
 class TextStoryPostLinkEntryFragment : KeyboardEntryDialogFragment(
   contentLayoutId = R.layout.stories_text_post_link_entry_fragment
 ) {
+
+  private lateinit var input: EditText
 
   private val linkPreviewViewModel: LinkPreviewViewModel by viewModels(
     factoryProducer = { LinkPreviewViewModel.Factory(LinkPreviewRepository()) }
@@ -29,15 +33,24 @@ class TextStoryPostLinkEntryFragment : KeyboardEntryDialogFragment(
   )
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    val input: EditText = view.findViewById(R.id.input)
+    input = view.findViewById(R.id.input)
+
     val linkPreview: StoryLinkPreviewView = view.findViewById(R.id.link_preview)
     val confirmButton: View = view.findViewById(R.id.confirm_button)
+    val progress: CircularProgressIndicator = view.findViewById(R.id.loading_spinner)
 
     val shareALinkGroup: Group = view.findViewById(R.id.share_a_link_group)
 
     input.addTextChangedListener(
       afterTextChanged = {
-        linkPreviewViewModel.onTextChanged(requireContext(), it!!.toString(), input.selectionStart, input.selectionEnd)
+        val scheme = "https://"
+        val (uriString, selectionStart, selectionEnd) = if (it!!.startsWith(scheme)) {
+          Triple(it, input.selectionStart, input.selectionEnd)
+        } else {
+          Triple("$scheme$it", input.selectionStart + scheme.length, input.selectionEnd + scheme.length)
+        }
+
+        linkPreviewViewModel.onTextChanged(requireContext(), uriString.toString(), selectionStart, selectionEnd)
       }
     )
 
@@ -53,7 +66,13 @@ class TextStoryPostLinkEntryFragment : KeyboardEntryDialogFragment(
       linkPreview.bind(state)
       shareALinkGroup.visible = !state.isLoading && !state.linkPreview.isPresent && state.error == null
       confirmButton.isEnabled = state.linkPreview.isPresent
+      progress.visible = state.isLoading
     }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    ViewUtil.focusAndShowKeyboard(input)
   }
 
   override fun onDismiss(dialog: DialogInterface) {

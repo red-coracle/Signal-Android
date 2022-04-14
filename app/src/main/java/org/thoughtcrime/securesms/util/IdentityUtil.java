@@ -8,6 +8,10 @@ import androidx.annotation.StringRes;
 
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
+import org.signal.libsignal.protocol.IdentityKey;
+import org.signal.libsignal.protocol.SignalProtocolAddress;
+import org.signal.libsignal.protocol.state.SessionRecord;
+import org.signal.libsignal.protocol.state.SessionStore;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.crypto.ReentrantSessionLock;
 import org.thoughtcrime.securesms.crypto.storage.SignalIdentityKeyStore;
@@ -30,16 +34,12 @@ import org.thoughtcrime.securesms.sms.OutgoingTextMessage;
 import org.thoughtcrime.securesms.util.concurrent.ListenableFuture;
 import org.thoughtcrime.securesms.util.concurrent.SettableFuture;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
-import org.whispersystems.libsignal.IdentityKey;
-import org.whispersystems.libsignal.SignalProtocolAddress;
-import org.whispersystems.libsignal.state.SessionRecord;
-import org.whispersystems.libsignal.state.SessionStore;
-import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.SignalSessionLock;
 import org.whispersystems.signalservice.api.messages.multidevice.VerifiedMessage;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 
 import java.util.List;
+import java.util.Optional;
 
 public final class IdentityUtil {
 
@@ -95,7 +95,7 @@ public final class IdentityUtil {
     }
 
     if (remote) {
-      IncomingTextMessage incoming = new IncomingTextMessage(recipient.getId(), 1, time, -1, time, null, Optional.absent(), 0, false, null);
+      IncomingTextMessage incoming = new IncomingTextMessage(recipient.getId(), 1, time, -1, time, null, Optional.empty(), 0, false, null);
 
       if (verified) incoming = new IncomingIdentityVerifiedMessage(incoming);
       else          incoming = new IncomingIdentityDefaultMessage(incoming);
@@ -133,7 +133,7 @@ public final class IdentityUtil {
       }
     }
 
-    IncomingTextMessage           incoming         = new IncomingTextMessage(recipientId, 1, time, -1, time, null, Optional.absent(), 0, false, null);
+    IncomingTextMessage           incoming         = new IncomingTextMessage(recipientId, 1, time, -1, time, null, Optional.empty(), 0, false, null);
     IncomingIdentityUpdateMessage individualUpdate = new IncomingIdentityUpdateMessage(incoming);
     Optional<InsertResult>        insertResult     = smsDatabase.insertMessageInbox(individualUpdate);
 

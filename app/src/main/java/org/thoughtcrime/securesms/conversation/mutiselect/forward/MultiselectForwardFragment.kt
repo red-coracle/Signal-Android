@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.ContactFilterView
-import org.thoughtcrime.securesms.contacts.HeaderAction
 import org.thoughtcrime.securesms.contacts.paged.ContactSearchConfiguration
 import org.thoughtcrime.securesms.contacts.paged.ContactSearchKey
 import org.thoughtcrime.securesms.contacts.paged.ContactSearchMediator
@@ -35,8 +34,11 @@ import org.thoughtcrime.securesms.sharing.MultiShareArgs
 import org.thoughtcrime.securesms.sharing.ShareSelectionAdapter
 import org.thoughtcrime.securesms.sharing.ShareSelectionMappingModel
 import org.thoughtcrime.securesms.stories.Stories
+import org.thoughtcrime.securesms.stories.Stories.getHeaderAction
+import org.thoughtcrime.securesms.stories.dialogs.StoryDialogs
 import org.thoughtcrime.securesms.stories.settings.create.CreateStoryFlowDialogFragment
 import org.thoughtcrime.securesms.stories.settings.create.CreateStoryWithViewersFragment
+import org.thoughtcrime.securesms.stories.settings.hide.HideStoryFromDialogFragment
 import org.thoughtcrime.securesms.util.BottomSheetUtil
 import org.thoughtcrime.securesms.util.FeatureFlags
 import org.thoughtcrime.securesms.util.LifecycleDisposable
@@ -45,10 +47,7 @@ import org.thoughtcrime.securesms.util.fragments.findListener
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog
 import org.thoughtcrime.securesms.util.visible
 
-class MultiselectForwardFragment :
-  Fragment(),
-  SafetyNumberChangeDialog.Callback,
-  ChooseStoryTypeBottomSheet.Callback {
+class MultiselectForwardFragment : Fragment(R.layout.multiselect_forward_fragment), SafetyNumberChangeDialog.Callback, ChooseStoryTypeBottomSheet.Callback {
 
   private val viewModel: MultiselectForwardViewModel by viewModels(factoryProducer = this::createViewModelFactory)
   private val disposables = LifecycleDisposable()
@@ -67,8 +66,12 @@ class MultiselectForwardFragment :
 
   private fun getMultiShareArgs(): ArrayList<MultiShareArgs> = requireNotNull(requireArguments().getParcelableArrayList(ARG_MULTISHARE_ARGS))
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-    return inflater.inflate(R.layout.multiselect_forward_fragment, container, false)
+  override fun onGetLayoutInflater(savedInstanceState: Bundle?): LayoutInflater {
+    return if (parentFragment != null) {
+      requireParentFragment().onGetLayoutInflater(savedInstanceState)
+    } else {
+      super.onGetLayoutInflater(savedInstanceState)
+    }
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -105,7 +108,21 @@ class MultiselectForwardFragment :
 
     sendButton.setOnClickListener {
       sendButton.isEnabled = false
-      viewModel.send(addMessage.text.toString(), contactSearchMediator.getSelectedContacts())
+
+      StoryDialogs.guardWithAddToYourStoryDialog(
+        requireContext(),
+        contactSearchMediator.getSelectedContacts(),
+        onAddToStory = {
+          performSend()
+        },
+        onEditViewers = {
+          sendButton.isEnabled = true
+          HideStoryFromDialogFragment().show(childFragmentManager, null)
+        },
+        onCancel = {
+          sendButton.isEnabled = true
+        }
+      )
     }
 
     shareSelectionRecycler.adapter = shareSelectionAdapter
@@ -114,13 +131,15 @@ class MultiselectForwardFragment :
 
     container.addView(bottomBar)
 
-    contactSearchMediator.getSelectionState().observe(viewLifecycleOwner) {
-      shareSelectionAdapter.submitList(it.mapIndexed { index, key -> ShareSelectionMappingModel(key.requireShareContact(), index == 0) })
+    contactSearchMediator.getSelectionState().observe(viewLifecycleOwner) { contactSelection ->
+      shareSelectionAdapter.submitList(contactSelection.mapIndexed { index, key -> ShareSelectionMappingModel(key.requireShareContact(), index == 0) })
 
-      if (it.isNotEmpty() && !bottomBar.isVisible) {
+      addMessage.visible = contactSelection.any { key -> key !is ContactSearchKey.Story } && getMultiShareArgs().isNotEmpty()
+
+      if (contactSelection.isNotEmpty() && !bottomBar.isVisible) {
         bottomBar.animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_from_bottom)
         bottomBar.visible = true
-      } else if (it.isEmpty() && bottomBar.isVisible) {
+      } else if (contactSelection.isEmpty() && bottomBar.isVisible) {
         bottomBar.animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_to_bottom)
         bottomBar.visible = false
       }
@@ -145,8 +164,6 @@ class MultiselectForwardFragment :
 
       sendButton.isEnabled = it.stage == MultiselectForwardState.Stage.Selection
     }
-
-    addMessage.visible = getMultiShareArgs().isNotEmpty()
 
     setFragmentResultListener(CreateStoryWithViewersFragment.REQUEST_KEY) { _, bundle ->
       val recipientId: RecipientId = bundle.getParcelable(CreateStoryWithViewersFragment.STORY_RECIPIENT)!!
@@ -211,6 +228,10 @@ class MultiselectForwardFragment :
       .show()
   }
 
+  private fun performSend() {
+    viewModel.send(addMessage.text.toString(), contactSearchMediator.getSelectedContacts())
+  }
+
   private fun displaySafetyNumberConfirmation(identityRecords: List<IdentityRecord>) {
     SafetyNumberChangeDialog.show(childFragmentManager, identityRecords)
   }
@@ -257,54 +278,53 @@ class MultiselectForwardFragment :
     viewModel.cancelSend()
   }
 
-  private fun getHeaderAction(): HeaderAction {
-    return HeaderAction(
-      R.string.ContactsCursorLoader_new_story,
-      R.drawable.ic_plus_20
-    ) {
-      ChooseStoryTypeBottomSheet().show(childFragmentManager, BottomSheetUtil.STANDARD_BOTTOM_SHEET_FRAGMENT_TAG)
-    }
-  }
-
   private fun getConfiguration(contactSearchState: ContactSearchState): ContactSearchConfiguration {
-    return ContactSearchConfiguration.build {
+    return findListener<SearchConfigurationProvider>()?.getSearchConfiguration(childFragmentManager, contactSearchState) ?: ContactSearchConfiguration.build {
       query = contactSearchState.query
 
       if (Stories.isFeatureEnabled() && isSelectedMediaValidForStories()) {
+        val expandedConfig: ContactSearchConfiguration.ExpandConfig? = if (isSelectedMediaValidForNonStories()) {
+          ContactSearchConfiguration.ExpandConfig(
+            isExpanded = contactSearchState.expandedSections.contains(ContactSearchConfiguration.SectionKey.STORIES)
+          )
+        } else {
+          null
+        }
+
         addSection(
           ContactSearchConfiguration.Section.Stories(
             groupStories = contactSearchState.groupStories,
             includeHeader = true,
-            headerAction = getHeaderAction(),
-            expandConfig = ContactSearchConfiguration.ExpandConfig(
-              isExpanded = contactSearchState.expandedSections.contains(ContactSearchConfiguration.SectionKey.STORIES)
+            headerAction = getHeaderAction(childFragmentManager),
+            expandConfig = expandedConfig
+          )
+        )
+      }
+
+      if (isSelectedMediaValidForNonStories()) {
+        if (query.isNullOrEmpty()) {
+          addSection(
+            ContactSearchConfiguration.Section.Recents(
+              includeHeader = true
             )
           )
-        )
-      }
+        }
 
-      if (query.isNullOrEmpty()) {
         addSection(
-          ContactSearchConfiguration.Section.Recents(
-            includeHeader = true
+          ContactSearchConfiguration.Section.Individuals(
+            includeHeader = true,
+            transportType = if (includeSms()) ContactSearchConfiguration.TransportType.ALL else ContactSearchConfiguration.TransportType.PUSH,
+            includeSelf = true
+          )
+        )
+
+        addSection(
+          ContactSearchConfiguration.Section.Groups(
+            includeHeader = true,
+            includeMms = includeSms()
           )
         )
       }
-
-      addSection(
-        ContactSearchConfiguration.Section.Individuals(
-          includeHeader = true,
-          transportType = if (includeSms()) ContactSearchConfiguration.TransportType.ALL else ContactSearchConfiguration.TransportType.PUSH,
-          includeSelf = true
-        )
-      )
-
-      addSection(
-        ContactSearchConfiguration.Section.Groups(
-          includeHeader = true,
-          includeMms = includeSms()
-        )
-      )
     }
   }
 
@@ -314,6 +334,10 @@ class MultiselectForwardFragment :
 
   private fun isSelectedMediaValidForStories(): Boolean {
     return getMultiShareArgs().all { it.isValidForStories }
+  }
+
+  private fun isSelectedMediaValidForNonStories(): Boolean {
+    return getMultiShareArgs().all { it.isValidForNonStories }
   }
 
   override fun onGroupStoryClicked() {

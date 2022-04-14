@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.jobs
 
 import org.signal.core.util.logging.Log
+import org.signal.libsignal.protocol.InvalidMessageException
 import org.thoughtcrime.securesms.database.IdentityDatabase.VerifiedStatus
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
@@ -11,7 +12,6 @@ import org.thoughtcrime.securesms.net.NotPushRegisteredException
 import org.thoughtcrime.securesms.profiles.AvatarHelper
 import org.thoughtcrime.securesms.providers.BlobProvider
 import org.thoughtcrime.securesms.recipients.Recipient
-import org.whispersystems.libsignal.InvalidMessageException
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachmentPointer
 import org.whispersystems.signalservice.api.messages.multidevice.DeviceContact
 import org.whispersystems.signalservice.api.messages.multidevice.DeviceContactsInputStream
@@ -75,7 +75,7 @@ class MultiDeviceContactSyncJob(parameters: Parameters, private val attachmentPo
 
     var contact: DeviceContact? = deviceContacts.read()
     while (contact != null) {
-      val recipient = Recipient.externalPush(contact.address.serviceId, contact.address.number.orNull(), true)
+      val recipient = Recipient.externalPush(contact.address.serviceId, contact.address.number.orElse(null), true)
 
       if (recipient.isSelf) {
         contact = deviceContacts.read()

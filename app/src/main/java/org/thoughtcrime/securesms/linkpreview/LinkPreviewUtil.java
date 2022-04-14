@@ -8,7 +8,6 @@ import android.text.util.Linkify;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.text.HtmlCompat;
 import androidx.core.text.util.LinkifyCompat;
 
@@ -20,13 +19,13 @@ import org.thoughtcrime.securesms.stickers.StickerUrl;
 import org.thoughtcrime.securesms.util.DateUtils;
 import org.thoughtcrime.securesms.util.SetUtil;
 import org.thoughtcrime.securesms.util.Util;
-import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.util.OptionalUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +39,7 @@ public final class LinkPreviewUtil {
   private static final Pattern DOMAIN_PATTERN             = Pattern.compile("^(https?://)?([^/]+).*$");
   private static final Pattern ALL_ASCII_PATTERN          = Pattern.compile("^[\\x00-\\x7F]*$");
   private static final Pattern ALL_NON_ASCII_PATTERN      = Pattern.compile("^[^\\x00-\\x7F]*$");
+  private static final Pattern ILLEGAL_CHARACTERS_PATTERN = Pattern.compile("[\u202C\u202D\u202E\u2500-\u25FF]");
   private static final Pattern OPEN_GRAPH_TAG_PATTERN     = Pattern.compile("<\\s*meta[^>]*property\\s*=\\s*\"\\s*og:([^\"]+)\"[^>]*/?\\s*>");
   private static final Pattern ARTICLE_TAG_PATTERN        = Pattern.compile("<\\s*meta[^>]*property\\s*=\\s*\"\\s*article:([^\"]+)\"[^>]*/?\\s*>");
   private static final Pattern OPEN_GRAPH_CONTENT_PATTERN = Pattern.compile("content\\s*=\\s*\"([^\"]*)\"");
@@ -81,6 +81,10 @@ public final class LinkPreviewUtil {
   }
 
   public static boolean isLegalUrl(@NonNull String url) {
+    if (ILLEGAL_CHARACTERS_PATTERN.matcher(url).find()) {
+      return false;
+    }
+
     Matcher matcher = DOMAIN_PATTERN.matcher(url);
 
     if (matcher.matches()) {
@@ -228,7 +232,7 @@ public final class LinkPreviewUtil {
     }
 
     public Optional<Link> findFirst() {
-      return links.isEmpty() ? Optional.absent()
+      return links.isEmpty() ? Optional.empty()
                              : Optional.of(links.get(0));
     }
 

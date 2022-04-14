@@ -66,6 +66,8 @@ class TextStoryPostTextEntryFragment : KeyboardEntryDialogFragment(
   private var allCapsFilter = InputFilter.AllCaps()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    requireDialog().window?.attributes?.windowAnimations = R.style.TextSecure_Animation_TextStoryPostEntryDialog
+
     initializeViews(view)
     initializeInput()
     initializeAlignmentButton()
@@ -104,6 +106,8 @@ class TextStoryPostTextEntryFragment : KeyboardEntryDialogFragment(
   }
 
   private fun initializeInput() {
+    TextStoryTextWatcher.install(input)
+
     input.filters = input.filters + bufferFilter
     input.doOnTextChanged { _, _, _, _ ->
       presentHint()

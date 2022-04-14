@@ -30,11 +30,11 @@ class StoryReplyComposer @JvmOverloads constructor(
 
   private val inputAwareLayout: InputAwareLayout
   private val quoteView: QuoteView
-  private val reactionButton: View
   private val privacyChrome: TextView
   private val emojiDrawerToggle: EmojiToggle
   private val emojiDrawer: MediaKeyboard
 
+  val reactionButton: View
   val input: ComposeText
 
   var isRequestingEmojiDrawer: Boolean = false
@@ -92,7 +92,7 @@ class StoryReplyComposer @JvmOverloads constructor(
       GlideApp.with(this),
       messageRecord.dateSent,
       messageRecord.recipient,
-      null,
+      messageRecord.body,
       false,
       messageRecord.slideDeck,
       null

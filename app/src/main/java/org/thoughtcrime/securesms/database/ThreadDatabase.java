@@ -32,8 +32,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.jsoup.helper.StringUtil;
 import org.signal.core.util.logging.Log;
-import org.signal.zkgroup.InvalidInputException;
-import org.signal.zkgroup.groups.GroupMasterKey;
+import org.signal.libsignal.zkgroup.InvalidInputException;
+import org.signal.libsignal.zkgroup.groups.GroupMasterKey;
 import org.thoughtcrime.securesms.database.MessageDatabase.MarkedMessageInfo;
 import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
@@ -52,18 +52,17 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.storage.StorageSyncHelper;
 import org.thoughtcrime.securesms.util.ConversationUtil;
-import org.thoughtcrime.securesms.util.CursorUtil;
+import org.signal.core.util.CursorUtil;
 import org.thoughtcrime.securesms.util.JsonUtils;
-import org.thoughtcrime.securesms.util.SqlUtil;
+import org.signal.core.util.SqlUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
-import org.whispersystems.libsignal.util.guava.Optional;
-import org.whispersystems.signalservice.api.push.ACI;
 import org.whispersystems.signalservice.api.push.ServiceId;
 import org.whispersystems.signalservice.api.storage.SignalAccountRecord;
 import org.whispersystems.signalservice.api.storage.SignalContactRecord;
 import org.whispersystems.signalservice.api.storage.SignalGroupV1Record;
 import org.whispersystems.signalservice.api.storage.SignalGroupV2Record;
+import org.whispersystems.signalservice.api.util.OptionalUtil;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -78,6 +77,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import kotlin.Unit;
@@ -724,6 +724,29 @@ public class ThreadDatabase extends Database {
     return positions;
   }
 
+  public long getTabBarUnreadCount() {
+    String[] countProjection = SqlUtil.buildArgs("COUNT(*)");
+    String[] sumProjection   = SqlUtil.buildArgs("SUM(" + UNREAD_COUNT + ")");
+    String   where           = ARCHIVED + " = 0 AND " + MEANINGFUL_MESSAGES + " != 0 AND " + READ + " = ?";
+    String[] countArgs       = SqlUtil.buildArgs(ReadStatus.FORCED_UNREAD.serialize());
+    String[] sumArgs         = SqlUtil.buildArgs(ReadStatus.UNREAD.serialize());
+    long     total           = 0;
+
+    try (Cursor cursor = getReadableDatabase().query(TABLE_NAME, countProjection, where, countArgs, null, null, null)) {
+      if (cursor != null && cursor.moveToFirst()) {
+        total += cursor.getLong(0);
+      }
+    }
+
+    try (Cursor cursor = getReadableDatabase().query(TABLE_NAME, sumProjection, where, sumArgs, null, null, null)) {
+      if (cursor != null && cursor.moveToFirst()) {
+        total += cursor.getLong(0);
+      }
+    }
+
+    return total;
+  }
+
   public Cursor getArchivedConversationList(long offset, long limit) {
     return getConversationList("1", offset, limit);
   }
@@ -1308,7 +1331,7 @@ public class ThreadDatabase extends Database {
     try {
       record = mmsSmsDatabase.getConversationSnippet(threadId);
     } catch (NoSuchMessageException e) {
-      if (allowDeletion) {
+      if (allowDeletion && !SignalDatabase.mms().containsStories(threadId)) {
         deleteConversation(threadId);
       }
       return true;
@@ -1452,7 +1475,9 @@ public class ThreadDatabase extends Database {
     if (!record.isMms() || record.isMmsNotification() || record.isGroupAction()) return null;
 
     SlideDeck slideDeck = ((MediaMmsMessageRecord)record).getSlideDeck();
-    Slide     thumbnail = Optional.fromNullable(slideDeck.getThumbnailSlide()).or(Optional.fromNullable(slideDeck.getStickerSlide())).orNull();
+    Slide     thumbnail = OptionalUtil.or(Optional.ofNullable(slideDeck.getThumbnailSlide()),
+                                          Optional.ofNullable(slideDeck.getStickerSlide()))
+                                      .orElse(null);
 
     if (thumbnail != null && !((MmsMessageRecord) record).isViewOnce()) {
       return thumbnail.getUri();
@@ -1613,7 +1638,7 @@ public class ThreadDatabase extends Database {
         if (group != null) {
           RecipientDetails details = new RecipientDetails(group.getTitle(),
                                                           null,
-                                                          group.hasAvatar() ? Optional.of(group.getAvatarId()) : Optional.absent(),
+                                                          group.hasAvatar() ? Optional.of(group.getAvatarId()) : Optional.empty(),
                                                           false,
                                                           false,
                                                           recipientSettings.getRegistered(),

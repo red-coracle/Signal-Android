@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.signal.core.util.Hex
 import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
@@ -22,7 +23,6 @@ import org.thoughtcrime.securesms.recipients.RecipientForeverObserver
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.subscription.Subscriber
 import org.thoughtcrime.securesms.util.Base64
-import org.thoughtcrime.securesms.util.Hex
 import org.thoughtcrime.securesms.util.SpanUtil
 import org.thoughtcrime.securesms.util.Util
 import org.thoughtcrime.securesms.util.livedata.Store
@@ -60,7 +60,7 @@ class InternalConversationSettingsFragment : DSLSettingsFragment(
       )
 
       if (!recipient.isGroup) {
-        val serviceId = recipient.serviceId.transform(ServiceId::toString).or("null")
+        val serviceId = recipient.serviceId.map(ServiceId::toString).orElse("null")
         longClickPref(
           title = DSLSettingsText.from("ServiceId"),
           summary = DSLSettingsText.from(serviceId),
@@ -186,8 +186,6 @@ class InternalConversationSettingsFragment : DSLSettingsFragment(
 
   private fun buildCapabilitySpan(recipient: Recipient): CharSequence {
     return TextUtils.concat(
-      colorize("GV2", recipient.groupsV2Capability),
-      ", ",
       colorize("GV1Migration", recipient.groupsV1MigrationCapability),
       ", ",
       colorize("AnnouncementGroup", recipient.announcementGroupCapability),
@@ -228,7 +226,7 @@ class InternalConversationSettingsFragment : DSLSettingsFragment(
 
       SignalExecutors.BOUNDED.execute {
         val threadId: Long? = SignalDatabase.threads.getThreadIdFor(recipientId)
-        val groupId: GroupId? = SignalDatabase.groups.getGroup(recipientId).transform { it.id }.orNull()
+        val groupId: GroupId? = SignalDatabase.groups.getGroup(recipientId).map { it.id }.orElse(null)
         store.update { state -> state.copy(threadId = threadId, groupId = groupId) }
       }
     }

@@ -181,7 +181,7 @@ public final class RecipientBottomSheetDialogFragment extends BottomSheetDialogF
         Drawable systemContact = DrawableUtil.tint(ContextUtil.requireDrawable(requireContext(), R.drawable.ic_profile_circle_outline_16),
                                                    ContextCompat.getColor(requireContext(), R.color.signal_text_primary));
         SpanUtil.appendCenteredImageSpan(nameBuilder, systemContact, 16, 16);
-      } else if (recipient.isReleaseNotes()) {
+      } else if (recipient.showVerified()) {
         SpanUtil.appendCenteredImageSpan(nameBuilder, ContextUtil.requireDrawable(requireContext(), R.drawable.ic_official_28), 28, 28);
       }
       fullName.setText(nameBuilder);
@@ -199,7 +199,7 @@ public final class RecipientBottomSheetDialogFragment extends BottomSheetDialogF
       }
 
       String usernameNumberString = recipient.hasAUserSetDisplayName(requireContext()) && !recipient.isSelf()
-                                    ? recipient.getSmsAddress().transform(PhoneNumberFormatter::prettyPrint).or("").trim()
+                                    ? recipient.getSmsAddress().map(PhoneNumberFormatter::prettyPrint).orElse("").trim()
                                     : "";
       usernameNumber.setText(usernameNumberString);
       usernameNumber.setVisibility(TextUtils.isEmpty(usernameNumberString) ? View.GONE : View.VISIBLE);
@@ -290,6 +290,10 @@ public final class RecipientBottomSheetDialogFragment extends BottomSheetDialogF
       makeGroupAdminButton.setVisibility(adminStatus.isCanMakeAdmin() ? View.VISIBLE : View.GONE);
       removeAdminButton.setVisibility(adminStatus.isCanMakeNonAdmin() ? View.VISIBLE : View.GONE);
       removeFromGroupButton.setVisibility(adminStatus.isCanRemove() ? View.VISIBLE : View.GONE);
+
+      if (adminStatus.isCanRemove()) {
+        removeFromGroupButton.setOnClickListener(view -> viewModel.onRemoveFromGroupClicked(requireActivity(), adminStatus.isLinkActive(), this::dismiss));
+      }
     });
 
     viewModel.getIdentity().observe(getViewLifecycleOwner(), identityRecord -> {
@@ -318,8 +322,6 @@ public final class RecipientBottomSheetDialogFragment extends BottomSheetDialogF
 
     makeGroupAdminButton.setOnClickListener(view -> viewModel.onMakeGroupAdminClicked(requireActivity()));
     removeAdminButton.setOnClickListener(view -> viewModel.onRemoveGroupAdminClicked(requireActivity()));
-
-    removeFromGroupButton.setOnClickListener(view -> viewModel.onRemoveFromGroupClicked(requireActivity(), this::dismiss));
 
     addToGroupButton.setOnClickListener(view -> {
       dismiss();

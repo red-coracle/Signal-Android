@@ -6,24 +6,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import org.signal.core.util.logging.Log;
-import org.signal.zkgroup.profiles.ProfileKey;
-import org.signal.zkgroup.profiles.ProfileKeyCredential;
+import org.signal.libsignal.zkgroup.profiles.ProfileKey;
+import org.signal.libsignal.zkgroup.profiles.ProfileKeyCredential;
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
-import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.SignalServiceAccountManager;
 import org.whispersystems.signalservice.api.groupsv2.GroupCandidate;
-import org.whispersystems.signalservice.api.push.ACI;
 import org.whispersystems.signalservice.api.push.ServiceId;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 public class GroupCandidateHelper {
@@ -48,12 +47,12 @@ public class GroupCandidateHelper {
   {
     final Recipient recipient = Recipient.resolved(recipientId);
 
-    ServiceId serviceId = recipient.getServiceId().orNull();
+    ServiceId serviceId = recipient.getServiceId().orElse(null);
     if (serviceId == null) {
       throw new AssertionError("Non UUID members should have need detected by now");
     }
 
-    Optional<ProfileKeyCredential> profileKeyCredential = Optional.fromNullable(recipient.getProfileKeyCredential());
+    Optional<ProfileKeyCredential> profileKeyCredential = Optional.ofNullable(recipient.getProfileKeyCredential());
     GroupCandidate                 candidate            = new GroupCandidate(serviceId.uuid(), profileKeyCredential);
 
     if (!candidate.hasProfileKeyCredential()) {

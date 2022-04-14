@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.database
 
 import com.google.protobuf.ByteString
+import org.signal.libsignal.zkgroup.groups.GroupMasterKey
 import org.signal.storageservice.protos.groups.AccessControl
 import org.signal.storageservice.protos.groups.GroupChange
 import org.signal.storageservice.protos.groups.Member
@@ -12,16 +13,14 @@ import org.signal.storageservice.protos.groups.local.DecryptedRequestingMember
 import org.signal.storageservice.protos.groups.local.DecryptedString
 import org.signal.storageservice.protos.groups.local.DecryptedTimer
 import org.signal.storageservice.protos.groups.local.EnabledState
-import org.signal.zkgroup.groups.GroupMasterKey
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.recipients.RecipientId
-import org.whispersystems.libsignal.util.guava.Optional
 import org.whispersystems.signalservice.api.groupsv2.DecryptedGroupHistoryEntry
 import org.whispersystems.signalservice.api.groupsv2.GroupHistoryPage
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2Operations
 import org.whispersystems.signalservice.api.push.DistributionId
 import org.whispersystems.signalservice.api.push.ServiceId
-import java.util.UUID
+import java.util.Optional
 
 fun DecryptedGroupChange.Builder.setNewDescription(description: String) {
   newDescription = DecryptedString.newBuilder().setValue(description).build()
@@ -67,7 +66,7 @@ class ChangeSet {
   }
 
   fun toApiResponse(): GroupHistoryPage {
-    return GroupHistoryPage(changeSet.map { DecryptedGroupHistoryEntry(Optional.fromNullable(it.groupSnapshot), Optional.fromNullable(it.groupChange)) }, GroupHistoryPage.PagingData.NONE)
+    return GroupHistoryPage(changeSet.map { DecryptedGroupHistoryEntry(Optional.ofNullable(it.groupSnapshot), Optional.ofNullable(it.groupChange)) }, GroupHistoryPage.PagingData.NONE)
   }
 }
 
@@ -100,7 +99,7 @@ class GroupChangeData(private val revision: Int, private val groupOperations: Gr
 class GroupStateTestData(private val masterKey: GroupMasterKey, private val groupOperations: GroupsV2Operations.GroupOperations? = null) {
 
   var localState: DecryptedGroup? = null
-  var groupRecord: Optional<GroupDatabase.GroupRecord> = Optional.absent()
+  var groupRecord: Optional<GroupDatabase.GroupRecord> = Optional.empty()
   var serverState: DecryptedGroup? = null
   var changeSet: ChangeSet? = null
   var groupChange: GroupChange? = null
@@ -223,22 +222,4 @@ fun decryptedGroup(
     .addAllRequestingMembers(requestingMembers)
 
   return builder.build()
-}
-
-fun member(serviceId: UUID, role: Member.Role = Member.Role.DEFAULT, joinedAt: Int = 0): DecryptedMember {
-  return member(ServiceId.from(serviceId), role, joinedAt)
-}
-
-fun member(serviceId: ServiceId, role: Member.Role = Member.Role.DEFAULT, joinedAt: Int = 0): DecryptedMember {
-  return DecryptedMember.newBuilder()
-    .setRole(role)
-    .setUuid(serviceId.toByteString())
-    .setJoinedAtRevision(joinedAt)
-    .build()
-}
-
-fun requestingMember(serviceId: ServiceId): DecryptedRequestingMember {
-  return DecryptedRequestingMember.newBuilder()
-    .setUuid(serviceId.toByteString())
-    .build()
 }

@@ -28,10 +28,12 @@ import androidx.annotation.VisibleForTesting;
 
 import com.annimon.stream.Stream;
 import com.google.android.mms.pdu_alt.NotificationInd;
+import com.google.protobuf.ByteString;
 
 import net.zetetic.database.sqlcipher.SQLiteStatement;
 
 import org.signal.core.util.logging.Log;
+import org.signal.libsignal.protocol.util.Pair;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatch;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatchSet;
 import org.thoughtcrime.securesms.database.documents.NetworkFailure;
@@ -56,13 +58,11 @@ import org.thoughtcrime.securesms.sms.IncomingGroupUpdateMessage;
 import org.thoughtcrime.securesms.sms.IncomingTextMessage;
 import org.thoughtcrime.securesms.sms.OutgoingTextMessage;
 import org.thoughtcrime.securesms.util.Base64;
-import org.thoughtcrime.securesms.util.CursorUtil;
+import org.signal.core.util.CursorUtil;
 import org.thoughtcrime.securesms.util.JsonUtils;
-import org.thoughtcrime.securesms.util.SqlUtil;
+import org.signal.core.util.SqlUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
-import org.whispersystems.libsignal.util.Pair;
-import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -74,6 +74,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -1093,6 +1094,8 @@ public class SmsDatabase extends MessageDatabase {
 
   @Override
   public Optional<InsertResult> insertMessageInbox(IncomingTextMessage message, long type) {
+    boolean tryToCollapseJoinRequestEvents = false;
+
     if (message.isJoined()) {
       type = (type & (Types.TOTAL_MASK - Types.BASE_TYPE_MASK)) | Types.JOINED_TYPE;
     } else if (message.isPreKeyBundle()) {
@@ -1108,6 +1111,8 @@ public class SmsDatabase extends MessageDatabase {
         type |= Types.GROUP_V2_BIT | Types.GROUP_UPDATE_BIT;
         if (incomingGroupUpdateMessage.isJustAGroupLeave()) {
           type |= Types.GROUP_LEAVE_BIT;
+        } else if (incomingGroupUpdateMessage.isCancelJoinRequest()) {
+          tryToCollapseJoinRequestEvents = true;
         }
       } else if (incomingGroupUpdateMessage.isUpdate()) {
         type |= Types.GROUP_UPDATE_BIT;
@@ -1152,6 +1157,13 @@ public class SmsDatabase extends MessageDatabase {
     if (groupRecipient == null) threadId = SignalDatabase.threads().getOrCreateThreadIdFor(recipient);
     else                        threadId = SignalDatabase.threads().getOrCreateThreadIdFor(groupRecipient);
 
+    if (tryToCollapseJoinRequestEvents) {
+        final Optional<InsertResult> result = collapseJoinRequestEventsIfPossible(threadId, (IncomingGroupUpdateMessage) message);
+        if (result.isPresent()) {
+          return result;
+        }
+    }
+
     ContentValues values = new ContentValues();
     values.put(RECIPIENT_ID, message.getSender().serialize());
     values.put(ADDRESS_DEVICE_ID,  message.getSenderDeviceId());
@@ -1176,7 +1188,7 @@ public class SmsDatabase extends MessageDatabase {
 
     if (message.isPush() && isDuplicate(message, threadId)) {
       Log.w(TAG, "Duplicate message (" + message.getSentTimestampMillis() + "), ignoring...");
-      return Optional.absent();
+      return Optional.empty();
     } else {
       SQLiteDatabase db        = databaseHelper.getSignalWritableDatabase();
       long           messageId = db.insert(TABLE_NAME, null, values);
@@ -1383,7 +1395,7 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
-  public @NonNull MessageDatabase.Reader getAllOutgoingStories() {
+  public @NonNull MessageDatabase.Reader getAllOutgoingStories(boolean reverse) {
     throw new UnsupportedOperationException();
   }
 
@@ -1409,6 +1421,11 @@ public class SmsDatabase extends MessageDatabase {
 
   @Override
   public int getNumberOfStoryReplies(long parentStoryId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean containsStories(long threadId) {
     throw new UnsupportedOperationException();
   }
 
@@ -1809,4 +1826,44 @@ public class SmsDatabase extends MessageDatabase {
     }
   }
 
+  @VisibleForTesting
+  Optional<InsertResult> collapseJoinRequestEventsIfPossible(long threadId, IncomingGroupUpdateMessage message) {
+    InsertResult result = null;
+
+
+    SQLiteDatabase db = getWritableDatabase();
+    db.beginTransaction();
+
+    try {
+      try (MmsSmsDatabase.Reader reader = MmsSmsDatabase.readerFor(SignalDatabase.mmsSms().getConversation(threadId, 0, 2))) {
+        MessageRecord latestMessage = reader.getNext();
+        if (latestMessage != null && latestMessage.isGroupV2()) {
+          Optional<ByteString> changeEditor = message.getChangeEditor();
+          if (changeEditor.isPresent() && latestMessage.isGroupV2JoinRequest(changeEditor.get())) {
+            String encodedBody;
+            long   id;
+
+            MessageRecord secondLatestMessage = reader.getNext();
+            if (secondLatestMessage != null && secondLatestMessage.isGroupV2JoinRequest(changeEditor.get())) {
+              id          = secondLatestMessage.getId();
+              encodedBody = MessageRecord.createNewContextWithAppendedDeleteJoinRequest(secondLatestMessage, message.getChangeRevision(), changeEditor.get());
+              deleteMessage(latestMessage.getId());
+            } else {
+              id          = latestMessage.getId();
+              encodedBody = MessageRecord.createNewContextWithAppendedDeleteJoinRequest(latestMessage, message.getChangeRevision(), changeEditor.get());
+            }
+
+            ContentValues values = new ContentValues(1);
+            values.put(BODY, encodedBody);
+            getWritableDatabase().update(TABLE_NAME, values, ID_WHERE, SqlUtil.buildArgs(id));
+            result = new InsertResult(id, threadId);
+          }
+        }
+      }
+      db.setTransactionSuccessful();
+    } finally {
+      db.endTransaction();
+    }
+    return Optional.ofNullable(result);
+  }
 }

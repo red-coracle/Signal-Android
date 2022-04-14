@@ -9,6 +9,8 @@ import androidx.annotation.Nullable;
 import com.annimon.stream.Stream;
 
 import org.signal.core.util.logging.Log;
+import org.signal.libsignal.protocol.IdentityKey;
+import org.signal.libsignal.protocol.InvalidKeyException;
 import org.signal.ringrtc.CallException;
 import org.signal.ringrtc.CallId;
 import org.signal.ringrtc.CallManager;
@@ -43,9 +45,6 @@ import org.thoughtcrime.securesms.util.TelephonyUtil;
 import org.thoughtcrime.securesms.webrtc.audio.SignalAudioManager;
 import org.thoughtcrime.securesms.webrtc.locks.LockManager;
 import org.webrtc.PeerConnection;
-import org.whispersystems.libsignal.IdentityKey;
-import org.whispersystems.libsignal.InvalidKeyException;
-import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.messages.calls.AnswerMessage;
 import org.whispersystems.signalservice.api.messages.calls.BusyMessage;
 import org.whispersystems.signalservice.api.messages.calls.HangupMessage;
@@ -56,6 +55,7 @@ import org.whispersystems.signalservice.api.messages.calls.SignalServiceCallMess
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -438,15 +438,11 @@ public abstract class WebRtcActionProcessor {
 
     if (errorCallState == WebRtcViewModel.State.UNTRUSTED_IDENTITY) {
       CallParticipant participant = Objects.requireNonNull(currentState.getCallInfoState().getRemoteCallParticipant(activePeer.getRecipient()));
-      CallParticipant untrusted   = participant.withIdentityKey(identityKey.orNull());
+      CallParticipant untrusted   = participant.withIdentityKey(identityKey.orElse(null));
 
       builder.changeCallInfoState()
              .callState(WebRtcViewModel.State.UNTRUSTED_IDENTITY)
              .putParticipant(activePeer.getRecipient(), untrusted)
-             .commit();
-    } else {
-      builder.changeCallInfoState()
-             .callState(errorCallState)
              .commit();
     }
 
@@ -460,6 +456,11 @@ public abstract class WebRtcActionProcessor {
 
   protected @NonNull WebRtcServiceState handleSetUserAudioDevice(@NonNull WebRtcServiceState currentState, @NonNull SignalAudioManager.AudioDevice userDevice) {
     Log.i(tag, "handleSetUserAudioDevice not processed");
+    return currentState;
+  }
+
+  public @NonNull WebRtcServiceState handleCallReconnect(@NonNull WebRtcServiceState currentState, @NonNull CallManager.CallEvent event) {
+    Log.i(tag, "handleCallReconnect not processed");
     return currentState;
   }
 

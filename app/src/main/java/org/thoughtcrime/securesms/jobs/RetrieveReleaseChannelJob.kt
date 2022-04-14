@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.jobs
 
 import androidx.core.os.LocaleListCompat
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.signal.core.util.Hex
 import org.signal.core.util.ThreadUtil
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.BuildConfig
@@ -20,7 +21,6 @@ import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.releasechannel.ReleaseChannel
 import org.thoughtcrime.securesms.s3.S3
 import org.thoughtcrime.securesms.transport.RetryLaterException
-import org.thoughtcrime.securesms.util.Hex
 import org.thoughtcrime.securesms.util.LocaleFeatureFlags
 import org.whispersystems.signalservice.internal.ServiceResponse
 import java.io.IOException
@@ -134,7 +134,7 @@ class RetrieveReleaseChannelJob private constructor(private val force: Boolean, 
     Log.i(TAG, "Updating release notes to ${Hex.toStringCondensed(manifestMd5)}")
 
     val values = SignalStore.releaseChannelValues()
-    val allReleaseNotes: ReleaseNotes? = S3.getAndVerifyObject(MANIFEST, ReleaseNotes::class.java, manifestMd5).result.orNull()
+    val allReleaseNotes: ReleaseNotes? = S3.getAndVerifyObject(MANIFEST, ReleaseNotes::class.java, manifestMd5).result.orElse(null)
 
     if (allReleaseNotes != null) {
       val resolvedNotes: List<FullReleaseNote?> = allReleaseNotes.announcements.asSequence()
@@ -227,7 +227,7 @@ class RetrieveReleaseChannelJob private constructor(private val force: Boolean, 
 
       if (translationJson.result.isPresent) {
         return FullReleaseNote(releaseNote, translationJson.result.get())
-      } else if (translationJson.status != 404 && translationJson.executionError.orNull() !is S3.Md5FailureException) {
+      } else if (translationJson.status != 404 && translationJson.executionError.orElse(null) !is S3.Md5FailureException) {
         throw RetryLaterException()
       }
     }

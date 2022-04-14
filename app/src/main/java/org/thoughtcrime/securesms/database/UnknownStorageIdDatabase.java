@@ -10,10 +10,10 @@ import androidx.annotation.Nullable;
 import com.annimon.stream.Stream;
 
 import org.thoughtcrime.securesms.util.Base64;
-import org.thoughtcrime.securesms.util.SqlUtil;
-import org.whispersystems.libsignal.util.guava.Preconditions;
+import org.signal.core.util.SqlUtil;
 import org.whispersystems.signalservice.api.storage.SignalStorageRecord;
 import org.whispersystems.signalservice.api.storage.StorageId;
+import org.whispersystems.signalservice.api.util.Preconditions;
 
 import java.io.IOException;
 import java.util.ArrayList;

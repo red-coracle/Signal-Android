@@ -10,11 +10,27 @@ import androidx.core.content.contentValuesOf
 import com.google.protobuf.ByteString
 import com.google.protobuf.InvalidProtocolBufferException
 import net.zetetic.database.sqlcipher.SQLiteConstraintException
+import org.signal.core.util.Bitmask
+import org.signal.core.util.CursorUtil
+import org.signal.core.util.SqlUtil
 import org.signal.core.util.logging.Log
+import org.signal.core.util.optionalBlob
+import org.signal.core.util.optionalBoolean
+import org.signal.core.util.optionalInt
+import org.signal.core.util.optionalString
+import org.signal.core.util.or
+import org.signal.core.util.requireBlob
+import org.signal.core.util.requireBoolean
+import org.signal.core.util.requireInt
+import org.signal.core.util.requireLong
+import org.signal.core.util.requireNonNullString
+import org.signal.core.util.requireString
+import org.signal.libsignal.protocol.IdentityKey
+import org.signal.libsignal.protocol.InvalidKeyException
+import org.signal.libsignal.zkgroup.InvalidInputException
+import org.signal.libsignal.zkgroup.profiles.ProfileKey
+import org.signal.libsignal.zkgroup.profiles.ProfileKeyCredential
 import org.signal.storageservice.protos.groups.local.DecryptedGroup
-import org.signal.zkgroup.InvalidInputException
-import org.signal.zkgroup.profiles.ProfileKey
-import org.signal.zkgroup.profiles.ProfileKeyCredential
 import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.badges.Badges.toDatabaseBadge
 import org.thoughtcrime.securesms.badges.models.Badge
@@ -35,7 +51,9 @@ import org.thoughtcrime.securesms.database.SignalDatabase.Companion.identities
 import org.thoughtcrime.securesms.database.SignalDatabase.Companion.messageLog
 import org.thoughtcrime.securesms.database.SignalDatabase.Companion.notificationProfiles
 import org.thoughtcrime.securesms.database.SignalDatabase.Companion.reactions
+import org.thoughtcrime.securesms.database.SignalDatabase.Companion.runPostSuccessfulTransaction
 import org.thoughtcrime.securesms.database.SignalDatabase.Companion.sessions
+import org.thoughtcrime.securesms.database.SignalDatabase.Companion.storySends
 import org.thoughtcrime.securesms.database.SignalDatabase.Companion.threads
 import org.thoughtcrime.securesms.database.model.DistributionListId
 import org.thoughtcrime.securesms.database.model.RecipientRecord
@@ -54,7 +72,6 @@ import org.thoughtcrime.securesms.groups.GroupId.V2
 import org.thoughtcrime.securesms.groups.v2.ProfileKeySet
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor
 import org.thoughtcrime.securesms.jobs.RecipientChangedNumberJob
-import org.thoughtcrime.securesms.jobs.RefreshAttributesJob
 import org.thoughtcrime.securesms.jobs.RequestGroupV2InfoJob
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -66,19 +83,14 @@ import org.thoughtcrime.securesms.storage.StorageRecordUpdate
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
 import org.thoughtcrime.securesms.storage.StorageSyncModels
 import org.thoughtcrime.securesms.util.Base64
-import org.thoughtcrime.securesms.util.Bitmask
 import org.thoughtcrime.securesms.util.GroupUtil
 import org.thoughtcrime.securesms.util.IdentityUtil
-import org.thoughtcrime.securesms.util.SqlUtil
+import org.thoughtcrime.securesms.util.ProfileUtil
 import org.thoughtcrime.securesms.util.StringUtil
 import org.thoughtcrime.securesms.util.Util
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaperFactory
 import org.thoughtcrime.securesms.wallpaper.WallpaperStorage
-import org.whispersystems.libsignal.IdentityKey
-import org.whispersystems.libsignal.InvalidKeyException
-import org.whispersystems.libsignal.util.Pair
-import org.whispersystems.libsignal.util.guava.Optional
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfile
 import org.whispersystems.signalservice.api.push.ACI
 import org.whispersystems.signalservice.api.push.PNI
@@ -95,6 +107,7 @@ import java.util.Arrays
 import java.util.Collections
 import java.util.LinkedList
 import java.util.Objects
+import java.util.Optional
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 
@@ -471,8 +484,8 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
         }
 
         if (remapped != null) {
-          Recipient.live(remapped.first()).refresh(remapped.second())
-          ApplicationDependencies.getRecipientCache().remap(remapped.first(), remapped.second())
+          Recipient.live(remapped.first).refresh(remapped.second)
+          ApplicationDependencies.getRecipientCache().remap(remapped.first, remapped.second)
         }
 
         if (recipientsNeedingRefresh.isNotEmpty() || remapped != null) {
@@ -488,12 +501,12 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
   }
 
   private fun fetchRecipient(serviceId: ServiceId?, e164: String?, highTrust: Boolean, changeSelf: Boolean): RecipientFetch {
-    val byE164 = e164?.let { getByE164(it) } ?: Optional.absent()
-    val byAci = serviceId?.let { getByServiceId(it) } ?: Optional.absent()
+    val byE164 = e164?.let { getByE164(it) } ?: Optional.empty()
+    val byAci = serviceId?.let { getByServiceId(it) } ?: Optional.empty()
 
     var logs = LogBundle(
-      bySid = byAci.transform { id -> RecipientLogDetails(id = id) }.orNull(),
-      byE164 = byE164.transform { id -> RecipientLogDetails(id = id) }.orNull(),
+      bySid = byAci.map { id -> RecipientLogDetails(id = id) }.orElse(null),
+      byE164 = byE164.map { id -> RecipientLogDetails(id = id) }.orElse(null),
       label = "L0"
     )
 
@@ -586,6 +599,17 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
         put(PROFILE_SHARING, 1)
       }
     ).recipientId
+  }
+
+  fun getDistributionListRecipientIds(): List<RecipientId> {
+    val recipientIds = mutableListOf<RecipientId>()
+    readableDatabase.query(TABLE_NAME, arrayOf(ID), "$DISTRIBUTION_LIST_ID is not NULL", null, null, null, null).use { cursor ->
+      while (cursor != null && cursor.moveToNext()) {
+        recipientIds.add(RecipientId.from(CursorUtil.requireLong(cursor, ID)))
+      }
+    }
+
+    return recipientIds
   }
 
   fun getOrInsertFromGroupId(groupId: GroupId): RecipientId {
@@ -796,7 +820,7 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
     val recipientId: RecipientId
     if (id < 0) {
       Log.w(TAG, "[applyStorageSyncContactInsert] Failed to insert. Possibly merging.")
-      recipientId = getAndPossiblyMerge(if (insert.address.hasValidServiceId()) insert.address.serviceId else null, insert.address.number.orNull(), true)
+      recipientId = getAndPossiblyMerge(if (insert.address.hasValidServiceId()) insert.address.serviceId else null, insert.address.number.orElse(null), true)
       db.update(TABLE_NAME, values, ID_WHERE, SqlUtil.buildArgs(recipientId))
     } else {
       recipientId = RecipientId.from(id)
@@ -833,7 +857,7 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
       var recipientId = getByColumn(STORAGE_SERVICE_ID, Base64.encodeBytes(update.old.id.raw)).get()
 
       Log.w(TAG, "[applyStorageSyncContactUpdate] Found user $recipientId. Possibly merging.")
-      recipientId = getAndPossiblyMerge(if (update.new.address.hasValidServiceId()) update.new.address.serviceId else null, update.new.address.number.orNull(), true)
+      recipientId = getAndPossiblyMerge(if (update.new.address.hasValidServiceId()) update.new.address.serviceId else null, update.new.address.number.orElse(null), true)
 
       Log.w(TAG, "[applyStorageSyncContactUpdate] Merged into $recipientId")
       db.update(TABLE_NAME, values, ID_WHERE, SqlUtil.buildArgs(recipientId))
@@ -939,10 +963,10 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
   }
 
   fun applyStorageSyncAccountUpdate(update: StorageRecordUpdate<SignalAccountRecord>) {
-    val profileName = ProfileName.fromParts(update.new.givenName.orNull(), update.new.familyName.orNull())
-    val localKey = ProfileKeyUtil.profileKeyOptional(update.old.profileKey.orNull())
-    val remoteKey = ProfileKeyUtil.profileKeyOptional(update.new.profileKey.orNull())
-    val profileKey = remoteKey.or(localKey).transform { obj: ProfileKey -> obj.serialize() }.transform { source: ByteArray? -> Base64.encodeBytes(source!!) }.orNull()
+    val profileName = ProfileName.fromParts(update.new.givenName.orElse(null), update.new.familyName.orElse(null))
+    val localKey = ProfileKeyUtil.profileKeyOptional(update.old.profileKey.orElse(null))
+    val remoteKey = ProfileKeyUtil.profileKeyOptional(update.new.profileKey.orElse(null))
+    val profileKey = remoteKey.or(localKey).map { obj: ProfileKey -> obj.serialize() }.map { source: ByteArray? -> Base64.encodeBytes(source!!) }.orElse(null)
     if (!remoteKey.isPresent) {
       Log.w(TAG, "Got an empty profile key while applying an account record update!")
     }
@@ -966,8 +990,8 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
     }
 
     if (remoteKey != localKey) {
-      Log.w(TAG, "Profile key changed during storage sync! Scheduling jobs to refresh things.")
-      ApplicationDependencies.getJobManager().add(RefreshAttributesJob())
+      Log.i(TAG, "Our own profile key was changed during a storage sync.", Throwable())
+      runPostSuccessfulTransaction { ProfileUtil.handleSelfProfileKeyChange() }
     }
 
     threads.applyStorageSyncUpdate(Recipient.self().id, update.new)
@@ -1377,10 +1401,10 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
     return DeviceLastResetTime.newBuilder().build()
   }
 
-  fun setBadges(id: RecipientId, badges: List<Badge?>) {
+  fun setBadges(id: RecipientId, badges: List<Badge>) {
     val badgeListBuilder = BadgeList.newBuilder()
     for (badge in badges) {
-      badgeListBuilder.addBadges(toDatabaseBadge(badge!!))
+      badgeListBuilder.addBadges(toDatabaseBadge(badge))
     }
 
     val values = ContentValues(1).apply {
@@ -1388,14 +1412,12 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
     }
 
     if (update(id, values)) {
-      ApplicationDependencies.getDatabaseObserver().notifyNotificationProfileObservers()
       ApplicationDependencies.getDatabaseObserver().notifyRecipientChanged(id)
     }
   }
 
   fun setCapabilities(id: RecipientId, capabilities: SignalServiceProfile.Capabilities) {
     var value: Long = 0
-    value = Bitmask.update(value, Capabilities.GROUPS_V2, Capabilities.BIT_LENGTH, Recipient.Capability.fromBoolean(capabilities.isGv2).serialize().toLong())
     value = Bitmask.update(value, Capabilities.GROUPS_V1_MIGRATION, Capabilities.BIT_LENGTH, Recipient.Capability.fromBoolean(capabilities.isGv1Migration).serialize().toLong())
     value = Bitmask.update(value, Capabilities.SENDER_KEY, Capabilities.BIT_LENGTH, Recipient.Capability.fromBoolean(capabilities.isSenderKey).serialize().toLong())
     value = Bitmask.update(value, Capabilities.ANNOUNCEMENT_GROUPS, Capabilities.BIT_LENGTH, Recipient.Capability.fromBoolean(capabilities.isAnnouncementGroup).serialize().toLong())
@@ -1447,6 +1469,12 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
       rotateStorageId(id)
       ApplicationDependencies.getDatabaseObserver().notifyRecipientChanged(id)
       StorageSyncHelper.scheduleSyncForDataChange()
+
+      if (id == Recipient.self().id) {
+        Log.i(TAG, "Our own profile key was changed.", Throwable())
+        runPostSuccessfulTransaction { ProfileUtil.handleSelfProfileKeyChange() }
+      }
+
       return true
     }
     return false
@@ -1667,7 +1695,7 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
           idWithWallpaper.add(
             Pair(
               RecipientId.from(cursor.requireInt(ID).toLong()),
-              cursor.optionalString(WALLPAPER_URI).orNull()
+              cursor.optionalString(WALLPAPER_URI).orElse(null)
             )
           )
         }
@@ -1685,9 +1713,9 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
       val rowsUpdated = database.update(TABLE_NAME, values, where, null)
       if (rowsUpdated == idWithWallpaper.size) {
         for (pair in idWithWallpaper) {
-          ApplicationDependencies.getDatabaseObserver().notifyRecipientChanged(pair.first())
-          if (pair.second() != null) {
-            WallpaperStorage.onWallpaperDeselected(context, Uri.parse(pair.second()))
+          ApplicationDependencies.getDatabaseObserver().notifyRecipientChanged(pair.first)
+          if (pair.second != null) {
+            WallpaperStorage.onWallpaperDeselected(context, Uri.parse(pair.second))
           }
         }
       } else {
@@ -1885,7 +1913,7 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
     }
   }
 
-  fun getAllPhoneNumbers(): Set<String> {
+  fun getAllE164s(): Set<String> {
     val results: MutableSet<String> = HashSet()
     readableDatabase.query(TABLE_NAME, arrayOf(PHONE), null, null, null, null, null).use { cursor ->
       while (cursor != null && cursor.moveToNext()) {
@@ -2006,7 +2034,7 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
     db.beginTransaction()
     try {
       for ((e164, aci) in mapping) {
-        var aciEntry = if (aci != null) getByServiceId(aci) else Optional.absent()
+        var aciEntry = if (aci != null) getByServiceId(aci) else Optional.empty()
 
         if (aciEntry.isPresent) {
           val idChanged = setPhoneNumber(aciEntry.get(), e164)
@@ -2539,7 +2567,7 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
       return if (cursor != null && cursor.moveToFirst()) {
         Optional.of(RecipientId.from(cursor.getLong(cursor.getColumnIndexOrThrow(ID))))
       } else {
-        Optional.absent()
+        Optional.empty()
       }
     }
   }
@@ -2680,6 +2708,9 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
     // DistributionLists
     distributionLists.remapRecipient(byE164, byAci)
 
+    // Story Sends
+    storySends.remapRecipient(byE164, byAci)
+
     // Recipient
     Log.w(TAG, "Deleting recipient $byE164", true)
     db.delete(TABLE_NAME, ID_WHERE, SqlUtil.buildArgs(byE164))
@@ -2688,17 +2719,17 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
     val uuidValues = ContentValues().apply {
       put(PHONE, e164Record.e164)
       put(BLOCKED, e164Record.isBlocked || aciRecord.isBlocked)
-      put(MESSAGE_RINGTONE, Optional.fromNullable(aciRecord.messageRingtone).or(Optional.fromNullable(e164Record.messageRingtone)).transform { obj: Uri? -> obj.toString() }.orNull())
+      put(MESSAGE_RINGTONE, Optional.ofNullable(aciRecord.messageRingtone).or(Optional.ofNullable(e164Record.messageRingtone)).map { obj: Uri? -> obj.toString() }.orElse(null))
       put(MESSAGE_VIBRATE, if (aciRecord.messageVibrateState != VibrateState.DEFAULT) aciRecord.messageVibrateState.id else e164Record.messageVibrateState.id)
-      put(CALL_RINGTONE, Optional.fromNullable(aciRecord.callRingtone).or(Optional.fromNullable(e164Record.callRingtone)).transform { obj: Uri? -> obj.toString() }.orNull())
+      put(CALL_RINGTONE, Optional.ofNullable(aciRecord.callRingtone).or(Optional.ofNullable(e164Record.callRingtone)).map { obj: Uri? -> obj.toString() }.orElse(null))
       put(CALL_VIBRATE, if (aciRecord.callVibrateState != VibrateState.DEFAULT) aciRecord.callVibrateState.id else e164Record.callVibrateState.id)
       put(NOTIFICATION_CHANNEL, aciRecord.notificationChannel ?: e164Record.notificationChannel)
       put(MUTE_UNTIL, if (aciRecord.muteUntil > 0) aciRecord.muteUntil else e164Record.muteUntil)
-      put(CHAT_COLORS, Optional.fromNullable(aciRecord.chatColors).or(Optional.fromNullable(e164Record.chatColors)).transform { colors: ChatColors? -> colors!!.serialize().toByteArray() }.orNull())
+      put(CHAT_COLORS, Optional.ofNullable(aciRecord.chatColors).or(Optional.ofNullable(e164Record.chatColors)).map { colors: ChatColors? -> colors!!.serialize().toByteArray() }.orElse(null))
       put(AVATAR_COLOR, aciRecord.avatarColor.serialize())
-      put(CUSTOM_CHAT_COLORS_ID, Optional.fromNullable(aciRecord.chatColors).or(Optional.fromNullable(e164Record.chatColors)).transform { colors: ChatColors? -> colors!!.id.longValue }.orNull())
+      put(CUSTOM_CHAT_COLORS_ID, Optional.ofNullable(aciRecord.chatColors).or(Optional.ofNullable(e164Record.chatColors)).map { colors: ChatColors? -> colors!!.id.longValue }.orElse(null))
       put(SEEN_INVITE_REMINDER, e164Record.insightsBannerTier.id)
-      put(DEFAULT_SUBSCRIPTION_ID, e164Record.getDefaultSubscriptionId().or(-1))
+      put(DEFAULT_SUBSCRIPTION_ID, e164Record.getDefaultSubscriptionId().orElse(-1))
       put(MESSAGE_EXPIRATION_TIME, if (aciRecord.expireMessages > 0) aciRecord.expireMessages else e164Record.expireMessages)
       put(REGISTERED, RegisteredState.REGISTERED.id)
       put(SYSTEM_GIVEN_NAME, e164Record.systemProfileName.givenName)
@@ -2740,18 +2771,18 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
 
   private fun getValuesForStorageContact(contact: SignalContactRecord, isInsert: Boolean): ContentValues {
     return ContentValues().apply {
-      val profileName = ProfileName.fromParts(contact.givenName.orNull(), contact.familyName.orNull())
-      val username = contact.username.orNull()
+      val profileName = ProfileName.fromParts(contact.givenName.orElse(null), contact.familyName.orElse(null))
+      val username = contact.username.orElse(null)
 
       if (contact.address.hasValidServiceId()) {
         put(SERVICE_ID, contact.address.serviceId.toString())
       }
 
-      put(PHONE, contact.address.number.orNull())
+      put(PHONE, contact.address.number.orElse(null))
       put(PROFILE_GIVEN_NAME, profileName.givenName)
       put(PROFILE_FAMILY_NAME, profileName.familyName)
       put(PROFILE_JOINED_NAME, profileName.toString())
-      put(PROFILE_KEY, contact.profileKey.transform { source -> Base64.encodeBytes(source) }.orNull())
+      put(PROFILE_KEY, contact.profileKey.map { source -> Base64.encodeBytes(source) }.orElse(null))
       put(USERNAME, if (TextUtils.isEmpty(username)) null else username)
       put(PROFILE_SHARING, if (contact.isProfileSharingEnabled) "1" else "0")
       put(BLOCKED, if (contact.isBlocked) "1" else "0")
@@ -2910,7 +2941,6 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
       unidentifiedAccessMode = UnidentifiedAccessMode.fromMode(cursor.requireInt(UNIDENTIFIED_ACCESS_MODE)),
       forceSmsSelection = cursor.requireBoolean(FORCE_SMS_SELECTION),
       rawCapabilities = capabilities,
-      groupsV2Capability = Recipient.Capability.deserialize(Bitmask.read(capabilities, Capabilities.GROUPS_V2, Capabilities.BIT_LENGTH).toInt()),
       groupsV1MigrationCapability = Recipient.Capability.deserialize(Bitmask.read(capabilities, Capabilities.GROUPS_V1_MIGRATION, Capabilities.BIT_LENGTH).toInt()),
       senderKeyCapability = Recipient.Capability.deserialize(Bitmask.read(capabilities, Capabilities.SENDER_KEY, Capabilities.BIT_LENGTH).toInt()),
       announcementGroupCapability = Recipient.Capability.deserialize(Bitmask.read(capabilities, Capabilities.ANNOUNCEMENT_GROUPS, Capabilities.BIT_LENGTH).toInt()),
@@ -2956,13 +2986,13 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
   }
 
   private fun getSyncExtras(cursor: Cursor): RecipientRecord.SyncExtras {
-    val storageProtoRaw = cursor.optionalString(STORAGE_PROTO).orNull()
+    val storageProtoRaw = cursor.optionalString(STORAGE_PROTO).orElse(null)
     val storageProto = if (storageProtoRaw != null) Base64.decodeOrThrow(storageProtoRaw) else null
-    val archived = cursor.optionalBoolean(ThreadDatabase.ARCHIVED).or(false)
-    val forcedUnread = cursor.optionalInt(ThreadDatabase.READ).transform { status: Int -> status == ThreadDatabase.ReadStatus.FORCED_UNREAD.serialize() }.or(false)
-    val groupMasterKey = cursor.optionalBlob(GroupDatabase.V2_MASTER_KEY).transform { GroupUtil.requireMasterKey(it) }.orNull()
-    val identityKey = cursor.optionalString(IDENTITY_KEY).transform { Base64.decodeOrThrow(it) }.orNull()
-    val identityStatus = cursor.optionalInt(IDENTITY_STATUS).transform { VerifiedStatus.forState(it) }.or(VerifiedStatus.DEFAULT)
+    val archived = cursor.optionalBoolean(ThreadDatabase.ARCHIVED).orElse(false)
+    val forcedUnread = cursor.optionalInt(ThreadDatabase.READ).map { status: Int -> status == ThreadDatabase.ReadStatus.FORCED_UNREAD.serialize() }.orElse(false)
+    val groupMasterKey = cursor.optionalBlob(GroupDatabase.V2_MASTER_KEY).map { GroupUtil.requireMasterKey(it) }.orElse(null)
+    val identityKey = cursor.optionalString(IDENTITY_KEY).map { Base64.decodeOrThrow(it) }.orElse(null)
+    val identityStatus = cursor.optionalInt(IDENTITY_STATUS).map { VerifiedStatus.forState(it) }.orElse(VerifiedStatus.DEFAULT)
 
     return RecipientRecord.SyncExtras(storageProto, groupMasterKey, identityKey, identityStatus, archived, forcedUnread)
   }
@@ -2972,14 +3002,14 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
   }
 
   private fun getRecipientExtras(cursor: Cursor): RecipientExtras? {
-    return cursor.optionalBlob(EXTRAS).transform { b: ByteArray? ->
+    return cursor.optionalBlob(EXTRAS).map { b: ByteArray? ->
       try {
         RecipientExtras.parseFrom(b)
       } catch (e: InvalidProtocolBufferException) {
         Log.w(TAG, e)
         throw AssertionError(e)
       }
-    }.orNull()
+    }.orElse(null)
   }
 
   /**
@@ -3297,7 +3327,7 @@ open class RecipientDatabase(context: Context, databaseHelper: SignalDatabase) :
    */
   internal object Capabilities {
     const val BIT_LENGTH = 2
-    const val GROUPS_V2 = 0
+//    const val GROUPS_V2 = 0
     const val GROUPS_V1_MIGRATION = 1
     const val SENDER_KEY = 2
     const val ANNOUNCEMENT_GROUPS = 3

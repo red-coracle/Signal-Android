@@ -1,6 +1,5 @@
 package org.thoughtcrime.securesms.mms;
 
-import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.database.ThreadDatabase;
 import org.thoughtcrime.securesms.database.model.StoryType;
 import org.thoughtcrime.securesms.recipients.Recipient;
@@ -20,6 +19,7 @@ public class OutgoingExpirationUpdateMessage extends OutgoingSecureMediaMessage 
           false,
           StoryType.NONE,
           null,
+          false,
           null,
           Collections.emptyList(),
           Collections.emptyList(),

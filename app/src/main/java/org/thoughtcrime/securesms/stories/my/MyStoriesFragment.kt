@@ -1,5 +1,9 @@
 package org.thoughtcrime.securesms.stories.my
 
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
@@ -30,6 +34,15 @@ class MyStoriesFragment : DSLSettingsFragment(
   override fun bindAdapter(adapter: DSLSettingsAdapter) {
     MyStoriesItem.register(adapter)
 
+    requireActivity().onBackPressedDispatcher.addCallback(
+      viewLifecycleOwner,
+      object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+          requireActivity().finish()
+        }
+      }
+    )
+
     lifecycleDisposable.bindTo(viewLifecycleOwner)
     viewModel.state.observe(viewLifecycleOwner) {
       adapter.submitList(getConfiguration(it).toMappingModelList())
@@ -55,9 +68,20 @@ class MyStoriesFragment : DSLSettingsFragment(
             customPref(
               MyStoriesItem.Model(
                 distributionStory = conversationMessage,
-                onClick = {
-                  // TODO [stories] pass in something more specific to start with the correct progress
-                  startActivity(StoryViewerActivity.createIntent(requireContext(), Recipient.self().id))
+                onClick = { it, preview ->
+                  if (it.distributionStory.messageRecord.isOutgoing && it.distributionStory.messageRecord.isFailed) {
+                    lifecycleDisposable += viewModel.resend(it.distributionStory.messageRecord).subscribe()
+                    Toast.makeText(requireContext(), R.string.message_recipients_list_item__resend, Toast.LENGTH_SHORT).show()
+                  } else {
+                    val recipientId = if (it.distributionStory.messageRecord.recipient.isGroup) {
+                      it.distributionStory.messageRecord.recipient.id
+                    } else {
+                      Recipient.self().id
+                    }
+
+                    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), preview, ViewCompat.getTransitionName(preview) ?: "")
+                    startActivity(StoryViewerActivity.createIntent(requireContext(), recipientId, conversationMessage.messageRecord.id), options.toBundle())
+                  }
                 },
                 onSaveClick = {
                   StoryContextMenu.save(requireContext(), it.distributionStory.messageRecord)

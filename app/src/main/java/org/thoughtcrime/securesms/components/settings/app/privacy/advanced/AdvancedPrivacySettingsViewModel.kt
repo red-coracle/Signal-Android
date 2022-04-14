@@ -8,8 +8,8 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
-import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraintObserver
 import org.thoughtcrime.securesms.jobs.RefreshAttributesJob
+import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.phonenumbers.PhoneNumberFormatter
@@ -21,7 +21,7 @@ import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
 class AdvancedPrivacySettingsViewModel(
   private val sharedPreferences: SharedPreferences,
   private val repository: AdvancedPrivacySettingsRepository
-) : ViewModel(), NetworkConstraintObserver.NetworkListener {
+) : ViewModel() {
 
   private val store = Store(getState())
   private val singleEvents = SingleLiveEvent<Event>()
@@ -31,7 +31,6 @@ class AdvancedPrivacySettingsViewModel(
   val disposables: CompositeDisposable = CompositeDisposable()
 
   init {
-    NetworkConstraintObserver.getInstance(ApplicationDependencies.getApplication()).addListener(this)
     disposables.add(
       ApplicationDependencies.getSignalWebSocket().webSocketState
         .observeOn(AndroidSchedulers.mainThread())
@@ -71,7 +70,7 @@ class AdvancedPrivacySettingsViewModel(
 
   fun setAllowSealedSenderFromAnyone(enabled: Boolean) {
     sharedPreferences.edit().putBoolean(TextSecurePreferences.UNIVERSAL_UNIDENTIFIED_ACCESS, enabled).apply()
-    ApplicationDependencies.getJobManager().add(RefreshAttributesJob())
+    ApplicationDependencies.getJobManager().startChain(RefreshAttributesJob()).then(RefreshOwnProfileJob()).enqueue()
     refresh()
   }
 
@@ -86,12 +85,7 @@ class AdvancedPrivacySettingsViewModel(
     store.update { getState().copy(showProgressSpinner = it.showProgressSpinner) }
   }
 
-  override fun onNetworkChanged() {
-    refresh()
-  }
-
   override fun onCleared() {
-    NetworkConstraintObserver.getInstance(ApplicationDependencies.getApplication()).removeListener(this)
     disposables.dispose()
   }
 

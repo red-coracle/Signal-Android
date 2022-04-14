@@ -10,13 +10,11 @@ import com.annimon.stream.Stream;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.database.GroupReceiptDatabase;
-import org.thoughtcrime.securesms.database.GroupReceiptDatabase.GroupReceiptInfo;
 import org.thoughtcrime.securesms.database.MessageDatabase;
 import org.thoughtcrime.securesms.database.NoSuchMessageException;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatch;
 import org.thoughtcrime.securesms.database.documents.NetworkFailure;
-import org.thoughtcrime.securesms.database.model.DistributionListId;
 import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.jobmanager.Data;
 import org.thoughtcrime.securesms.jobmanager.Job;
@@ -24,11 +22,12 @@ import org.thoughtcrime.securesms.jobmanager.JobLogger;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.messages.GroupSendUtil;
+import org.thoughtcrime.securesms.messages.StorySendUtil;
 import org.thoughtcrime.securesms.mms.MmsException;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
-import org.thoughtcrime.securesms.recipients.RecipientUtil;
+import org.thoughtcrime.securesms.stories.Stories;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 import org.thoughtcrime.securesms.transport.UndeliverableMessageException;
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException;
@@ -42,7 +41,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * A job that lets us send a message to a distribution list. Currently the only supported message type is a story.
@@ -59,11 +57,11 @@ public final class PushDistributionListSendJob extends PushSendJob {
 
   public PushDistributionListSendJob(long messageId, @NonNull RecipientId destination, boolean hasMedia) {
     this(new Parameters.Builder()
-                       .setQueue(destination.toQueueKey(hasMedia))
-                       .addConstraint(NetworkConstraint.KEY)
-                       .setLifespan(TimeUnit.DAYS.toMillis(1))
-                       .setMaxAttempts(Parameters.UNLIMITED)
-                       .build(),
+             .setQueue(destination.toQueueKey(hasMedia))
+             .addConstraint(NetworkConstraint.KEY)
+             .setLifespan(TimeUnit.DAYS.toMillis(1))
+             .setMaxAttempts(Parameters.UNLIMITED)
+             .build(),
          messageId);
 
   }
@@ -147,7 +145,7 @@ public final class PushDistributionListSendJob extends PushSendJob {
       List<Recipient> target;
 
       if (!existingNetworkFailures.isEmpty()) target = Stream.of(existingNetworkFailures).map(nf -> nf.getRecipientId(context)).distinct().map(Recipient::resolved).toList();
-      else                                    target = Stream.of(getFullRecipients(listRecipient.requireDistributionListId(), messageId)).distinctBy(Recipient::getId).toList();
+      else target = Stream.of(Stories.getRecipientsToSendTo(messageId, message.getSentTimeMillis(), message.getStoryType().isStoryWithReplies())).distinctBy(Recipient::getId).toList();
 
       List<SendMessageResult> results = deliver(message, target);
       Log.i(TAG, JobLogger.format(this, "Finished send."));
@@ -173,30 +171,20 @@ public final class PushDistributionListSendJob extends PushSendJob {
 
       List<Attachment>              attachments        = Stream.of(message.getAttachments()).filterNot(Attachment::isSticker).toList();
       List<SignalServiceAttachment> attachmentPointers = getAttachmentPointersFor(attachments);
-      boolean                       isRecipientUpdate  = Stream.of(SignalDatabase.groupReceipts().getGroupReceiptInfo(messageId))
-                                                               .anyMatch(info -> info.getStatus() > GroupReceiptDatabase.STATUS_UNDELIVERED);
+      boolean isRecipientUpdate = Stream.of(SignalDatabase.groupReceipts().getGroupReceiptInfo(messageId))
+                                        .anyMatch(info -> info.getStatus() > GroupReceiptDatabase.STATUS_UNDELIVERED);
 
-      SignalServiceStoryMessage storyMessage = SignalServiceStoryMessage.forFileAttachment(Recipient.self().getProfileKey(), null, attachmentPointers.get(0), message.getStoryType().isStoryWithReplies());
+      final SignalServiceStoryMessage storyMessage;
+      if (message.getStoryType().isTextStory()) {
+        storyMessage = SignalServiceStoryMessage.forTextAttachment(Recipient.self().getProfileKey(), null, StorySendUtil.deserializeBodyToStoryTextAttachment(message, this::getPreviewsFor), message.getStoryType().isStoryWithReplies());
+      } else if (!attachmentPointers.isEmpty()) {
+        storyMessage = SignalServiceStoryMessage.forFileAttachment(Recipient.self().getProfileKey(), null, attachmentPointers.get(0), message.getStoryType().isStoryWithReplies());
+      } else {
+        throw new UndeliverableMessageException("No attachment on non-text story.");
+      }
       return GroupSendUtil.sendStoryMessage(context, message.getRecipient().requireDistributionListId(), destinations, isRecipientUpdate, new MessageId(messageId, true), message.getSentTimeMillis(), storyMessage);
     } catch (ServerRejectedException e) {
       throw new UndeliverableMessageException(e);
-    }
-  }
-
-  private static List<Recipient> getFullRecipients(@NonNull DistributionListId distributionListId, long messageId) {
-    List<GroupReceiptInfo> destinations = SignalDatabase.groupReceipts().getGroupReceiptInfo(messageId);
-
-    if (!destinations.isEmpty()) {
-      return RecipientUtil.getEligibleForSending(destinations.stream()
-                                                             .map(GroupReceiptInfo::getRecipientId)
-                                                             .map(Recipient::resolved)
-                                                             .collect(Collectors.toList()));
-    } else {
-      return RecipientUtil.getEligibleForSending(SignalDatabase.distributionLists()
-                                                               .getMembers(distributionListId)
-                                                               .stream()
-                                                               .map(Recipient::resolved)
-                                                               .collect(Collectors.toList()));
     }
   }
 

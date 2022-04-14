@@ -8,30 +8,21 @@ import androidx.annotation.Nullable;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.profiles.ProfileName;
-import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 final class ContactHolder {
 
   private static final String TAG = Log.tag(ContactHolder.class);
 
-  private final String                  lookupKey;
   private final List<PhoneNumberRecord> phoneNumberRecords = new LinkedList<>();
 
   private StructuredNameRecord structuredNameRecord;
 
-  ContactHolder(@NonNull String lookupKey) {
-    this.lookupKey = lookupKey;
-  }
-
-  @NonNull String getLookupKey() {
-    return lookupKey;
-  }
-
-  public void addPhoneNumberRecord(@NonNull PhoneNumberRecord phoneNumberRecord) {
-    phoneNumberRecords.add(phoneNumberRecord);
+  public void addPhoneNumberRecords(@NonNull List<PhoneNumberRecord> phoneNumberRecords) {
+    this.phoneNumberRecords.addAll(phoneNumberRecords);
   }
 
   public void setStructuredNameRecord(@NonNull StructuredNameRecord structuredNameRecord) {
@@ -46,7 +37,7 @@ final class ContactHolder {
                                   phoneNumberRecord.getContactPhotoUri(),
                                   phoneNumberRecord.getContactLabel(),
                                   phoneNumberRecord.getPhoneType(),
-                                  Optional.fromNullable(phoneNumberRecord.getContactUri()).transform(Uri::toString).orNull());
+                                  Optional.ofNullable(phoneNumberRecord.getContactUri()).map(Uri::toString).orElse(null));
     }
   }
 

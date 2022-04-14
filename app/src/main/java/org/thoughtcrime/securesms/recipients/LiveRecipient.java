@@ -21,13 +21,15 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.DistributionListRecord;
 import org.thoughtcrime.securesms.database.model.RecipientRecord;
 import org.thoughtcrime.securesms.util.livedata.LiveDataUtil;
-import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.rxjava3.core.Observable;
 
 public final class LiveRecipient {
 
@@ -93,6 +95,19 @@ public final class LiveRecipient {
    */
   public void removeObservers(@NonNull LifecycleOwner owner) {
     ThreadUtil.runOnMain(() -> observableLiveData.removeObservers(owner));
+  }
+
+  public Observable<Recipient> asObservable() {
+    return Observable.create(emitter -> {
+      Recipient current = recipient.get();
+      if (current != null && current.getId() != RecipientId.UNKNOWN) {
+        emitter.onNext(current);
+      }
+
+      RecipientForeverObserver foreverObserver = emitter::onNext;
+      observeForever(foreverObserver);
+      emitter.setCancellable(() -> removeForeverObserver(foreverObserver));
+    });
   }
 
   /**
@@ -218,7 +233,7 @@ public final class LiveRecipient {
     if (groupRecord.isPresent()) {
       String          title    = groupRecord.get().getTitle();
       List<Recipient> members  = Stream.of(groupRecord.get().getMembers()).filterNot(RecipientId::isUnknown).map(this::fetchAndCacheRecipientFromDisk).toList();
-      Optional<Long>  avatarId = Optional.absent();
+      Optional<Long>  avatarId = Optional.empty();
 
       if (groupRecord.get().hasAvatar()) {
         avatarId = Optional.of(groupRecord.get().getAvatarId());
@@ -227,7 +242,7 @@ public final class LiveRecipient {
       return new RecipientDetails(title, null,  avatarId, false, false, record.getRegistered(), record, members, false);
     }
 
-    return new RecipientDetails(null, null, Optional.absent(), false, false, record.getRegistered(), record, null, false);
+    return new RecipientDetails(null, null, Optional.empty(), false, false, record.getRegistered(), record, null, false);
   }
 
   @WorkerThread

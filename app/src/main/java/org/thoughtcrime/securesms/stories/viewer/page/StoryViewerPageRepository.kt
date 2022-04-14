@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.stories.viewer.page
 
 import android.content.Context
+import android.net.Uri
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -13,12 +14,14 @@ import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.MessageId
 import org.thoughtcrime.securesms.database.model.MessageRecord
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord
+import org.thoughtcrime.securesms.database.model.databaseprotos.StoryTextPost
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.jobs.AttachmentDownloadJob
 import org.thoughtcrime.securesms.jobs.MultiDeviceViewedUpdateJob
 import org.thoughtcrime.securesms.jobs.SendViewedReceiptJob
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
+import org.thoughtcrime.securesms.util.Base64
 
 class StoryViewerPageRepository(context: Context) {
 
@@ -30,7 +33,7 @@ class StoryViewerPageRepository(context: Context) {
 
       fun refresh() {
         val stories = if (recipient.isMyStory) {
-          SignalDatabase.mms.allOutgoingStories
+          SignalDatabase.mms.getAllOutgoingStories(false)
         } else {
           SignalDatabase.mms.getAllStoriesFor(recipientId)
         }
@@ -71,7 +74,7 @@ class StoryViewerPageRepository(context: Context) {
           viewCount = record.viewedReceiptCount,
           replyCount = SignalDatabase.mms.getNumberOfStoryReplies(record.id),
           dateInMilliseconds = record.dateSent,
-          attachment = (record as MmsMessageRecord).slideDeck.firstSlide!!.asAttachment(),
+          content = getContent(record as MmsMessageRecord),
           conversationMessage = ConversationMessage.ConversationMessageFactory.createWithUnresolvedData(context, record),
           allowsReplies = record.storyType.isStoryWithReplies
         )
@@ -125,9 +128,11 @@ class StoryViewerPageRepository(context: Context) {
   }
 
   fun forceDownload(post: StoryPost) {
-    ApplicationDependencies.getJobManager().add(
-      AttachmentDownloadJob(post.id, (post.attachment as DatabaseAttachment).attachmentId, true)
-    )
+    if (post.content is StoryPost.Content.AttachmentContent) {
+      ApplicationDependencies.getJobManager().add(
+        AttachmentDownloadJob(post.id, (post.content.attachment as DatabaseAttachment).attachmentId, true)
+      )
+    }
   }
 
   fun getStoryPostsFor(recipientId: RecipientId): Observable<List<StoryPost>> {
@@ -165,6 +170,33 @@ class StoryViewerPageRepository(context: Context) {
           MultiDeviceViewedUpdateJob.enqueue(listOf(markedMessageInfo.syncMessageId))
         }
       }
+    }
+  }
+
+  private fun getContent(record: MmsMessageRecord): StoryPost.Content {
+    return if (record.storyType.isTextStory || record.slideDeck.asAttachments().isEmpty()) {
+      StoryPost.Content.TextContent(
+        uri = Uri.parse("story_text_post://${record.id}"),
+        recordId = record.id,
+        hasBody = canParseToTextStory(record.body)
+      )
+    } else {
+      StoryPost.Content.AttachmentContent(
+        attachment = record.slideDeck.asAttachments().first()
+      )
+    }
+  }
+
+  private fun canParseToTextStory(body: String): Boolean {
+    return if (body.isNotEmpty()) {
+      try {
+        StoryTextPost.parseFrom(Base64.decode(body))
+        return true
+      } catch (e: Exception) {
+        false
+      }
+    } else {
+      false
     }
   }
 }

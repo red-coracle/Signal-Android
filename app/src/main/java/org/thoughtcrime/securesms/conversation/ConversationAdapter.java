@@ -40,7 +40,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.exoplayer2.MediaItem;
 
-import org.signal.core.util.DimensionUnit;
 import org.signal.core.util.ThreadUtil;
 import org.signal.core.util.logging.Log;
 import org.signal.paging.PagingController;
@@ -63,7 +62,6 @@ import org.thoughtcrime.securesms.util.ProjectionList;
 import org.thoughtcrime.securesms.util.StickyHeaderDecoration;
 import org.thoughtcrime.securesms.util.ThemeUtil;
 import org.thoughtcrime.securesms.util.ViewUtil;
-import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -74,6 +72,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -114,8 +113,6 @@ public class ConversationAdapter
   private final Recipient         recipient;
 
   private final Set<MultiselectPart>         selected;
-  private final List<ConversationMessage>    fastRecords;
-  private final Set<Long>                    releasedFastRecords;
   private final Calendar                     calendar;
   private final MessageDigest                digest;
 
@@ -158,8 +155,6 @@ public class ConversationAdapter
     this.clickListener                = clickListener;
     this.recipient                    = recipient;
     this.selected                     = new HashSet<>();
-    this.fastRecords                  = new ArrayList<>();
-    this.releasedFastRecords          = new HashSet<>();
     this.calendar                     = Calendar.getInstance();
     this.digest                       = getMessageDigestOrThrow();
     this.hasWallpaper                 = recipient.hasWallpaper();
@@ -280,8 +275,8 @@ public class ConversationAdapter
 
         conversationViewHolder.getBindable().bind(lifecycleOwner,
                                                   conversationMessage,
-                                                  Optional.fromNullable(previousMessage != null ? previousMessage.getMessageRecord() : null),
-                                                  Optional.fromNullable(nextMessage != null ? nextMessage.getMessageRecord() : null),
+                                                  Optional.ofNullable(previousMessage != null ? previousMessage.getMessageRecord() : null),
+                                                  Optional.ofNullable(nextMessage != null ? nextMessage.getMessageRecord() : null),
                                                   glideRequests,
                                                   locale,
                                                   selected,
@@ -309,7 +304,7 @@ public class ConversationAdapter
   @Override
   public int getItemCount() {
     boolean hasFooter = footerView != null;
-    return super.getItemCount() + fastRecords.size() + (isTypingViewEnabled ? 1 : 0) + (hasFooter ? 1 : 0);
+    return super.getItemCount() + (isTypingViewEnabled ? 1 : 0) + (hasFooter ? 1 : 0);
   }
 
   @Override
@@ -330,7 +325,7 @@ public class ConversationAdapter
 
     if (conversationMessage == null) return -1;
 
-    calendar.setTimeInMillis(conversationMessage.getMessageRecord().getDateReceived());
+    calendar.setTimeInMillis(conversationMessage.getMessageRecord().getDateSent());
     return calendar.get(Calendar.YEAR) * 1000L + calendar.get(Calendar.DAY_OF_YEAR);
   }
 
@@ -344,7 +339,7 @@ public class ConversationAdapter
     Context             context             = viewHolder.itemView.getContext();
     ConversationMessage conversationMessage = Objects.requireNonNull(getItem(position));
 
-    viewHolder.setText(DateUtils.getConversationDateHeaderString(viewHolder.itemView.getContext(), locale, conversationMessage.getMessageRecord().getDateReceived()));
+    viewHolder.setText(DateUtils.getConversationDateHeaderString(viewHolder.itemView.getContext(), locale, conversationMessage.getMessageRecord().getDateSent()));
 
     if (type == HEADER_TYPE_POPOVER_DATE) {
       if (hasWallpaper) {
@@ -370,28 +365,20 @@ public class ConversationAdapter
   public @Nullable ConversationMessage getItem(int position) {
     position = isTypingViewEnabled() ? position - 1 : position;
 
-    if (position == -1) {
+    if (position < 0) {
       return null;
-    } else if (position < fastRecords.size()) {
-      return fastRecords.get(position);
     } else {
-      int correctedPosition = position - fastRecords.size();
       if (pagingController != null) {
-        pagingController.onDataNeededAroundIndex(correctedPosition);
+        pagingController.onDataNeededAroundIndex(position);
       }
 
-      if (correctedPosition < getItemCount()) {
-        return super.getItem(correctedPosition);
+      if (position < getItemCount()) {
+        return super.getItem(position);
       } else {
-        Log.d(TAG, "Could not access corrected position " + correctedPosition + " as it is out of bounds.");
+        Log.d(TAG, "Could not access corrected position " + position + " as it is out of bounds.");
         return null;
       }
     }
-  }
-
-  public void submitList(@Nullable List<ConversationMessage> pagedList) {
-    cleanFastRecords();
-    super.submitList(pagedList);
   }
 
   public void setPagingController(@Nullable PagingController pagingController) {
@@ -417,7 +404,7 @@ public class ConversationAdapter
   }
 
   boolean hasNoConversationMessages() {
-    return getItemCount() + fastRecords.size() == 0;
+    return super.getItemCount() == 0;
   }
 
   /**
@@ -527,27 +514,6 @@ public class ConversationAdapter
   }
 
   /**
-   * Adds a record to a memory cache to allow it to be rendered immediately, as opposed to waiting
-   * for a database change.
-   */
-  @MainThread
-  void addFastRecord(ConversationMessage conversationMessage) {
-    fastRecords.add(0, conversationMessage);
-    notifyDataSetChanged();
-  }
-
-  /**
-   * Marks a record as no-longer-needed. Will be removed from the adapter the next time the database
-   * changes.
-   */
-  @AnyThread
-  void releaseFastRecord(long id) {
-    synchronized (releasedFastRecords) {
-      releasedFastRecords.add(id);
-    }
-  }
-
-  /**
    * Returns set of records that are selected in multi-select mode.
    */
   public Set<MultiselectPart> getSelectedItems() {
@@ -589,22 +555,6 @@ public class ConversationAdapter
     pool.setMaxRecycledViews(MESSAGE_TYPE_HEADER, 1);
     pool.setMaxRecycledViews(MESSAGE_TYPE_FOOTER, 1);
     pool.setMaxRecycledViews(MESSAGE_TYPE_UPDATE, 5);
-  }
-
-  @MainThread
-  private void cleanFastRecords() {
-    ThreadUtil.assertMainThread();
-
-    synchronized (releasedFastRecords) {
-      Iterator<ConversationMessage> messageIterator = fastRecords.iterator();
-      while (messageIterator.hasNext()) {
-        long id = messageIterator.next().getMessageRecord().getId();
-        if (releasedFastRecords.contains(id)) {
-          messageIterator.remove();
-          releasedFastRecords.remove(id);
-        }
-      }
-    }
   }
 
   public boolean isTypingViewEnabled() {

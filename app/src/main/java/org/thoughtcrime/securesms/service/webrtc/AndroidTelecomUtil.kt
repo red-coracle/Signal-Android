@@ -20,6 +20,7 @@ import androidx.core.os.bundleOf
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.recipients.RecipientId
+import org.thoughtcrime.securesms.util.FeatureFlags
 import org.thoughtcrime.securesms.webrtc.audio.SignalAudioManager
 
 /**
@@ -39,7 +40,7 @@ object AndroidTelecomUtil {
   @JvmStatic
   val telecomSupported: Boolean
     get() {
-      if (Build.VERSION.SDK_INT >= 26 && !systemRejected) {
+      if (Build.VERSION.SDK_INT >= 26 && !systemRejected && !isRestrictedDevice()) {
         if (!accountRegistered) {
           registerPhoneAccount()
         }
@@ -161,7 +162,7 @@ object AndroidTelecomUtil {
     if (telecomSupported) {
       val connection: AndroidCallConnection? = connections[recipientId]
       Log.i(TAG, "Selecting audio route: $device connection: ${connection != null}")
-      if (connection != null) {
+      if (connection?.callAudioState != null) {
         when (device) {
           SignalAudioManager.AudioDevice.SPEAKER_PHONE -> connection.setAudioRouteIfDifferent(CallAudioState.ROUTE_SPEAKER)
           SignalAudioManager.AudioDevice.BLUETOOTH -> connection.setAudioRouteIfDifferent(CallAudioState.ROUTE_BLUETOOTH)
@@ -175,7 +176,7 @@ object AndroidTelecomUtil {
   fun getSelectedAudioDevice(recipientId: RecipientId): SignalAudioManager.AudioDevice {
     if (telecomSupported) {
       val connection: AndroidCallConnection? = connections[recipientId]
-      if (connection != null) {
+      if (connection?.callAudioState != null) {
         return when (connection.callAudioState.route) {
           CallAudioState.ROUTE_SPEAKER -> SignalAudioManager.AudioDevice.SPEAKER_PHONE
           CallAudioState.ROUTE_BLUETOOTH -> SignalAudioManager.AudioDevice.BLUETOOTH
@@ -185,6 +186,10 @@ object AndroidTelecomUtil {
       }
     }
     return SignalAudioManager.AudioDevice.NONE
+  }
+
+  private fun isRestrictedDevice(): Boolean {
+    return !FeatureFlags.internalUser()
   }
 }
 

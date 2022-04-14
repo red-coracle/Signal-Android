@@ -8,8 +8,8 @@ import androidx.annotation.Nullable;
 import com.annimon.stream.Stream;
 
 import org.signal.core.util.logging.Log;
+import org.signal.libsignal.zkgroup.groups.GroupMasterKey;
 import org.signal.storageservice.protos.groups.local.DecryptedGroup;
-import org.signal.zkgroup.groups.GroupMasterKey;
 import org.thoughtcrime.securesms.database.GroupDatabase;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.database.SignalDatabase;
@@ -223,8 +223,7 @@ public final class GroupsV1MigrationUtil {
    */
   private static @NonNull List<Recipient> getMigratableManualMigrationMembers(@NonNull List<Recipient> registeredMembers) {
     return Stream.of(registeredMembers)
-                 .filter(r -> r.getGroupsV2Capability() == Recipient.Capability.SUPPORTED &&
-                     r.getGroupsV1MigrationCapability() == Recipient.Capability.SUPPORTED)
+                 .filter(r -> r.getGroupsV1MigrationCapability() == Recipient.Capability.SUPPORTED)
                  .toList();
   }
 
@@ -233,7 +232,6 @@ public final class GroupsV1MigrationUtil {
    */
   public static boolean isAutoMigratable(@NonNull Recipient recipient) {
     return recipient.hasServiceId() &&
-           recipient.getGroupsV2Capability() == Recipient.Capability.SUPPORTED &&
            recipient.getGroupsV1MigrationCapability() == Recipient.Capability.SUPPORTED &&
            recipient.getRegistered() == RecipientDatabase.RegisteredState.REGISTERED &&
            recipient.getProfileKey() != null;

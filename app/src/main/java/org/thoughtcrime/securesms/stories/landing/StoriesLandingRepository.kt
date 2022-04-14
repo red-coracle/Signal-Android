@@ -14,10 +14,17 @@ import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientForeverObserver
 import org.thoughtcrime.securesms.recipients.RecipientId
+import org.thoughtcrime.securesms.sms.MessageSender
 
 class StoriesLandingRepository(context: Context) {
 
   private val context = context.applicationContext
+
+  fun resend(story: MessageRecord): Completable {
+    return Completable.fromAction {
+      MessageSender.resend(context, story)
+    }.subscribeOn(Schedulers.io())
+  }
 
   fun getStories(): Observable<List<StoriesLandingItemData>> {
     return Observable.create<Observable<List<StoriesLandingItemData>>> { emitter ->
@@ -63,33 +70,33 @@ class StoriesLandingRepository(context: Context) {
   }
 
   private fun createStoriesLandingItemData(sender: Recipient, messageRecords: List<MessageRecord>): Observable<StoriesLandingItemData> {
-    return Observable.create { emitter ->
-      fun refresh() {
+    val itemDataObservable = Observable.create<StoriesLandingItemData> { emitter ->
+      fun refresh(sender: Recipient) {
         val itemData = StoriesLandingItemData(
           storyRecipient = sender,
-          storyViewState = getStoryViewState(messageRecords),
+          storyViewState = StoryViewState.NONE,
           hasReplies = messageRecords.any { SignalDatabase.mms.getNumberOfStoryReplies(it.id) > 0 },
           hasRepliesFromSelf = messageRecords.any { SignalDatabase.mms.hasSelfReplyInStory(it.id) },
-          isHidden = Recipient.resolved(messageRecords.first().recipient.id).shouldHideStory(),
+          isHidden = sender.shouldHideStory(),
           primaryStory = ConversationMessage.ConversationMessageFactory.createWithUnresolvedData(context, messageRecords.first()),
-          secondaryStory = messageRecords.drop(1).firstOrNull()?.let {
+          secondaryStory = if (sender.isMyStory) messageRecords.drop(1).firstOrNull()?.let {
             ConversationMessage.ConversationMessageFactory.createWithUnresolvedData(context, it)
-          }
+          } else null
         )
 
         emitter.onNext(itemData)
       }
 
       val newRepliesObserver = DatabaseObserver.Observer {
-        refresh()
+        Recipient.live(sender.id).refresh()
       }
 
       val recipientChangedObserver = RecipientForeverObserver {
-        refresh()
+        refresh(it)
       }
 
       ApplicationDependencies.getDatabaseObserver().registerConversationObserver(messageRecords.first().threadId, newRepliesObserver)
-      val liveRecipient = Recipient.live(messageRecords.first().recipient.id)
+      val liveRecipient = Recipient.live(sender.id)
       liveRecipient.observeForever(recipientChangedObserver)
 
       emitter.setCancellable {
@@ -97,7 +104,13 @@ class StoriesLandingRepository(context: Context) {
         liveRecipient.removeForeverObserver(recipientChangedObserver)
       }
 
-      refresh()
+      refresh(sender)
+    }
+
+    val storyViewedStateObservable = StoryViewState.getForRecipientId(if (sender.isMyStory) Recipient.self().id else sender.id)
+
+    return Observable.combineLatest(itemDataObservable, storyViewedStateObservable) { data, state ->
+      data.copy(storyViewState = state)
     }
   }
 
@@ -105,18 +118,5 @@ class StoriesLandingRepository(context: Context) {
     return Completable.fromAction {
       SignalDatabase.recipients.setHideStory(recipientId, hideStory)
     }.subscribeOn(Schedulers.io())
-  }
-
-  private fun getStoryViewState(messageRecords: List<MessageRecord>): StoryViewState {
-    val incoming = messageRecords.filterNot { it.isOutgoing }
-    if (incoming.isEmpty()) {
-      return StoryViewState.NONE
-    }
-
-    if (incoming.any { it.viewedReceiptCount == 0 }) {
-      return StoryViewState.UNVIEWED
-    }
-
-    return StoryViewState.VIEWED
   }
 }

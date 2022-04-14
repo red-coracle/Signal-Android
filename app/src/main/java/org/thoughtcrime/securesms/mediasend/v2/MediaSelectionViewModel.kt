@@ -240,7 +240,7 @@ class MediaSelectionViewModel(
 
   fun getMediaConstraints(): MediaConstraints {
     return if (store.state.transportOption.isSms) {
-      MediaConstraints.getMmsMediaConstraints(store.state.transportOption.simSubscriptionId.or(-1))
+      MediaConstraints.getMmsMediaConstraints(store.state.transportOption.simSubscriptionId.orElse(-1))
     } else {
       MediaConstraints.getPushMediaConstraints()
     }
@@ -278,19 +278,21 @@ class MediaSelectionViewModel(
   }
 
   fun send(
-    selectedContacts: List<RecipientSearchKey> = emptyList(),
+    selectedContacts: List<RecipientSearchKey> = emptyList()
   ): Maybe<MediaSendActivityResult> {
-    return repository.send(
-      store.state.selectedMedia,
-      store.state.editorStateMap,
-      store.state.quality,
-      store.state.message,
-      store.state.transportOption.isSms,
-      isViewOnceEnabled(),
-      destination.getRecipientSearchKey(),
-      if (selectedContacts.isNotEmpty()) selectedContacts else destination.getRecipientSearchKeyList(),
-      MentionAnnotation.getMentionsFromAnnotations(store.state.message),
-      store.state.transportOption
+    return UntrustedRecords.checkForBadIdentityRecords(selectedContacts.toSet()).andThen(
+      repository.send(
+        store.state.selectedMedia,
+        store.state.editorStateMap,
+        store.state.quality,
+        store.state.message,
+        store.state.transportOption.isSms,
+        isViewOnceEnabled(),
+        destination.getRecipientSearchKey(),
+        selectedContacts.ifEmpty { destination.getRecipientSearchKeyList() },
+        MentionAnnotation.getMentionsFromAnnotations(store.state.message),
+        store.state.transportOption
+      )
     )
   }
 

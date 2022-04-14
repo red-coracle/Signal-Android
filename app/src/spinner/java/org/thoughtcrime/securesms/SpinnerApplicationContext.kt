@@ -6,6 +6,9 @@ import leakcanary.LeakCanary
 import org.signal.spinner.Spinner
 import org.signal.spinner.Spinner.DatabaseConfig
 import org.thoughtcrime.securesms.database.DatabaseMonitor
+import org.thoughtcrime.securesms.database.GV2Transformer
+import org.thoughtcrime.securesms.database.GV2UpdateTransformer
+import org.thoughtcrime.securesms.database.IsStoryTransformer
 import org.thoughtcrime.securesms.database.JobDatabase
 import org.thoughtcrime.securesms.database.KeyValueDatabase
 import org.thoughtcrime.securesms.database.LocalMetricsDatabase
@@ -14,6 +17,8 @@ import org.thoughtcrime.securesms.database.MegaphoneDatabase
 import org.thoughtcrime.securesms.database.MessageBitmaskColumnTransformer
 import org.thoughtcrime.securesms.database.QueryMonitor
 import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.AppSignatureUtil
 import shark.AndroidReferenceMatchers
 
@@ -23,15 +28,19 @@ class SpinnerApplicationContext : ApplicationContext() {
 
     Spinner.init(
       this,
-      Spinner.DeviceInfo(
-        name = "${Build.MODEL} (Android ${Build.VERSION.RELEASE}, API ${Build.VERSION.SDK_INT})",
-        packageName = "$packageName (${AppSignatureUtil.getAppSignature(this).or("Unknown")})",
-        appVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.CANONICAL_VERSION_CODE}, ${BuildConfig.GIT_HASH})"
+      mapOf(
+        "Device" to "${Build.MODEL} (Android ${Build.VERSION.RELEASE}, API ${Build.VERSION.SDK_INT})",
+        "Package" to "$packageName (${AppSignatureUtil.getAppSignature(this).orElse("Unknown")})",
+        "App Version" to "${BuildConfig.VERSION_NAME} (${BuildConfig.CANONICAL_VERSION_CODE}, ${BuildConfig.GIT_HASH})",
+        "Profile Name" to (if (SignalStore.account().isRegistered) Recipient.self().profileName.toString() else "none"),
+        "E164" to (SignalStore.account().e164 ?: "none"),
+        "ACI" to (SignalStore.account().aci?.toString() ?: "none"),
+        "PNI" to (SignalStore.account().pni?.toString() ?: "none")
       ),
       linkedMapOf(
         "signal" to DatabaseConfig(
           db = SignalDatabase.rawDatabase,
-          columnTransformers = listOf(MessageBitmaskColumnTransformer)
+          columnTransformers = listOf(MessageBitmaskColumnTransformer, GV2Transformer, GV2UpdateTransformer, IsStoryTransformer)
         ),
         "jobmanager" to DatabaseConfig(db = JobDatabase.getInstance(this).sqlCipherDatabase),
         "keyvalue" to DatabaseConfig(db = KeyValueDatabase.getInstance(this).sqlCipherDatabase),

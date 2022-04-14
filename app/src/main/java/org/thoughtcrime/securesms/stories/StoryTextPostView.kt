@@ -1,29 +1,33 @@
 package org.thoughtcrime.securesms.stories
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.widget.ImageView
-import android.widget.TextView
+import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.Px
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
-import com.airbnb.lottie.SimpleColorFilter
-import org.signal.core.util.DimensionUnit
+import com.google.android.material.imageview.ShapeableImageView
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.conversation.colors.ChatColors
+import org.thoughtcrime.securesms.database.model.databaseprotos.StoryTextPost
+import org.thoughtcrime.securesms.fonts.Fonts
+import org.thoughtcrime.securesms.fonts.TextFont
+import org.thoughtcrime.securesms.linkpreview.LinkPreview
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewViewModel
 import org.thoughtcrime.securesms.mediasend.v2.text.TextAlignment
 import org.thoughtcrime.securesms.mediasend.v2.text.TextStoryPostCreationState
 import org.thoughtcrime.securesms.mediasend.v2.text.TextStoryScale
-import org.thoughtcrime.securesms.util.ViewUtil
+import org.thoughtcrime.securesms.mediasend.v2.text.TextStoryTextWatcher
+import org.thoughtcrime.securesms.stories.viewer.page.StoryDisplay
+import org.thoughtcrime.securesms.util.concurrent.ListenableFuture
+import org.thoughtcrime.securesms.util.concurrent.SimpleTask
 import org.thoughtcrime.securesms.util.visible
+import java.util.Locale
 
 class StoryTextPostView @JvmOverloads constructor(
   context: Context,
@@ -36,25 +40,26 @@ class StoryTextPostView @JvmOverloads constructor(
   }
 
   private var textAlignment: TextAlignment? = null
-  private val backgroundView: ImageView = findViewById(R.id.text_story_post_background)
-  private val textView: TextView = findViewById(R.id.text_story_post_text)
+  private val backgroundView: ShapeableImageView = findViewById(R.id.text_story_post_background)
+  private val textView: StoryTextView = findViewById(R.id.text_story_post_text)
   private val linkPreviewView: StoryLinkPreviewView = findViewById(R.id.text_story_post_link_preview)
 
   private var isPlaceholder: Boolean = true
 
   init {
-    backgroundView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-      textView.maxWidth = backgroundView.measuredWidth - DimensionUnit.DP.toPixels(40f).toInt()
+    TextStoryTextWatcher.install(textView)
 
-      textAlignment?.apply {
-        adjustTextTranslationX(this)
-      }
-    }
+    val displaySize = StoryDisplay.getStoryDisplay(
+      resources.displayMetrics.widthPixels.toFloat(),
+      resources.displayMetrics.heightPixels.toFloat()
+    )
 
-    textView.doAfterTextChanged {
-      textAlignment?.apply {
-        adjustTextTranslationX(this)
-      }
+    when (displaySize) {
+      StoryDisplay.SMALL ->
+        backgroundView.shapeAppearanceModel = backgroundView.shapeAppearanceModel
+          .toBuilder()
+          .setAllCornerSizes(0f)
+          .build()
     }
   }
 
@@ -102,13 +107,7 @@ class StoryTextPostView @JvmOverloads constructor(
   }
 
   fun setTextBackgroundColor(@ColorInt color: Int) {
-    if (color == Color.TRANSPARENT) {
-      textView.background = null
-    } else {
-      textView.background = AppCompatResources.getDrawable(context, R.drawable.rounded_rectangle_secondary_18)?.apply {
-        colorFilter = SimpleColorFilter(color)
-      }
-    }
+    textView.setWrappedBackgroundColor(color)
   }
 
   fun bindFromCreationState(state: TextStoryPostCreationState) {
@@ -116,22 +115,61 @@ class StoryTextPostView @JvmOverloads constructor(
 
     setPostBackground(state.backgroundColor.chatBubbleMask)
     setText(
-      if (state.body.isEmpty()) {
+      state.body.ifEmpty {
         context.getString(R.string.TextStoryPostCreationFragment__tap_to_add_text)
-      } else {
-        state.body
+      }.let {
+        if (state.textFont.isAllCaps) {
+          it.toString().toUpperCase(Locale.getDefault())
+        } else {
+          it
+        }
       },
       state.body.isEmpty()
     )
 
     setTextColor(state.textForegroundColor)
-    setTextSize(state.textSize)
     setTextBackgroundColor(state.textBackgroundColor)
     setTextGravity(state.textAlignment)
     setTextScale(state.textScale)
 
-    postAdjustTextTranslationX(state.textAlignment)
     postAdjustLinkPreviewTranslationY()
+  }
+
+  fun bindFromStoryTextPost(storyTextPost: StoryTextPost) {
+    linkPreviewView.visible = false
+
+    textAlignment = TextAlignment.CENTER
+
+    val font = TextFont.fromStyle(storyTextPost.style)
+    setPostBackground(ChatColors.forChatColor(ChatColors.Id.NotSet, storyTextPost.background).chatBubbleMask)
+
+    if (font.isAllCaps) {
+      setText(storyTextPost.body.toUpperCase(Locale.getDefault()), false)
+    } else {
+      setText(storyTextPost.body, false)
+    }
+
+    setTextColor(storyTextPost.textForegroundColor)
+    setTextBackgroundColor(storyTextPost.textBackgroundColor)
+    setTextGravity(TextAlignment.CENTER)
+
+    SimpleTask.run(
+      {
+        when (val fontResult = Fonts.resolveFont(context, Locale.getDefault(), font)) {
+          is Fonts.FontResult.Immediate -> fontResult.typeface
+          is Fonts.FontResult.Async -> fontResult.future.get()
+        }
+      },
+      { typeface -> setTypeface(typeface) }
+    )
+
+    hideCloseButton()
+
+    postAdjustLinkPreviewTranslationY()
+  }
+
+  fun bindLinkPreview(linkPreview: LinkPreview?): ListenableFuture<Boolean> {
+    return linkPreviewView.bind(linkPreview, View.GONE)
   }
 
   fun bindLinkPreviewState(linkPreviewState: LinkPreviewViewModel.LinkPreviewState, hiddenVisibility: Int) {
@@ -145,18 +183,16 @@ class StoryTextPostView @JvmOverloads constructor(
     }
   }
 
-  fun postAdjustTextTranslationX(textAlignment: TextAlignment) {
-    doOnNextLayout {
-      adjustTextTranslationX(textAlignment)
-    }
-  }
-
   fun setTextViewClickListener(onClickListener: OnClickListener) {
-    textView.setOnClickListener(onClickListener)
+    setOnClickListener(onClickListener)
   }
 
   fun setLinkPreviewCloseListener(onClickListener: OnClickListener) {
     linkPreviewView.setOnCloseClickListener(onClickListener)
+  }
+
+  fun setLinkPreviewClickListener(onClickListener: OnClickListener?) {
+    linkPreviewView.setOnClickListener(onClickListener)
   }
 
   fun showPostContent() {
@@ -197,36 +233,6 @@ class StoryTextPostView @JvmOverloads constructor(
       val desiredPoint = backgroundHeight / 2f
 
       textView.translationY = desiredPoint - originPoint
-    }
-  }
-
-  private fun alignTextLeft() {
-    textView.translationX = DimensionUnit.DP.toPixels(20f)
-  }
-
-  private fun alignTextRight() {
-    textView.translationX = backgroundView.measuredWidth - textView.measuredWidth - DimensionUnit.DP.toPixels(20f)
-  }
-
-  private fun adjustTextTranslationX(textAlignment: TextAlignment) {
-    when (textAlignment) {
-      TextAlignment.CENTER -> {
-        textView.translationX = backgroundView.measuredWidth / 2f - textView.measuredWidth / 2f
-      }
-      TextAlignment.START -> {
-        if (ViewUtil.isLtr(textView)) {
-          alignTextLeft()
-        } else {
-          alignTextRight()
-        }
-      }
-      TextAlignment.END -> {
-        if (ViewUtil.isRtl(textView)) {
-          alignTextLeft()
-        } else {
-          alignTextRight()
-        }
-      }
     }
   }
 }

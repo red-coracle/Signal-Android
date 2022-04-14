@@ -8,14 +8,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.signal.core.util.logging.Log;
 import org.signal.donations.StripeApi;
-import org.signal.zkgroup.InvalidInputException;
-import org.signal.zkgroup.VerificationFailedException;
-import org.signal.zkgroup.receipts.ClientZkReceiptOperations;
-import org.signal.zkgroup.receipts.ReceiptCredential;
-import org.signal.zkgroup.receipts.ReceiptCredentialPresentation;
-import org.signal.zkgroup.receipts.ReceiptCredentialRequestContext;
-import org.signal.zkgroup.receipts.ReceiptCredentialResponse;
-import org.signal.zkgroup.receipts.ReceiptSerial;
+import org.signal.libsignal.zkgroup.InvalidInputException;
+import org.signal.libsignal.zkgroup.VerificationFailedException;
+import org.signal.libsignal.zkgroup.receipts.ClientZkReceiptOperations;
+import org.signal.libsignal.zkgroup.receipts.ReceiptCredential;
+import org.signal.libsignal.zkgroup.receipts.ReceiptCredentialPresentation;
+import org.signal.libsignal.zkgroup.receipts.ReceiptCredentialRequestContext;
+import org.signal.libsignal.zkgroup.receipts.ReceiptCredentialResponse;
+import org.signal.libsignal.zkgroup.receipts.ReceiptSerial;
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationError;
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationErrorSource;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
@@ -139,7 +139,7 @@ public class BoostReceiptRequestResponseJob extends BaseJob {
                                                        receiptCredentialPresentation.serialize())
                                       .build());
     } else {
-      Log.w(TAG, "Encountered a retryable exception: " + response.getStatus(), response.getExecutionError().orNull(), true);
+      Log.w(TAG, "Encountered a retryable exception: " + response.getStatus(), response.getExecutionError().orElse(null), true);
       throw new RetryableException();
     }
   }
