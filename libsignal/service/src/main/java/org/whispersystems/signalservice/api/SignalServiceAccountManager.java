@@ -690,7 +690,7 @@ public class SignalServiceAccountManager {
     for (StorageId id : manifest.getStorageIds()) {
       ManifestRecord.Identifier idProto = ManifestRecord.Identifier.newBuilder()
                                                         .setRaw(ByteString.copyFrom(id.getRaw()))
-                                                        .setType(ManifestRecord.Identifier.Type.forNumber(id.getType())).build();
+                                                        .setTypeValue(id.getType()).build();
       manifestRecordBuilder.addIdentifiers(idProto);
     }
 
@@ -805,8 +805,8 @@ public class SignalServiceAccountManager {
     throw new IOException();
   }
 
-  public void reportSpam(String e164, String serverGuid) throws IOException {
-    this.pushServiceSocket.reportSpam(e164, serverGuid);
+  public void reportSpam(ServiceId serviceId, String serverGuid) throws IOException {
+    this.pushServiceSocket.reportSpam(serviceId, serverGuid);
   }
 
   /**
