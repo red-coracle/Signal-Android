@@ -47,7 +47,8 @@ object TestMms {
       emptyList(),
       emptyList(),
       emptySet(),
-      emptySet()
+      emptySet(),
+      null
     )
 
     return insert(
@@ -106,6 +107,7 @@ object TestMms {
     values.putNull(MmsDatabase.QUOTE_BODY)
     values.putNull(MmsDatabase.QUOTE_AUTHOR)
     values.putNull(MmsDatabase.QUOTE_ATTACHMENT)
+    values.put(MmsDatabase.QUOTE_TYPE, -1)
     values.putNull(MmsDatabase.QUOTE_ID)
     values.putNull(MmsDatabase.LINK_PREVIEWS)
     values.putNull(MmsDatabase.SHARED_CONTACTS)

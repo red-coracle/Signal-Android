@@ -91,8 +91,18 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
     refresh()
   }
 
-  fun setInternalAudioProcessingMethod(method: CallManager.AudioProcessingMethod) {
-    preferenceDataStore.putInt(InternalValues.AUDIO_PROCESSING_METHOD, method.ordinal)
+  fun setInternalCallingAudioProcessingMethod(method: CallManager.AudioProcessingMethod) {
+    preferenceDataStore.putInt(InternalValues.CALLING_AUDIO_PROCESSING_METHOD, method.ordinal)
+    refresh()
+  }
+
+  fun setInternalCallingBandwidthMode(bandwidthMode: CallManager.BandwidthMode) {
+    preferenceDataStore.putInt(InternalValues.CALLING_BANDWIDTH_MODE, bandwidthMode.ordinal)
+    refresh()
+  }
+
+  fun setInternalCallingDisableTelecom(enabled: Boolean) {
+    preferenceDataStore.putBoolean(InternalValues.CALLING_DISABLE_TELECOM, enabled)
     refresh()
   }
 
@@ -121,7 +131,9 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
     disableAutoMigrationNotification = SignalStore.internalValues().disableGv1AutoMigrateNotification(),
     allowCensorshipSetting = SignalStore.internalValues().allowChangingCensorshipSetting(),
     callingServer = SignalStore.internalValues().groupCallingServer(),
-    audioProcessingMethod = SignalStore.internalValues().audioProcessingMethod(),
+    callingAudioProcessingMethod = SignalStore.internalValues().callingAudioProcessingMethod(),
+    callingBandwidthMode = SignalStore.internalValues().callingBandwidthMode(),
+    callingDisableTelecom = SignalStore.internalValues().callingDisableTelecom(),
     useBuiltInEmojiSet = SignalStore.internalValues().forceBuiltInEmoji(),
     emojiVersion = null,
     removeSenderKeyMinimium = SignalStore.internalValues().removeSenderKeyMinimum(),
@@ -131,7 +143,7 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
   )
 
   class Factory(private val repository: InternalSettingsRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
       return requireNotNull(modelClass.cast(InternalSettingsViewModel(repository)))
     }
   }

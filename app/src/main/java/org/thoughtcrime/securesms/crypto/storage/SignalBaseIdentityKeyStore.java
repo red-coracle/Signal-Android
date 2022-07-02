@@ -29,6 +29,7 @@ import org.whispersystems.signalservice.api.push.ServiceId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -71,13 +72,17 @@ public class SignalBaseIdentityKeyStore {
       RecipientId         recipientId    = RecipientId.fromExternalPush(address.getName());
 
       if (identityRecord == null) {
-        Log.i(TAG, "Saving new identity...");
+        Log.i(TAG, "Saving new identity for " + address);
         cache.save(address.getName(), recipientId, identityKey, VerifiedStatus.DEFAULT, true, System.currentTimeMillis(), nonBlockingApproval);
         return SaveResult.NEW;
       }
 
-      if (!identityRecord.getIdentityKey().equals(identityKey)) {
-        Log.i(TAG, "Replacing existing identity... Existing: " + identityRecord.getIdentityKey().hashCode() + " New: " + identityKey.hashCode());
+      boolean identityKeyChanged = !identityRecord.getIdentityKey().equals(identityKey);
+      
+      if (identityKeyChanged && Recipient.self().getId().equals(recipientId) && Objects.equals(SignalStore.account().getAci(), ServiceId.parseOrNull(address.getName()))) {
+        Log.w(TAG, "Received different identity key for self, ignoring" + " | Existing: " + identityRecord.getIdentityKey().hashCode() + ", New: " + identityKey.hashCode());
+      } else if (identityKeyChanged) {
+        Log.i(TAG, "Replacing existing identity for " + address + " | Existing: " + identityRecord.getIdentityKey().hashCode() + ", New: " + identityKey.hashCode());
         VerifiedStatus verifiedStatus;
 
         if (identityRecord.getVerifiedStatus() == VerifiedStatus.VERIFIED ||
@@ -96,7 +101,7 @@ public class SignalBaseIdentityKeyStore {
       }
 
       if (isNonBlockingApprovalRequired(identityRecord)) {
-        Log.i(TAG, "Setting approval status...");
+        Log.i(TAG, "Setting approval status for " + address);
         cache.setApproval(address.getName(), recipientId, identityRecord, nonBlockingApproval);
         return SaveResult.NON_BLOCKING_APPROVAL_REQUIRED;
       }
@@ -116,7 +121,7 @@ public class SignalBaseIdentityKeyStore {
     if (recipient.hasServiceId()) {
       cache.save(recipient.requireServiceId().toString(), recipientId, identityKey, verifiedStatus, firstUse, timestamp, nonBlockingApproval);
     } else {
-      Log.w(TAG, "[saveIdentity] No serviceId for " + recipient.getId());
+      Log.w(TAG, "[saveIdentity] No serviceId for " + recipient.getId(), new Throwable());
     }
   }
 
@@ -157,7 +162,11 @@ public class SignalBaseIdentityKeyStore {
       IdentityStoreRecord record = cache.get(recipient.requireServiceId().toString());
       return Optional.ofNullable(record).map(r -> r.toIdentityRecord(recipient.getId()));
     } else {
-      Log.w(TAG, "[getIdentityRecord] No ServiceId for " + recipient.getId());
+      if (recipient.isRegistered()) {
+        Log.w(TAG, "[getIdentityRecord] No ServiceId for registered user " + recipient.getId(), new Throwable());
+      } else {
+        Log.d(TAG, "[getIdentityRecord] No ServiceId for unregistered user " + recipient.getId());
+      }
       return Optional.empty();
     }
   }
@@ -183,7 +192,11 @@ public class SignalBaseIdentityKeyStore {
           records.add(record.toIdentityRecord(recipient.getId()));
         }
       } else {
-        Log.w(TAG, "[getIdentityRecords] No serviceId for " + recipient.getId());
+        if (recipient.isRegistered()) {
+          Log.w(TAG, "[getIdentityRecords] No serviceId for registered user " + recipient.getId(), new Throwable());
+        } else {
+          Log.d(TAG, "[getIdentityRecords] No serviceId for unregistered user " + recipient.getId());
+        }
       }
     }
 
@@ -196,7 +209,7 @@ public class SignalBaseIdentityKeyStore {
     if (recipient.hasServiceId()) {
       cache.setApproval(recipient.requireServiceId().toString(), recipientId, nonBlockingApproval);
     } else {
-      Log.w(TAG, "[setApproval] No serviceId for " + recipient.getId());
+      Log.w(TAG, "[setApproval] No serviceId for " + recipient.getId(), new Throwable());
     }
   }
 
@@ -206,7 +219,7 @@ public class SignalBaseIdentityKeyStore {
     if (recipient.hasServiceId()) {
       cache.setVerified(recipient.requireServiceId().toString(), recipientId, identityKey, verifiedStatus);
     } else {
-      Log.w(TAG, "[setVerified] No serviceId for " + recipient.getId());
+      Log.w(TAG, "[setVerified] No serviceId for " + recipient.getId(), new Throwable());
     }
   }
 

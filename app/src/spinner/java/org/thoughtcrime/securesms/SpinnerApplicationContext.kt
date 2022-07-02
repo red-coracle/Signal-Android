@@ -2,6 +2,8 @@ package org.thoughtcrime.securesms
 
 import android.content.ContentValues
 import android.os.Build
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
 import leakcanary.LeakCanary
 import org.signal.spinner.Spinner
 import org.signal.spinner.Spinner.DatabaseConfig
@@ -17,36 +19,59 @@ import org.thoughtcrime.securesms.database.MegaphoneDatabase
 import org.thoughtcrime.securesms.database.MessageBitmaskColumnTransformer
 import org.thoughtcrime.securesms.database.QueryMonitor
 import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.database.TimestampTransformer
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.AppSignatureUtil
 import shark.AndroidReferenceMatchers
+import java.util.Locale
 
 class SpinnerApplicationContext : ApplicationContext() {
   override fun onCreate() {
     super.onCreate()
 
+    StrictMode.setThreadPolicy(
+      ThreadPolicy.Builder()
+        .detectDiskReads()
+        .detectDiskWrites()
+        .detectNetwork()
+        .penaltyLog()
+        .build()
+    )
+
+    try {
+      Class.forName("dalvik.system.CloseGuard")
+        .getMethod("setEnabled", Boolean::class.javaPrimitiveType)
+        .invoke(null, true)
+    } catch (e: ReflectiveOperationException) {
+      throw RuntimeException(e)
+    }
+
     Spinner.init(
       this,
       mapOf(
         "Device" to "${Build.MODEL} (Android ${Build.VERSION.RELEASE}, API ${Build.VERSION.SDK_INT})",
-        "Package" to "$packageName (${AppSignatureUtil.getAppSignature(this).orElse("Unknown")})",
+        "Package" to "$packageName (${AppSignatureUtil.getAppSignature(this)})",
         "App Version" to "${BuildConfig.VERSION_NAME} (${BuildConfig.CANONICAL_VERSION_CODE}, ${BuildConfig.GIT_HASH})",
         "Profile Name" to (if (SignalStore.account().isRegistered) Recipient.self().profileName.toString() else "none"),
         "E164" to (SignalStore.account().e164 ?: "none"),
         "ACI" to (SignalStore.account().aci?.toString() ?: "none"),
-        "PNI" to (SignalStore.account().pni?.toString() ?: "none")
+        "PNI" to (SignalStore.account().pni?.toString() ?: "none"),
+        Spinner.KEY_ENVIRONMENT to BuildConfig.FLAVOR_environment.toUpperCase(Locale.US)
       ),
       linkedMapOf(
         "signal" to DatabaseConfig(
           db = SignalDatabase.rawDatabase,
-          columnTransformers = listOf(MessageBitmaskColumnTransformer, GV2Transformer, GV2UpdateTransformer, IsStoryTransformer)
+          columnTransformers = listOf(MessageBitmaskColumnTransformer, GV2Transformer, GV2UpdateTransformer, IsStoryTransformer, TimestampTransformer)
         ),
         "jobmanager" to DatabaseConfig(db = JobDatabase.getInstance(this).sqlCipherDatabase),
         "keyvalue" to DatabaseConfig(db = KeyValueDatabase.getInstance(this).sqlCipherDatabase),
         "megaphones" to DatabaseConfig(db = MegaphoneDatabase.getInstance(this).sqlCipherDatabase),
         "localmetrics" to DatabaseConfig(db = LocalMetricsDatabase.getInstance(this).sqlCipherDatabase),
         "logs" to DatabaseConfig(db = LogDatabase.getInstance(this).sqlCipherDatabase),
+      ),
+      linkedMapOf(
+        StorageServicePlugin.PATH to StorageServicePlugin()
       )
     )
 

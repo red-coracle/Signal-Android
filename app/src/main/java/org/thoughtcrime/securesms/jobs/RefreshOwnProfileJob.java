@@ -114,6 +114,15 @@ public class RefreshOwnProfileJob extends BaseJob {
     ProfileAndCredential profileAndCredential = ProfileUtil.retrieveProfileSync(context, self, getRequestType(self), false);
     SignalServiceProfile profile              = profileAndCredential.getProfile();
 
+    if (Util.isEmpty(profile.getName()) &&
+        Util.isEmpty(profile.getAvatar()) &&
+        Util.isEmpty(profile.getAbout()) &&
+        Util.isEmpty(profile.getAboutEmoji()))
+    {
+      Log.w(TAG, "The profile we retrieved was empty! Ignoring it.");
+      return;
+    }
+
     setProfileName(profile.getName());
     setProfileAbout(profile.getAbout(), profile.getAboutEmoji());
     setProfileAvatar(profile.getAvatar());
@@ -155,8 +164,13 @@ public class RefreshOwnProfileJob extends BaseJob {
       String      plaintextName = ProfileUtil.decryptString(profileKey, encryptedName);
       ProfileName profileName   = ProfileName.fromSerialized(plaintextName);
 
-      Log.d(TAG, "Saving " + (!Util.isEmpty(plaintextName) ? "non-" : "") + "empty name.");
-      SignalDatabase.recipients().setProfileName(Recipient.self().getId(), profileName);
+      if (!profileName.isEmpty()) {
+        Log.d(TAG, "Saving non-empty name.");
+        SignalDatabase.recipients().setProfileName(Recipient.self().getId(), profileName);
+      } else {
+        Log.w(TAG, "Ignoring empty name.");
+      }
+
     } catch (InvalidCiphertextException | IOException e) {
       Log.w(TAG, e);
     }
@@ -220,7 +234,7 @@ public class RefreshOwnProfileJob extends BaseJob {
     }
   }
 
-  private void setProfileBadges(@Nullable List<SignalServiceProfile.Badge> badges) {
+  private void setProfileBadges(@Nullable List<SignalServiceProfile.Badge> badges) throws IOException {
     if (badges == null) {
       return;
     }
@@ -241,6 +255,8 @@ public class RefreshOwnProfileJob extends BaseJob {
     boolean localHasSubscriptionBadges  = localDonorBadgeIds.stream().anyMatch(RefreshOwnProfileJob::isSubscription);
     boolean remoteHasBoostBadges        = remoteDonorBadgeIds.stream().anyMatch(RefreshOwnProfileJob::isBoost);
     boolean localHasBoostBadges         = localDonorBadgeIds.stream().anyMatch(RefreshOwnProfileJob::isBoost);
+    boolean remoteHasGiftBadges         = remoteDonorBadgeIds.stream().anyMatch(RefreshOwnProfileJob::isGift);
+    boolean localHasGiftBadges          = localDonorBadgeIds.stream().anyMatch(RefreshOwnProfileJob::isGift);
 
     if (!remoteHasSubscriptionBadges && localHasSubscriptionBadges) {
       Badge mostRecentExpiration = Recipient.self()
@@ -270,6 +286,10 @@ public class RefreshOwnProfileJob extends BaseJob {
               Log.d(TAG, "Unexpected expiry due to payment failure.", true);
               isDueToPaymentFailure = true;
             }
+
+            if (activeSubscription.getChargeFailure() != null) {
+              Log.d(TAG, "Active payment contains a charge failure: " + activeSubscription.getChargeFailure().getCode(), true);
+            }
           }
         }
 
@@ -291,6 +311,32 @@ public class RefreshOwnProfileJob extends BaseJob {
 
       Log.d(TAG, "Marking boost badge as expired, should notify next time the conversation list is open.", true);
       SignalStore.donationsValues().setExpiredBadge(mostRecentExpiration);
+    } else {
+      Badge badge = SignalStore.donationsValues().getExpiredBadge();
+
+      if (badge != null && badge.isSubscription() && remoteHasSubscriptionBadges) {
+        Log.d(TAG, "Remote has subscription badges. Clearing local expired subscription badge.", true);
+        SignalStore.donationsValues().setExpiredBadge(null);
+      } else if (badge != null && badge.isBoost() && remoteHasBoostBadges) {
+        Log.d(TAG, "Remote has boost badges. Clearing local expired boost badge.", true);
+        SignalStore.donationsValues().setExpiredBadge(null);
+      }
+    }
+
+    if (!remoteHasGiftBadges && localHasGiftBadges) {
+      Badge mostRecentExpiration = Recipient.self()
+                                            .getBadges()
+                                            .stream()
+                                            .filter(badge -> badge.getCategory() == Badge.Category.Donor)
+                                            .filter(badge -> isGift(badge.getId()))
+                                            .max(Comparator.comparingLong(Badge::getExpirationTimestamp))
+                                            .get();
+
+      Log.d(TAG, "Marking gift badge as expired, should notify next time the manage donations screen is open.", true);
+      SignalStore.donationsValues().setExpiredGiftBadge(mostRecentExpiration);
+    } else if (remoteHasGiftBadges) {
+      Log.d(TAG, "We have remote gift badges. Clearing local expired gift badge.", true);
+      SignalStore.donationsValues().setExpiredGiftBadge(null);
     }
 
     boolean userHasVisibleBadges   = badges.stream().anyMatch(SignalServiceProfile.Badge::isVisible);
@@ -305,18 +351,23 @@ public class RefreshOwnProfileJob extends BaseJob {
                  " visible.", true);
 
       BadgeRepository badgeRepository = new BadgeRepository(context);
-      badgeRepository.setVisibilityForAllBadges(displayBadgesOnProfile, appBadges).blockingSubscribe();
+      List<Badge> updatedBadges = badgeRepository.setVisibilityForAllBadgesSync(displayBadgesOnProfile, appBadges);
+      SignalDatabase.recipients().setBadges(Recipient.self().getId(), updatedBadges);
     } else {
       SignalDatabase.recipients().setBadges(Recipient.self().getId(), appBadges);
     }
   }
 
   private static boolean isSubscription(String badgeId) {
-    return !Objects.equals(badgeId, Badge.BOOST_BADGE_ID);
+    return !isBoost(badgeId) && !isGift(badgeId);
   }
 
   private static boolean isBoost(String badgeId) {
     return Objects.equals(badgeId, Badge.BOOST_BADGE_ID);
+  }
+
+  private static boolean isGift(String badgeId) {
+    return Objects.equals(badgeId, Badge.GIFT_BADGE_ID);
   }
 
   public static final class Factory implements Job.Factory<RefreshOwnProfileJob> {

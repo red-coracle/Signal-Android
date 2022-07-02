@@ -230,7 +230,7 @@ public class PushServiceSocket {
   private static final String STICKER_MANIFEST_PATH          = "stickers/%s/manifest.proto";
   private static final String STICKER_PATH                   = "stickers/%s/full/%d";
 
-  private static final String GROUPSV2_CREDENTIAL       = "/v1/certificate/group/%d/%d";
+  private static final String GROUPSV2_CREDENTIAL       = "/v1/certificate/group/%d/%d?identity=%s";
   private static final String GROUPSV2_GROUP            = "/v1/groups/";
   private static final String GROUPSV2_GROUP_PASSWORD   = "/v1/groups/?inviteLinkPassword=%s";
   private static final String GROUPSV2_GROUP_CHANGES    = "/v1/groups/logs/%s?maxSupportedChangeEpoch=%d&includeFirstState=%s&includeLastState=false";
@@ -253,11 +253,12 @@ public class PushServiceSocket {
   private static final String DEFAULT_SUBSCRIPTION_PAYMENT_METHOD = "/v1/subscription/%s/default_payment_method/%s";
   private static final String SUBSCRIPTION_RECEIPT_CREDENTIALS    = "/v1/subscription/%s/receipt_credentials";
   private static final String BOOST_AMOUNTS                       = "/v1/subscription/boost/amounts";
+  private static final String GIFT_AMOUNT                         = "/v1/subscription/boost/amounts/gift";
   private static final String CREATE_BOOST_PAYMENT_INTENT         = "/v1/subscription/boost/create";
   private static final String BOOST_RECEIPT_CREDENTIALS           = "/v1/subscription/boost/receipt_credentials";
   private static final String BOOST_BADGES                        = "/v1/subscription/boost/badges";
 
-  private static final String CDSH_AUTH = "/v2/directory/auth";
+  private static final String CDSI_AUTH = "/v2/directory/auth";
 
   private static final String REPORT_SPAM = "/v1/messages/report/%s/%s";
 
@@ -341,9 +342,9 @@ public class PushServiceSocket {
     }
   }
 
-  public CdshAuthResponse getCdshAuth() throws IOException {
-    String body = makeServiceRequest(CDSH_AUTH, "GET", null);
-    return JsonUtil.fromJsonResponse(body, CdshAuthResponse.class);
+  public CdsiAuthResponse getCdsiAuth() throws IOException {
+    String body = makeServiceRequest(CDSI_AUTH, "GET", null);
+    return JsonUtil.fromJsonResponse(body, CdsiAuthResponse.class);
   }
 
   public VerifyAccountResponse verifyAccountCode(String verificationCode, String signalingKey, int registrationId, boolean fetchesMessages,
@@ -896,8 +897,8 @@ public class PushServiceSocket {
     makeServiceRequest(DONATION_REDEEM_RECEIPT, "POST", payload);
   }
 
-  public SubscriptionClientSecret createBoostPaymentMethod(String currencyCode, long amount, String description) throws IOException {
-    String payload = JsonUtil.toJson(new DonationIntentPayload(amount, currencyCode, description));
+  public SubscriptionClientSecret createBoostPaymentMethod(String currencyCode, long amount, long level) throws IOException {
+    String payload = JsonUtil.toJson(new DonationIntentPayload(amount, currencyCode, level));
     String result  = makeServiceRequestWithoutAuthentication(CREATE_BOOST_PAYMENT_INTENT, "POST", payload);
     return JsonUtil.fromJsonResponse(result, SubscriptionClientSecret.class);
   }
@@ -905,6 +906,12 @@ public class PushServiceSocket {
   public Map<String, List<BigDecimal>> getBoostAmounts() throws IOException {
     String result = makeServiceRequestWithoutAuthentication(BOOST_AMOUNTS, "GET", null);
     TypeReference<HashMap<String, List<BigDecimal>>> typeRef = new TypeReference<HashMap<String, List<BigDecimal>>>() {};
+    return JsonUtil.fromJsonResponse(result, typeRef);
+  }
+
+  public Map<String, BigDecimal> getGiftAmount() throws IOException {
+    String result = makeServiceRequestWithoutAuthentication(GIFT_AMOUNT, "GET", null);
+    TypeReference<HashMap<String, BigDecimal>> typeRef = new TypeReference<HashMap<String, BigDecimal>>() {};
     return JsonUtil.fromJsonResponse(result, typeRef);
   }
 
@@ -2310,11 +2317,11 @@ public class PushServiceSocket {
 
   public enum ClientSet { ContactDiscovery, KeyBackup }
 
-  public CredentialResponse retrieveGroupsV2Credentials(int today)
+  public CredentialResponse retrieveGroupsV2Credentials(int today, boolean isAci)
       throws IOException
   {
     int    todayPlus7 = today + 7;
-    String response   = makeServiceRequest(String.format(Locale.US, GROUPSV2_CREDENTIAL, today, todayPlus7),
+    String response   = makeServiceRequest(String.format(Locale.US, GROUPSV2_CREDENTIAL, today, todayPlus7, isAci ? "aci" : "pni"),
                                            "GET",
                                            null,
                                            NO_HEADERS,

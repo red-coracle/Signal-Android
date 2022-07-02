@@ -78,12 +78,14 @@ public class SubmitDebugLogRepository {
     }
     add(new LogSectionNotifications());
     add(new LogSectionNotificationProfiles());
+    add(new LogSectionExoPlayerPool());
     add(new LogSectionKeyPreferences());
+    add(new LogSectionSMS());
     add(new LogSectionBadges());
     add(new LogSectionPermissions());
     add(new LogSectionTrace());
     add(new LogSectionThreads());
-    add(new LogSectionBlockedThreads());
+    add(new LogSectionThreadDump());
     if (FeatureFlags.internalUser()) {
       add(new LogSectionSenderKey());
     }

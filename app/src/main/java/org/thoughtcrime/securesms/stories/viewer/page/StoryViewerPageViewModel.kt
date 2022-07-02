@@ -10,6 +10,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import io.reactivex.rxjava3.subjects.PublishSubject
 import io.reactivex.rxjava3.subjects.Subject
+import org.thoughtcrime.securesms.database.AttachmentDatabase
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.util.livedata.Store
 import org.thoughtcrime.securesms.util.rx.RxStore
@@ -23,6 +24,7 @@ import kotlin.math.min
 class StoryViewerPageViewModel(
   private val recipientId: RecipientId,
   private val initialStoryId: Long,
+  private val isUnviewedOnly: Boolean,
   private val repository: StoryViewerPageRepository
 ) : ViewModel() {
 
@@ -46,10 +48,12 @@ class StoryViewerPageViewModel(
 
   fun refresh() {
     disposables.clear()
-    disposables += repository.getStoryPostsFor(recipientId).subscribe { posts ->
+    disposables += repository.getStoryPostsFor(recipientId, isUnviewedOnly).subscribe { posts ->
       store.update { state ->
+        var isDisplayingInitialState = false
         val startIndex = if (state.posts.isEmpty() && initialStoryId > 0) {
           val initialIndex = posts.indexOfFirst { it.id == initialStoryId }
+          isDisplayingInitialState = initialIndex > -1
           initialIndex.takeIf { it > -1 } ?: state.selectedPostIndex
         } else if (state.posts.isEmpty()) {
           val initialPost = getNextUnreadPost(posts)
@@ -60,9 +64,11 @@ class StoryViewerPageViewModel(
         }
 
         state.copy(
+          isReady = true,
           posts = posts,
           replyState = resolveSwipeToReplyState(state, startIndex),
-          selectedPostIndex = startIndex
+          selectedPostIndex = startIndex,
+          isDisplayingInitialState = isDisplayingInitialState
         )
       }
     }
@@ -76,11 +82,15 @@ class StoryViewerPageViewModel(
     return repository.hideStory(recipientId)
   }
 
+  fun markViewed(storyPost: StoryPost) {
+    repository.markViewed(storyPost)
+  }
+
   fun setSelectedPostIndex(index: Int) {
     val selectedPost = getPostAt(index)
 
-    if (selectedPost != null) {
-      repository.markViewed(selectedPost)
+    if (selectedPost != null && selectedPost.content.transferState != AttachmentDatabase.TRANSFER_PROGRESS_DONE) {
+      disposables += repository.forceDownload(selectedPost).subscribe()
     }
 
     store.update {
@@ -111,7 +121,9 @@ class StoryViewerPageViewModel(
     }
 
     val postIndex = store.state.selectedPostIndex
-    setSelectedPostIndex(max(-1, postIndex - 1))
+    val minIndex = if (store.state.isFirstPage) 0 else -1
+
+    setSelectedPostIndex(max(minIndex, postIndex - 1))
   }
 
   fun getRestartIndex(): Int {
@@ -131,7 +143,7 @@ class StoryViewerPageViewModel(
   }
 
   fun forceDownloadSelectedPost() {
-    repository.forceDownload(getPost())
+    disposables += repository.forceDownload(getPost()).subscribe()
   }
 
   fun startDirectReply(storyId: Long, recipientId: RecipientId) {
@@ -148,6 +160,10 @@ class StoryViewerPageViewModel(
 
   fun setIsDisplayingSlate(isDisplayingSlate: Boolean) {
     storyViewerPlaybackStore.update { it.copy(isDisplayingSlate = isDisplayingSlate) }
+  }
+
+  fun setIsFirstPage(isFirstPage: Boolean) {
+    store.update { it.copy(isFirstPage = isFirstPage) }
   }
 
   fun setIsSelectedPage(isSelectedPage: Boolean) {
@@ -198,6 +214,10 @@ class StoryViewerPageViewModel(
     storyViewerPlaybackStore.update { it.copy(isRunningSharedElementAnimation = isRunningSharedElementAnimation) }
   }
 
+  fun setIsDisplayingFirstTimeNavigation(isDisplayingFirstTimeNavigation: Boolean) {
+    storyViewerPlaybackStore.update { it.copy(isDisplayingFirstTimeNavigation = isDisplayingFirstTimeNavigation) }
+  }
+
   private fun resolveSwipeToReplyState(state: StoryViewerPageState, index: Int): StoryViewerPageState.ReplyState {
     if (index !in state.posts.indices) {
       return StoryViewerPageState.ReplyState.NONE
@@ -222,9 +242,14 @@ class StoryViewerPageViewModel(
     return store.state.posts.getOrNull(index)
   }
 
-  class Factory(private val recipientId: RecipientId, private val initialStoryId: Long, private val repository: StoryViewerPageRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-      return modelClass.cast(StoryViewerPageViewModel(recipientId, initialStoryId, repository)) as T
+  class Factory(
+    private val recipientId: RecipientId,
+    private val initialStoryId: Long,
+    private val isUnviewedOnly: Boolean,
+    private val repository: StoryViewerPageRepository
+  ) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      return modelClass.cast(StoryViewerPageViewModel(recipientId, initialStoryId, isUnviewedOnly, repository)) as T
     }
   }
 }

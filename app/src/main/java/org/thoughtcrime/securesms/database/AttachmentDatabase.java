@@ -80,6 +80,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -278,7 +279,7 @@ public class AttachmentDatabase extends Database {
     }
 
     SQLiteDatabase database = databaseHelper.getSignalReadableDatabase();
-    SqlUtil.Query  query    = SqlUtil.buildCollectionQuery(MMS_ID, mmsIds);
+    SqlUtil.Query  query    = SqlUtil.buildSingleCollectionQuery(MMS_ID, mmsIds);
 
     Map<Long, List<DatabaseAttachment>> output = new HashMap<>();
 
@@ -1534,6 +1535,19 @@ public class AttachmentDatabase extends Database {
         Log.w(TAG, "Failed to parse TransformProperties!", e);
         return empty();
       }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      final TransformProperties that = (TransformProperties) o;
+      return skipTransform == that.skipTransform && videoTrim == that.videoTrim && videoTrimStartTimeUs == that.videoTrimStartTimeUs && videoTrimEndTimeUs == that.videoTrimEndTimeUs && sentMediaQuality == that.sentMediaQuality;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(skipTransform, videoTrim, videoTrimStartTimeUs, videoTrimEndTimeUs, sentMediaQuality);
     }
   }
 }

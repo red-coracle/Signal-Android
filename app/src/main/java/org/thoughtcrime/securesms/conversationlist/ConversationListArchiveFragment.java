@@ -70,9 +70,9 @@ public class ConversationListArchiveFragment extends ConversationListFragment im
 
     coordinator = view.findViewById(R.id.coordinator);
     list        = view.findViewById(R.id.list);
+    emptyState  = new Stub<>(view.findViewById(R.id.empty_state));
     fab         = view.findViewById(R.id.fab);
     cameraFab   = view.findViewById(R.id.camera_fab);
-    emptyState  = new Stub<>(view.findViewById(R.id.empty_state));
 
     toolbar.get().setNavigationOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
     toolbar.get().setTitle(R.string.AndroidManifest_archived_conversations);

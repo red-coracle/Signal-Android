@@ -142,6 +142,9 @@ public class SignalServiceProfile {
     @JsonProperty
     private boolean visible;
 
+    @JsonProperty
+    private long duration;
+
     public String getId() {
       return id;
     }
@@ -169,6 +172,13 @@ public class SignalServiceProfile {
     public boolean isVisible() {
       return visible;
     }
+
+    /**
+     * @return Duration badge is valid for, in seconds.
+     */
+    public long getDuration() {
+      return duration;
+    }
   }
 
   public static class Capabilities {
@@ -190,8 +200,21 @@ public class SignalServiceProfile {
     @JsonProperty
     private boolean stories;
 
+    @JsonProperty
+    private boolean giftBadges;
+
     @JsonCreator
     public Capabilities() {}
+
+    public Capabilities(boolean storage, boolean gv1Migration, boolean senderKey, boolean announcementGroup, boolean changeNumber, boolean stories, boolean giftBadges) {
+      this.storage           = storage;
+      this.gv1Migration      = gv1Migration;
+      this.senderKey         = senderKey;
+      this.announcementGroup = announcementGroup;
+      this.changeNumber      = changeNumber;
+      this.stories           = stories;
+      this.giftBadges        = giftBadges;
+    }
 
     public boolean isStorage() {
       return storage;
@@ -215,6 +238,10 @@ public class SignalServiceProfile {
 
     public boolean isStories() {
       return stories;
+    }
+
+    public boolean isGiftBadges() {
+      return giftBadges;
     }
   }
 

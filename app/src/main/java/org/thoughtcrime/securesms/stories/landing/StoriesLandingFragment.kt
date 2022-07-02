@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.stories.landing
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.transition.TransitionInflater
@@ -13,11 +12,17 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.app.SharedElementCallback
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
 import org.thoughtcrime.securesms.components.settings.DSLSettingsAdapter
@@ -27,26 +32,38 @@ import org.thoughtcrime.securesms.components.settings.configure
 import org.thoughtcrime.securesms.conversation.ConversationIntents
 import org.thoughtcrime.securesms.conversation.mutiselect.forward.MultiselectForwardFragment
 import org.thoughtcrime.securesms.conversation.mutiselect.forward.MultiselectForwardFragmentArgs
+import org.thoughtcrime.securesms.conversation.ui.error.SafetyNumberChangeDialog
 import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord
+import org.thoughtcrime.securesms.database.model.StoryViewState
+import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder
 import org.thoughtcrime.securesms.mediasend.v2.MediaSelectionActivity
 import org.thoughtcrime.securesms.permissions.Permissions
 import org.thoughtcrime.securesms.stories.StoryTextPostModel
+import org.thoughtcrime.securesms.stories.StoryViewerArgs
 import org.thoughtcrime.securesms.stories.dialogs.StoryContextMenu
+import org.thoughtcrime.securesms.stories.dialogs.StoryDialogs
 import org.thoughtcrime.securesms.stories.my.MyStoriesActivity
 import org.thoughtcrime.securesms.stories.settings.StorySettingsActivity
+import org.thoughtcrime.securesms.stories.tabs.ConversationListTab
 import org.thoughtcrime.securesms.stories.tabs.ConversationListTabsViewModel
 import org.thoughtcrime.securesms.stories.viewer.StoryViewerActivity
 import org.thoughtcrime.securesms.util.LifecycleDisposable
+import org.thoughtcrime.securesms.util.fragments.requireListener
 import org.thoughtcrime.securesms.util.visible
+import java.util.concurrent.TimeUnit
 
 /**
  * The "landing page" for Stories.
  */
 class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_landing_fragment) {
 
+  companion object {
+    private const val LIST_SMOOTH_SCROLL_TO_TOP_THRESHOLD = 25
+  }
+
   private lateinit var emptyNotice: View
-  private lateinit var cameraFab: View
+  private lateinit var cameraFab: FloatingActionButton
 
   private val lifecycleDisposable = LifecycleDisposable()
 
@@ -72,7 +89,7 @@ class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_l
 
   override fun onResume() {
     super.onResume()
-    adapter.notifyItemRangeChanged(0, adapter.itemCount)
+    viewModel.isTransitioningToAnotherScreen = false
   }
 
   override fun bindAdapter(adapter: DSLSettingsAdapter) {
@@ -82,11 +99,25 @@ class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_l
     MyStoriesItem.register(adapter)
     ExpandHeader.register(adapter)
 
+    requireListener<Material3OnScrollHelperBinder>().bindScrollHelper(recyclerView!!)
+
     lifecycleDisposable.bindTo(viewLifecycleOwner)
     emptyNotice = requireView().findViewById(R.id.empty_notice)
     cameraFab = requireView().findViewById(R.id.camera_fab)
 
-    sharedElementEnterTransition = TransitionInflater.from(requireContext()).inflateTransition(R.transition.change_transform)
+    sharedElementEnterTransition = TransitionInflater.from(requireContext()).inflateTransition(R.transition.change_transform_fabs)
+    setEnterSharedElementCallback(object : SharedElementCallback() {
+      override fun onSharedElementStart(sharedElementNames: MutableList<String>?, sharedElements: MutableList<View>?, sharedElementSnapshots: MutableList<View>?) {
+        if (sharedElementNames?.contains("camera_fab") == true) {
+          cameraFab.setImageResource(R.drawable.ic_compose_outline_24)
+          lifecycleDisposable += Single.timer(200, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+              cameraFab.setImageResource(R.drawable.ic_camera_outline_24)
+            }
+        }
+      }
+    })
 
     cameraFab.setOnClickListener {
       Permissions.with(this)
@@ -94,14 +125,18 @@ class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_l
         .ifNecessary()
         .withRationaleDialog(getString(R.string.ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera), R.drawable.ic_camera_24)
         .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video))
-        .onAllGranted { startActivity(MediaSelectionActivity.camera(requireContext(), isStory = true)) }
+        .onAllGranted {
+          startActivityIfAble(MediaSelectionActivity.camera(requireContext(), isStory = true))
+        }
         .onAnyDenied { Toast.makeText(requireContext(), R.string.ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video, Toast.LENGTH_LONG).show() }
         .execute()
     }
 
     viewModel.state.observe(viewLifecycleOwner) {
-      adapter.submitList(getConfiguration(it).toMappingModelList())
-      emptyNotice.visible = it.hasNoStories
+      if (it.loadingState == StoriesLandingState.LoadingState.LOADED) {
+        adapter.submitList(getConfiguration(it).toMappingModelList())
+        emptyNotice.visible = it.hasNoStories
+      }
     }
 
     requireActivity().onBackPressedDispatcher.addCallback(
@@ -112,6 +147,17 @@ class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_l
         }
       }
     )
+
+    lifecycleDisposable += tabsViewModel.tabClickEvents
+      .filter { it == ConversationListTab.STORIES }
+      .subscribeBy(onNext = {
+        val layoutManager = recyclerView?.layoutManager as? LinearLayoutManager ?: return@subscribeBy
+        if (layoutManager.findFirstVisibleItemPosition() <= LIST_SMOOTH_SCROLL_TO_TOP_THRESHOLD) {
+          recyclerView?.smoothScrollToPosition(0)
+        } else {
+          recyclerView?.scrollToPosition(0)
+        }
+      })
   }
 
   private fun getConfiguration(state: StoriesLandingState): DSLConfiguration {
@@ -126,7 +172,7 @@ class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_l
         customPref(
           MyStoriesItem.Model(
             onClick = {
-              startActivity(Intent(requireContext(), MyStoriesActivity::class.java))
+              startActivityIfAble(Intent(requireContext(), MyStoriesActivity::class.java))
             },
             onClickThumbnail = {
               cameraFab.performClick()
@@ -162,21 +208,42 @@ class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_l
       data = data,
       onRowClick = { model, preview ->
         if (model.data.storyRecipient.isMyStory) {
-          startActivity(Intent(requireContext(), MyStoriesActivity::class.java))
+          startActivityIfAble(Intent(requireContext(), MyStoriesActivity::class.java))
         } else if (model.data.primaryStory.messageRecord.isOutgoing && model.data.primaryStory.messageRecord.isFailed) {
-          lifecycleDisposable += viewModel.resend(model.data.primaryStory.messageRecord).subscribe()
-          Toast.makeText(requireContext(), R.string.message_recipients_list_item__resend, Toast.LENGTH_SHORT).show()
+          if (model.data.primaryStory.messageRecord.isIdentityMismatchFailure) {
+            SafetyNumberChangeDialog.show(requireContext(), childFragmentManager, model.data.primaryStory.messageRecord)
+          } else {
+            StoryDialogs.resendStory(requireContext()) {
+              lifecycleDisposable += viewModel.resend(model.data.primaryStory.messageRecord).subscribe()
+            }
+          }
         } else {
           val options = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), preview, ViewCompat.getTransitionName(preview) ?: "")
 
           val record = model.data.primaryStory.messageRecord as MmsMessageRecord
+          val blur = record.slideDeck.thumbnailSlide?.placeholderBlur
           val (text: StoryTextPostModel?, image: Uri?) = if (record.storyType.isTextStory) {
             StoryTextPostModel.parseFrom(record) to null
           } else {
             null to record.slideDeck.thumbnailSlide?.uri
           }
 
-          startActivity(StoryViewerActivity.createIntent(requireContext(), model.data.storyRecipient.id, -1L, model.data.isHidden, text, image), options.toBundle())
+          startActivityIfAble(
+            StoryViewerActivity.createIntent(
+              context = requireContext(),
+              storyViewerArgs = StoryViewerArgs(
+                recipientId = model.data.storyRecipient.id,
+                storyId = -1L,
+                isInHiddenStoryMode = model.data.isHidden,
+                storyThumbTextModel = text,
+                storyThumbUri = image,
+                storyThumbBlur = blur,
+                recipientIds = viewModel.getRecipientIds(model.data.isHidden, model.data.storyViewState == StoryViewState.UNVIEWED),
+                isUnviewedOnly = model.data.storyViewState == StoryViewState.UNVIEWED
+              )
+            ),
+            options.toBundle()
+          )
         }
       },
       onForwardStory = {
@@ -185,7 +252,7 @@ class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_l
         }
       },
       onGoToChat = {
-        startActivity(ConversationIntents.createBuilder(requireContext(), it.data.storyRecipient.id, -1L).build())
+        startActivityIfAble(ConversationIntents.createBuilder(requireContext(), it.data.storyRecipient.id, -1L).build())
       },
       onHideStory = {
         if (!it.data.isHidden) {
@@ -211,13 +278,12 @@ class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_l
   }
 
   private fun handleHideStory(model: StoriesLandingItem.Model) {
-    MaterialAlertDialogBuilder(requireContext(), R.style.Signal_ThemeOverlay_Dialog_Rounded)
+    MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Signal_MaterialAlertDialog)
       .setTitle(R.string.StoriesLandingFragment__hide_story)
       .setMessage(getString(R.string.StoriesLandingFragment__new_story_updates, model.data.storyRecipient.getShortDisplayName(requireContext())))
       .setPositiveButton(R.string.StoriesLandingFragment__hide) { _, _ ->
         viewModel.setHideStory(model.data.storyRecipient, true).subscribe {
           Snackbar.make(cameraFab, R.string.StoriesLandingFragment__story_hidden, Snackbar.LENGTH_SHORT)
-            .setTextColor(Color.WHITE)
             .setAnchorView(cameraFab)
             .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE)
             .show()
@@ -229,7 +295,7 @@ class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_l
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     return if (item.itemId == R.id.action_settings) {
-      startActivity(StorySettingsActivity.getIntent(requireContext()))
+      startActivityIfAble(StorySettingsActivity.getIntent(requireContext()))
       true
     } else {
       false
@@ -238,5 +304,14 @@ class StoriesLandingFragment : DSLSettingsFragment(layoutId = R.layout.stories_l
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     Permissions.onRequestPermissionsResult(this, requestCode, permissions, grantResults)
+  }
+
+  private fun startActivityIfAble(intent: Intent, options: Bundle? = null) {
+    if (viewModel.isTransitioningToAnotherScreen) {
+      return
+    }
+
+    viewModel.isTransitioningToAnotherScreen = true
+    startActivity(intent, options)
   }
 }

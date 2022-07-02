@@ -24,6 +24,7 @@ import org.thoughtcrime.securesms.util.CachedInflater;
 import org.thoughtcrime.securesms.util.CommunicationActions;
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
+import org.thoughtcrime.securesms.util.SplashScreenUtil;
 import org.thoughtcrime.securesms.util.WindowUtil;
 
 public class MainActivity extends PassphraseRequiredActivity implements VoiceNoteMediaControllerOwner {
@@ -101,6 +102,12 @@ public class MainActivity extends PassphraseRequiredActivity implements VoiceNot
   }
 
   @Override
+  protected void onStop() {
+    super.onStop();
+    SplashScreenUtil.setSplashScreenThemeIfNecessary(this, SignalStore.settings().getTheme());
+  }
+
+  @Override
   public void onBackPressed() {
     if (!navigator.onBackPressed()) {
       super.onBackPressed();
@@ -118,10 +125,10 @@ public class MainActivity extends PassphraseRequiredActivity implements VoiceNot
   private void updateTabVisibility() {
     if (Stories.isFeatureEnabled()) {
       findViewById(R.id.conversation_list_tabs).setVisibility(View.VISIBLE);
-      WindowUtil.setNavigationBarColor(getWindow(), ContextCompat.getColor(this, R.color.signal_colorSecondaryContainer));
+      WindowUtil.setNavigationBarColor(this, ContextCompat.getColor(this, R.color.signal_colorSurface2));
     } else {
       findViewById(R.id.conversation_list_tabs).setVisibility(View.GONE);
-      WindowUtil.setNavigationBarColor(getWindow(), ContextCompat.getColor(this, R.color.signal_background_primary));
+      WindowUtil.setNavigationBarColor(this, ContextCompat.getColor(this, R.color.signal_colorBackground));
       conversationListTabsViewModel.onChatsSelected();
     }
   }

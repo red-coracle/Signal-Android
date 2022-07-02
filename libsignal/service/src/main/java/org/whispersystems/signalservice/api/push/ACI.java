@@ -16,6 +16,14 @@ public final class ACI extends ServiceId {
     return new ACI(uuid);
   }
 
+  public static ACI from(ServiceId serviceId) {
+    return new ACI(serviceId.uuid());
+  }
+
+  public static ACI fromNullable(ServiceId serviceId) {
+    return serviceId != null ? new ACI(serviceId.uuid()) : null;
+  }
+
   public static ACI parseOrThrow(String raw) {
     return from(UUID.fromString(raw));
   }
@@ -35,24 +43,5 @@ public final class ACI extends ServiceId {
 
   public byte[] toByteArray() {
     return UuidUtil.toByteArray(uuid);
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other instanceof ServiceId) {
-      return uuid.equals(((ServiceId) other).uuid);
-    } else {
-      return false;
-    }
-  }
-
-  @Override
-  public int hashCode() {
-    return uuid.hashCode();
-  }
-
-  @Override
-  public String toString() {
-    return uuid.toString();
   }
 }

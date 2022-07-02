@@ -63,7 +63,6 @@ public class CallSetupActionProcessorDelegate extends WebRtcActionProcessor {
 
     try {
       CallManager callManager = webRtcInteractor.getCallManager();
-      callManager.setCommunicationMode();
       callManager.setAudioEnable(currentState.getLocalDeviceState().isMicrophoneEnabled());
       callManager.setVideoEnable(currentState.getLocalDeviceState().getCameraState().isEnabled());
     } catch (CallException e) {
@@ -97,6 +96,16 @@ public class CallSetupActionProcessorDelegate extends WebRtcActionProcessor {
                                .changeLocalDeviceState()
                                .cameraState(camera.getCameraState())
                                .build();
+
+    //noinspection SimplifiableBooleanExpression
+    if ((enable && camera.isInitialized()) || !enable) {
+      try {
+        CallManager callManager = webRtcInteractor.getCallManager();
+        callManager.setVideoEnable(enable);
+      } catch (CallException e) {
+        Log.w(tag, "Unable change video enabled state to " + enable, e);
+      }
+    }
 
     WebRtcUtil.enableSpeakerPhoneIfNeeded(webRtcInteractor, currentState);
 

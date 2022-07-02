@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewKt;
 import androidx.core.widget.TextViewCompat;
 
+import org.signal.core.util.StringUtil;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.emoji.parsing.EmojiParser;
 import org.thoughtcrime.securesms.components.mention.MentionAnnotation;
@@ -34,6 +35,7 @@ import org.thoughtcrime.securesms.emoji.JumboEmoji;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.util.Util;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -150,10 +152,10 @@ public class EmojiTextView extends AppCompatTextView {
     // Android fails to ellipsize spannable strings. (https://issuetracker.google.com/issues/36991688)
     // We ellipsize them ourselves by manually truncating the appropriate section.
     if (getText() != null && getText().length() > 0 && isEllipsizedAtEnd()) {
-      if (maxLength > 0) {
-        ellipsizeAnyTextForMaxLength();
-      } else if (getMaxLines() > 0) {
+      if (getMaxLines() > 0) {
         ellipsizeEmojiTextForMaxLines();
+      } else if (maxLength > 0) {
+        ellipsizeAnyTextForMaxLength();
       }
     }
 
@@ -212,7 +214,7 @@ public class EmojiTextView extends AppCompatTextView {
         int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
 
-        float measuredTextWidth = hasMetricAffectingSpan(text) ? Layout.getDesiredWidth(text, getPaint()) : getPaint().measureText(text, 0, text.length());
+        float measuredTextWidth = hasMetricAffectingSpan(text) ? Layout.getDesiredWidth(text, getPaint()) : getLongestLineWidth(text);
         int   desiredWidth      = (int) measuredTextWidth + getPaddingLeft() + getPaddingRight();
 
         if (widthSpecMode == MeasureSpec.AT_MOST && desiredWidth < widthSpecSize) {
@@ -230,6 +232,20 @@ public class EmojiTextView extends AppCompatTextView {
     }
 
     return ((Spanned) text).nextSpanTransition(-1, text.length(), CharacterStyle.class) != text.length();
+  }
+
+  private float getLongestLineWidth(@NonNull CharSequence text) {
+    if (TextUtils.isEmpty(text)) {
+      return 0f;
+    }
+
+    long maxLines = getMaxLines() > 0 ? getMaxLines() : Long.MAX_VALUE;
+
+    return Arrays.stream(text.toString().split("\n"))
+                 .limit(maxLines)
+                 .map(s -> getPaint().measureText(s, 0, s.length()))
+                 .max(Float::compare)
+                 .orElse(0f);
   }
 
   public int getLastLineWidth() {
@@ -293,11 +309,17 @@ public class EmojiTextView extends AppCompatTextView {
 
       int lineCount = getLineCount();
       if (lineCount > maxLines) {
-        int          overflowStart = getLayout().getLineStart(maxLines - 1);
+        int overflowStart = getLayout().getLineStart(maxLines - 1);
+
+        if (maxLength > 0 && overflowStart > maxLength) {
+          ellipsizeAnyTextForMaxLength();
+          return;
+        }
+
         int          overflowEnd   = getLayout().getLineEnd(maxLines - 1);
         CharSequence overflow      = getText().subSequence(overflowStart, overflowEnd);
         float        adjust        = overflowText != null ? getPaint().measureText(overflowText, 0, overflowText.length()) : 0f;
-        CharSequence ellipsized    = TextUtils.ellipsize(overflow, getPaint(), getWidth() - adjust, TextUtils.TruncateAt.END);
+        CharSequence ellipsized    = StringUtil.trim(TextUtils.ellipsize(overflow, getPaint(), getWidth() - adjust, TextUtils.TruncateAt.END));
 
         SpannableStringBuilder newContent = new SpannableStringBuilder();
         newContent.append(getText().subSequence(0, overflowStart))
@@ -308,6 +330,8 @@ public class EmojiTextView extends AppCompatTextView {
         CharSequence              emojified     = EmojiProvider.emojify(newCandidates, newContent, this, isJumbomoji || forceJumboEmoji);
 
         super.setText(emojified, BufferType.SPANNABLE);
+      } else if (maxLength > 0) {
+        ellipsizeAnyTextForMaxLength();
       }
     };
 

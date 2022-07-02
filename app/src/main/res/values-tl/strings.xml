@@ -345,8 +345,8 @@
   <string name="DozeReminder_optimize_for_missing_play_services">I-optimize para sa nawawalang Play Services</string>
   <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Ang device na ito ay walang suporta para sa Play Services. Pindutin upang i-disable ang mga pang-sistemang optimisasyon ng baterya na pumipigil sa Signal na kuhanin ang mga mensahe habang hindi ito aktibo.</string>
   <!--ShareActivity-->
-  <string name="ShareActivity_share_with">Ibahagi kay</string>
-  <string name="ShareActivity_multiple_attachments_are_only_supported">Ang maramihang kalakip ay suportado lamang para sa mga imahe at videos</string>
+  <!-- Removed by excludeNonTranslatables <string name="ShareActivity_share_with">Ibahagi kay</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ShareActivity_multiple_attachments_are_only_supported">Ang maramihang kalakip ay suportado lamang para sa mga imahe at videos</string> -->
   <!--GcmBroadcastReceiver-->
   <!-- Removed by excludeNonTranslatables <string name="GcmBroadcastReceiver_retrieving_a_message">May kinukuhang mensahe…</string> -->
   <!--GcmRefreshJob-->
@@ -599,10 +599,6 @@
   <plurals name="MessageRequestProfileView_members">
     <item quantity="one">%1$d na kasapi</item>
     <item quantity="other">%1$d na mga kasapi</item>
-  </plurals>
-  <plurals name="MessageRequestProfileView_members_and_invited">
-    <item quantity="one">%1$d na kasapi (+%2$d na inimbitahan)</item>
-    <item quantity="other">%1$d na mga kasapi (+%2$d na inimbitahan)</item>
   </plurals>
   <!--PassphraseChangeActivity-->
   <string name="PassphraseChangeActivity_passphrases_dont_match_exclamation">Hindi tugma ang mga passphrase!</string>
@@ -1239,10 +1235,10 @@
   <string name="webrtc_answer_decline_button__swipe_down_to_reject">I-swipe pababa upang tanggihan</string>
   <!--message_details_header-->
   <string name="message_details_header__issues_need_your_attention">May ilang isyu na nangangailangan ng iyong atensyon.</string>
-  <string name="message_details_header__sent">Naipadala na</string>
-  <string name="message_details_header__received">Natanggap na</string>
-  <string name="message_details_header__disappears">Naglalaho</string>
-  <string name="message_details_header__via">Sa pamamagitan ng</string>
+  <!-- Removed by excludeNonTranslatables <string name="message_details_header__sent">Naipadala na</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="message_details_header__received">Natanggap na</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="message_details_header__disappears">Naglalaho</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="message_details_header__via">Sa pamamagitan ng</string> -->
   <!--message_details_recipient_header-->
   <!--message_Details_recipient-->
   <string name="message_details_recipient__failed_to_send">Nabigong ipadala</string>

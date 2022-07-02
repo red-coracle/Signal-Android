@@ -93,9 +93,9 @@ object SqlUtil {
     while (i < len) {
       val point = StringUtil.codePointToString(query.codePointAt(i))
       pattern.append("[")
-      pattern.append(point.toLowerCase(Locale.getDefault()))
-      pattern.append(point.toUpperCase(Locale.getDefault()))
-      pattern.append(getAccentuatedCharRegex(point.toLowerCase(Locale.getDefault())))
+      pattern.append(point.lowercase(Locale.getDefault()))
+      pattern.append(point.uppercase(Locale.getDefault()))
+      pattern.append(getAccentuatedCharRegex(point.lowercase(Locale.getDefault())))
       pattern.append("]")
       i++
     }
@@ -166,7 +166,7 @@ object SqlUtil {
       if (value != null) {
         if (value is ByteArray) {
           qualifier.append("hex(").append(key).append(") != ? OR ").append(key).append(" IS NULL")
-          fullArgs.add(Hex.toStringCondensed(value).toUpperCase(Locale.US))
+          fullArgs.add(Hex.toStringCondensed(value).uppercase(Locale.US))
         } else {
           qualifier.append(key).append(" != ? OR ").append(key).append(" IS NULL")
           fullArgs.add(value.toString())
@@ -183,8 +183,33 @@ object SqlUtil {
     return Query("($selection) AND ($qualifier)", fullArgs.toTypedArray())
   }
 
+  /**
+   * A convenient way of making queries in the form: WHERE [column] IN (?, ?, ..., ?)
+   * Handles breaking it 
+   */
   @JvmStatic
-  fun buildCollectionQuery(column: String, values: Collection<Any?>): Query {
+  fun buildCollectionQuery(column: String, values: Collection<Any?>): List<Query> {
+    return buildCollectionQuery(column, values, MAX_QUERY_ARGS)
+  }
+
+  @VisibleForTesting
+  @JvmStatic
+  fun buildCollectionQuery(column: String, values: Collection<Any?>, maxSize: Int): List<Query> {
+    require(!values.isEmpty()) { "Must have values!" }
+
+    return values
+      .chunked(maxSize)
+      .map { batch -> buildSingleCollectionQuery(column, batch) }
+  }
+
+  /**
+   * A convenient way of making queries in the form: WHERE [column] IN (?, ?, ..., ?)
+   *
+   * Important: Should only be used if you know the number of values is < 1000. Otherwise you risk creating a SQL statement this is too large.
+   * Prefer [buildCollectionQuery] when possible.
+   */
+  @JvmStatic
+  fun buildSingleCollectionQuery(column: String, values: Collection<Any?>): Query {
     require(!values.isEmpty()) { "Must have values!" }
 
     val query = StringBuilder()

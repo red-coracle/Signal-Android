@@ -8,13 +8,23 @@ import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.MessageRecord
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.sms.MessageSender
 import org.thoughtcrime.securesms.util.task.ProgressDialogAsyncTask
 
 object DeleteDialog {
 
+  /**
+   * Displays a deletion dialog for the given set of message records.
+   *
+   * @param context           Android Context
+   * @param messageRecords    The message records to delete
+   * @param title             The dialog title
+   * @param message           The dialog message, or null
+   * @param forceRemoteDelete Allow remote deletion, even if it would normally be disallowed
+   *
+   * @return a Single, who's value notes whether or not a thread deletion occurred.
+   */
   fun show(
     context: Context,
     messageRecords: Set<MessageRecord>,
@@ -64,7 +74,7 @@ object DeleteDialog {
   private fun deleteForEveryone(messageRecords: Set<MessageRecord>, emitter: SingleEmitter<Boolean>) {
     SignalExecutors.BOUNDED.execute {
       messageRecords.forEach { message ->
-        MessageSender.sendRemoteDelete(ApplicationDependencies.getApplication(), message.id, message.isMms)
+        MessageSender.sendRemoteDelete(message.id, message.isMms)
       }
 
       emitter.onSuccess(false)

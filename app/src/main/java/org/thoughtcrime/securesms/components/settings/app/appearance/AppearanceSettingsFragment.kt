@@ -8,6 +8,7 @@ import org.thoughtcrime.securesms.components.settings.DSLSettingsAdapter
 import org.thoughtcrime.securesms.components.settings.DSLSettingsFragment
 import org.thoughtcrime.securesms.components.settings.DSLSettingsText
 import org.thoughtcrime.securesms.components.settings.configure
+import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 
 class AppearanceSettingsFragment : DSLSettingsFragment(R.string.preferences__appearance) {
@@ -18,7 +19,7 @@ class AppearanceSettingsFragment : DSLSettingsFragment(R.string.preferences__app
   private val themeValues by lazy { resources.getStringArray(R.array.pref_theme_values) }
 
   private val messageFontSizeLabels by lazy { resources.getStringArray(R.array.pref_message_font_size_entries) }
-  private val messageFontSizeValues by lazy { resources.getStringArray(R.array.pref_message_font_size_values) }
+  private val messageFontSizeValues by lazy { resources.getIntArray(R.array.pref_message_font_size_values) }
 
   private val languageLabels by lazy { resources.getStringArray(R.array.language_entries) }
   private val languageValues by lazy { resources.getStringArray(R.array.language_values) }
@@ -36,9 +37,9 @@ class AppearanceSettingsFragment : DSLSettingsFragment(R.string.preferences__app
       radioListPref(
         title = DSLSettingsText.from(R.string.preferences__theme),
         listItems = themeLabels,
-        selected = themeValues.indexOf(state.theme),
+        selected = themeValues.indexOf(state.theme.serialize()),
         onSelected = {
-          viewModel.setTheme(themeValues[it])
+          viewModel.setTheme(activity, SettingsValues.Theme.deserialize(themeValues[it]))
         }
       )
 
@@ -52,7 +53,7 @@ class AppearanceSettingsFragment : DSLSettingsFragment(R.string.preferences__app
       radioListPref(
         title = DSLSettingsText.from(R.string.preferences_chats__message_text_size),
         listItems = messageFontSizeLabels,
-        selected = messageFontSizeValues.indexOf(state.messageFontSize.toString()),
+        selected = messageFontSizeValues.indexOf(state.messageFontSize),
         onSelected = {
           viewModel.setMessageFontSize(messageFontSizeValues[it].toInt())
         }

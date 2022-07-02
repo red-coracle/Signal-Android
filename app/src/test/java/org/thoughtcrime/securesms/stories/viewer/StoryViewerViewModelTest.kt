@@ -10,8 +10,11 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.thoughtcrime.securesms.recipients.RecipientId
+import org.thoughtcrime.securesms.stories.StoryViewerArgs
 
 class StoryViewerViewModelTest {
   private val testScheduler = TestScheduler()
@@ -29,14 +32,44 @@ class StoryViewerViewModelTest {
   }
 
   @Test
+  fun `Given a list of recipients, when I initialize, then I expect the list`() {
+    // GIVEN
+    val repoStories: List<RecipientId> = (1L..5L).map(RecipientId::from)
+    whenever(repository.getStories(any(), any())).doReturn(Single.just(repoStories))
+
+    val injectedStories: List<RecipientId> = (6L..10L).map(RecipientId::from)
+
+    // WHEN
+    val testSubject = StoryViewerViewModel(
+      StoryViewerArgs(
+        recipientId = injectedStories.first(),
+        isInHiddenStoryMode = false,
+        recipientIds = injectedStories
+      ),
+      repository
+    )
+    testScheduler.triggerActions()
+
+    // THEN
+    verify(repository, never()).getStories(any(), any())
+    assertEquals(injectedStories, testSubject.stateSnapshot.pages)
+  }
+
+  @Test
   fun `Given five stories, when I initialize with story 2, then I expect to be on the right page`() {
     // GIVEN
     val stories: List<RecipientId> = (1L..5L).map(RecipientId::from)
     val startStory = RecipientId.from(2L)
-    whenever(repository.getStories(any())).doReturn(Single.just(stories))
+    whenever(repository.getStories(any(), any())).doReturn(Single.just(stories))
 
     // WHEN
-    val testSubject = StoryViewerViewModel(startStory, false, null, null, repository)
+    val testSubject = StoryViewerViewModel(
+      StoryViewerArgs(
+        recipientId = startStory,
+        isInHiddenStoryMode = false
+      ),
+      repository
+    )
     testScheduler.triggerActions()
 
     // THEN
@@ -51,8 +84,14 @@ class StoryViewerViewModelTest {
     // GIVEN
     val stories: List<RecipientId> = (1L..5L).map(RecipientId::from)
     val startStory = RecipientId.from(1L)
-    whenever(repository.getStories(any())).doReturn(Single.just(stories))
-    val testSubject = StoryViewerViewModel(startStory, false, null, null, repository)
+    whenever(repository.getStories(any(), any())).doReturn(Single.just(stories))
+    val testSubject = StoryViewerViewModel(
+      StoryViewerArgs(
+        recipientId = startStory,
+        isInHiddenStoryMode = false,
+      ),
+      repository
+    )
     testScheduler.triggerActions()
 
     // WHEN
@@ -71,8 +110,14 @@ class StoryViewerViewModelTest {
     // GIVEN
     val stories: List<RecipientId> = (1L..5L).map(RecipientId::from)
     val startStory = stories.last()
-    whenever(repository.getStories(any())).doReturn(Single.just(stories))
-    val testSubject = StoryViewerViewModel(startStory, false, null, null, repository)
+    whenever(repository.getStories(any(), any())).doReturn(Single.just(stories))
+    val testSubject = StoryViewerViewModel(
+      StoryViewerArgs(
+        recipientId = startStory,
+        isInHiddenStoryMode = false,
+      ),
+      repository
+    )
     testScheduler.triggerActions()
 
     // WHEN
@@ -91,8 +136,14 @@ class StoryViewerViewModelTest {
     // GIVEN
     val stories: List<RecipientId> = (1L..5L).map(RecipientId::from)
     val startStory = stories.last()
-    whenever(repository.getStories(any())).doReturn(Single.just(stories))
-    val testSubject = StoryViewerViewModel(startStory, false, null, null, repository)
+    whenever(repository.getStories(any(), any())).doReturn(Single.just(stories))
+    val testSubject = StoryViewerViewModel(
+      StoryViewerArgs(
+        recipientId = startStory,
+        isInHiddenStoryMode = false,
+      ),
+      repository
+    )
     testScheduler.triggerActions()
 
     // WHEN
@@ -111,8 +162,14 @@ class StoryViewerViewModelTest {
     // GIVEN
     val stories: List<RecipientId> = (1L..5L).map(RecipientId::from)
     val startStory = stories.first()
-    whenever(repository.getStories(any())).doReturn(Single.just(stories))
-    val testSubject = StoryViewerViewModel(startStory, false, null, null, repository)
+    whenever(repository.getStories(any(), any())).doReturn(Single.just(stories))
+    val testSubject = StoryViewerViewModel(
+      StoryViewerArgs(
+        recipientId = startStory,
+        isInHiddenStoryMode = false,
+      ),
+      repository
+    )
     testScheduler.triggerActions()
 
     // WHEN
@@ -131,8 +188,14 @@ class StoryViewerViewModelTest {
     // GIVEN
     val stories: List<RecipientId> = (1L..5L).map(RecipientId::from)
     val startStory = stories.first()
-    whenever(repository.getStories(any())).doReturn(Single.just(stories))
-    val testSubject = StoryViewerViewModel(startStory, false, null, null, repository)
+    whenever(repository.getStories(any(), any())).doReturn(Single.just(stories))
+    val testSubject = StoryViewerViewModel(
+      StoryViewerArgs(
+        recipientId = startStory,
+        isInHiddenStoryMode = false,
+      ),
+      repository
+    )
     testScheduler.triggerActions()
 
     // WHEN

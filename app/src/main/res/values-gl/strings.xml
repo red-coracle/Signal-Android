@@ -410,8 +410,8 @@
   </plurals>
   <string name="PendingGroupJoinRequestsReminder_view">Ver</string>
   <!--ShareActivity-->
-  <string name="ShareActivity_share_with">Compartir con</string>
-  <string name="ShareActivity_multiple_attachments_are_only_supported">Os anexos múltiples só se permiten para imaxes e vídeos</string>
+  <!-- Removed by excludeNonTranslatables <string name="ShareActivity_share_with">Compartir con</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ShareActivity_multiple_attachments_are_only_supported">Os anexos múltiples só se permiten para imaxes e vídeos</string> -->
   <!--GcmRefreshJob-->
   <string name="GcmRefreshJob_Permanent_Signal_communication_failure">Erro de comunicación permanente!</string>
   <string name="GcmRefreshJob_Signal_was_unable_to_register_with_Google_Play_Services">Non foi posible rexistrar Signal con Servizos de Google Play. As mensaxes e chamadas de Signal foron desactivadas; tenta volver facer o rexistro en Axustes&gt;Avanzado.</string>
@@ -567,8 +567,8 @@
   <string name="AddGroupDetailsFragment__this_field_is_required">Este campo é obrigatorio.</string>
   <string name="AddGroupDetailsFragment__group_creation_failed">Erro ao crear o grupo.</string>
   <string name="AddGroupDetailsFragment__try_again_later">Volver tentar máis tarde.</string>
-  <string name="AddGroupDetailsFragment__youve_selected_a_contact_that_doesnt">Seleccionou un contacto que non é compatíbel con grupos Signal, así que este grupo será MMS.</string>
-  <string name="AddGroupDetailsFragment_custom_mms_group_names_and_photos_will_only_be_visible_to_you">Os nomes de grupos MMS personalizados e fotos só serán visibles para ti.</string>
+  <!-- Removed by excludeNonTranslatables <string name="AddGroupDetailsFragment__youve_selected_a_contact_that_doesnt">Seleccionou un contacto que non é compatíbel con grupos Signal, así que este grupo será MMS.</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="AddGroupDetailsFragment_custom_mms_group_names_and_photos_will_only_be_visible_to_you">Os nomes de grupos MMS personalizados e fotos só serán visibles para ti.</string> -->
   <string name="AddGroupDetailsFragment__remove">Eliminar</string>
   <string name="AddGroupDetailsFragment__sms_contact">Contacto SMS</string>
   <string name="AddGroupDetailsFragment__remove_s_from_this_group">Retirar %1$s deste grupo?</string>
@@ -1048,10 +1048,6 @@
   <plurals name="MessageRequestProfileView_members">
     <item quantity="one">%1$d membro</item>
     <item quantity="other">%1$d membros</item>
-  </plurals>
-  <plurals name="MessageRequestProfileView_members_and_invited">
-    <item quantity="one">%1$d membro (+%2$d convidados)</item>
-    <item quantity="other">%1$d membros (+%2$d convidados)</item>
   </plurals>
   <plurals name="MessageRequestProfileView_member_of_d_additional_groups">
     <item quantity="one">%d grupo adicional</item>
@@ -2626,7 +2622,7 @@
   <string name="MultiShareDialogs__failed_to_send_to_some_users">Fallou o envío a algúns usuarios</string>
   <string name="MultiShareDialogs__you_can_only_share_with_up_to">Soamente pode compartila con %1$d chat</string>
   <!--ShareInterstitialActivity-->
-  <string name="ShareInterstitialActivity__forward_message">Reenviar mensaxe</string>
+  <!-- Removed by excludeNonTranslatables <string name="ShareInterstitialActivity__forward_message">Reenviar mensaxe</string> -->
   <!--ChatWallpaperActivity-->
   <string name="ChatWallpaperActivity__chat_wallpaper">Fondo de pantalla do chat</string>
   <!--ChatWallpaperFragment-->
@@ -2782,17 +2778,17 @@
   <string name="ChatColorSelectionFragment__auto_matches_the_color_to_the_wallpaper">Segue automáticamente a cor do fondo</string>
   <string name="CustomChatColorCreatorFragment__drag_to_change_the_direction_of_the_gradient">Arrastra para cambiar a dirección do gradiente</string>
   <!--ChatColorsMegaphone-->
-  <string name="ChatColorsMegaphone__new_chat_colors">Novas cores para o chat</string>
-  <string name="ChatColorsMegaphone__we_switched_up_chat_colors">Melloramos as cores para o chat para darche máis opcións e facilitar a lectura dos chats.</string>
-  <string name="ChatColorsMegaphone__appearance">Aparencia</string>
-  <string name="ChatColorsMegaphone__not_now">Agora non</string>
+  <!-- Removed by excludeNonTranslatables <string name="ChatColorsMegaphone__new_chat_colors">Novas cores para o chat</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ChatColorsMegaphone__we_switched_up_chat_colors">Melloramos as cores para o chat para darche máis opcións e facilitar a lectura dos chats.</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ChatColorsMegaphone__appearance">Aparencia</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ChatColorsMegaphone__not_now">Agora non</string> -->
   <!--AddAProfilePhotoMegaphone-->
   <string name="AddAProfilePhotoMegaphone__add_a_profile_photo">Engadir unha foto de perfil</string>
   <string name="AddAProfilePhotoMegaphone__choose_a_look_and_color">Elixe o aspecto e cor ou personaliza as túas iniciais.</string>
   <string name="AddAProfilePhotoMegaphone__not_now">Agora non</string>
   <string name="AddAProfilePhotoMegaphone__add_photo">Engadir foto</string>
   <!--BecomeASustainerMegaphone-->
-  <string name="BecomeASustainerMegaphone__no_thanks">Non, grazas</string>
+  <!-- Removed by excludeNonTranslatables <string name="BecomeASustainerMegaphone__no_thanks">Non, grazas</string> -->
   <!--KeyboardPagerFragment-->
   <string name="KeyboardPagerFragment_emoji">Emoji</string>
   <string name="KeyboardPagerFragment_open_emoji_search">Abrir busca de emojis</string>
@@ -2980,7 +2976,7 @@
   <!--Description for notification profile megaphone-->
   <!--Call to action button to create a profile from megaphone-->
   <!--Button to dismiss notification profile megaphone-->
-  <string name="NotificationProfilesMegaphone__not_now">Agora non</string>
+  <!-- Removed by excludeNonTranslatables <string name="NotificationProfilesMegaphone__not_now">Agora non</string> -->
   <!--Displayed in a toast when we fail to open the ringtone picker-->
   <!--Description shown for the Signal Release Notes channel-->
   <!--EOF-->

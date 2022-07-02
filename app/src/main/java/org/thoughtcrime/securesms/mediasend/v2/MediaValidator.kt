@@ -1,15 +1,18 @@
 package org.thoughtcrime.securesms.mediasend.v2
 
 import android.content.Context
+import androidx.annotation.WorkerThread
 import org.thoughtcrime.securesms.mediasend.Media
 import org.thoughtcrime.securesms.mms.MediaConstraints
+import org.thoughtcrime.securesms.stories.Stories
 import org.thoughtcrime.securesms.util.MediaUtil
 import org.thoughtcrime.securesms.util.Util
 
 object MediaValidator {
 
-  fun filterMedia(context: Context, media: List<Media>, mediaConstraints: MediaConstraints, maxSelection: Int): FilterResult {
-    val filteredMedia = filterForValidMedia(context, media, mediaConstraints)
+  @WorkerThread
+  fun filterMedia(context: Context, media: List<Media>, mediaConstraints: MediaConstraints, maxSelection: Int, isStory: Boolean): FilterResult {
+    val filteredMedia = filterForValidMedia(context, media, mediaConstraints, isStory)
     val isAllMediaValid = filteredMedia.size == media.size
 
     var error: FilterError? = null
@@ -45,11 +48,15 @@ object MediaValidator {
     return FilterResult(truncatedMedia, error, bucketId)
   }
 
-  private fun filterForValidMedia(context: Context, media: List<Media>, mediaConstraints: MediaConstraints): List<Media> {
+  @WorkerThread
+  private fun filterForValidMedia(context: Context, media: List<Media>, mediaConstraints: MediaConstraints, isStory: Boolean): List<Media> {
     return media
       .filter { m -> isSupportedMediaType(m.mimeType) }
       .filter { m ->
         MediaUtil.isImageAndNotGif(m.mimeType) || isValidGif(context, m, mediaConstraints) || isValidVideo(context, m, mediaConstraints)
+      }
+      .filter { m ->
+        !isStory || Stories.MediaTransform.getSendRequirements(m) != Stories.MediaTransform.SendRequirements.CAN_NOT_SEND
       }
   }
 

@@ -408,8 +408,8 @@
   </plurals>
   <string name="PendingGroupJoinRequestsReminder_view">Sken</string>
   <!--ShareActivity-->
-  <string name="ShareActivity_share_with">Bḍu akked</string>
-  <string name="ShareActivity_multiple_attachments_are_only_supported">Aṭas n tceqqufin yeddna ttusefrakent kan i tugniwin d tvidyutin</string>
+  <!-- Removed by excludeNonTranslatables <string name="ShareActivity_share_with">Bḍu akked</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ShareActivity_multiple_attachments_are_only_supported">Aṭas n tceqqufin yeddna ttusefrakent kan i tugniwin d tvidyutin</string> -->
   <!--GcmRefreshJob-->
   <string name="GcmRefreshJob_Permanent_Signal_communication_failure">Taywalt n Signal mazal ur iteddu ara!</string>
   <string name="GcmRefreshJob_Signal_was_unable_to_register_with_Google_Play_Services">Signal ur yermid ara i usekles akked yimeẓla n Google Play. Iznan d yisawalen n Signal nsan, ttxil-k·m ɛreḍ ad talseḍ ajerred deg Yiɣewwaren &gt; leqqyaen.</string>
@@ -569,8 +569,8 @@
   <string name="AddGroupDetailsFragment__this_field_is_required">Urti-agi ilaq.</string>
   <string name="AddGroupDetailsFragment__group_creation_failed">Tella-d tuccḍa deg usnulfu n ugraw.</string>
   <string name="AddGroupDetailsFragment__try_again_later">Ɛreḍ tikelt nniḍen</string>
-  <string name="AddGroupDetailsFragment__youve_selected_a_contact_that_doesnt">Tferneḍ anermis ur nsefraka ara igrawen n Signal, ihi agraw-a ad yili d MMS.</string>
-  <string name="AddGroupDetailsFragment_custom_mms_group_names_and_photos_will_only_be_visible_to_you">Sagen ismawen d tewlafin n ugraw ara ad d-ibanen kan i kečč·kemm.</string>
+  <!-- Removed by excludeNonTranslatables <string name="AddGroupDetailsFragment__youve_selected_a_contact_that_doesnt">Tferneḍ anermis ur nsefraka ara igrawen n Signal, ihi agraw-a ad yili d MMS.</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="AddGroupDetailsFragment_custom_mms_group_names_and_photos_will_only_be_visible_to_you">Sagen ismawen d tewlafin n ugraw ara ad d-ibanen kan i kečč·kemm.</string> -->
   <string name="AddGroupDetailsFragment__remove">Kkes</string>
   <string name="AddGroupDetailsFragment__sms_contact">Anermis SMS</string>
   <string name="AddGroupDetailsFragment__remove_s_from_this_group">Kkes %1$s seg ugraw-a?</string>
@@ -1039,10 +1039,6 @@
   <plurals name="MessageRequestProfileView_members">
     <item quantity="one">%1$d n uɛeggal</item>
     <item quantity="other">%1$d n iɛeggalen</item>
-  </plurals>
-  <plurals name="MessageRequestProfileView_members_and_invited">
-    <item quantity="one">%1$d uεeggal (+%2$d yettwancad)</item>
-    <item quantity="other">%1$d yiεeggalen (+%2$d ttwancaden)</item>
   </plurals>
   <plurals name="MessageRequestProfileView_member_of_d_additional_groups">
     <item quantity="one">%d ugraw-nniḍen</item>
@@ -2570,7 +2566,7 @@ i d-tefkiḍ (%s) ur yeɣti ara.</string>
   <string name="MultiShareDialogs__failed_to_send_to_some_users">Tuzna i kra n yiseqdacen ur teddi ara</string>
   <string name="MultiShareDialogs__you_can_only_share_with_up_to">Tzemreḍ kan ad tebḍuḍ alamma %1$d n yidiwenniyen</string>
   <!--ShareInterstitialActivity-->
-  <string name="ShareInterstitialActivity__forward_message">Ḍfer izen</string>
+  <!-- Removed by excludeNonTranslatables <string name="ShareInterstitialActivity__forward_message">Ḍfer izen</string> -->
   <!--ChatWallpaperActivity-->
   <string name="ChatWallpaperActivity__chat_wallpaper">Agilal n ugdil n udiwenni</string>
   <!--ChatWallpaperFragment-->
@@ -2689,8 +2685,8 @@ i d-tefkiḍ (%s) ur yeɣti ara.</string>
   <string name="EditReactionsFragment__reset">Wennez</string>
   <string name="EditReactionsFragment_save">Sekles</string>
   <!--ChatColorsMegaphone-->
-  <string name="ChatColorsMegaphone__appearance">Askan</string>
-  <string name="ChatColorsMegaphone__not_now">Mačči tura</string>
+  <!-- Removed by excludeNonTranslatables <string name="ChatColorsMegaphone__appearance">Askan</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="ChatColorsMegaphone__not_now">Mačči tura</string> -->
   <!--AddAProfilePhotoMegaphone-->
   <string name="AddAProfilePhotoMegaphone__not_now">Mačči tura</string>
   <!--KeyboardPagerFragment-->

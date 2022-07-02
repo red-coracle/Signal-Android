@@ -23,7 +23,7 @@ import org.whispersystems.signalservice.internal.util.Hex;
 import org.whispersystems.signalservice.internal.util.JsonUtil;
 import org.whispersystems.signalservice.internal.websocket.DefaultResponseMapper;
 import org.whispersystems.signalservice.internal.websocket.ResponseMapper;
-import org.whispersystems.signalservice.internal.websocket.WebSocketProtos;
+import org.whispersystems.signalservice.internal.websocket.WebSocketProtos.WebSocketRequestMessage;
 
 import java.security.SecureRandom;
 import java.util.Locale;
@@ -64,9 +64,9 @@ public final class ProfileService {
     SecureRandom                       random         = new SecureRandom();
     ProfileKeyCredentialRequestContext requestContext = null;
 
-    WebSocketProtos.WebSocketRequestMessage.Builder builder = WebSocketProtos.WebSocketRequestMessage.newBuilder()
-                                                                                                     .setId(random.nextLong())
-                                                                                                     .setVerb("GET");
+    WebSocketRequestMessage.Builder builder = WebSocketRequestMessage.newBuilder()
+                                                                     .setId(random.nextLong())
+                                                                     .setVerb("GET");
 
     if (profileKey.isPresent()) {
       ProfileKeyVersion profileKeyIdentifier = profileKey.get().getProfileKeyVersion(serviceId.uuid());
@@ -88,7 +88,7 @@ public final class ProfileService {
 
     builder.addHeaders(AcceptLanguagesUtil.getAcceptLanguageHeader(locale));
 
-    WebSocketProtos.WebSocketRequestMessage requestMessage = builder.build();
+    WebSocketRequestMessage requestMessage = builder.build();
 
     ResponseMapper<ProfileAndCredential> responseMapper = DefaultResponseMapper.extend(ProfileAndCredential.class)
                                                                                .withResponseMapper(new ProfileResponseMapper(requestType, requestContext))

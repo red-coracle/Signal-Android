@@ -55,17 +55,17 @@ class StripeApi(
     setupIntentHelper.setDefaultPaymentMethod(it)
   }
 
-  fun createPaymentIntent(price: FiatMoney, description: String? = null): Single<CreatePaymentIntentResult> {
+  fun createPaymentIntent(price: FiatMoney, level: Long): Single<CreatePaymentIntentResult> {
     @Suppress("CascadeIf")
     return if (Validation.isAmountTooSmall(price)) {
       Single.just(CreatePaymentIntentResult.AmountIsTooSmall(price))
     } else if (Validation.isAmountTooLarge(price)) {
       Single.just(CreatePaymentIntentResult.AmountIsTooLarge(price))
-    } else if (!Validation.supportedCurrencyCodes.contains(price.currency.currencyCode.toUpperCase(Locale.ROOT))) {
+    } else if (!Validation.supportedCurrencyCodes.contains(price.currency.currencyCode.uppercase(Locale.ROOT))) {
       Single.just<CreatePaymentIntentResult>(CreatePaymentIntentResult.CurrencyIsNotSupported(price.currency.currencyCode))
     } else {
       paymentIntentFetcher
-        .fetchPaymentIntent(price, description)
+        .fetchPaymentIntent(price, level)
         .map<CreatePaymentIntentResult> { CreatePaymentIntentResult.Success(it) }
     }.subscribeOn(Schedulers.io())
   }
@@ -360,7 +360,7 @@ class StripeApi(
   interface PaymentIntentFetcher {
     fun fetchPaymentIntent(
       price: FiatMoney,
-      description: String? = null
+      level: Long
     ): Single<PaymentIntent>
   }
 

@@ -1,7 +1,6 @@
 package org.thoughtcrime.securesms.components.settings.app.subscription.subscribe
 
 import android.content.DialogInterface
-import android.graphics.Color
 import android.text.SpannableStringBuilder
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -39,7 +38,6 @@ import org.thoughtcrime.securesms.util.LifecycleDisposable
 import org.thoughtcrime.securesms.util.SpanUtil
 import org.thoughtcrime.securesms.util.fragments.requireListener
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
-import java.util.Calendar
 import java.util.Currency
 import java.util.concurrent.TimeUnit
 
@@ -53,7 +51,7 @@ class SubscribeFragment : DSLSettingsFragment(
   private val lifecycleDisposable = LifecycleDisposable()
 
   private val supportTechSummary: CharSequence by lazy {
-    SpannableStringBuilder(requireContext().getString(R.string.SubscribeFragment__support_technology_that_is_built_for_you_not))
+    SpannableStringBuilder(requireContext().getString(R.string.SubscribeFragment__make_a_recurring_monthly_donation))
       .append(" ")
       .append(
         SpanUtil.readMore(requireContext(), ContextCompat.getColor(requireContext(), R.color.signal_button_secondary_text)) {
@@ -121,7 +119,7 @@ class SubscribeFragment : DSLSettingsFragment(
 
   override fun onDestroyView() {
     super.onDestroyView()
-    processingDonationPaymentDialog.hide()
+    processingDonationPaymentDialog.dismiss()
   }
 
   private fun getConfiguration(state: SubscribeState): DSLConfiguration {
@@ -134,12 +132,12 @@ class SubscribeFragment : DSLSettingsFragment(
     val areFieldsEnabled = state.stage == SubscribeState.Stage.READY && !state.hasInProgressSubscriptionTransaction
 
     return configure {
-      customPref(BadgePreview.SubscriptionModel(state.selectedSubscription?.badge))
+      customPref(BadgePreview.BadgeModel.SubscriptionModel(state.selectedSubscription?.badge))
 
       sectionHeaderPref(
         title = DSLSettingsText.from(
           R.string.SubscribeFragment__signal_is_powered_by_people_like_you,
-          DSLSettingsText.CenterModifier, DSLSettingsText.Title2BoldModifier
+          DSLSettingsText.CenterModifier, DSLSettingsText.TitleLargeModifier
         )
       )
 
@@ -216,9 +214,7 @@ class SubscribeFragment : DSLSettingsFragment(
           isEnabled = areFieldsEnabled && (!activeAndSameLevel || state.isSubscriptionExpiring()),
           onClick = {
             val price = viewModel.getPriceOfSelectedSubscription() ?: return@primaryButton
-            val calendar = Calendar.getInstance()
 
-            calendar.add(Calendar.MONTH, 1)
             MaterialAlertDialogBuilder(requireContext())
               .setTitle(R.string.SubscribeFragment__update_subscription_question)
               .setMessage(
@@ -303,9 +299,7 @@ class SubscribeFragment : DSLSettingsFragment(
   }
 
   private fun onSubscriptionCancelled() {
-    Snackbar.make(requireView(), R.string.SubscribeFragment__your_subscription_has_been_cancelled, Snackbar.LENGTH_LONG)
-      .setTextColor(Color.WHITE)
-      .show()
+    Snackbar.make(requireView(), R.string.SubscribeFragment__your_subscription_has_been_cancelled, Snackbar.LENGTH_LONG).show()
 
     requireActivity().finish()
     requireActivity().startActivity(AppSettingsActivity.home(requireContext()))

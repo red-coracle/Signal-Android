@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.signal.core.util.logging.Log;
+import org.signal.donations.StripeDeclineCode;
 import org.signal.libsignal.zkgroup.InvalidInputException;
 import org.signal.libsignal.zkgroup.VerificationFailedException;
 import org.signal.libsignal.zkgroup.receipts.ClientZkReceiptOperations;
@@ -90,15 +91,17 @@ public class SubscriptionReceiptRequestResponseJob extends BaseJob {
   }
 
   public static JobManager.Chain createSubscriptionContinuationJobChain(boolean isForKeepAlive) {
-    Subscriber                            subscriber           = SignalStore.donationsValues().requireSubscriber();
-    SubscriptionReceiptRequestResponseJob requestReceiptJob    = createJob(subscriber.getSubscriberId(), isForKeepAlive);
-    DonationReceiptRedemptionJob          redeemReceiptJob     = DonationReceiptRedemptionJob.createJobForSubscription(requestReceiptJob.getErrorSource());
-    RefreshOwnProfileJob                  refreshOwnProfileJob = RefreshOwnProfileJob.forSubscription();
+    Subscriber                            subscriber                         = SignalStore.donationsValues().requireSubscriber();
+    SubscriptionReceiptRequestResponseJob requestReceiptJob                  = createJob(subscriber.getSubscriberId(), isForKeepAlive);
+    DonationReceiptRedemptionJob          redeemReceiptJob                   = DonationReceiptRedemptionJob.createJobForSubscription(requestReceiptJob.getErrorSource());
+    RefreshOwnProfileJob                  refreshOwnProfileJob               = RefreshOwnProfileJob.forSubscription();
+    MultiDeviceProfileContentUpdateJob    multiDeviceProfileContentUpdateJob = new MultiDeviceProfileContentUpdateJob();
 
     return ApplicationDependencies.getJobManager()
                                   .startChain(requestReceiptJob)
                                   .then(redeemReceiptJob)
-                                  .then(refreshOwnProfileJob);
+                                  .then(refreshOwnProfileJob)
+                                  .then(multiDeviceProfileContentUpdateJob);
   }
 
   private SubscriptionReceiptRequestResponseJob(@NonNull Parameters parameters,
@@ -138,19 +141,46 @@ public class SubscriptionReceiptRequestResponseJob extends BaseJob {
   }
 
   private void doRun() throws Exception {
-    ActiveSubscription.Subscription subscription = getLatestSubscriptionInformation();
+    ActiveSubscription              activeSubscription = getLatestSubscriptionInformation();
+    ActiveSubscription.Subscription subscription       = activeSubscription.getActiveSubscription();
+
     if (subscription == null) {
       Log.w(TAG, "Subscription is null.", true);
       throw new RetryableException();
     } else if (subscription.isFailedPayment()) {
-      Log.w(TAG, "Subscription payment failure in active subscription response (status = " + subscription.getStatus() + ").", true);
-      onPaymentFailure(subscription.getStatus(), subscription.getEndOfCurrentPeriod());
-      throw new Exception("Subscription has a payment failure: " + subscription.getStatus());
+      ActiveSubscription.ChargeFailure chargeFailure = activeSubscription.getChargeFailure();
+      if (chargeFailure != null) {
+        Log.w(TAG, "Subscription payment charge failure code: " + chargeFailure.getCode() + ", message: " + chargeFailure.getMessage(), true);
+      }
+
+      if (isForKeepAlive) {
+        Log.w(TAG, "Subscription payment failure in active subscription response (status = " + subscription.getStatus() + ").", true);
+        onPaymentFailure(subscription.getStatus(), chargeFailure, subscription.getEndOfCurrentPeriod(), true);
+        throw new Exception("Active subscription hit a payment failure: " + subscription.getStatus());
+      } else {
+        Log.w(TAG, "New subscription has hit a payment failure. (status = " + subscription.getStatus() + ").", true);
+        onPaymentFailure(subscription.getStatus(), chargeFailure, subscription.getEndOfCurrentPeriod(), false);
+        throw new Exception("New subscription has hit a payment failure: " + subscription.getStatus());
+      }
     } else if (!subscription.isActive()) {
+      ActiveSubscription.ChargeFailure chargeFailure = activeSubscription.getChargeFailure();
+      if (chargeFailure != null) {
+        Log.w(TAG, "Subscription payment charge failure code: " + chargeFailure.getCode() + ", message: " + chargeFailure.getMessage(), true);
+
+        if (!isForKeepAlive) {
+          Log.w(TAG, "Initial subscription payment failed, treating as a permanent failure.");
+          onPaymentFailure(subscription.getStatus(), chargeFailure, subscription.getEndOfCurrentPeriod(), false);
+          throw new Exception("New subscription has hit a payment failure.");
+        }
+      }
+
       Log.w(TAG, "Subscription is not yet active. Status: " + subscription.getStatus(), true);
       throw new RetryableException();
+    } else if (subscription.isCanceled()) {
+      Log.w(TAG, "Subscription is marked as cancelled, but it's possible that the user cancelled and then later tried to resubscribe. Scheduling a retry.", true);
+      throw new RetryableException();
     } else {
-      Log.i(TAG, "Recording end of period from active subscription.", true);
+      Log.i(TAG, "Recording end of period from active subscription: " + subscription.getStatus(), true);
       SignalStore.donationsValues().setLastEndOfPeriod(subscription.getEndOfCurrentPeriod());
       MultiDeviceSubscriptionSyncRequestJob.enqueue();
     }
@@ -184,13 +214,13 @@ public class SubscriptionReceiptRequestResponseJob extends BaseJob {
     }
   }
 
-  private @Nullable ActiveSubscription.Subscription getLatestSubscriptionInformation() throws Exception {
+  private @NonNull ActiveSubscription getLatestSubscriptionInformation() throws Exception {
     ServiceResponse<ActiveSubscription> activeSubscription = ApplicationDependencies.getDonationsService()
                                                                                     .getSubscription(subscriberId)
                                                                                     .blockingGet();
 
     if (activeSubscription.getResult().isPresent()) {
-      return activeSubscription.getResult().get().getActiveSubscription();
+      return activeSubscription.getResult().get();
     } else if (activeSubscription.getApplicationError().isPresent()) {
       Log.w(TAG, "Unrecoverable error getting the user's current subscription. Failing.", activeSubscription.getApplicationError().get(), true);
       DonationError.routeDonationError(context, DonationError.genericBadgeRedemptionFailure(getErrorSource()));
@@ -233,9 +263,8 @@ public class SubscriptionReceiptRequestResponseJob extends BaseJob {
         DonationError.routeDonationError(context, DonationError.genericBadgeRedemptionFailure(getErrorSource()));
         throw new Exception(response.getApplicationError().get());
       case 402:
-        Log.w(TAG, "Subscription payment failure in credential response.", response.getApplicationError().get(), true);
-        onPaymentFailure(null, 0L);
-        throw new Exception(response.getApplicationError().get());
+        Log.w(TAG, "Payment looks like a failure but may be retried.", response.getApplicationError().get(), true);
+        throw new RetryableException();
       case 403:
         Log.w(TAG, "SubscriberId password mismatch or account auth was present.", response.getApplicationError().get(), true);
         DonationError.routeDonationError(context, DonationError.genericBadgeRedemptionFailure(getErrorSource()));
@@ -253,14 +282,50 @@ public class SubscriptionReceiptRequestResponseJob extends BaseJob {
     }
   }
 
-  private void onPaymentFailure(@Nullable String status, long timestamp) {
+  /**
+   * Handles state updates and error routing for a payment failure.
+   *
+   * There are two ways this could go, depending on whether the job was created for a keep-alive chain.
+   *
+   * 1. In the case of a normal chain (new subscription) We simply route the error out to the user. The payment failure would have occurred while trying to
+   *    charge for the first month of their subscription, and are likely still on the "Subscribe" screen, so we can just display a dialog.
+   * 1. In the case of a keep-alive event, we want to book-keep the error to show the user on a subsequent launch, and we want to sync our failure state to
+   *    linked devices.
+   */
+  private void onPaymentFailure(@NonNull String status, @Nullable ActiveSubscription.ChargeFailure chargeFailure, long timestamp, boolean isForKeepAlive) {
     SignalStore.donationsValues().setShouldCancelSubscriptionBeforeNextSubscribeAttempt(true);
-    if (status == null) {
-      DonationError.routeDonationError(context, DonationError.genericPaymentFailure(getErrorSource()));
-    } else {
+    if (isForKeepAlive){
+      Log.d(TAG, "Is for a keep-alive and we have a status. Setting UnexpectedSubscriptionCancelation state...", true);
+      SignalStore.donationsValues().setUnexpectedSubscriptionCancelationChargeFailure(chargeFailure);
       SignalStore.donationsValues().setUnexpectedSubscriptionCancelationReason(status);
       SignalStore.donationsValues().setUnexpectedSubscriptionCancelationTimestamp(timestamp);
       MultiDeviceSubscriptionSyncRequestJob.enqueue();
+    } else if (chargeFailure != null) {
+      StripeDeclineCode               declineCode = StripeDeclineCode.Companion.getFromCode(chargeFailure.getOutcomeNetworkReason());
+      DonationError.PaymentSetupError paymentSetupError;
+
+      if (declineCode.isKnown()) {
+        paymentSetupError = new DonationError.PaymentSetupError.DeclinedError(
+            getErrorSource(),
+            new Exception(chargeFailure.getMessage()),
+            declineCode
+        );
+      } else {
+        paymentSetupError = new DonationError.PaymentSetupError.CodedError(
+            getErrorSource(),
+            new Exception("Card was declined. " + chargeFailure.getCode()),
+            chargeFailure.getCode()
+        );
+      }
+
+      Log.w(TAG, "Not for a keep-alive and we have a charge failure. Routing a payment setup error...", true);
+      DonationError.routeDonationError(context, paymentSetupError);
+    } else {
+      Log.d(TAG, "Not for a keep-alive and we have a failure status. Routing a payment setup error...", true);
+      DonationError.routeDonationError(context, new DonationError.PaymentSetupError.GenericError(
+          getErrorSource(),
+          new Exception("Got a failure status from the subscription object.")
+      ));
     }
   }
 
@@ -282,11 +347,11 @@ public class SubscriptionReceiptRequestResponseJob extends BaseJob {
    * - level should match the current subscription level and be the same level you signed up for at the time the subscription was last updated
    * - expiration time should have the following characteristics:
    * - expiration_time mod 86400 == 0
-   * - expiration_time is between now and 60 days from now
+   * - expiration_time is between now and 90 days from now
    */
   private static boolean isCredentialValid(@NonNull ActiveSubscription.Subscription subscription, @NonNull ReceiptCredential receiptCredential) {
     long    now                     = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
-    long    maxExpirationTime       = now + TimeUnit.DAYS.toSeconds(60);
+    long    maxExpirationTime       = now + TimeUnit.DAYS.toSeconds(90);
     boolean isSameLevel             = subscription.getLevel() == receiptCredential.getReceiptLevel();
     boolean isExpirationAfterSub    = subscription.getEndOfCurrentPeriod() < receiptCredential.getReceiptExpirationTime();
     boolean isExpiration86400       = receiptCredential.getReceiptExpirationTime() % 86400 == 0;

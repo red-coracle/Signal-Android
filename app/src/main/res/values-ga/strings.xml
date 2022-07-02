@@ -278,7 +278,7 @@
   <!-- Removed by excludeNonTranslatables <string name="DocumentView_unknown_file">Comhad anaithnid</string> -->
   <!--DozeReminder-->
   <!--ShareActivity-->
-  <string name="ShareActivity_share_with">Comhroinn le</string>
+  <!-- Removed by excludeNonTranslatables <string name="ShareActivity_share_with">Comhroinn le</string> -->
   <!--ExperienceUpgradeActivity-->
   <!-- Removed by excludeNonTranslatables <string name="ExperienceUpgradeActivity_welcome_to_signal_dgaf">Fáilte go Signal!</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ExperienceUpgradeActivity_textsecure_is_now_called_signal">Is an teachtaire príobháideach céanna anois iad TextSecure agus RedPhone le gach cúrsa: Signal.</string> -->
@@ -868,10 +868,10 @@ a shonrú</string>
   <string name="webrtc_answer_decline_button__swipe_down_to_reject">Sleamhnaigh do mhéar síos chun diúltú dó </string>
   <!--message_details_header-->
   <string name="message_details_header__issues_need_your_attention">Is gá fadhbanna áirithe a réiteach.</string>
-  <string name="message_details_header__sent">Seolta</string>
-  <string name="message_details_header__received">Faighte</string>
-  <string name="message_details_header__disappears">Imíonn as amharc</string>
-  <string name="message_details_header__via">Trí</string>
+  <!-- Removed by excludeNonTranslatables <string name="message_details_header__sent">Seolta</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="message_details_header__received">Faighte</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="message_details_header__disappears">Imíonn as amharc</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="message_details_header__via">Trí</string> -->
   <!-- Removed by excludeNonTranslatables <string name="message_details_header__to">Chuig:</string> -->
   <!-- Removed by excludeNonTranslatables <string name="message_details_header__from">Ó:</string> -->
   <!-- Removed by excludeNonTranslatables <string name="message_details_header__with">Le:</string> -->

@@ -111,6 +111,10 @@ internal class AccountValues internal constructor(store: KeyValueStore) : Signal
     putString(KEY_PNI, pni.toString())
   }
 
+  fun getServiceIds(): ServiceIds {
+    return ServiceIds(requireAci(), pni)
+  }
+
   /** The local user's E164. */
   val e164: String?
     get() = getString(KEY_E164, null)

@@ -21,6 +21,7 @@ import org.signal.libsignal.protocol.message.DecryptionErrorMessage;
 import org.signal.libsignal.protocol.message.SenderKeyDistributionMessage;
 import org.signal.libsignal.zkgroup.InvalidInputException;
 import org.signal.libsignal.zkgroup.groups.GroupMasterKey;
+import org.signal.libsignal.zkgroup.receipts.ReceiptCredentialPresentation;
 import org.whispersystems.signalservice.api.InvalidMessageStructureException;
 import org.whispersystems.signalservice.api.messages.calls.AnswerMessage;
 import org.whispersystems.signalservice.api.messages.calls.BusyMessage;
@@ -57,11 +58,14 @@ import org.whispersystems.signalservice.internal.serialize.SignalServiceMetadata
 import org.whispersystems.signalservice.internal.serialize.protos.SignalServiceContentProto;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class SignalServiceContent {
 
@@ -76,6 +80,7 @@ public final class SignalServiceContent {
   private final SignalServiceContentProto serializedState;
   private final String                    serverUuid;
   private final Optional<byte[]>          groupId;
+  private final String                    destinationUuid;
 
   private final Optional<SignalServiceDataMessage>     message;
   private final Optional<SignalServiceSyncMessage>     synchronizeMessage;
@@ -96,6 +101,7 @@ public final class SignalServiceContent {
                                boolean needsReceipt,
                                String serverUuid,
                                Optional<byte[]> groupId,
+                               String destinationUuid,
                                SignalServiceContentProto serializedState)
   {
     this.sender                   = sender;
@@ -106,6 +112,7 @@ public final class SignalServiceContent {
     this.needsReceipt             = needsReceipt;
     this.serverUuid               = serverUuid;
     this.groupId                  = groupId;
+    this.destinationUuid          = destinationUuid;
     this.serializedState          = serializedState;
 
     this.message                      = Optional.ofNullable(message);
@@ -128,6 +135,7 @@ public final class SignalServiceContent {
                                boolean needsReceipt,
                                String serverUuid,
                                Optional<byte[]> groupId,
+                               String destinationUuid,
                                SignalServiceContentProto serializedState)
   {
     this.sender                   = sender;
@@ -138,6 +146,7 @@ public final class SignalServiceContent {
     this.needsReceipt             = needsReceipt;
     this.serverUuid               = serverUuid;
     this.groupId                  = groupId;
+    this.destinationUuid          = destinationUuid;
     this.serializedState          = serializedState;
 
     this.message                      = Optional.empty();
@@ -160,6 +169,7 @@ public final class SignalServiceContent {
                                boolean needsReceipt,
                                String serverUuid,
                                Optional<byte[]> groupId,
+                               String destinationUuid,
                                SignalServiceContentProto serializedState)
   {
     this.sender                   = sender;
@@ -170,6 +180,7 @@ public final class SignalServiceContent {
     this.needsReceipt             = needsReceipt;
     this.serverUuid               = serverUuid;
     this.groupId                  = groupId;
+    this.destinationUuid          = destinationUuid;
     this.serializedState          = serializedState;
 
     this.message                      = Optional.empty();
@@ -192,6 +203,7 @@ public final class SignalServiceContent {
                                boolean needsReceipt,
                                String serverUuid,
                                Optional<byte[]> groupId,
+                               String destinationUuid,
                                SignalServiceContentProto serializedState)
   {
     this.sender                   = sender;
@@ -202,6 +214,7 @@ public final class SignalServiceContent {
     this.needsReceipt             = needsReceipt;
     this.serverUuid               = serverUuid;
     this.groupId                  = groupId;
+    this.destinationUuid          = destinationUuid;
     this.serializedState          = serializedState;
 
     this.message                      = Optional.empty();
@@ -224,6 +237,7 @@ public final class SignalServiceContent {
                                boolean needsReceipt,
                                String serverUuid,
                                Optional<byte[]> groupId,
+                               String destinationUuid,
                                SignalServiceContentProto serializedState)
   {
     this.sender                   = sender;
@@ -234,6 +248,7 @@ public final class SignalServiceContent {
     this.needsReceipt             = needsReceipt;
     this.serverUuid               = serverUuid;
     this.groupId                  = groupId;
+    this.destinationUuid          = destinationUuid;
     this.serializedState          = serializedState;
 
     this.message                      = Optional.empty();
@@ -256,6 +271,7 @@ public final class SignalServiceContent {
                                boolean needsReceipt,
                                String serverUuid,
                                Optional<byte[]> groupId,
+                               String destinationUuid,
                                SignalServiceContentProto serializedState)
   {
     this.sender                   = sender;
@@ -266,6 +282,7 @@ public final class SignalServiceContent {
     this.needsReceipt             = needsReceipt;
     this.serverUuid               = serverUuid;
     this.groupId                  = groupId;
+    this.destinationUuid          = destinationUuid;
     this.serializedState          = serializedState;
 
     this.message                      = Optional.empty();
@@ -287,6 +304,7 @@ public final class SignalServiceContent {
                                boolean needsReceipt,
                                String serverUuid,
                                Optional<byte[]> groupId,
+                               String destinationUuid,
                                SignalServiceContentProto serializedState)
   {
     this.sender                   = sender;
@@ -297,6 +315,7 @@ public final class SignalServiceContent {
     this.needsReceipt             = needsReceipt;
     this.serverUuid               = serverUuid;
     this.groupId                  = groupId;
+    this.destinationUuid          = destinationUuid;
     this.serializedState          = serializedState;
 
     this.message                      = Optional.empty();
@@ -318,6 +337,7 @@ public final class SignalServiceContent {
                                boolean needsReceipt,
                                String serverUuid,
                                Optional<byte[]> groupId,
+                               String destinationUuid,
                                SignalServiceContentProto serializedState)
   {
     this.sender                   = sender;
@@ -328,6 +348,7 @@ public final class SignalServiceContent {
     this.needsReceipt             = needsReceipt;
     this.serverUuid               = serverUuid;
     this.groupId                  = groupId;
+    this.destinationUuid          = destinationUuid;
     this.serializedState          = serializedState;
 
     this.message                      = Optional.empty();
@@ -404,6 +425,10 @@ public final class SignalServiceContent {
     return groupId;
   }
 
+  public String getDestinationUuid() {
+    return destinationUuid;
+  }
+
   public byte[] serialize() {
     return serializedState.toByteArray();
   }
@@ -443,6 +468,7 @@ public final class SignalServiceContent {
                                       metadata.isNeedsReceipt(),
                                       metadata.getServerGuid(),
                                       metadata.getGroupId(),
+                                      metadata.getDestinationUuid(),
                                       serviceContentProto);
     } else if (serviceContentProto.getDataCase() == SignalServiceContentProto.DataCase.CONTENT) {
       SignalServiceProtos.Content            message                      = serviceContentProto.getContent();
@@ -467,6 +493,7 @@ public final class SignalServiceContent {
                                         metadata.isNeedsReceipt(),
                                         metadata.getServerGuid(),
                                         metadata.getGroupId(),
+                                        metadata.getDestinationUuid(),
                                         serviceContentProto);
       } else if (message.hasSyncMessage() && localAddress.matches(metadata.getSender())) {
         return new SignalServiceContent(createSynchronizeMessage(metadata, message.getSyncMessage()),
@@ -479,6 +506,7 @@ public final class SignalServiceContent {
                                         metadata.isNeedsReceipt(),
                                         metadata.getServerGuid(),
                                         metadata.getGroupId(),
+                                        metadata.getDestinationUuid(),
                                         serviceContentProto);
       } else if (message.hasCallMessage()) {
         return new SignalServiceContent(createCallMessage(message.getCallMessage()),
@@ -491,6 +519,7 @@ public final class SignalServiceContent {
                                         metadata.isNeedsReceipt(),
                                         metadata.getServerGuid(),
                                         metadata.getGroupId(),
+                                        metadata.getDestinationUuid(),
                                         serviceContentProto);
       } else if (message.hasReceiptMessage()) {
         return new SignalServiceContent(createReceiptMessage(metadata, message.getReceiptMessage()),
@@ -503,6 +532,7 @@ public final class SignalServiceContent {
                                         metadata.isNeedsReceipt(),
                                         metadata.getServerGuid(),
                                         metadata.getGroupId(),
+                                        metadata.getDestinationUuid(),
                                         serviceContentProto);
       } else if (message.hasTypingMessage()) {
         return new SignalServiceContent(createTypingMessage(metadata, message.getTypingMessage()),
@@ -515,6 +545,7 @@ public final class SignalServiceContent {
                                         false,
                                         metadata.getServerGuid(),
                                         metadata.getGroupId(),
+                                        metadata.getDestinationUuid(),
                                         serviceContentProto);
       } else if (message.hasDecryptionErrorMessage()) {
         return new SignalServiceContent(createDecryptionErrorMessage(metadata, message.getDecryptionErrorMessage()),
@@ -527,6 +558,7 @@ public final class SignalServiceContent {
                                         metadata.isNeedsReceipt(),
                                         metadata.getServerGuid(),
                                         metadata.getGroupId(),
+                                        metadata.getDestinationUuid(),
                                         serviceContentProto);
       } else if (senderKeyDistributionMessage.isPresent()) {
         return new SignalServiceContent(senderKeyDistributionMessage.get(),
@@ -538,6 +570,7 @@ public final class SignalServiceContent {
                                         false,
                                         metadata.getServerGuid(),
                                         metadata.getGroupId(),
+                                        metadata.getDestinationUuid(),
                                         serviceContentProto);
       } else if (message.hasStoryMessage()) {
         return new SignalServiceContent(createStoryMessage(message.getStoryMessage()),
@@ -549,6 +582,7 @@ public final class SignalServiceContent {
                                         false,
                                         metadata.getServerGuid(),
                                         metadata.getGroupId(),
+                                        metadata.getDestinationUuid(),
                                         serviceContentProto);
       }
     }
@@ -584,6 +618,7 @@ public final class SignalServiceContent {
     SignalServiceDataMessage.RemoteDelete    remoteDelete     = createRemoteDelete(content);
     SignalServiceDataMessage.GroupCallUpdate groupCallUpdate  = createGroupCallUpdate(content);
     SignalServiceDataMessage.StoryContext    storyContext     = createStoryContext(content);
+    SignalServiceDataMessage.GiftBadge       giftBadge        = createGiftBadge(content);
 
     if (content.getRequiredProtocolVersion() > SignalServiceProtos.DataMessage.ProtocolVersion.CURRENT_VALUE) {
       throw new UnsupportedDataMessageProtocolVersionException(SignalServiceProtos.DataMessage.ProtocolVersion.CURRENT_VALUE,
@@ -633,7 +668,8 @@ public final class SignalServiceContent {
                                         remoteDelete,
                                         groupCallUpdate,
                                         payment,
-                                        storyContext);
+                                        storyContext,
+                                        giftBadge);
   }
 
   private static SignalServiceSyncMessage createSynchronizeMessage(SignalServiceMetadata metadata,
@@ -641,14 +677,21 @@ public final class SignalServiceContent {
       throws ProtocolInvalidKeyException, UnsupportedDataMessageException, InvalidMessageStructureException
   {
     if (content.hasSent()) {
-      Map<SignalServiceAddress, Boolean>   unidentifiedStatuses = new HashMap<>();
-      SignalServiceProtos.SyncMessage.Sent sentContent          = content.getSent();
-      SignalServiceDataMessage             dataMessage          = createSignalServiceMessage(metadata, sentContent.getMessage());
-      Optional<SignalServiceAddress>       address              = SignalServiceAddress.isValidAddress(sentContent.getDestinationUuid())
-                                                                  ? Optional.of(new SignalServiceAddress(ServiceId.parseOrThrow(sentContent.getDestinationUuid())))
-                                                                  : Optional.empty();
+      Map<SignalServiceAddress, Boolean>      unidentifiedStatuses = new HashMap<>();
+      SignalServiceProtos.SyncMessage.Sent    sentContent          = content.getSent();
+      Optional<SignalServiceDataMessage>      dataMessage          = sentContent.hasMessage() ? Optional.of(createSignalServiceMessage(metadata, sentContent.getMessage())) : Optional.empty();
+      Optional<SignalServiceStoryMessage>     storyMessage         = sentContent.hasStoryMessage() ? Optional.of(createStoryMessage(sentContent.getStoryMessage())) : Optional.empty();
+      Optional<SignalServiceAddress>          address              = SignalServiceAddress.isValidAddress(sentContent.getDestinationUuid())
+                                                                     ? Optional.of(new SignalServiceAddress(ServiceId.parseOrThrow(sentContent.getDestinationUuid())))
+                                                                     : Optional.empty();
+      Set<SignalServiceStoryMessageRecipient> recipientManifest    = sentContent.getStoryMessageRecipientsList()
+                                                                                .stream()
+                                                                                .map(SignalServiceContent::createSignalServiceStoryMessageRecipient)
+                                                                                .collect(Collectors.toSet());
 
-      if (!address.isPresent() && !dataMessage.getGroupContext().isPresent()) {
+      if (!address.isPresent()                                                        &&
+          !dataMessage.flatMap(SignalServiceDataMessage::getGroupContext).isPresent() &&
+          !storyMessage.flatMap(SignalServiceStoryMessage::getGroupContext).isPresent()) {
         throw new InvalidMessageStructureException("SyncMessage missing both destination and group ID!");
       }
 
@@ -666,7 +709,9 @@ public final class SignalServiceContent {
                                                                                   dataMessage,
                                                                                   sentContent.getExpirationStartTimestamp(),
                                                                                   unidentifiedStatuses,
-                                                                                  sentContent.getIsRecipientUpdate()));
+                                                                                  sentContent.getIsRecipientUpdate(),
+                                                                                  storyMessage,
+                                                                                  recipientManifest));
     }
 
     if (content.hasRequest()) {
@@ -880,6 +925,14 @@ public final class SignalServiceContent {
     return SignalServiceSyncMessage.empty();
   }
 
+  private static SignalServiceStoryMessageRecipient createSignalServiceStoryMessageRecipient(SignalServiceProtos.SyncMessage.Sent.StoryMessageRecipient storyMessageRecipient) {
+    return new SignalServiceStoryMessageRecipient(
+        new SignalServiceAddress(ServiceId.parseOrThrow(storyMessageRecipient.getDestinationUuid())),
+        storyMessageRecipient.getDistributionListIdsList(),
+        storyMessageRecipient.getIsAllowedToReply()
+    );
+  }
+
   private static SignalServiceCallMessage createCallMessage(SignalServiceProtos.CallMessage content) {
     boolean isMultiRing         = content.getMultiRing();
     Integer destinationDeviceId = content.hasDestinationDeviceId() ? content.getDestinationDeviceId() : null;
@@ -988,7 +1041,8 @@ public final class SignalServiceContent {
                                                 address,
                                                 content.getQuote().getText(),
                                                 attachments,
-                                                createMentions(content.getQuote().getBodyRangesList(), content.getQuote().getText(), isGroupV2));
+                                                createMentions(content.getQuote().getBodyRangesList(), content.getQuote().getText(), isGroupV2),
+                                                SignalServiceDataMessage.Quote.Type.fromProto(content.getQuote().getType()));
     } else {
       Log.w(TAG, "Quote was missing an author! Returning null.");
       return null;
@@ -1136,6 +1190,23 @@ public final class SignalServiceContent {
     }
 
     return new SignalServiceDataMessage.StoryContext(serviceId, content.getStoryContext().getSentTimestamp());
+  }
+
+  private static SignalServiceDataMessage.GiftBadge createGiftBadge(SignalServiceProtos.DataMessage content) throws InvalidMessageStructureException {
+    if (!content.hasGiftBadge()) {
+      return null;
+    }
+
+    if (!content.getGiftBadge().hasReceiptCredentialPresentation()) {
+      throw new InvalidMessageStructureException("GiftBadge does not contain a receipt credential presentation!");
+    }
+
+    try {
+      ReceiptCredentialPresentation receiptCredentialPresentation = new ReceiptCredentialPresentation(content.getGiftBadge().getReceiptCredentialPresentation().toByteArray());
+      return new SignalServiceDataMessage.GiftBadge(receiptCredentialPresentation);
+    } catch (InvalidInputException invalidInputException) {
+      throw new InvalidMessageStructureException(invalidInputException);
+    }
   }
 
   private static SignalServiceDataMessage.PaymentNotification createPaymentNotification(SignalServiceProtos.DataMessage.Payment content)

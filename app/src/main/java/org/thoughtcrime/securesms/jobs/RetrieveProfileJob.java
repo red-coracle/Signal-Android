@@ -38,6 +38,7 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 import org.thoughtcrime.securesms.util.Base64;
+import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.IdentityUtil;
 import org.thoughtcrime.securesms.util.ProfileUtil;
 import org.signal.core.util.SetUtil;
@@ -83,7 +84,7 @@ public class RetrieveProfileJob extends BaseJob {
    * Identical to {@link #enqueue(Set)})}, but run on a background thread for convenience.
    */
   public static void enqueueAsync(@NonNull RecipientId recipientId) {
-    SignalExecutors.BOUNDED.execute(() -> ApplicationDependencies.getJobManager().add(forRecipient(recipientId)));
+    SignalExecutors.BOUNDED_IO.execute(() -> ApplicationDependencies.getJobManager().add(forRecipient(recipientId)));
   }
 
   /**
@@ -120,10 +121,9 @@ public class RetrieveProfileJob extends BaseJob {
     if (recipient.isSelf()) {
       return new RefreshOwnProfileJob();
     } else if (recipient.isGroup()) {
-      Context         context    = ApplicationDependencies.getApplication();
-      List<Recipient> recipients = SignalDatabase.groups().getGroupMembers(recipient.requireGroupId(), GroupDatabase.MemberSet.FULL_MEMBERS_EXCLUDING_SELF);
+      List<RecipientId> recipients = SignalDatabase.groups().getGroupMemberIds(recipient.requireGroupId(), GroupDatabase.MemberSet.FULL_MEMBERS_EXCLUDING_SELF);
 
-      return new RetrieveProfileJob(Stream.of(recipients).map(Recipient::getId).collect(Collectors.toSet()));
+      return new RetrieveProfileJob(new HashSet<>(recipients));
     } else {
       return new RetrieveProfileJob(Collections.singleton(recipientId));
     }
@@ -253,13 +253,9 @@ public class RetrieveProfileJob extends BaseJob {
     List<Recipient> recipients = Recipient.resolvedList(recipientIds);
     stopwatch.split("resolve-ensure");
 
-    ProfileService profileService = new ProfileService(ApplicationDependencies.getGroupsV2Operations().getProfileOperations(),
-                                                       ApplicationDependencies.getSignalServiceMessageReceiver(),
-                                                       ApplicationDependencies.getSignalWebSocket());
-
     List<Observable<Pair<Recipient, ServiceResponse<ProfileAndCredential>>>> requests = Stream.of(recipients)
                                                                                               .filter(Recipient::hasServiceId)
-                                                                                              .map(r -> ProfileUtil.retrieveProfile(context, r, getRequestType(r), profileService).toObservable())
+                                                                                              .map(r -> ProfileUtil.retrieveProfile(context, r, getRequestType(r)).toObservable())
                                                                                               .toList();
     stopwatch.split("requests");
 
@@ -306,7 +302,8 @@ public class RetrieveProfileJob extends BaseJob {
     });
 
     recipientDatabase.markProfilesFetched(success, System.currentTimeMillis());
-    if (operationState.unregistered.size() > 0 || newlyRegistered.size() > 0) {
+    // XXX The service hasn't implemented profiles for PNIs yet, so if using PNP CDS we don't want to mark users without profiles as unregistered.
+    if ((operationState.unregistered.size() > 0 || newlyRegistered.size() > 0) && !FeatureFlags.phoneNumberPrivacy()) {
       Log.i(TAG, "Marking " + newlyRegistered.size() + " users as registered and " + operationState.unregistered.size() + " users as unregistered.");
       recipientDatabase.bulkUpdatedRegisteredStatus(newlyRegistered, operationState.unregistered);
     }
@@ -449,6 +446,11 @@ public class RetrieveProfileJob extends BaseJob {
 
       String plaintextProfileName = Util.emptyIfNull(ProfileUtil.decryptString(profileKey, profileName));
 
+      if (TextUtils.isEmpty(plaintextProfileName)) {
+        Log.w(TAG, "No name set on the profile for " + recipient.getId() + " -- Leaving it alone");
+        return;
+      }
+
       ProfileName remoteProfileName = ProfileName.fromSerialized(plaintextProfileName);
       ProfileName localProfileName  = recipient.getProfileName();
 
@@ -471,10 +473,6 @@ public class RetrieveProfileJob extends BaseJob {
           Log.i(TAG, String.format(Locale.US, "Name changed, but wasn't relevant to write an event. blocked: %s, group: %s, self: %s, firstSet: %s, displayChange: %s",
                                    recipient.isBlocked(), recipient.isGroup(), recipient.isSelf(), localDisplayName.isEmpty(), !remoteDisplayName.equals(localDisplayName)));
         }
-      }
-
-      if (TextUtils.isEmpty(plaintextProfileName)) {
-        Log.i(TAG, "No profile name set for " + recipient.getId());
       }
     } catch (InvalidCiphertextException e) {
       Log.w(TAG, "Bad profile key for " + recipient.getId());

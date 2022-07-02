@@ -13,7 +13,6 @@ import com.bumptech.glide.request.target.Target
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.avatar.view.AvatarView
 import org.thoughtcrime.securesms.badges.BadgeImageView
-import org.thoughtcrime.securesms.components.settings.PreferenceModel
 import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord
 import org.thoughtcrime.securesms.mms.DecryptableStreamUriLoader
 import org.thoughtcrime.securesms.mms.GlideApp
@@ -24,6 +23,7 @@ import org.thoughtcrime.securesms.util.DateUtils
 import org.thoughtcrime.securesms.util.SpanUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.LayoutFactory
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
+import org.thoughtcrime.securesms.util.adapter.mapping.MappingModel
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingViewHolder
 import org.thoughtcrime.securesms.util.visible
 import java.util.Locale
@@ -48,7 +48,7 @@ object StoriesLandingItem {
     val onGoToChat: (Model) -> Unit,
     val onSave: (Model) -> Unit,
     val onDeleteStory: (Model) -> Unit
-  ) : PreferenceModel<Model>() {
+  ) : MappingModel<Model> {
     override fun areItemsTheSame(newItem: Model): Boolean {
       return data.storyRecipient.id == newItem.data.storyRecipient.id
     }
@@ -57,7 +57,8 @@ object StoriesLandingItem {
       return data.storyRecipient.hasSameContent(newItem.data.storyRecipient) &&
         data == newItem.data &&
         !hasStatusChange(newItem) &&
-        super.areContentsTheSame(newItem)
+        (data.sendingCount == newItem.data.sendingCount && data.failureCount == newItem.data.failureCount) &&
+        data.storyViewState == newItem.data.storyViewState
     }
 
     override fun getChangePayload(newItem: Model): Any? {
@@ -137,7 +138,6 @@ object StoriesLandingItem {
         val storyTextPostModel = StoryTextPostModel.parseFrom(record)
         GlideApp.with(storyPreview)
           .load(storyTextPostModel)
-          .addListener(HideBlurAfterLoadListener())
           .placeholder(storyTextPostModel.getPlaceholder())
           .centerCrop()
           .dontAnimate()
@@ -205,12 +205,17 @@ object StoriesLandingItem {
     }
 
     private fun presentDateOrStatus(model: Model) {
-      if (model.data.primaryStory.messageRecord.isOutgoing && (model.data.primaryStory.messageRecord.isPending || model.data.primaryStory.messageRecord.isMediaPending)) {
-        errorIndicator.visible = false
-        date.setText(R.string.StoriesLandingItem__sending)
-      } else if (model.data.primaryStory.messageRecord.isOutgoing && model.data.primaryStory.messageRecord.isFailed) {
+      if (model.data.sendingCount > 0 || (model.data.primaryStory.messageRecord.isOutgoing && (model.data.primaryStory.messageRecord.isPending || model.data.primaryStory.messageRecord.isMediaPending))) {
+        errorIndicator.visible = model.data.failureCount > 0L
+        if (model.data.sendingCount > 1) {
+          date.text = context.getString(R.string.StoriesLandingItem__sending_d, model.data.sendingCount)
+        } else {
+          date.setText(R.string.StoriesLandingItem__sending)
+        }
+      } else if (model.data.failureCount > 0 || (model.data.primaryStory.messageRecord.isOutgoing && model.data.primaryStory.messageRecord.isFailed)) {
         errorIndicator.visible = true
-        date.text = SpanUtil.color(ContextCompat.getColor(context, R.color.signal_alert_primary), context.getString(R.string.StoriesLandingItem__couldnt_send))
+        val message = if (model.data.primaryStory.messageRecord.isIdentityMismatchFailure) R.string.StoriesLandingItem__partially_sent else R.string.StoriesLandingItem__send_failed
+        date.text = SpanUtil.color(ContextCompat.getColor(context, R.color.signal_alert_primary), context.getString(message))
       } else {
         errorIndicator.visible = false
         date.text = DateUtils.getBriefRelativeTimeSpanString(context, Locale.getDefault(), model.data.dateInMilliseconds)
@@ -219,11 +224,6 @@ object StoriesLandingItem {
 
     private fun setUpClickListeners(model: Model) {
       itemView.setOnClickListener {
-        if (!itemView.isClickable) {
-          return@setOnClickListener
-        }
-
-        itemView.isClickable = false
         model.onRowClick(model, storyPreview)
       }
 

@@ -42,6 +42,7 @@ import org.thoughtcrime.securesms.database.documents.NetworkFailure;
 import org.thoughtcrime.securesms.database.model.GroupCallUpdateDetailsUtil;
 import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
+import org.thoughtcrime.securesms.database.model.ParentStoryId;
 import org.thoughtcrime.securesms.database.model.SmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.StoryResult;
 import org.thoughtcrime.securesms.database.model.StoryViewState;
@@ -655,6 +656,11 @@ public class SmsDatabase extends MessageDatabase {
   @Override
   public @NonNull List<MarkedMessageInfo> setIncomingMessagesViewed(@NonNull List<Long> messageIds) {
     return Collections.emptyList();
+  }
+
+  @Override
+  public @NonNull List<MarkedMessageInfo> setOutgoingGiftsRevealed(@NonNull List<Long> messageIds) {
+    throw new UnsupportedOperationException();
   }
 
   private InsertResult updateMessageBodyAndType(long messageId, String body, long maskOff, long maskOn) {
@@ -1402,12 +1408,21 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
+  public @NonNull MessageDatabase.Reader getAllOutgoingStoriesAt(long sentTimestamp) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public @NonNull List<StoryResult> getOrderedStoryRecipientsAndIds() {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public @NonNull MessageDatabase.Reader getAllStoriesFor(@NonNull RecipientId recipientId) {
+    throw new UnsupportedOperationException();
+  }
+
+  public boolean isOutgoingStoryAlreadyInDatabase(@NonNull RecipientId recipientId, long sentTimestamp) {
     throw new UnsupportedOperationException();
   }
 
@@ -1437,6 +1452,11 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
+  public boolean hasSelfReplyInGroupStory(long parentStoryId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public @NonNull Cursor getStoryReplies(long parentStoryId) {
     throw new UnsupportedOperationException();
   }
@@ -1452,7 +1472,32 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
+  public void updateViewedStories(@NonNull Set<SyncMessageId> syncMessageIds) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public int deleteStoriesOlderThan(long timestamp) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull MessageDatabase.Reader getUnreadStories(@NonNull RecipientId recipientId, int limit) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @Nullable ParentStoryId.GroupReply getParentStoryIdForGroupReply(long messageId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull List<MarkedMessageInfo> setGroupStoryMessagesReadSince(long threadId, long groupStoryId, long sinceTimestamp) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void deleteGroupStoryReplies(long parentStoryId) {
     throw new UnsupportedOperationException();
   }
 
@@ -1683,6 +1728,21 @@ public class SmsDatabase extends MessageDatabase {
 
   @Override
   public void markIncomingNotificationReceived(long threadId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void markGiftRedemptionCompleted(long messageId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void markGiftRedemptionStarted(long messageId) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void markGiftRedemptionFailed(long messageId) {
     throw new UnsupportedOperationException();
   }
 

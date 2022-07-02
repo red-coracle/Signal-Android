@@ -498,7 +498,7 @@ public class TextSecurePreferences {
    * @deprecated Use {@link SettingsValues#getMessageFontSize()} via {@link org.thoughtcrime.securesms.keyvalue.SignalStore} instead.
    */
   public static int getMessageBodyTextSize(Context context) {
-    return Integer.valueOf(getStringPreference(context, MESSAGE_BODY_TEXT_SIZE_PREF, "16"));
+    return Integer.parseInt(getStringPreference(context, MESSAGE_BODY_TEXT_SIZE_PREF, "16"));
   }
 
   public static boolean isTurnOnly(Context context) {
@@ -649,7 +649,7 @@ public class TextSecurePreferences {
   }
 
   public static boolean isPasswordDisabled(Context context) {
-    return getBooleanPreference(context, DISABLE_PASSPHRASE_PREF, false);
+    return getBooleanPreference(context, DISABLE_PASSPHRASE_PREF, true);
   }
 
   public static void setPasswordDisabled(Context context, boolean disabled) {
@@ -774,7 +774,7 @@ public class TextSecurePreferences {
    * @deprecated Use {@link SettingsValues#getTheme()} via {@link org.thoughtcrime.securesms.keyvalue.SignalStore} instead.
    */
   public static String getTheme(Context context) {
-    return getStringPreference(context, THEME_PREF, DynamicTheme.systemThemeAvailable() ? DynamicTheme.SYSTEM : DynamicTheme.LIGHT);
+    return getStringPreference(context, THEME_PREF, DynamicTheme.systemThemeAvailable() ? "system" : "light");
   }
 
   public static boolean isShowInviteReminders(Context context) {

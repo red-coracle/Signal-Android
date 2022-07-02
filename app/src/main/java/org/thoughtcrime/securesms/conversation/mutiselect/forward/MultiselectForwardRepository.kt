@@ -1,25 +1,38 @@
 package org.thoughtcrime.securesms.conversation.mutiselect.forward
 
-import android.content.Context
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.contacts.paged.ContactSearchKey
 import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.database.ThreadDatabase
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.sharing.MultiShareArgs
 import org.thoughtcrime.securesms.sharing.MultiShareSender
-import org.thoughtcrime.securesms.sharing.ShareContactAndThread
+import org.thoughtcrime.securesms.stories.Stories
 import java.util.Optional
 
-class MultiselectForwardRepository(context: Context) {
+class MultiselectForwardRepository {
 
   class MultiselectForwardResultHandlers(
     val onAllMessageSentSuccessfully: () -> Unit,
     val onSomeMessagesFailed: () -> Unit,
     val onAllMessagesFailed: () -> Unit
   )
+
+  fun checkAllSelectedMediaCanBeSentToStories(records: List<MultiShareArgs>): Single<Stories.MediaTransform.SendRequirements> {
+    if (!Stories.isFeatureEnabled() || records.isEmpty()) {
+      return Single.just(Stories.MediaTransform.SendRequirements.CAN_NOT_SEND)
+    }
+
+    return Single.fromCallable {
+      if (records.any { !it.isValidForStories }) {
+        Stories.MediaTransform.SendRequirements.CAN_NOT_SEND
+      } else {
+        Stories.MediaTransform.getSendRequirements(records.map { it.media }.flatten())
+      }
+    }.subscribeOn(Schedulers.io())
+  }
 
   fun canSelectRecipient(recipientId: Optional<RecipientId>): Single<Boolean> {
     if (!recipientId.isPresent) {
@@ -44,28 +57,20 @@ class MultiselectForwardRepository(context: Context) {
     resultHandlers: MultiselectForwardResultHandlers
   ) {
     SignalExecutors.BOUNDED.execute {
-      val threadDatabase: ThreadDatabase = SignalDatabase.threads
-
-      val sharedContactsAndThreads: Set<ShareContactAndThread> = shareContacts
+      val filteredContacts: Set<ContactSearchKey> = shareContacts
         .asSequence()
-        .filter { it is ContactSearchKey.Story || it is ContactSearchKey.KnownRecipient }
-        .map {
-          val recipient = Recipient.resolved(it.requireShareContact().recipientId.get())
-          val isStory = it is ContactSearchKey.Story || recipient.isDistributionList
-          val thread = if (isStory) -1L else threadDatabase.getOrCreateThreadIdFor(recipient)
-          ShareContactAndThread(recipient.id, thread, recipient.isForceSmsSelection, it is ContactSearchKey.Story)
-        }
+        .filter { it is ContactSearchKey.RecipientSearchKey.Story || it is ContactSearchKey.RecipientSearchKey.KnownRecipient }
         .toSet()
 
-      val mappedArgs: List<MultiShareArgs> = multiShareArgs.map { it.buildUpon(sharedContactsAndThreads).build() }
+      val mappedArgs: List<MultiShareArgs> = multiShareArgs.map { it.buildUpon(filteredContacts).build() }
       val results = mappedArgs.sortedBy { it.timestamp }.map { MultiShareSender.sendSync(it) }
 
       if (additionalMessage.isNotEmpty()) {
-        val additional = MultiShareArgs.Builder(sharedContactsAndThreads.filterNot { it.isStory }.toSet())
+        val additional = MultiShareArgs.Builder(filteredContacts.filterNot { it is ContactSearchKey.RecipientSearchKey.Story }.toSet())
           .withDraftText(additionalMessage)
           .build()
 
-        if (additional.shareContactAndThreads.isNotEmpty()) {
+        if (additional.contactSearchKeys.isNotEmpty()) {
           val additionalResult: MultiShareSender.MultiShareSendResultCollection = MultiShareSender.sendSync(additional)
 
           handleResults(results + additionalResult, resultHandlers)
