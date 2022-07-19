@@ -152,6 +152,7 @@ import org.thoughtcrime.securesms.components.voice.VoiceNotePlaybackState;
 import org.thoughtcrime.securesms.components.voice.VoiceNotePlayerView;
 import org.thoughtcrime.securesms.contacts.ContactAccessor;
 import org.thoughtcrime.securesms.contacts.ContactAccessor.ContactData;
+import org.thoughtcrime.securesms.contacts.paged.ContactSearchKey;
 import org.thoughtcrime.securesms.contacts.sync.ContactDiscovery;
 import org.thoughtcrime.securesms.contactshare.Contact;
 import org.thoughtcrime.securesms.contactshare.ContactShareEditActivity;
@@ -161,7 +162,6 @@ import org.thoughtcrime.securesms.conversation.ConversationGroupViewModel.GroupA
 import org.thoughtcrime.securesms.conversation.ConversationMessage.ConversationMessageFactory;
 import org.thoughtcrime.securesms.conversation.drafts.DraftRepository;
 import org.thoughtcrime.securesms.conversation.drafts.DraftViewModel;
-import org.thoughtcrime.securesms.conversation.ui.error.SafetyNumberChangeDialog;
 import org.thoughtcrime.securesms.conversation.ui.groupcall.GroupCallViewModel;
 import org.thoughtcrime.securesms.conversation.ui.mentions.MentionsPickerViewModel;
 import org.thoughtcrime.securesms.crypto.ReentrantSessionLock;
@@ -263,6 +263,7 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.recipients.ui.disappearingmessages.RecipientDisappearingMessagesActivity;
 import org.thoughtcrime.securesms.registration.RegistrationNavigationActivity;
+import org.thoughtcrime.securesms.safety.SafetyNumberBottomSheet;
 import org.thoughtcrime.securesms.search.MessageResult;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.sms.MessageSender;
@@ -348,7 +349,7 @@ public class ConversationParentFragment extends Fragment
                AttachmentKeyboard.Callback,
                ConversationReactionOverlay.OnReactionSelectedListener,
                ReactWithAnyEmojiBottomSheetDialogFragment.Callback,
-               SafetyNumberChangeDialog.Callback,
+               SafetyNumberBottomSheet.Callbacks,
                ReactionsBottomSheetDialogFragment.Callback,
                MediaKeyboard.MediaKeyboardListener,
                EmojiEventListener,
@@ -416,7 +417,6 @@ public class ConversationParentFragment extends Fragment
   protected HidingLinearLayout       quickAttachmentToggle;
   protected HidingLinearLayout       inlineAttachmentToggle;
   private   InputPanel               inputPanel;
-  private   View                     panelParent;
   private   View                     noLongerMemberBanner;
   private   Stub<TextView>           cannotSendInAnnouncementGroupBanner;
   private   View                     requestingMemberBanner;
@@ -454,6 +454,7 @@ public class ConversationParentFragment extends Fragment
   private boolean       isMmsEnabled                  = true;
   private boolean       isSecurityInitialized         = false;
   private boolean       isSearchRequested             = false;
+  private boolean       hasProcessedShareData         = false;
 
   private final LifecycleDisposable disposables          = new LifecycleDisposable();
   private final Debouncer           optionsMenuDebouncer = new Debouncer(50);
@@ -519,6 +520,10 @@ public class ConversationParentFragment extends Fragment
 
     final boolean typingIndicatorsEnabled = TextSecurePreferences.isTypingIndicatorsEnabled(requireContext());
 
+    if (savedInstanceState != null) {
+      hasProcessedShareData = savedInstanceState.getBoolean("SHARED", false);
+    }
+
     initializeReceivers();
     initializeViews(view);
     updateWallpaper(args.getWallpaper());
@@ -549,6 +554,8 @@ public class ConversationParentFragment extends Fragment
 
         initializeProfiles();
         initializeGv1Migration();
+
+        Log.d(TAG, "Initializing data from onViewCreated...");
         initializeDraft(args).addListener(new AssertedSuccessListener<Boolean>() {
           @Override
           public void onSuccess(Boolean loadedDraft) {
@@ -635,10 +642,13 @@ public class ConversationParentFragment extends Fragment
 
     reportShortcutLaunch(viewModel.getArgs().getRecipientId());
     initializeResources(viewModel.getArgs());
+
     initializeSecurity(recipient.get().isRegistered(), isDefaultSms).addListener(new AssertedSuccessListener<Boolean>() {
       @Override
       public void onSuccess(Boolean result) {
         if (getContext() != null) {
+          Log.d(TAG, "Initializing draft from new intent...");
+          hasProcessedShareData = false;
           initializeDraft(viewModel.getArgs());
         }
       }
@@ -886,6 +896,7 @@ public class ConversationParentFragment extends Fragment
 
     outState.putInt(STATE_REACT_WITH_ANY_PAGE, reactWithAnyEmojiStartPage);
     outState.putBoolean(STATE_IS_SEARCH_REQUESTED, isSearchRequested);
+    outState.putBoolean("SHARED", hasProcessedShareData);
   }
 
   @Override
@@ -1002,6 +1013,10 @@ public class ConversationParentFragment extends Fragment
 
     inflater.inflate(R.menu.conversation, menu);
 
+    if (isInMessageRequest() && !recipient.get().isBlocked()) {
+      hideMenuItem(menu, R.id.menu_conversation_settings);
+    }
+
     if (isSingleConversation() && !isSecureText && !recipient.get().isReleaseNotes()) {
       inflater.inflate(R.menu.conversation_insecure, menu);
     }
@@ -1009,7 +1024,7 @@ public class ConversationParentFragment extends Fragment
     if (recipient != null && recipient.get().isMuted()) inflater.inflate(R.menu.conversation_muted, menu);
     else                                                inflater.inflate(R.menu.conversation_unmuted, menu);
 
-    if (isSingleConversation() && getRecipient().getContactUri() == null && !recipient.get().isReleaseNotes()) {
+    if (isSingleConversation() && getRecipient().getContactUri() == null && !recipient.get().isReleaseNotes() && !recipient.get().isSelf()) {
       inflater.inflate(R.menu.conversation_add_to_contacts, menu);
     }
 
@@ -1309,7 +1324,7 @@ public class ConversationParentFragment extends Fragment
       return;
     }
 
-    if (isInMessageRequest()) return;
+    if (isInMessageRequest() && !recipient.get().isBlocked()) return;
 
     Intent intent = ConversationSettingsActivity.forRecipient(requireContext(), recipient.getId());
     Bundle bundle = ConversationSettingsActivity.createTransitionBundle(requireActivity(), titleView.findViewById(R.id.contact_photo_image), toolbar);
@@ -1591,22 +1606,16 @@ public class ConversationParentFragment extends Fragment
   private void handleRecentSafetyNumberChange() {
     List<IdentityRecord> records = identityRecords.getUnverifiedRecords();
     records.addAll(identityRecords.getUntrustedRecords());
-    SafetyNumberChangeDialog.show(getChildFragmentManager(), records);
+    SafetyNumberBottomSheet
+        .forIdentityRecordsAndDestination(
+            records,
+            new ContactSearchKey.RecipientSearchKey.KnownRecipient(recipient.getId())
+        )
+        .show(getChildFragmentManager());
   }
 
   @Override
-  public void onSendAnywayAfterSafetyNumberChange(@NonNull List<RecipientId> changedRecipients) {
-    Log.d(TAG, "onSendAnywayAfterSafetyNumberChange");
-    initializeIdentityRecords().addListener(new AssertedSuccessListener<Boolean>() {
-      @Override
-      public void onSuccess(Boolean result) {
-        sendMessage(null);
-      }
-    });
-  }
-
-  @Override
-  public void onMessageResentAfterSafetyNumberChange() {
+  public void onMessageResentAfterSafetyNumberChangeInBottomSheet() {
     Log.d(TAG, "onMessageResentAfterSafetyNumberChange");
     initializeIdentityRecords().addListener(new AssertedSuccessListener<Boolean>() {
       @Override
@@ -1659,6 +1668,12 @@ public class ConversationParentFragment extends Fragment
   private ListenableFuture<Boolean> initializeDraft(@NonNull ConversationIntents.Args args) {
     final SettableFuture<Boolean> result = new SettableFuture<>();
 
+    if (hasProcessedShareData) {
+      Log.d(TAG, "Already processed this share data. Skipping.");
+      result.set(false);
+      return result;
+    }
+
     final CharSequence   draftText        = args.getDraftText();
     final Uri            draftMedia       = requireActivity().getIntent().getData();
     final String         draftContentType = requireActivity().getIntent().getType();
@@ -1667,6 +1682,8 @@ public class ConversationParentFragment extends Fragment
     final StickerLocator stickerLocator   = args.getStickerLocator();
     final boolean        borderless       = args.isBorderless();
 
+    hasProcessedShareData = true;
+
     if (stickerLocator != null && draftMedia != null) {
       Log.d(TAG, "Handling shared sticker.");
       sendSticker(stickerLocator, Objects.requireNonNull(draftContentType), draftMedia, 0, true);
@@ -1674,6 +1691,7 @@ public class ConversationParentFragment extends Fragment
     }
 
     if (draftMedia != null && draftContentType != null && borderless) {
+      Log.d(TAG, "Handling borderless draft media with content type " + draftContentType);
       SimpleTask.run(getLifecycle(),
                      () -> getKeyboardImageDetails(draftMedia),
                      details -> sendKeyboardImage(draftMedia, draftContentType, details));
@@ -2131,7 +2149,6 @@ public class ConversationParentFragment extends Fragment
     quickAttachmentToggle    = view.findViewById(R.id.quick_attachment_toggle);
     inlineAttachmentToggle   = view.findViewById(R.id.inline_attachment_container);
     inputPanel               = view.findViewById(R.id.bottom_panel);
-    panelParent              = view.findViewById(R.id.conversation_activity_panel_parent);
     searchNav                = view.findViewById(R.id.conversation_search_nav);
     messageRequestBottomView = view.findViewById(R.id.conversation_activity_message_request_bottom_bar);
     mentionsSuggestions      = ViewUtil.findStubById(view, R.id.conversation_mention_suggestions_stub);
@@ -3181,7 +3198,7 @@ public class ConversationParentFragment extends Fragment
       outgoingMessage = new OutgoingSecureMediaMessage(outgoingMessageCandidate);
       ApplicationDependencies.getTypingStatusSender().onTypingStopped(thread);
     } else {
-      outgoingMessage = outgoingMessageCandidate;
+      outgoingMessage = outgoingMessageCandidate.withExpiry(0);
     }
 
     Permissions.with(this)
@@ -3229,7 +3246,7 @@ public class ConversationParentFragment extends Fragment
       message = new OutgoingEncryptedMessage(recipient.get(), messageBody, expiresIn);
       ApplicationDependencies.getTypingStatusSender().onTypingStopped(thread);
     } else {
-      message = new OutgoingTextMessage(recipient.get(), messageBody, expiresIn, sendType.getSimSubscriptionIdOr(-1));
+      message = new OutgoingTextMessage(recipient.get(), messageBody, 0, sendType.getSimSubscriptionIdOr(-1));
     }
 
     Permissions.with(this)
@@ -3627,6 +3644,17 @@ public class ConversationParentFragment extends Fragment
     material3OnScrollHelper.setColorImmediate();
   }
 
+  @Override
+  public void sendAnywayAfterSafetyNumberChangedInBottomSheet(@NonNull List<? extends ContactSearchKey.RecipientSearchKey> destinations) {
+    Log.d(TAG, "onSendAnywayAfterSafetyNumberChange");
+    initializeIdentityRecords().addListener(new AssertedSuccessListener<Boolean>() {
+      @Override
+      public void onSuccess(Boolean result) {
+        sendMessage(null);
+      }
+    });
+  }
+
   // Listeners
 
   private final class DeleteCanceledVoiceNoteListener implements ListenableFuture.Listener<VoiceNoteDraft> {
@@ -3886,7 +3914,9 @@ public class ConversationParentFragment extends Fragment
   @Override
   public void onMessageWithErrorClicked(@NonNull MessageRecord messageRecord) {
     if (messageRecord.isIdentityMismatchFailure()) {
-      SafetyNumberChangeDialog.show(requireContext(), getChildFragmentManager(), messageRecord);
+      SafetyNumberBottomSheet
+          .forMessageRecord(requireContext(), messageRecord)
+          .show(getChildFragmentManager());
     } else if (messageRecord.hasFailedWithNetworkFailures()) {
       new MaterialAlertDialogBuilder(requireContext())
           .setMessage(R.string.conversation_activity__message_could_not_be_sent)

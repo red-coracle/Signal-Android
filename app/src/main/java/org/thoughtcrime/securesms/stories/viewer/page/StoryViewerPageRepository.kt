@@ -19,10 +19,12 @@ import org.thoughtcrime.securesms.database.model.databaseprotos.StoryTextPost
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.jobs.MultiDeviceViewedUpdateJob
 import org.thoughtcrime.securesms.jobs.SendViewedReceiptJob
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.stories.Stories
 import org.thoughtcrime.securesms.util.Base64
+import org.thoughtcrime.securesms.util.TextSecurePreferences
 
 /**
  * Open for testing.
@@ -35,17 +37,19 @@ open class StoryViewerPageRepository(context: Context) {
 
   private val context = context.applicationContext
 
+  fun isReadReceiptsEnabled(): Boolean = TextSecurePreferences.isReadReceiptsEnabled(context)
+
   private fun getStoryRecords(recipientId: RecipientId, isUnviewedOnly: Boolean): Observable<List<MessageRecord>> {
     return Observable.create { emitter ->
       val recipient = Recipient.resolved(recipientId)
 
       fun refresh() {
         val stories = if (recipient.isMyStory) {
-          SignalDatabase.mms.getAllOutgoingStories(false)
+          SignalDatabase.mms.getAllOutgoingStories(false, 100)
         } else if (isUnviewedOnly) {
           SignalDatabase.mms.getUnreadStories(recipientId, 100)
         } else {
-          SignalDatabase.mms.getAllStoriesFor(recipientId)
+          SignalDatabase.mms.getAllStoriesFor(recipientId, 100)
         }
 
         val results = mutableListOf<MessageRecord>()
@@ -170,19 +174,24 @@ open class StoryViewerPageRepository(context: Context) {
         val markedMessageInfo = SignalDatabase.mms.setIncomingMessageViewed(storyPost.id)
         if (markedMessageInfo != null) {
           ApplicationDependencies.getDatabaseObserver().notifyConversationListListeners()
-          ApplicationDependencies.getJobManager().add(
-            SendViewedReceiptJob(
-              markedMessageInfo.threadId,
-              storyPost.sender.id,
-              markedMessageInfo.syncMessageId.timetamp,
-              MessageId(storyPost.id, true)
-            )
-          )
-          MultiDeviceViewedUpdateJob.enqueue(listOf(markedMessageInfo.syncMessageId))
 
-          val recipientId = storyPost.group?.id ?: storyPost.sender.id
-          SignalDatabase.recipients.updateLastStoryViewTimestamp(recipientId)
-          Stories.enqueueNextStoriesForDownload(recipientId, true)
+          if (storyPost.sender.isReleaseNotes) {
+            SignalStore.storyValues().userHasSeenOnboardingStory = true
+          } else {
+            ApplicationDependencies.getJobManager().add(
+              SendViewedReceiptJob(
+                markedMessageInfo.threadId,
+                storyPost.sender.id,
+                markedMessageInfo.syncMessageId.timetamp,
+                MessageId(storyPost.id, true)
+              )
+            )
+            MultiDeviceViewedUpdateJob.enqueue(listOf(markedMessageInfo.syncMessageId))
+
+            val recipientId = storyPost.group?.id ?: storyPost.sender.id
+            SignalDatabase.recipients.updateLastStoryViewTimestamp(recipientId)
+            Stories.enqueueNextStoriesForDownload(recipientId, true, 5)
+          }
         }
       }
     }

@@ -219,8 +219,10 @@
   <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">এই ডিভাইস ডায়াল ক্রিয়া সমর্থন করে বলে মনে হচ্ছে না।</string>
   <string name="ConversationActivity_transport_insecure_sms">অনিরাপদ এসএমএস</string>
   <!--A title for the option to send an SMS with a placeholder to put the name of their SIM card-->
+  <string name="ConversationActivity_transport_insecure_sms_with_sim">অনিরাপদ এসএমএস (%1$s)</string>
   <string name="ConversationActivity_transport_insecure_mms">অনিরাপদ এমএমএস</string>
   <!--A title for the option to send an SMS with a placeholder to put the name of their SIM card-->
+  <string name="ConversationActivity_transport_insecure_mms_with_sim">অনিরাপদ এমএমএস (%1$s)</string>
   <string name="ConversationActivity_transport_signal">Signal বার্তা</string>
   <string name="ConversationActivity_lets_switch_to_signal">চলুন Signal এ যোগ দেই %1$s</string>
   <string name="ConversationActivity_specify_recipient">দয়া করে একটি পরিচিতি চয়ন করুন</string>
@@ -272,6 +274,8 @@
     <item quantity="other"> %d টি অপঠিত বার্তা</item>
   </plurals>
   <!--ConversationFragment-->
+  <!--Toast text when contacts activity is not found-->
+  <string name="ConversationFragment__contacts_app_not_found">কন্ট্যাক্ট অ্যাপ পাওয়া যায়নি।</string>
   <plurals name="ConversationFragment_delete_selected_messages">
     <item quantity="one">বাছাইকৃত বার্তাটি মুছে ফেলবেন?</item>
     <item quantity="other">বাছাইকৃত বার্তাগুলো মুছে ফেলবেন?</item>
@@ -655,6 +659,7 @@
   <string name="AddGroupDetailsFragment__group_creation_failed">গ্রুপ তৈরিকরণ ব্যার্থ হয়েছে</string>
   <string name="AddGroupDetailsFragment__try_again_later">পরবর্তীতে পুনরায় চেষ্টা করুন।</string>
   <!--Displayed when adding group details to an MMS Group-->
+  <string name="AddGroupDetailsFragment__youve_selected_a_contact_that_doesnt_support">আপনি এমন একটি কন্ট্যাক্ট নির্বাচন করেছেন যেটি Signal গ্ৰুপ সমর্থন করে না, তাই এই গ্ৰুপটি এমএমএস হবে৷ কাস্টম এমএমএস গ্রুপের নাম এবং ছবি শুধু আপনি দেখতে পাবেন।</string>
   <string name="AddGroupDetailsFragment__remove">সরান</string>
   <string name="AddGroupDetailsFragment__sms_contact">এসএমএস কন্টাক্ট</string>
   <string name="AddGroupDetailsFragment__remove_s_from_this_group">%1$s কে এই গ্রুপ থেকে বের করে দিবেন?</string>
@@ -899,12 +904,15 @@
   <string name="Megaphones_use_sms">এসএমএস ব্যবহার করুন</string>
   <string name="Megaphones_appearance">অ্যাপিয়ারেন্স</string>
   <string name="Megaphones_add_photo">ছবি যুক্ত করুন</string>
+  <!--Title of a bottom sheet to render messages that all quote a specific message-->
+  <string name="MessageQuotesBottomSheet_replies">রিপ্লাই</string>
   <!--NotificationBarManager-->
   <string name="NotificationBarManager_signal_call_in_progress">Signal কল চলমান </string>
   <string name="NotificationBarManager__establishing_signal_call">Signal কল স্থাপন করা হচ্ছে</string>
   <string name="NotificationBarManager__incoming_signal_call">আগত Signal কল</string>
   <string name="NotificationBarManager__incoming_signal_group_call">ইনকামিং সিগন্যাল গ্রুপ কল</string>
   <!--Temporary notification shown when starting the calling service-->
+  <string name="NotificationBarManager__starting_signal_call_service">Signal কল সার্ভিস চালু করা হচ্ছে</string>
   <string name="NotificationBarManager__stopping_signal_call_service">Signal কল সার্ভিস বন্ধ করা হচ্ছে</string>
   <string name="NotificationBarManager__decline_call">কল প্রত্যাখ্যান করুন</string>
   <string name="NotificationBarManager__answer_call">কল গ্রহণ করুন</string>
@@ -1120,9 +1128,7 @@
   <string name="MessageRecord_a_message_from_s_couldnt_be_delivered">%s এর থেকে একটি বার্তা সরবরাহ করা যায়নি</string>
   <string name="MessageRecord_s_changed_their_phone_number">%1$s তাদের ফোন নাম্বার পৰিবৰ্তন করেছেন।</string>
   <!--Update item message shown in the release channel when someone is already a sustainer so we ask them if they want to boost.-->
-  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_like_this_new_feature_say_thanks_with_a_boost">এই নতুন ফিচারটি পছন্দ হয়েছে? একটি বুস্ট দেয়ার মাধ্যমে ধন্যবাদ জানান।</string> -->
-  <!--Update item message shown in the release channel when someone is not a sustainer so we ask them to consider becoming one-->
-  <!-- Removed by excludeNonTranslatables <string name="MessageRecord_signal_is_powered_by_people_like_you_become_a_sustainer_today">আপনার মতো মানুষেরাই Signal-এর শক্তি। আজই হয়ে যান একজন সাসটেইনার। </string> -->
+  <string name="MessageRecord_like_this_new_feature_help_support_signal_with_a_one_time_donation">এই নতুন ফিচারটি পছন্দ হয়েছে? একটি এককালীন ডোনেশন দিয়ে Signal-কে সাহায্য করুন।</string>
   <!--Group Calling update messages-->
   <string name="MessageRecord_s_started_a_group_call_s">%1$s একটি গ্রুপ কল শুরু করেছে । %2$s</string>
   <string name="MessageRecord_s_is_in_the_group_call_s">%1$s গ্রুপ কল এ আছেন। %2$s</string>
@@ -1812,9 +1818,7 @@
   <string name="ConversationUpdateItem_view">দেখান</string>
   <string name="ConversationUpdateItem_the_disappearing_message_time_will_be_set_to_s_when_you_message_them">আপনি তাদের মেসেজ পাঠালে মেসেজ অদৃশ্য হওয়ার সময় %1$s-এ সেট করা হবে।</string>
   <!--Update item button text to show to boost a feature-->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationUpdateItem_signal_boost">সিগন্যাল বুস্ট</string> -->
-  <!--Update item button text to show to become a sustainer in the release notes channel-->
-  <!-- Removed by excludeNonTranslatables <string name="ConversationUpdateItem_become_a_sustainer">একজন সাসটেইনার হয়ে উঠুন</string> -->
+  <string name="ConversationUpdateItem_donate">অনুদান</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">চালু…. বিরতি</string>
   <string name="audio_view__download_accessibility_description">ডাউনলোড</string>
@@ -2054,6 +2058,16 @@
   <string name="HelpFragment__debug_log">ডিবাগ লগ:</string>
   <string name="HelpFragment__could_not_upload_logs">লগসমূহ আপলোড করা যায়নি</string>
   <string name="HelpFragment__please_be_as_descriptive_as_possible">আমরা যাতে সমস্যাটি বুঝতে পারি সেজন্য যতটা সম্ভব বিস্তারিত বলুন।</string>
+  <string-array name="HelpFragment__categories_4">
+    <item>-\- অনুগ্রহ করে একটি অপশন বেছে নিন\-\-</item>
+    <item>কিছু একটা কাজ করছে না</item>
+    <item>ফিচারের জন্য অনুরোধ</item>
+    <item>প্রশ্ন</item>
+    <item>প্রতিক্রিয়া</item>
+    <item>অন্যান্য</item>
+    <item>পেমেন্ট (MobileCoin)</item>
+    <item>ডোনেশন &amp; ব্যাজ</item>
+  </string-array>
   <!--ReactWithAnyEmojiBottomSheetDialogFragment-->
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__this_message">এই মেসেজ</string>
   <string name="ReactWithAnyEmojiBottomSheetDialogFragment__recently_used">সম্প্রতি ব্যাবহৃত হয়েছে</string>
@@ -3427,6 +3441,10 @@
   <string name="MultiselectForwardFragment__share_with">এর সাথে শেয়ার করুন</string>
   <string name="MultiselectForwardFragment__add_a_message">বার্তা যোগ করুন</string>
   <string name="MultiselectForwardFragment__faster_forwards">দ্রুত ফরোয়ার্ড</string>
+  <!--Displayed when user selects a video that will be clipped before sharing to a story-->
+  <string name="MultiselectForwardFragment__videos_will_be_trimmed">ভিডিওগুলোকে 30 সেকেন্ড ক্লিপে কাটা হবে এবং একাধিক স্টোরি হিসাবে পাঠানো হবে৷</string>
+  <!--Displayed when user selects a video that cannot be sent as a story-->
+  <string name="MultiselectForwardFragment__videos_sent_to_stories_cant">স্টোরি-তে পাঠানো ভিডিও 30 সেকেন্ডের বেশি হতে পারবে না।</string>
   <string name="MultiselectForwardFragment__forwarded_messages_are_now">ফরোয়ার্ড করা বার্তা এখন অবিলম্বে পাঠানো হয়।</string>
   <plurals name="MultiselectForwardFragment_send_d_messages">
     <item quantity="one">%1$d টি বার্তা পাঠান</item>
@@ -3566,6 +3584,7 @@
   <!--Copy displayed when badge expires after payment failure-->
   <string name="ExpiredBadgeBottomSheetDialogFragment__your_recurring_monthly_donation_was_canceled">আপনার পুনরাবৃত্ত মাসিক ডোনেশন বাতিল করা হয়েছে কারণ আমরা আপনার প্রদান করা অর্থ প্রক্রিয়া করতে পারিনি। আপনার ব্যাজটি আপনার প্রোফাইলে আর দৃশ্যমান নয়৷</string>
   <!--Copy displayed when badge expires after a payment failure and we have a displayable charge failure reason-->
+  <string name="ExpiredBadgeBottomSheetDialogFragment__your_recurring_monthly_donation_was_canceled_s">আপনার পুনরাবৃত্ত মাসিক ডোনেশন বাতিল করা হয়েছে। %1$s আপনার %2$s ব্যাজ আপনার প্রোফাইলে আর দেখা যাবে না।</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__you_can">আপনি সিগন্যাল ব্যবহার চালিয়ে যেতে পারেন তবে অ্যাপটিকে সমর্থন করতে এবং আপনার ব্যাজ পুনরায় সক্রিয় করতে, এখনই নবায়ন করুন।</string>
   <string name="ExpiredBadgeBottomSheetDialogFragment__renew_subscription">সদস্যতা নবায়ন করুন</string>
   <!--Button label to send user to Google Pay website-->
@@ -3849,6 +3868,7 @@
   <!--Label when a story fails to send due to networking-->
   <string name="StoriesLandingItem__send_failed">পাঠাতে ব্যর্থ হয়েছে</string>
   <!--Label when a story fails to send due to identity mismatch-->
+  <string name="StoriesLandingItem__partially_sent">আংশিক পাঠানো হয়েছে</string>
   <!--Status label when a story fails to send indicating user action to retry-->
   <string name="StoriesLandingItem__tap_to_retry">পুনঃরায় চেষ্টা করতে ট্যাপ করুন</string>
   <!--Title of dialog confirming decision to hide a story-->
@@ -3862,16 +3882,32 @@
   <!--Section header for hidden stories-->
   <string name="StoriesLandingFragment__hidden_stories">লুকানো স্টোরি</string>
   <!--Displayed on each sent story under My Stories-->
+  <plurals name="MyStories__d_views">
+    <item quantity="one">%1$d ভিউ</item>
+    <item quantity="other">%1$d ভিউ</item>
+  </plurals>
   <!--Forward story label, displayed in My Stories context menu-->
   <string name="MyStories_forward">ফরওয়ার্ড</string>
   <!--Label for stories for a single user. Format is {given name}\'s Story-->
+  <string name="MyStories__ss_story">%1$s-এর স্টোরি</string>
   <!--Title of dialog to confirm deletion of story-->
   <string name="MyStories__delete_story">স্টোরি মুছে ফেলবেন?</string>
   <!--Message of dialog to confirm deletion of story-->
   <string name="MyStories__this_story_will_be_deleted">এই স্টোরিটি আপনার এবং যারা এটি পেয়েছেন তাদের জন্য মুছে ফেলা হবে৷</string>
   <!--Toast shown when story media cannot be saved-->
+  <string name="MyStories__unable_to_save">সেভ করা যায়নি</string>
   <!--Displayed at bottom of story viewer when current item has views-->
+  <plurals name="StoryViewerFragment__d_views">
+    <item quantity="one">%1$d ভিউ</item>
+    <item quantity="other">%1$d ভিউ</item>
+  </plurals>
   <!--Displayed at bottom of story viewer when current item has replies-->
+  <plurals name="StoryViewerFragment__d_replies">
+    <item quantity="one">%1$d উত্তর</item>
+    <item quantity="other">%1$d উত্তর</item>
+  </plurals>
+  <!--Used when view receipts are disabled-->
+  <string name="StoryViewerPageFragment__views_off">ভিউ বন্ধ</string>
   <!--Used to join views and replies when both exist on a story item-->
   <string name="StoryViewerFragment__s_s">%1$s %2$s</string>
   <!--Displayed when viewing a post you sent-->
@@ -3884,6 +3920,10 @@
   <string name="StoryViewerPageFragment__reply_to_group">গ্ৰুপে রিপ্লাই করুন</string>
   <!--Displayed when a story has no views-->
   <string name="StoryViewsFragment__no_views_yet">এখন পর্যন্ত কোন ভিউ নেই</string>
+  <!--Displayed when user has disabled receipts-->
+  <string name="StoryViewsFragment__enable_read_receipts_to_see_whos_viewed_your_story">কে আপনার স্টোরি দেখেছে তা দেখতে রিড রিসিপ্ট চালু করুন৷</string>
+  <!--Button label displayed when user has disabled receipts-->
+  <string name="StoryViewsFragment__go_to_settings">সেটিংস-এ যান</string>
   <!--Displayed when a story has no replies yet-->
   <string name="StoryGroupReplyFragment__no_replies_yet">এখন পর্যন্ত কোন রিপ্লাই নেই</string>
   <!--Displayed for each user that reacted to a story when viewing replies-->
@@ -3916,17 +3956,42 @@
   <string name="MyStorySettingsFragment__who_can_see_this_story">যারা স্টোরি দেখতে পাবেন</string>
   <!--Clickable option for selecting people to hide your story from-->
   <string name="MyStorySettingsFragment__hide_story_from">যাদের কাছ থেকে স্টোরি লুকাবেন</string>
-  <!--Summary of clickable option displaying how many people you have hidden your story from-->
+  <!--Privacy setting title for sending stories to all your signal connections-->
+  <string name="MyStorySettingsFragment__all_signal_connections">সকল Signal কানেকশন</string>
+  <!--Privacy setting description for sending stories to all your signal connections-->
+  <string name="MyStorySettingsFragment__share_with_all_connections">সকল কানেকশনের সাথে শেয়ার করুন</string>
+  <!--Privacy setting title for sending stories to all except the specified connections-->
+  <string name="MyStorySettingsFragment__all_signal_connections_except">…ছাড়া সকল Signal কানেকশন</string>
+  <!--Privacy setting description for sending stories to all except the specified connections-->
+  <string name="MyStorySettingsFragment__hide_your_story_from_specific_people">কিছু নির্দিষ্ট ব্যক্তির কাছ থেকে আপনার স্টোরি লুকান</string>
+  <!--Summary of clickable option displaying how many people you have excluded from your story-->
+  <plurals name="MyStorySettingsFragment__d_people_excluded">
+    <item quantity="one">%1$d জন ব্যক্তিকে বাদ দেয়া হয়েছে</item>
+    <item quantity="other">%1$d জন ব্যক্তিকে বাদ দেয়া হয়েছে</item>
+  </plurals>
+  <!--Privacy setting title for only sharing your story with specified connections-->
+  <string name="MyStorySettingsFragment__only_share_with">শেয়ার করুন শুধু…</string>
+  <!--Privacy setting description for only sharing your story with specified connections-->
+  <string name="MyStorySettingsFragment__only_share_with_selected_people">শুধু কিছু নির্দিষ্ট ব্যক্তির সাথে শেয়ার করুন</string>
+  <!--Summary of clickable option displaying how many people you have included to send to in your story-->
+  <plurals name="MyStorySettingsFragment__d_people">
+    <item quantity="one">%1$d মানুষ</item>
+    <item quantity="other">%1$d মানুষ</item>
+  </plurals>
+  <!--My story privacy fine print about what the privacy settings are for-->
+  <string name="MyStorySettingsFragment__choose_who_can_view_your_story">আপনার স্টোরি কে দেখতে পাবে তা নির্ধারণ করুন৷ পরিবর্তনগুলো আপনার ইতিমধ্যে পাঠানো স্টোরি-কে প্রভাবিত করবে না৷</string>
   <!--Section header for options related to replies and reactions-->
+  <string name="MyStorySettingsFragment__replies_amp_reactions">উত্তর &amp; রিঅ্যাকশন</string>
   <!--Switchable option for allowing replies and reactions on your stories-->
+  <string name="MyStorySettingsFragment__allow_replies_amp_reactions">উত্তর &amp; রিঅ্যাকশন অনুমোদন করুন</string>
   <!--Summary for switchable option allowing replies and reactions on your story-->
   <string name="MyStorySettingsFragment__let_people_who_can_view_your_story_react_and_reply">যারা আপনার স্টোরি দেখতে পাবেন তাদের রিঅ্যাক্ট এবং রিপ্লাই দিতে দিন</string>
   <!--Note about default sharing-->
   <string name="MyStorySettingsFragment__hide_your_story_from">নির্দিষ্ট ব্যক্তিদের কাছ থেকে আপনার স্টোরি লুকান। গতানুগতিকভাবে, আপনার স্টোরি আপনার %1$s এর সাথে শেয়ার করা হয়</string>
-  <!--Signal connections linked text that opens the Signal Connections sheet-->
-  <!-- Removed by excludeNonTranslatables <string name="MyStorySettingsFragment__signal_connections">Signal কানেকশন।</string> -->
+  <!--Signal connections bolded text in the Signal Connections sheet-->
+  <string name="SignalConnectionsBottomSheet___signal_connections">Signal কানেকশন</string>
   <!--Displayed at the top of the signal connections sheet. Please remember to insert strong tag as required.-->
-  <string name="SignalConnectionsBottomSheet__signal_connections_are_people"><strong>Signal কানেকশন</strong> হল এমন ব্যক্তিবর্গ যাদের আপনি বিশ্বাস করে বেছে নিয়েছেন, যার কারণ:</string>
+  <string name="SignalConnectionsBottomSheet__signal_connections_are_people">Signal কানেকশন হল এমন ব্যক্তি যাদের আপনি বিশ্বাস করে বেছে নিয়েছেন, যেসব কারণে:</string>
   <!--Signal connections sheet bullet point 1-->
   <string name="SignalConnectionsBottomSheet__starting_a_conversation">কথা শুরু হোক</string>
   <!--Signal connections sheet bullet point 2-->
@@ -3974,8 +4039,11 @@
   <!--Hint text for searching for a story text post recipient.-->
   <string name="TextStoryPostSendFragment__search">খুঁজুন</string>
   <!--Toast shown when an unexpected error occurs while sending a text story-->
-  <!--Title for screen allowing user to hide "My Story" entries from specific people-->
-  <!-- Removed by excludeNonTranslatables <string name="HideStoryFromFragment__hide_story_from">যাদের কাছ থেকে স্টোরি লুকাবেন…</string> -->
+  <string name="TextStoryPostSendFragment__an_unexpected_error_occurred_try_again">একটি অপ্রত্যাশিত সমস্যা দেখা দিয়েছে</string>
+  <!--Title for screen allowing user to exclude "My Story" entries from specific people-->
+  <string name="ChangeMyStoryMembershipFragment__all_except">…ছাড়া সব</string>
+  <!--Title for screen allowing user to only share "My Story" entries with specific people-->
+  <string name="ChangeMyStoryMembershipFragment__only_share_with">শেয়ার করুন শুধু…</string>
   <!--Done button label for hide story from screen-->
   <string name="HideStoryFromFragment__done">শেষ</string>
   <!--Dialog title for first time adding something to a story-->
@@ -3991,6 +4059,7 @@
   <!--Error message dialog button to resend a previously failed story send-->
   <string name="StoryDialogs__send">পাঠান</string>
   <!--Privacy Settings toggle title for stories-->
+  <string name="PrivacySettingsFragment__share_and_view_stories">&amp;amp শেয়ার করুন; স্টোরি দেখুন</string>
   <!--Privacy Settings toggle summary for stories-->
   <string name="PrivacySettingsFragment__you_will_no_longer_be_able">এই অপশনটি বন্ধ থাকলে আপনি আর স্টোরি শেয়ার করতে বা দেখতে পাবেন না৷</string>
   <!--New story viewer selection screen title-->
@@ -3998,6 +4067,10 @@
   <!--New story viewer selection action button label-->
   <string name="CreateStoryViewerSelectionFragment__next">পরবর্তী</string>
   <!--New story viewer selection screen title as recipients are selected-->
+  <plurals name="SelectViewersFragment__d_viewers">
+    <item quantity="one">%1$d জন দর্শক</item>
+    <item quantity="other">%1$d জন দর্শক</item>
+  </plurals>
   <!--Name story screen title-->
   <string name="CreateStoryWithViewersFragment__name_story">স্টোরি\'র নাম দিন</string>
   <!--Name story screen label hint-->
@@ -4063,6 +4136,10 @@
   <string name="ExpandModel__view_more">আরো দেখুন</string>
   <string name="StoriesLinkPopup__visit_link">লিংক ভিজিট করুন</string>
   <!--Duration and price information-->
+  <plurals name="GiftRowItem_s_dot_d_day_duration">
+    <item quantity="one">%1$s · %2$d দিন সময়কাল</item>
+    <item quantity="other">%1$s · %2$d দিন সময়কাল</item>
+  </plurals>
   <!--Tagline for gift row items-->
   <string name="GiftRowItem__send_a_gift_badge">একটি গিফট ব্যাজ পাঠান</string>
   <!--Headline text on start fragment for gifting a badge-->
@@ -4114,11 +4191,109 @@
   <!--Expired gift sheet not now button-->
   <string name="ExpiredGiftSheetConfiguration__not_now">এখন না</string>
   <!--Label under name for private stories-->
+  <plurals name="ContactSearchItems__private_story_d_viewers">
+    <item quantity="one">ব্যক্তিগত স্টোরি · %1$d জন দর্শক</item>
+    <item quantity="other">ব্যক্তিগত স্টোরি · %1$d জন দর্শক</item>
+  </plurals>
   <!--Label under name for group stories-->
+  <plurals name="ContactSearchItems__group_story_d_viewers">
+    <item quantity="one">গ্ৰুপ স্টোরি · %1$d জন দর্শক</item>
+    <item quantity="other">গ্ৰুপ স্টোরি · %1$d জন দর্শক</item>
+  </plurals>
+  <!--Label under name for My Story when first sending to my story-->
+  <string name="ContactSearchItems__tap_to_choose_your_viewers">আপনার ভিউয়ারদের বেছে নিতে ট্যাপ করুন</string>
+  <!--Label for context menu item to open story settings-->
+  <string name="ContactSearchItems__story_settings">স্টোরি সেটিংস</string>
+  <!--Label for context menu item to remove a group story from contact results-->
+  <string name="ContactSearchItems__remove_story">স্টোরি সরিয়ে ফেলুন</string>
+  <!--Label for context menu item to delete a private story-->
+  <string name="ContactSearchItems__delete_story">স্টোরি মুছে ফেলুন</string>
+  <!--Dialog title for removing a group story-->
+  <string name="ContactSearchMediator__remove_group_story">গ্রুপ স্টোরি সরাবেন?</string>
+  <!--Dialog message for removing a group story-->
+  <string name="ContactSearchMediator__this_will_remove">এটি এই লিস্ট থেকে স্টোরি সরাবে। আপনি এখনও এই গ্রুপ থেকে স্টোরি দেখতে সক্ষম হবেন।</string>
+  <!--Dialog action item for removing a group story-->
+  <string name="ContactSearchMediator__remove">সরান</string>
+  <!--Dialog title for deleting a private story-->
+  <string name="ContactSearchMediator__delete_story">স্টোরি মুছে ফেলবেন?</string>
+  <!--Dialog message for deleting a private story-->
+  <string name="ContactSearchMediator__delete_the_private">ব্যক্তিগত স্টোরি \"%1$s\" মুছবেন ?</string>
+  <!--Dialog action item for deleting a private story-->
+  <string name="ContactSearchMediator__delete">মুছুন</string>
   <!--Gift expiry days remaining-->
+  <plurals name="Gifts__d_days_remaining">
+    <item quantity="one">%1$d দিন বাকি আছে</item>
+    <item quantity="other">%1$d দিন বাকি আছে</item>
+  </plurals>
   <!--Gift expiry hours remaining-->
+  <plurals name="Gifts__d_hours_remaining">
+    <item quantity="one">%1$d ঘন্টা বাকি আছে</item>
+    <item quantity="other">%1$d ঘন্টা বাকি আছে</item>
+  </plurals>
   <!--Gift expiry minutes remaining-->
+  <plurals name="Gifts__d_minutes_remaining">
+    <item quantity="one">%1$d মিনিট বাকি আছে</item>
+    <item quantity="other">%1$d মিনিট বাকি আছে</item>
+  </plurals>
   <!--Gift expiry expired-->
   <string name="Gifts__expired">বাতিল</string>
+  <!--Label indicating that a user can tap to advance to the next post in a story-->
+  <string name="StoryFirstTimeNavigationView__tap_to_advance">সামনে যেতে ট্যাপ করুন</string>
+  <!--Label indicating swipe direction to skip current story-->
+  <string name="StoryFirstTimeNavigationView__swipe_up_to_skip">এড়িয়ে যেতে উপরে সোয়াইপ করুন</string>
+  <!--Label indicating swipe direction to exit story viewer-->
+  <string name="StoryFirstTimeNavigationView__swipe_right_to_exit">বন্ধ করতে ডানে সোয়াইপ করুন</string>
+  <!--Button label to confirm understanding of story navigation-->
+  <string name="StoryFirstTimeNagivationView__got_it">বুঝতে পেরেছি</string>
+  <!--Content description for vertical context menu button in safety number sheet rows-->
+  <string name="SafetyNumberRecipientRowItem__open_context_menu">কন্টেক্সট মেন্যু খুলুন</string>
+  <!--Sub-line when a user is verified.-->
+  <string name="SafetyNumberRecipientRowItem__s_dot_verified">%1$s · যাচাইকৃত</string>
+  <!--Sub-line when a user is verified.-->
+  <string name="SafetyNumberRecipientRowItem__verified">যাচাই করা হয়েছে</string>
+  <!--Title of safety number changes bottom sheet when showing individual records-->
+  <string name="SafetyNumberBottomSheetFragment__safety_number_changes">নিরাপত্তা নাম্বার পরিবর্তিত হয়</string>
+  <!--Message of safety number changes bottom sheet when showing individual records-->
+  <string name="SafetyNumberBottomSheetFragment__the_following_people">নিম্নলিখিত ব্যক্তিরা সম্ভবত Signal পুনরায় ইনস্টল করেছেন বা তাদের ডিভাইস পরিবর্তন করেছেন৷ নতুন নিরাপত্তা নাম্বার নিশ্চিত করতে একজন প্রাপককে ট্যাপ করুন। এটি অপশনাল।</string>
+  <!--Title of safety number changes bottom sheet when not showing individual records-->
+  <string name="SafetyNumberBottomSheetFragment__safety_number_checkup">নিরাপত্তা নাম্বার চেকআপ</string>
+  <!--Title of safety number changes bottom sheet when not showing individual records and user has seen review screen-->
+  <string name="SafetyNumberBottomSheetFragment__safety_number_checkup_complete">নিরাপত্তা নাম্বার চেকআপ সম্পন্ন হয়েছে</string>
+  <!--Message of safety number changes bottom sheet when not showing individual records and user has seen review screen-->
+  <string name="SafetyNumberBottomSheetFragment__all_connections_have_been_reviewed">সকল কানেকশন রিভিউ করা হয়েছে, চালিয়ে যেতে সেন্ড ট্যাপ করুন।</string>
+  <!--Message of safety number changes bottom sheet when not showing individual records-->
+  <string name="SafetyNumberBottomSheetFragment__you_have_d_connections">আপনার %1$d-টি কানেকশন আছে যারা সম্ভবত সিগন্যাল পুনরায় ইনস্টল করেছে বা ডিভাইস পরিবর্তন করেছেন৷ তাদের সাথে আপনার স্টোরি শেয়ার করার আগে তাদের নিরাপত্তা নাম্বার রিভিউ করুন বা আপনার স্টোরি দেখা থেকে তাদের বাদ দেয়ার কথা বিবেচনা করুন৷</string>
+  <!--Menu action to launch safety number verification screen-->
+  <string name="SafetyNumberBottomSheetFragment__verify_safety_number">নিরাপত্তা নাম্বার যাচাই করুন</string>
+  <!--Menu action to remove user from story-->
+  <string name="SafetyNumberBottomSheetFragment__remove_from_story">স্টোরি থেকে বাদ দিন</string>
+  <!--Action button at bottom of SafetyNumberBottomSheetFragment to send anyway-->
+  <string name="SafetyNumberBottomSheetFragment__send_anyway">যেকোনও উপায়ে পাঠান</string>
+  <!--Action button at bottom of SafetyNumberBottomSheetFragment to review connections-->
+  <string name="SafetyNumberBottomSheetFragment__review_connections">কানেকশন রিভিউ করুন</string>
+  <!--Empty state copy for SafetyNumberBottomSheetFragment-->
+  <string name="SafetyNumberBottomSheetFragment__no_more_recipients_to_show">দেখানোর মত কোন প্রাপক নেই।</string>
+  <!--Done button on safety number review fragment-->
+  <string name="SafetyNumberReviewConnectionsFragment__done">শেষ</string>
+  <!--Title of safety number review fragment-->
+  <string name="SafetyNumberReviewConnectionsFragment__safety_number_changes">নিরাপত্তা নাম্বার পরিবর্তিত হয়</string>
+  <!--Message of safety number review fragment-->
+  <string name="SafetyNumberReviewConnectionsFragment__d_recipients_may_have">%1$d প্রাপক সম্ভবত Signal পুনরায় ইনস্টল করেছেন বা ডিভাইস পরিবর্তন করেছেন। নতুন নিরাপত্তা নাম্বার নিশ্চিত করতে প্রাপককে ট্যাপ করুন। এটি অপশনাল।</string>
+  <!--Section header for 1:1 contacts in review fragment-->
+  <string name="SafetyNumberBucketRowItem__contacts">পরিচিতিসমূহ</string>
+  <!--Context menu label for distribution list headers in review fragment-->
+  <string name="SafetyNumberReviewConnectionsFragment__remove_all">সব মুছুন</string>
+  <!--Context menu label for 1:1 contacts to remove from send-->
+  <string name="SafetyNumberReviewConnectionsFragment__remove">সরান</string>
+  <!--Title of initial My Story settings configuration shown when sending to My Story for the first time-->
+  <string name="ChooseInitialMyStoryMembershipFragment__my_story_privacy">আমার স্টোরি প্রাইভেসি</string>
+  <!--Subtitle of initial My Story settings configuration shown when sending to My Story for the first time-->
+  <string name="ChooseInitialMyStoryMembershipFragment__choose_who_can_see_posts_to_my_story_you_can_always_make_changes_in_settings">আমার স্টোরি পোস্টগুলো কে দেখতে পাবেন তা বেছে নিন৷ আপনি সবসময় সেটিংস পরিবর্তন করতে পারেন।</string>
+  <!--All connections option for initial My Story settings configuration shown when sending to My Story for the first time-->
+  <string name="ChooseInitialMyStoryMembershipFragment__all_signal_connections">সকল Signal কানেকশন</string>
+  <!--All connections except option for initial My Story settings configuration shown when sending to My Story for the first time-->
+  <string name="ChooseInitialMyStoryMembershipFragment__all_signal_connections_except">…ছাড়া সকল Signal কানেকশন</string>
+  <!--Only with selected connections option for initial My Story settings configuration shown when sending to My Story for the first time-->
+  <string name="ChooseInitialMyStoryMembershipFragment__only_share_with">শেয়ার করুন শুধু…</string>
   <!--EOF-->
 </resources>

@@ -25,10 +25,11 @@ class StoryViewerPageViewModel(
   private val recipientId: RecipientId,
   private val initialStoryId: Long,
   private val isUnviewedOnly: Boolean,
-  private val repository: StoryViewerPageRepository
+  private val repository: StoryViewerPageRepository,
+  val storyCache: StoryCache
 ) : ViewModel() {
 
-  private val store = RxStore(StoryViewerPageState())
+  private val store = RxStore(StoryViewerPageState(isReceiptsEnabled = repository.isReadReceiptsEnabled()))
   private val disposables = CompositeDisposable()
   private val storyViewerDialogSubject: Subject<Optional<StoryViewerDialog>> = PublishSubject.create()
 
@@ -46,6 +47,16 @@ class StoryViewerPageViewModel(
     refresh()
   }
 
+  fun checkReadReceiptState() {
+    val isReceiptsEnabledInState = getStateSnapshot().isReceiptsEnabled
+    val isReceiptsEnabledInRepository = repository.isReadReceiptsEnabled()
+    if (isReceiptsEnabledInState xor isReceiptsEnabledInRepository) {
+      store.update {
+        it.copy(isReceiptsEnabled = isReceiptsEnabledInRepository)
+      }
+    }
+  }
+
   fun refresh() {
     disposables.clear()
     disposables += repository.getStoryPostsFor(recipientId, isUnviewedOnly).subscribe { posts ->
@@ -53,7 +64,7 @@ class StoryViewerPageViewModel(
         var isDisplayingInitialState = false
         val startIndex = if (state.posts.isEmpty() && initialStoryId > 0) {
           val initialIndex = posts.indexOfFirst { it.id == initialStoryId }
-          isDisplayingInitialState = initialIndex > -1
+          isDisplayingInitialState = true
           initialIndex.takeIf { it > -1 } ?: state.selectedPostIndex
         } else if (state.posts.isEmpty()) {
           val initialPost = getNextUnreadPost(posts)
@@ -71,11 +82,18 @@ class StoryViewerPageViewModel(
           isDisplayingInitialState = isDisplayingInitialState
         )
       }
+
+      storyCache.prefetch(
+        posts.map { it.content }
+          .filterIsInstance<StoryPost.Content.AttachmentContent>()
+          .map { it.attachment }
+      )
     }
   }
 
   override fun onCleared() {
     disposables.clear()
+    storyCache.clear()
   }
 
   fun hideStory(): Completable {
@@ -138,12 +156,20 @@ class StoryViewerPageViewModel(
     return store.state.selectedPostIndex in store.state.posts.indices
   }
 
-  fun getPost(): StoryPost {
-    return store.state.posts[store.state.selectedPostIndex]
+  fun getPost(): StoryPost? {
+    return if (hasPost()) {
+      store.state.posts[store.state.selectedPostIndex]
+    } else {
+      null
+    }
+  }
+
+  fun requirePost(): StoryPost {
+    return getPost()!!
   }
 
   fun forceDownloadSelectedPost() {
-    disposables += repository.forceDownload(getPost()).subscribe()
+    disposables += repository.forceDownload(requirePost()).subscribe()
   }
 
   fun startDirectReply(storyId: Long, recipientId: RecipientId) {
@@ -246,10 +272,11 @@ class StoryViewerPageViewModel(
     private val recipientId: RecipientId,
     private val initialStoryId: Long,
     private val isUnviewedOnly: Boolean,
-    private val repository: StoryViewerPageRepository
+    private val repository: StoryViewerPageRepository,
+    private val storyCache: StoryCache
   ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-      return modelClass.cast(StoryViewerPageViewModel(recipientId, initialStoryId, isUnviewedOnly, repository)) as T
+      return modelClass.cast(StoryViewerPageViewModel(recipientId, initialStoryId, isUnviewedOnly, repository, storyCache)) as T
     }
   }
 }

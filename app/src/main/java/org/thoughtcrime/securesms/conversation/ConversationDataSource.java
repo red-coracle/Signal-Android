@@ -139,7 +139,7 @@ public class ConversationDataSource implements PagedDataSource<MessageId, Conver
     stopwatch.split("attachment-models");
 
     for (ServiceId serviceId : referencedIds) {
-      Recipient.resolved(RecipientId.from(serviceId, null));
+      Recipient.resolved(RecipientId.from(serviceId));
     }
     stopwatch.split("recipient-resolves");
 
@@ -257,7 +257,7 @@ public class ConversationDataSource implements PagedDataSource<MessageId, Conver
     private Collection<MessageId>                messageIds           = new LinkedList<>();
     private Map<MessageId, List<ReactionRecord>> messageIdToReactions = new HashMap<>();
 
-    void add(MessageRecord record) {
+    public void add(MessageRecord record) {
       messageIds.add(new MessageId(record.getId(), record.isMms()));
     }
 

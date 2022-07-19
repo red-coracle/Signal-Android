@@ -1153,7 +1153,6 @@ public class ThreadDatabase extends Database {
     SQLiteDatabase db = databaseHelper.getSignalReadableDatabase();
 
     try (Cursor cursor = db.query(TABLE_NAME, RECIPIENT_ID_PROJECTION, ID_WHERE, SqlUtil.buildArgs(threadId), null, null, null)) {
-
       if (cursor != null && cursor.moveToFirst()) {
         return RecipientId.from(cursor.getLong(cursor.getColumnIndexOrThrow(RECIPIENT_ID)));
       }
@@ -1255,14 +1254,14 @@ public class ThreadDatabase extends Database {
           pinnedRecipient = Recipient.externalPush(pinned.getContact().get());
         } else if (pinned.getGroupV1Id().isPresent()) {
           try {
-            pinnedRecipient = Recipient.externalGroupExact(context, GroupId.v1(pinned.getGroupV1Id().get()));
+            pinnedRecipient = Recipient.externalGroupExact(GroupId.v1(pinned.getGroupV1Id().get()));
           } catch (BadGroupIdException e) {
             Log.w(TAG, "Failed to parse pinned groupV1 ID!", e);
             pinnedRecipient = null;
           }
         } else if (pinned.getGroupV2MasterKey().isPresent()) {
           try {
-            pinnedRecipient = Recipient.externalGroupExact(context, GroupId.v2(new GroupMasterKey(pinned.getGroupV2MasterKey().get())));
+            pinnedRecipient = Recipient.externalGroupExact(GroupId.v2(new GroupMasterKey(pinned.getGroupV2MasterKey().get())));
           } catch (InvalidInputException e) {
             Log.w(TAG, "Failed to parse pinned groupV2 master key!", e);
             pinnedRecipient = null;
@@ -1525,7 +1524,7 @@ public class ThreadDatabase extends Database {
         if (threadRecipient.isPushV2Group()) {
           MessageRecord.InviteAddState inviteAddState = record.getGv2AddInviteState();
           if (inviteAddState != null) {
-            RecipientId from = RecipientId.from(ServiceId.from(inviteAddState.getAddedOrInvitedBy()), null);
+            RecipientId from = RecipientId.from(ServiceId.from(inviteAddState.getAddedOrInvitedBy()));
             if (inviteAddState.isInvited()) {
               Log.i(TAG, "GV2 invite message request from " + from);
               return Extra.forGroupV2invite(from, individualRecipientId);
