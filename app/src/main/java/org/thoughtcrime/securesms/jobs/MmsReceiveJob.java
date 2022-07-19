@@ -73,8 +73,8 @@ public class MmsReceiveJob extends BaseJob {
 
     if (isNotification(pdu) && isBlocked(pdu)) {
       Log.w(TAG, "Received an MMS from a blocked user. Ignoring.");
-    } else if (isNotification(pdu) && isSelf(pdu)) {
-      Log.w(TAG, "Received an MMS from ourselves! Ignoring.");
+    /*} else if (isNotification(pdu) && isSelf(pdu)) {
+      Log.w(TAG, "Received an MMS from ourselves! Ignoring.");*/
     } else if (isNotification(pdu)) {
       MessageDatabase  database           = SignalDatabase.mms();
       Pair<Long, Long> messageAndThreadId = database.insertMessageInbox((NotificationInd)pdu, subscriptionId);

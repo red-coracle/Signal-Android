@@ -118,9 +118,9 @@ public class SmsReceiveJob extends BaseJob {
       }
     }
 
-    if (message.isPresent() && SignalStore.account().getE164() != null && message.get().getSender().equals(Recipient.self().getId())) {
+    /*if (message.isPresent() && SignalStore.account().getE164() != null && message.get().getSender().equals(Recipient.self().getId())) {
       Log.w(TAG, "Received an SMS from ourselves! Ignoring.");
-    } else if (message.isPresent() && !isBlocked(message.get())) {
+    } else */if (message.isPresent() && !isBlocked(message.get())) {
       Optional<InsertResult> insertResult = storeMessage(message.get());
 
       if (insertResult.isPresent()) {

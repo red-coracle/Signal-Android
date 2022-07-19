@@ -386,6 +386,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
       RecaptchaProofBottomSheetFragment.show(getChildFragmentManager());
     }
 
+    /*
     Badge                              expiredBadge                       = SignalStore.donationsValues().getExpiredBadge();
     String                             subscriptionCancellationReason     = SignalStore.donationsValues().getUnexpectedSubscriptionCancelationReason();
     UnexpectedSubscriptionCancellation unexpectedSubscriptionCancellation = UnexpectedSubscriptionCancellation.fromStatus(subscriptionCancellationReason);
@@ -421,6 +422,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
             getParentFragmentManager());
       }
     }
+    */
   }
 
   @Override
@@ -850,13 +852,13 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     SimpleTask.run(getViewLifecycleOwner().getLifecycle(), () -> {
       if (UnauthorizedReminder.isEligible(context)) {
         return Optional.of(new UnauthorizedReminder(context));
-      } else if (ExpiredBuildReminder.isEligible()) {
-        return Optional.of(new ExpiredBuildReminder(context));
+      //} else if (ExpiredBuildReminder.isEligible()) {
+      //  return Optional.of(new ExpiredBuildReminder(context));
       } else if (ServiceOutageReminder.isEligible(context)) {
         ApplicationDependencies.getJobManager().add(new ServiceOutageDetectionJob());
         return Optional.of(new ServiceOutageReminder(context));
-      } else if (OutdatedBuildReminder.isEligible()) {
-        return Optional.of(new OutdatedBuildReminder(context));
+      //} else if (OutdatedBuildReminder.isEligible()) {
+      //  return Optional.of(new OutdatedBuildReminder(context));
       } else if (PushRegistrationReminder.isEligible(context)) {
         return Optional.of((new PushRegistrationReminder(context)));
       } else if (DozeReminder.isEligible(context)) {
