@@ -153,7 +153,7 @@ import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.thoughtcrime.securesms.util.SignalProxyUtil;
 import org.thoughtcrime.securesms.util.SnapToTopDataObserver;
 import org.thoughtcrime.securesms.util.StickyHeaderDecoration;
-import org.thoughtcrime.securesms.util.Stopwatch;
+import org.signal.core.util.Stopwatch;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.ViewUtil;
@@ -428,7 +428,6 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   @Override
   public void onStart() {
     super.onStart();
-    ConversationFragment.prepare(requireContext());
     ApplicationDependencies.getAppForegroundObserver().addListener(appForegroundObserver);
     itemAnimator.disable();
   }
@@ -532,8 +531,10 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
   @Override
   public void onShowArchiveClick() {
-    NavHostFragment.findNavController(this)
-                   .navigate(ConversationListFragmentDirections.actionConversationListFragmentToConversationListArchiveFragment());
+    if (viewModel.currentSelectedConversations().isEmpty()) {
+      NavHostFragment.findNavController(this)
+                     .navigate(ConversationListFragmentDirections.actionConversationListFragmentToConversationListArchiveFragment());
+    }
   }
 
   @Override
@@ -691,6 +692,10 @@ public class ConversationListFragment extends MainFragment implements ActionMode
           AppStartup.getInstance().onCriticalRenderEventEnd();
           startupStopwatch.split("first-render");
           startupStopwatch.stop(TAG);
+
+          if (getContext() != null) {
+            ConversationFragment.prepare(getContext());
+          }
         });
       }
     });

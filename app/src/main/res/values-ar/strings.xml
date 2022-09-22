@@ -41,6 +41,9 @@
   <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">تسجيل جملة استعادة المدفوعات</string>
   <string name="ApplicationPreferencesActivity_record_phrase">تسجيل جملة</string>
   <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">قبل تعطيل رقمك التعريفي الشخصي، يجب عليك تسجيل جملة استعادة الدفوعات للتأكد من إمكانية استعادة حساب دفوعاتك.</string>
+  <!--NumericKeyboardView-->
+  <!--Back button on numeric keyboard-->
+  <string name="NumericKeyboardView__backspace">مسافة للخلف</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="zero">%d دقيقة</item>
@@ -177,17 +180,25 @@
   <string name="ContactsDatabase_message_s">رسالة %s</string>
   <string name="ContactsDatabase_signal_call_s">مكالمة Signal %s</string>
   <!--ContactNameEditActivity-->
+  <!--Toolbar title for contact name edit activity-->
+  <string name="ContactNameEditActivity__edit_name">تعديل الاسم</string>
   <string name="ContactNameEditActivity_given_name">الاسم الشخصي</string>
   <string name="ContactNameEditActivity_family_name">الاسم العائلي</string>
   <string name="ContactNameEditActivity_prefix">اللّقب</string>
   <string name="ContactNameEditActivity_suffix">لاحقة الاسم</string>
   <string name="ContactNameEditActivity_middle_name">الاسم الثاني</string>
   <!--ContactShareEditActivity-->
+  <!--ContactShareEditActivity toolbar title-->
+  <string name="ContactShareEditActivity__send_contact">إرسال جهة الاتصال</string>
   <string name="ContactShareEditActivity_type_home">المنزل</string>
   <string name="ContactShareEditActivity_type_mobile">الهاتف</string>
   <string name="ContactShareEditActivity_type_work">العمل</string>
   <string name="ContactShareEditActivity_type_missing">غير ذلك</string>
   <string name="ContactShareEditActivity_invalid_contact">جهة الاتصال التي تم اختيارها غير صالحة.</string>
+  <!--Content descrption for name edit button on contact share edit activity-->
+  <string name="ContactShareEditActivity__edit_name">تعديل الاسم</string>
+  <!--Content description for user avatar in edit activity-->
+  <string name="ContactShareEditActivity__avatar">الصورة الرمزية</string>
   <!--ConversationItem-->
   <string name="ConversationItem_error_not_sent_tap_for_details">لم تُرسَل، يرجى اللمس للمزيد من التفاصيل</string>
   <string name="ConversationItem_error_partially_not_delivered">أُرسلَت جزئيا فقط، يرجى اللمس لمعرفة المزيد</string>
@@ -537,6 +548,7 @@
   <string name="BackupsPreferenceFragment__to_restore_a_backup">لاستعادة نسخة احتياطية، يُرجى تثبيت نسخة Signal جديدة. يُرجى فتح التطبيق ولمس «استعادة نسخة احتياطية»، ثم تحديد مكان ملف النسخة الاحتياطية. %1$s</string>
   <string name="BackupsPreferenceFragment__learn_more">لمعرفة المزيد</string>
   <string name="BackupsPreferenceFragment__in_progress">يجري الآن…</string>
+  <!--Status text shown in backup preferences when verifying a backup-->
   <string name="BackupsPreferenceFragment__d_so_far">%1$d حتى الآن…‏</string>
   <!--Show percentage of completion of backup-->
   <string name="BackupsPreferenceFragment__s_so_far">‫%1$s%% إلى الآن…</string>
@@ -1800,6 +1812,10 @@
   <!--SubmitDebugLogActivity-->
   <string name="SubmitDebugLogActivity_edit">عدّل</string>
   <string name="SubmitDebugLogActivity_done">تم</string>
+  <!--Menu option to save a debug log file to disk.-->
+  <string name="SubmitDebugLogActivity_save">حفظ</string>
+  <!--Error that is show in a toast when we fail to save a debug log file to disk.-->
+  <!--Toast that is show to notify that we have saved the debug log file to disk.-->
   <string name="SubmitDebugLogActivity_tap_a_line_to_delete_it">المس على الخط لحذفه</string>
   <string name="SubmitDebugLogActivity_submit">إرسال</string>
   <string name="SubmitDebugLogActivity_failed_to_submit_logs">فشل إرسال السجل</string>
@@ -1853,6 +1869,10 @@
   <string name="ThreadRecord__you_sent_a_gift">لقد أرسلت هدية</string>
   <!--Displayed in the notification when the user has opened a received gift-->
   <string name="ThreadRecord__you_redeemed_a_gift_badge">لقد استرددت الشارة المُهداة</string>
+  <!--Displayed in the conversation list when someone reacted to your story-->
+  <string name="ThreadRecord__reacted_s_to_your_story">تفاعل %1$s مع قِصتك</string>
+  <!--Displayed in the conversation list when you reacted to someone\'s story-->
+  <string name="ThreadRecord__reacted_s_to_their_story">تفاعل %1$s مع قِصتهم</string>
   <!--UpdateApkReadyListener-->
   <string name="UpdateApkReadyListener_Signal_update">تحديث Signal</string>
   <string name="UpdateApkReadyListener_a_new_version_of_signal_is_available_tap_to_update">إصدار جديد لـ Signal متوفر، أنقر للتحديث</string>
@@ -3076,10 +3096,13 @@
   <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">لقد أدخلت العبارة السرية للنسخة الاحتياطية بنجاح</string>
   <string name="BackupDialog_passphrase_was_not_correct">العبارة السرية غير صحيحة</string>
   <string name="LocalBackupJob_creating_signal_backup">‫يجري إنشاء نسخة Signal احتياطية…</string>
+  <!--Title for progress notification shown in a system notification while verifying a recent backup.-->
   <string name="LocalBackupJobApi29_backup_failed">فشل النسخ الاحتياطي</string>
   <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">حُذف أو نُقل مجلد نسخك الاحتياطية.</string>
   <string name="LocalBackupJobApi29_your_backup_file_is_too_large">لا يمكن حفظ ملف النسخة الاحتياطية في وحدة التخزين هذه لأنه كبير جدا.</string>
   <string name="LocalBackupJobApi29_there_is_not_enough_space">لم يبق مكان كافٍ لحفظ نسختك الاحتياطية.</string>
+  <!--Error message shown if a newly created backup could not be verified as accurate-->
+  <!--Error message shown if a very large attachment is encountered during the backup creation and causes the backup to fail-->
   <string name="LocalBackupJobApi29_tap_to_manage_backups">يُرجى اللمس لإدارة النسخ الاحتياطية.</string>
   <string name="ProgressPreference_d_messages_so_far">%d رسالة حتى الآن</string>
   <string name="RegistrationActivity_wrong_number">رقم خاطئ </string>
@@ -3343,6 +3366,9 @@
   <string name="CallParticipant__you">أنت</string>
   <string name="CallParticipant__you_on_another_device">أنت (في جهاز آخر)</string>
   <string name="CallParticipant__s_on_another_device">%1$s (في جهاز آخر)</string>
+  <!--WifiToCellularPopupWindow-->
+  <!--Message shown during a call when the WiFi network is unusable, and cellular data starts to be used for the call instead.-->
+  <string name="WifiToCellularPopupWindow__weak_wifi_switched_to_cellular">شبكة Wi-Fi ضعيفة. تم التبديل إلى شبكة خلوية.</string>
   <!--DeleteAccountFragment-->
   <string name="DeleteAccountFragment__deleting_your_account_will">سيؤدي حذف حسابك إلى :</string>
   <string name="DeleteAccountFragment__enter_your_phone_number">يُرجى إدخال رقم هاتفك</string>
@@ -4269,6 +4295,8 @@
   <string name="StoriesLandingItem__share">المشاركة…</string>
   <!--Context menu option to go to story chat-->
   <string name="StoriesLandingItem__go_to_chat">الذهاب للمحادثة</string>
+  <!--Context menu option to go to story info-->
+  <string name="StoriesLandingItem__info">معلومات</string>
   <!--Label when a story is pending sending-->
   <string name="StoriesLandingItem__sending">يَجري الإرسال…</string>
   <!--Label when multiple stories are pending sending-->
@@ -4344,6 +4372,14 @@
   <string name="StoryViewsFragment__enable_read_receipts_to_see_whos_viewed_your_story">تفعيل إيصالات القراءة لرؤية من شاهد قصصك.</string>
   <!--Button label displayed when user has disabled receipts-->
   <string name="StoryViewsFragment__go_to_settings">الانتقال إلى الإعدادات</string>
+  <!--Dialog action to remove viewer from a story-->
+  <string name="StoryViewsFragment__remove">إزالة</string>
+  <!--Dialog title when removing a viewer from a story-->
+  <string name="StoryViewsFragment__remove_viewer">إزالة المُشاهد؟</string>
+  <!--Dialog message when removing a viewer from a story-->
+  <string name="StoryViewsFragment__s_will_still_be_able">%1$s سَيظل قادرًا على مشاهدة هذا المنشور، لكنه لن يتمكن من مشاهدة أية منشورات مُستقبلية تشاركها مع %2$s.</string>
+  <!--Story View context menu action to remove them from a story-->
+  <string name="StoryViewItem__remove_viewer">إزالة المُشاهد؟</string>
   <!--Displayed when a story has no replies yet-->
   <string name="StoryGroupReplyFragment__no_replies_yet">لا جواب حاليا</string>
   <!--Displayed for each user that reacted to a story when viewing replies-->
@@ -4567,7 +4603,7 @@
   <!--Content description for expand contacts chevron-->
   <string name="ExpandModel__view_more">رؤية المزيد</string>
   <string name="StoriesLinkPopup__visit_link">زيارة الرابط</string>
-  <!--Duration and price information-->
+  <!--Gift price and duration, formatted as: {price} dot {n} day duration-->
   <plurals name="GiftRowItem_s_dot_d_day_duration">
     <item quantity="zero">%1$s · لمدة %2$d أيام</item>
     <item quantity="one">%1$s · لمدة %2$d أيام</item>
@@ -4734,7 +4770,14 @@
   <!--Title of safety number review fragment-->
   <string name="SafetyNumberReviewConnectionsFragment__safety_number_changes">تغييرات رقم الأمان</string>
   <!--Message of safety number review fragment-->
-  <string name="SafetyNumberReviewConnectionsFragment__d_recipients_may_have">%1$d مُستلمين قد يكونوا أعادوا تثبيت Signal أو غيّروا أجهزتهم. انقر على مُستلم ما للتأكد من رقم الأمان الجديد. هذا الإجراء اختياري.</string>
+  <plurals name="SafetyNumberReviewConnectionsFragment__d_recipients_may_have">
+    <item quantity="zero">%1$d مُستلمين قد يكونوا أعادوا تثبيت Signal أو غيّروا أجهزتهم. انقر على مُستلم ما للتأكد من رقم الأمان الجديد. هذا الإجراء اختياري.</item>
+    <item quantity="one">%1$d مُستلم قد يمكن أن يكون أعاد تثبيت Signal أو غيّر جهازه. انقر على مُستلم ما للتأكد من رقم الأمان الجديد. هذا الإجراء اختياري.</item>
+    <item quantity="two">%1$d مُستلمين قد يكونوا أعادوا تثبيت Signal أو غيّروا أجهزتهم. انقر على مُستلم ما للتأكد من رقم الأمان الجديد. هذا الإجراء اختياري. </item>
+    <item quantity="few">%1$d مُستلمين قد يكونوا أعادوا تثبيت Signal أو غيّروا أجهزتهم. انقر على مُستلم ما للتأكد من رقم الأمان الجديد. هذا الإجراء اختياري.</item>
+    <item quantity="many">%1$d مُستلمين قد يكونوا أعادوا تثبيت Signal أو غيّروا أجهزتهم. انقر على مُستلم ما للتأكد من رقم الأمان الجديد. هذا الإجراء اختياري.</item>
+    <item quantity="other">%1$d مُستلمين قد يكونوا أعادوا تثبيت Signal أو غيّروا أجهزتهم. انقر على مُستلم ما للتأكد من رقم الأمان الجديد. هذا الإجراء اختياري.</item>
+  </plurals>
   <!--Section header for 1:1 contacts in review fragment-->
   <string name="SafetyNumberBucketRowItem__contacts">جهات الاتصال</string>
   <!--Context menu label for distribution list headers in review fragment-->
@@ -4751,5 +4794,17 @@
   <string name="ChooseInitialMyStoryMembershipFragment__all_signal_connections_except">كل ‫معارف Signal‬ إلا…</string>
   <!--Only with selected connections option for initial My Story settings configuration shown when sending to My Story for the first time-->
   <string name="ChooseInitialMyStoryMembershipFragment__only_share_with">مشاركة فقط مع…</string>
+  <!--Story info header sent heading-->
+  <string name="StoryInfoHeader__sent">أرسِلَت</string>
+  <!--Story info header received heading-->
+  <string name="StoryInfoHeader__received">تمَّ الاستلام</string>
+  <!--Story info header file size heading-->
+  <string name="StoryInfoHeader__file_size">حجم الملف</string>
+  <!--Story info "Sent to" header-->
+  <string name="StoryInfoBottomSheetDialogFragment__sent_to">أُرسِلَت إلى</string>
+  <!--Story info "Sent from" header-->
+  <string name="StoryInfoBottomSheetDialogFragment__sent_from">أُرسِلَت مِن قِبَل</string>
+  <!--Story Info context menu label-->
+  <string name="StoryInfoBottomSheetDialogFragment__info">معلومات</string>
   <!--EOF-->
 </resources>

@@ -41,6 +41,9 @@
   <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">Запиши резервна фраза на плаќањата</string>
   <string name="ApplicationPreferencesActivity_record_phrase">Сними фраза</string>
   <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">Пред да го исклучите PIN-от, морате да ја запишете резервната фраза на Вашите плаќања за да се осигурате дека можете да ја вратите Вашата сметка.</string>
+  <!--NumericKeyboardView-->
+  <!--Back button on numeric keyboard-->
+  <string name="NumericKeyboardView__backspace">Backspace</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">%d минута</item>
@@ -173,17 +176,25 @@
   <string name="ContactsDatabase_message_s">Порака %s</string>
   <string name="ContactsDatabase_signal_call_s">Signal повик %s</string>
   <!--ContactNameEditActivity-->
+  <!--Toolbar title for contact name edit activity-->
+  <string name="ContactNameEditActivity__edit_name">Сменете го името</string>
   <string name="ContactNameEditActivity_given_name">Име</string>
   <string name="ContactNameEditActivity_family_name">Презиме</string>
   <string name="ContactNameEditActivity_prefix">Префикс</string>
   <string name="ContactNameEditActivity_suffix">Суфикс</string>
   <string name="ContactNameEditActivity_middle_name">Средно име</string>
   <!--ContactShareEditActivity-->
+  <!--ContactShareEditActivity toolbar title-->
+  <string name="ContactShareEditActivity__send_contact">Испратете го контактот</string>
   <string name="ContactShareEditActivity_type_home">Дома</string>
   <string name="ContactShareEditActivity_type_mobile">Мобилен</string>
   <string name="ContactShareEditActivity_type_work">Работа</string>
   <string name="ContactShareEditActivity_type_missing">Друго</string>
   <string name="ContactShareEditActivity_invalid_contact">Избраниот контакт е невалиден</string>
+  <!--Content descrption for name edit button on contact share edit activity-->
+  <string name="ContactShareEditActivity__edit_name">Сменете го името</string>
+  <!--Content description for user avatar in edit activity-->
+  <string name="ContactShareEditActivity__avatar">Аватар</string>
   <!--ConversationItem-->
   <string name="ConversationItem_error_not_sent_tap_for_details">Не е испратено, допрете за детали</string>
   <string name="ConversationItem_error_partially_not_delivered">Делумно испратено, допрете за детали</string>
@@ -452,6 +463,7 @@
   <string name="BackupsPreferenceFragment__to_restore_a_backup">За да вратите резервна копија, инсталирајте нова копија на Signal. Отворете ја апликацијата и допрете „Врати резервна копија“, потоа лоцирајте ја датотеката со резервната копија. %1$s</string>
   <string name="BackupsPreferenceFragment__learn_more">Дознајте повеќе</string>
   <string name="BackupsPreferenceFragment__in_progress">Во тек…</string>
+  <!--Status text shown in backup preferences when verifying a backup-->
   <string name="BackupsPreferenceFragment__d_so_far">%1$d до сега…</string>
   <!--Show percentage of completion of backup-->
   <string name="BackupsPreferenceFragment__s_so_far">%1$s%% до сега…</string>
@@ -1510,6 +1522,10 @@
   <!--SubmitDebugLogActivity-->
   <string name="SubmitDebugLogActivity_edit">Уреди</string>
   <string name="SubmitDebugLogActivity_done">Готово</string>
+  <!--Menu option to save a debug log file to disk.-->
+  <string name="SubmitDebugLogActivity_save">Зачувај</string>
+  <!--Error that is show in a toast when we fail to save a debug log file to disk.-->
+  <!--Toast that is show to notify that we have saved the debug log file to disk.-->
   <string name="SubmitDebugLogActivity_tap_a_line_to_delete_it">Допрете линија да ја избришете</string>
   <string name="SubmitDebugLogActivity_submit">Испрати</string>
   <string name="SubmitDebugLogActivity_failed_to_submit_logs">Не успеав да ги испратам записите</string>
@@ -1563,6 +1579,10 @@
   <string name="ThreadRecord__you_sent_a_gift">Испративте подарок</string>
   <!--Displayed in the notification when the user has opened a received gift-->
   <string name="ThreadRecord__you_redeemed_a_gift_badge">Прифативте подарок беџ</string>
+  <!--Displayed in the conversation list when someone reacted to your story-->
+  <string name="ThreadRecord__reacted_s_to_your_story">Реагираше со %1$s на вашата приказна</string>
+  <!--Displayed in the conversation list when you reacted to someone\'s story-->
+  <string name="ThreadRecord__reacted_s_to_their_story">Реагиравте со %1$s на нивната приказна</string>
   <!--UpdateApkReadyListener-->
   <string name="UpdateApkReadyListener_Signal_update">Signal ажурирање</string>
   <string name="UpdateApkReadyListener_a_new_version_of_signal_is_available_tap_to_update">Достапна е нова верзија на Signal, допрете за ажурирање</string>
@@ -2712,10 +2732,13 @@
   <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">Успешно ја внесовте лозинката за резервна копија</string>
   <string name="BackupDialog_passphrase_was_not_correct">Лозинката не е точна</string>
   <string name="LocalBackupJob_creating_signal_backup">Создавам резервна копија од Signal…</string>
+  <!--Title for progress notification shown in a system notification while verifying a recent backup.-->
   <string name="LocalBackupJobApi29_backup_failed">Создавањето на резервна копија не успеа</string>
   <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">Вашиот директориум за резервни копии и избришан или преместен.</string>
   <string name="LocalBackupJobApi29_your_backup_file_is_too_large">Вашата резервна копија е преголема за да се складира на овој уред.</string>
   <string name="LocalBackupJobApi29_there_is_not_enough_space">Нема доволно простор за складирање на Вашата резервна копија.</string>
+  <!--Error message shown if a newly created backup could not be verified as accurate-->
+  <!--Error message shown if a very large attachment is encountered during the backup creation and causes the backup to fail-->
   <string name="LocalBackupJobApi29_tap_to_manage_backups">Допрете за управување со резервните копии.</string>
   <string name="ProgressPreference_d_messages_so_far">%d пораки до сега</string>
   <string name="RegistrationActivity_wrong_number">Погрешен број</string>
@@ -2971,6 +2994,9 @@
   <string name="CallParticipant__you">Вие</string>
   <string name="CallParticipant__you_on_another_device">Вие (од друг уред)</string>
   <string name="CallParticipant__s_on_another_device">%1$s (од друг уред)</string>
+  <!--WifiToCellularPopupWindow-->
+  <!--Message shown during a call when the WiFi network is unusable, and cellular data starts to be used for the call instead.-->
+  <string name="WifiToCellularPopupWindow__weak_wifi_switched_to_cellular">Слаба Wi-Fi конекција. Префрлени сте на мобилен интернет.</string>
   <!--DeleteAccountFragment-->
   <string name="DeleteAccountFragment__deleting_your_account_will">Бришењето на Вашата сметка ќе:</string>
   <string name="DeleteAccountFragment__enter_your_phone_number">Внесете го вашиот телефонски број</string>
@@ -3865,6 +3891,8 @@
   <string name="StoriesLandingItem__share">Сподели…</string>
   <!--Context menu option to go to story chat-->
   <string name="StoriesLandingItem__go_to_chat">Оди до разговорот</string>
+  <!--Context menu option to go to story info-->
+  <string name="StoriesLandingItem__info">Информации</string>
   <!--Label when a story is pending sending-->
   <string name="StoriesLandingItem__sending">Се испраќа…</string>
   <!--Label when multiple stories are pending sending-->
@@ -3928,6 +3956,14 @@
   <string name="StoryViewsFragment__enable_read_receipts_to_see_whos_viewed_your_story">Овозможете потврди за прочитани пораки за да видите кој ги гледал вашите приказни.</string>
   <!--Button label displayed when user has disabled receipts-->
   <string name="StoryViewsFragment__go_to_settings">Оди во поставувањата</string>
+  <!--Dialog action to remove viewer from a story-->
+  <string name="StoryViewsFragment__remove">Отстрани</string>
+  <!--Dialog title when removing a viewer from a story-->
+  <string name="StoryViewsFragment__remove_viewer">Дали сакате да го отстраните гледачот?</string>
+  <!--Dialog message when removing a viewer from a story-->
+  <string name="StoryViewsFragment__s_will_still_be_able">%1$s сè уште ќе може да ја види оваа објава, но нема да може да ги види идните објави кои ќе ги споделите на %2$s.</string>
+  <!--Story View context menu action to remove them from a story-->
+  <string name="StoryViewItem__remove_viewer">Отстрани го гледачот</string>
   <!--Displayed when a story has no replies yet-->
   <string name="StoryGroupReplyFragment__no_replies_yet">Сè уште нема одговори</string>
   <!--Displayed for each user that reacted to a story when viewing replies-->
@@ -4139,7 +4175,7 @@
   <!--Content description for expand contacts chevron-->
   <string name="ExpandModel__view_more">Види повеќе</string>
   <string name="StoriesLinkPopup__visit_link">Посети го линкот</string>
-  <!--Duration and price information-->
+  <!--Gift price and duration, formatted as: {price} dot {n} day duration-->
   <plurals name="GiftRowItem_s_dot_d_day_duration">
     <item quantity="one">%1$s · %2$dден важност</item>
     <item quantity="other">%1$s · %2$dдена важност</item>
@@ -4282,7 +4318,10 @@
   <!--Title of safety number review fragment-->
   <string name="SafetyNumberReviewConnectionsFragment__safety_number_changes">Промени на сигурносен број</string>
   <!--Message of safety number review fragment-->
-  <string name="SafetyNumberReviewConnectionsFragment__d_recipients_may_have">%1$d примачи можеби реинсталирале Signal или ги смениле уредите. Допрете на примач за да го потврдите новиот сигурносен број. Ова дејство е незадолжително.</string>
+  <plurals name="SafetyNumberReviewConnectionsFragment__d_recipients_may_have">
+    <item quantity="one">%1$dпримач можно е да има реинсталирано Signal или да сменил уред. Допрете на примачот за да го потврдите новиот сигурносен број. Ова дејство е незадолжително.</item>
+    <item quantity="other">%1$dпримачи можно е да имаат реинсталирано Signal или да смениле уред. Допрете на примачот за да го потврдите новиот сигурносен број. Ова дејство е незадолжително.</item>
+  </plurals>
   <!--Section header for 1:1 contacts in review fragment-->
   <string name="SafetyNumberBucketRowItem__contacts">Контакти</string>
   <!--Context menu label for distribution list headers in review fragment-->
@@ -4299,5 +4338,17 @@
   <string name="ChooseInitialMyStoryMembershipFragment__all_signal_connections_except">Сите Signal врски освен…</string>
   <!--Only with selected connections option for initial My Story settings configuration shown when sending to My Story for the first time-->
   <string name="ChooseInitialMyStoryMembershipFragment__only_share_with">Споделете само со…</string>
+  <!--Story info header sent heading-->
+  <string name="StoryInfoHeader__sent">Испратено</string>
+  <!--Story info header received heading-->
+  <string name="StoryInfoHeader__received">Примено</string>
+  <!--Story info header file size heading-->
+  <string name="StoryInfoHeader__file_size">Големина на датотека</string>
+  <!--Story info "Sent to" header-->
+  <string name="StoryInfoBottomSheetDialogFragment__sent_to">Испратено на</string>
+  <!--Story info "Sent from" header-->
+  <string name="StoryInfoBottomSheetDialogFragment__sent_from">Испратено од</string>
+  <!--Story Info context menu label-->
+  <string name="StoryInfoBottomSheetDialogFragment__info">Информации</string>
   <!--EOF-->
 </resources>

@@ -41,6 +41,9 @@
   <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">பதிவு செலுத்துதல் மீட்பு சொற்றொடர்</string>
   <string name="ApplicationPreferencesActivity_record_phrase">பதிவு சொற்றொடர்</string>
   <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">உங்களால் முடியும் முன் முடக்கு உங்கள் பின், உங்கள் கொடுப்பனவுகளை மீட்டெடுக்க முடியும் என்பதை உறுதிப்படுத்த உங்கள் கொடுப்பனவு மீட்பு சொற்றொடரை நீங்கள் பதிவு செய்ய வேண்டும் கணக்கு.</string>
+  <!--NumericKeyboardView-->
+  <!--Back button on numeric keyboard-->
+  <string name="NumericKeyboardView__backspace">பின்வெளி</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="one">%d நிமிடம்</item>
@@ -173,17 +176,25 @@
   <string name="ContactsDatabase_message_s">செய்தி %s</string>
   <string name="ContactsDatabase_signal_call_s"> Signal அழைப்பு %s</string>
   <!--ContactNameEditActivity-->
+  <!--Toolbar title for contact name edit activity-->
+  <string name="ContactNameEditActivity__edit_name">பெயரைத் திருத்தவும்</string>
   <string name="ContactNameEditActivity_given_name">கொடுக்கப்பட்ட பெயர்</string>
   <string name="ContactNameEditActivity_family_name">குடும்ப பெயர்</string>
   <string name="ContactNameEditActivity_prefix">முன்னொட்டு</string>
   <string name="ContactNameEditActivity_suffix">பின்னொட்டு</string>
   <string name="ContactNameEditActivity_middle_name">நடுப்பெயர்</string>
   <!--ContactShareEditActivity-->
+  <!--ContactShareEditActivity toolbar title-->
+  <string name="ContactShareEditActivity__send_contact">தொடர்பை அனுப்பவும்</string>
   <string name="ContactShareEditActivity_type_home">வீடு</string>
   <string name="ContactShareEditActivity_type_mobile">கைபேசி</string>
   <string name="ContactShareEditActivity_type_work">அலுவலகம்</string>
   <string name="ContactShareEditActivity_type_missing">மற்றவை</string>
   <string name="ContactShareEditActivity_invalid_contact">தேர்ந்தெடுத்த தொடர்பு தவறானது</string>
+  <!--Content descrption for name edit button on contact share edit activity-->
+  <string name="ContactShareEditActivity__edit_name">பெயரைத் திருத்தவும்</string>
+  <!--Content description for user avatar in edit activity-->
+  <string name="ContactShareEditActivity__avatar">சின்னம்</string>
   <!--ConversationItem-->
   <string name="ConversationItem_error_not_sent_tap_for_details">அனுப்பப்படவில்லை, மேலும் விவரங்களுக்கு இங்கே தட்டவும்</string>
   <string name="ConversationItem_error_partially_not_delivered">சிலருக்கு இது அனுப்பப்படுகிறது, விவரங்களுக்கு இங்கே தட்டவும்</string>
@@ -452,6 +463,7 @@
   <string name="BackupsPreferenceFragment__to_restore_a_backup">மறுபிரதியை மீட்டமைக்க, சிக்னலின் புதிய நகலை நிறுவவும். பயன்பாட்டைத் திறந்து \"மறுபிரதியை மீட்டமை\" என்பதைத் தட்டவும், பின்னர் மறுபிரதி கோப்பைக் கண்டறியவும்.%1$s</string>
   <string name="BackupsPreferenceFragment__learn_more">மேலும் அறிக</string>
   <string name="BackupsPreferenceFragment__in_progress">செயல்நிலையில் உள்ளது…</string>
+  <!--Status text shown in backup preferences when verifying a backup-->
   <string name="BackupsPreferenceFragment__d_so_far">%1$dஇதுவரை…</string>
   <!--Show percentage of completion of backup-->
   <string name="BackupsPreferenceFragment__s_so_far">இதுவரை %1$s%%… </string>
@@ -1508,6 +1520,10 @@
   <!--SubmitDebugLogActivity-->
   <string name="SubmitDebugLogActivity_edit">தொகு</string>
   <string name="SubmitDebugLogActivity_done">முடிந்தது</string>
+  <!--Menu option to save a debug log file to disk.-->
+  <string name="SubmitDebugLogActivity_save">சேமி</string>
+  <!--Error that is show in a toast when we fail to save a debug log file to disk.-->
+  <!--Toast that is show to notify that we have saved the debug log file to disk.-->
   <string name="SubmitDebugLogActivity_tap_a_line_to_delete_it">வரியை நீக்க ஒரு வரியைத் தட்டவும்</string>
   <string name="SubmitDebugLogActivity_submit">சமர்ப்பி</string>
   <string name="SubmitDebugLogActivity_failed_to_submit_logs">பதிவுகளை சமர்ப்பிப்பதில் தோல்வி</string>
@@ -1561,6 +1577,10 @@
   <string name="ThreadRecord__you_sent_a_gift">நீங்கள் ஒரு பரிசை அனுப்பியுள்ளீர்கள்</string>
   <!--Displayed in the notification when the user has opened a received gift-->
   <string name="ThreadRecord__you_redeemed_a_gift_badge">நீங்கள் ஒரு பரிசு பேட்ஜை மீட்டெடுத்துள்ளீர்கள்</string>
+  <!--Displayed in the conversation list when someone reacted to your story-->
+  <string name="ThreadRecord__reacted_s_to_your_story">உங்கள் ஸ்டோரி-க்கு %1$s என்று பதிலளித்துள்ளார்</string>
+  <!--Displayed in the conversation list when you reacted to someone\'s story-->
+  <string name="ThreadRecord__reacted_s_to_their_story">அவர்கள் ஸ்டோரி-க்கு %1$s என்று பதிலளித்துள்ளீர்கள்</string>
   <!--UpdateApkReadyListener-->
   <string name="UpdateApkReadyListener_Signal_update">Signal புதுப்பிப்பு</string>
   <string name="UpdateApkReadyListener_a_new_version_of_signal_is_available_tap_to_update">Signal புதிய பதிப்பு கிடைக்கும், புதுப்பிக்க தட்டவும்</string>
@@ -2704,10 +2724,13 @@
   <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">உங்கள் காப்புப்பிரதி கடவுச்சொற்றொடரை வெற்றிகரமாக உள்ளிட்டுள்ளீர்கள்</string>
   <string name="BackupDialog_passphrase_was_not_correct">கடவுச்சொல் சரியாக இல்லை</string>
   <string name="LocalBackupJob_creating_signal_backup">சிக்னல் காப்புநகலை உருவாக்குகிறது…</string>
+  <!--Title for progress notification shown in a system notification while verifying a recent backup.-->
   <string name="LocalBackupJobApi29_backup_failed">மறுபிரதி தோல்வியுற்றது</string>
   <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">உங்கள் மறுபிரதி கோப்புறை நீக்கப்பட்டது அல்லது வேறு இடத்திற்கு நகர்த்தப்பட்டது.</string>
   <string name="LocalBackupJobApi29_your_backup_file_is_too_large">உங்கள் மறுபிரதி கோப்பின் அளவு இந்த தொகுதியில் சேமிக்க முடியாத அளவுக்கு பெரியது.</string>
   <string name="LocalBackupJobApi29_there_is_not_enough_space">உங்கள் காப்புப்பிரதியை சேமிக்க போதுமான இடம் இல்லை.</string>
+  <!--Error message shown if a newly created backup could not be verified as accurate-->
+  <!--Error message shown if a very large attachment is encountered during the backup creation and causes the backup to fail-->
   <string name="LocalBackupJobApi29_tap_to_manage_backups">மறுபிரதிகளை நிர்வகிக்க தட்டவும்</string>
   <string name="ProgressPreference_d_messages_so_far">இதுவரை 1%d செய்திகள்</string>
   <string name="RegistrationActivity_wrong_number">தவறான எண்</string>
@@ -2963,6 +2986,9 @@
   <string name="CallParticipant__you">நீங்கள்</string>
   <string name="CallParticipant__you_on_another_device">நீங்கள் (மற்றொரு சாதனத்தில்)</string>
   <string name="CallParticipant__s_on_another_device">%1$s  (மற்றொரு சாதனத்தில்)</string>
+  <!--WifiToCellularPopupWindow-->
+  <!--Message shown during a call when the WiFi network is unusable, and cellular data starts to be used for the call instead.-->
+  <string name="WifiToCellularPopupWindow__weak_wifi_switched_to_cellular">பலவீனமான வை-ஃபை. செல்லுலார்க்கு மாறியது.</string>
   <!--DeleteAccountFragment-->
   <string name="DeleteAccountFragment__deleting_your_account_will">உங்கள் நீக்குகிறது கணக்கு விருப்பம்:</string>
   <string name="DeleteAccountFragment__enter_your_phone_number">உள்ளிடவும் உங்கள் தொலைபேசி எண்</string>
@@ -3860,6 +3886,8 @@
   <string name="StoriesLandingItem__share">பகிரவும்…</string>
   <!--Context menu option to go to story chat-->
   <string name="StoriesLandingItem__go_to_chat">சாட்டிற்குச் செல் </string>
+  <!--Context menu option to go to story info-->
+  <string name="StoriesLandingItem__info">தகவல்</string>
   <!--Label when a story is pending sending-->
   <string name="StoriesLandingItem__sending">அனுப்புகிறது …</string>
   <!--Label when multiple stories are pending sending-->
@@ -3923,6 +3951,14 @@
   <string name="StoryViewsFragment__enable_read_receipts_to_see_whos_viewed_your_story">உங்கள் ஸ்டோரீஸ்-ஐ யார் பார்த்தார்கள் என்பதைக் காண, வாசித்ததற்கான அறிவிப்புகளை இயக்கவும்.</string>
   <!--Button label displayed when user has disabled receipts-->
   <string name="StoryViewsFragment__go_to_settings">அமைப்புகளுக்குச் செல்</string>
+  <!--Dialog action to remove viewer from a story-->
+  <string name="StoryViewsFragment__remove">நீக்கு</string>
+  <!--Dialog title when removing a viewer from a story-->
+  <string name="StoryViewsFragment__remove_viewer">பார்வையாளரை அகற்றுவதா?</string>
+  <!--Dialog message when removing a viewer from a story-->
+  <string name="StoryViewsFragment__s_will_still_be_able">%1$s -ஆல் இன்னும் இந்த போஸ்ட்டைப் பார்க்க முடியும், ஆனால் %2$s -க்கு நீங்கள் எதிர்காலத்தில் பகிரும் எந்தவொரு போஸ்ட்டுகளையும் பார்க்க முடியாது.</string>
+  <!--Story View context menu action to remove them from a story-->
+  <string name="StoryViewItem__remove_viewer">பார்வையாளரை அகற்று</string>
   <!--Displayed when a story has no replies yet-->
   <string name="StoryGroupReplyFragment__no_replies_yet">இதுவரை பதில்கள் ஏதுமில்லை</string>
   <!--Displayed for each user that reacted to a story when viewing replies-->
@@ -4134,7 +4170,7 @@
   <!--Content description for expand contacts chevron-->
   <string name="ExpandModel__view_more">மேலும் பார்க்கவும்</string>
   <string name="StoriesLinkPopup__visit_link">இணைப்பை பார்வையிடவும்</string>
-  <!--Duration and price information-->
+  <!--Gift price and duration, formatted as: {price} dot {n} day duration-->
   <plurals name="GiftRowItem_s_dot_d_day_duration">
     <item quantity="one">%1$s · %2$d நாள் காலம்</item>
     <item quantity="other">%1$s · %2$d நாள் காலம்</item>
@@ -4277,7 +4313,10 @@
   <!--Title of safety number review fragment-->
   <string name="SafetyNumberReviewConnectionsFragment__safety_number_changes">பாதுகாப்பு எண் மாற்றங்கள்</string>
   <!--Message of safety number review fragment-->
-  <string name="SafetyNumberReviewConnectionsFragment__d_recipients_may_have">%1$d பெறுநர்கள் சிக்னலை மீண்டும் நிறுவியிருக்கலாம் அல்லது சாதனங்களை மாற்றியிருக்கலாம். புதிய பாதுகாப்பு எண்ணை உறுதிப்படுத்த ஒரு பெறுநரைத் தட்டவும். இது கட்டாயமில்லை.</string>
+  <plurals name="SafetyNumberReviewConnectionsFragment__d_recipients_may_have">
+    <item quantity="one">%1$d பெறுநர் சிக்னலை மீண்டும் நிறுவியிருக்கலாம் அல்லது சாதனங்களை மாற்றியிருக்கலாம். புதிய பாதுகாப்பு எண்ணை உறுதிப்படுத்த ஒரு பெறுநரைத் தட்டவும். இது கட்டாயமில்லை.</item>
+    <item quantity="other">%1$d பெறுநர்கள் சிக்னலை மீண்டும் நிறுவியிருக்கலாம் அல்லது சாதனங்களை மாற்றியிருக்கலாம். புதிய பாதுகாப்பு எண்ணை உறுதிப்படுத்த ஒரு பெறுநரைத் தட்டவும். இது கட்டாயமில்லை.</item>
+  </plurals>
   <!--Section header for 1:1 contacts in review fragment-->
   <string name="SafetyNumberBucketRowItem__contacts">தொடர்புகள்</string>
   <!--Context menu label for distribution list headers in review fragment-->
@@ -4294,5 +4333,17 @@
   <string name="ChooseInitialMyStoryMembershipFragment__all_signal_connections_except">அனைத்து சிக்னல் இணைப்புகளும், இதை தவிர…</string>
   <!--Only with selected connections option for initial My Story settings configuration shown when sending to My Story for the first time-->
   <string name="ChooseInitialMyStoryMembershipFragment__only_share_with">இவர்களுடன் மட்டும் பகிரவும்…</string>
+  <!--Story info header sent heading-->
+  <string name="StoryInfoHeader__sent">அனுப்பியது </string>
+  <!--Story info header received heading-->
+  <string name="StoryInfoHeader__received">பெறப்பட்டது</string>
+  <!--Story info header file size heading-->
+  <string name="StoryInfoHeader__file_size">கோப்பு அளவு</string>
+  <!--Story info "Sent to" header-->
+  <string name="StoryInfoBottomSheetDialogFragment__sent_to">அனுப்பப்பட்டது</string>
+  <!--Story info "Sent from" header-->
+  <string name="StoryInfoBottomSheetDialogFragment__sent_from">அனுப்புனர்</string>
+  <!--Story Info context menu label-->
+  <string name="StoryInfoBottomSheetDialogFragment__info">தகவல்</string>
   <!--EOF-->
 </resources>

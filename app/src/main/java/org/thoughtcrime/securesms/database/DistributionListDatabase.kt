@@ -522,7 +522,7 @@ class DistributionListDatabase constructor(context: Context?, databaseHelper: Si
   }
 
   fun getRecipientIdForSyncRecord(record: SignalStoryDistributionListRecord): RecipientId? {
-    val uuid: UUID = UuidUtil.parseOrNull(record.identifier) ?: return null
+    val uuid: UUID = requireNotNull(UuidUtil.parseOrNull(record.identifier)) { "Incoming record did not have a valid identifier." }
     val distributionId = DistributionId.from(uuid)
 
     return readableDatabase.query(
@@ -599,7 +599,7 @@ class DistributionListDatabase constructor(context: Context?, databaseHelper: Si
     SignalDatabase.recipients.updateStorageId(recipientId, update.new.id.raw)
 
     if (update.new.deletedAtTimestamp > 0L) {
-      if (distributionId.asUuid().equals(DistributionId.MY_STORY.asUuid())) {
+      if (distributionId == DistributionId.MY_STORY) {
         Log.w(TAG, "Refusing to delete My Story.")
         return
       }

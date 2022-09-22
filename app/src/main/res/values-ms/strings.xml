@@ -41,6 +41,9 @@
   <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">Rekodkan frasa pemulihan pembayaran</string>
   <string name="ApplicationPreferencesActivity_record_phrase">Rekodkan frasa</string>
   <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">Sebelum anda boleh menyahdayakan PIN anda, anda perlu merekodkan frasa pemulihan pembayaran anda untuk memastikan anda memulihkan akaun pembayaran anda.</string>
+  <!--NumericKeyboardView-->
+  <!--Back button on numeric keyboard-->
+  <string name="NumericKeyboardView__backspace">Undur Ruang</string>
   <!--AppProtectionPreferenceFragment-->
   <plurals name="AppProtectionPreferenceFragment_minutes">
     <item quantity="other">%d minit</item>
@@ -172,17 +175,25 @@
   <string name="ContactsDatabase_message_s">Mesej %s</string>
   <string name="ContactsDatabase_signal_call_s">Panggilan Signal %s</string>
   <!--ContactNameEditActivity-->
+  <!--Toolbar title for contact name edit activity-->
+  <string name="ContactNameEditActivity__edit_name">Edit nama</string>
   <string name="ContactNameEditActivity_given_name">Nama sebenar</string>
   <string name="ContactNameEditActivity_family_name">Nama keluarga</string>
   <string name="ContactNameEditActivity_prefix">Awalan</string>
   <string name="ContactNameEditActivity_suffix">Akhiran</string>
   <string name="ContactNameEditActivity_middle_name">Nama tengah</string>
   <!--ContactShareEditActivity-->
+  <!--ContactShareEditActivity toolbar title-->
+  <string name="ContactShareEditActivity__send_contact">Hantar kenalan</string>
   <string name="ContactShareEditActivity_type_home">Rumah</string>
   <string name="ContactShareEditActivity_type_mobile">Mudah alih</string>
   <string name="ContactShareEditActivity_type_work">Kerja</string>
   <string name="ContactShareEditActivity_type_missing">Lain-lain</string>
   <string name="ContactShareEditActivity_invalid_contact">Kenalan dipilih tidak sah</string>
+  <!--Content descrption for name edit button on contact share edit activity-->
+  <string name="ContactShareEditActivity__edit_name">Edit nama</string>
+  <!--Content description for user avatar in edit activity-->
+  <string name="ContactShareEditActivity__avatar">Avatar</string>
   <!--ConversationItem-->
   <string name="ConversationItem_error_not_sent_tap_for_details">Gagal menghantar, tekan untuk details</string>
   <string name="ConversationItem_error_partially_not_delivered">Dihantar separa sahaja, tekan untuk details</string>
@@ -431,6 +442,7 @@
   <string name="BackupsPreferenceFragment__to_restore_a_backup">Untuk memulihkan sandaran, pasang salinan Signal baharu. Buka aplikasi dan ketik \"Pulihkan sandaran\", kemudian cari fail sandaran. %1$s</string>
   <string name="BackupsPreferenceFragment__learn_more">Ketahui lebih lanjut</string>
   <string name="BackupsPreferenceFragment__in_progress">Dalam progres…</string>
+  <!--Status text shown in backup preferences when verifying a backup-->
   <string name="BackupsPreferenceFragment__d_so_far">%1$d setakat ini…</string>
   <!--Show percentage of completion of backup-->
   <string name="BackupsPreferenceFragment__s_so_far">%1$s%% setakat ini…</string>
@@ -1429,6 +1441,10 @@ Menerima mesej pertukaran kunci untuk versi protokol yang tidak sah.</string>
   <!--SubmitDebugLogActivity-->
   <string name="SubmitDebugLogActivity_edit">Edit</string>
   <string name="SubmitDebugLogActivity_done">Selesai</string>
+  <!--Menu option to save a debug log file to disk.-->
+  <string name="SubmitDebugLogActivity_save">Simpan</string>
+  <!--Error that is show in a toast when we fail to save a debug log file to disk.-->
+  <!--Toast that is show to notify that we have saved the debug log file to disk.-->
   <string name="SubmitDebugLogActivity_tap_a_line_to_delete_it">Ketik satu garisan untuk memadamkannya</string>
   <string name="SubmitDebugLogActivity_submit">Hantar</string>
   <string name="SubmitDebugLogActivity_failed_to_submit_logs">Gagal menyerahkan log</string>
@@ -1482,6 +1498,10 @@ Menerima mesej pertukaran kunci untuk versi protokol yang tidak sah.</string>
   <string name="ThreadRecord__you_sent_a_gift">Anda telah menghantarkan hadiah</string>
   <!--Displayed in the notification when the user has opened a received gift-->
   <string name="ThreadRecord__you_redeemed_a_gift_badge">Anda telah menebus lencana hadiah</string>
+  <!--Displayed in the conversation list when someone reacted to your story-->
+  <string name="ThreadRecord__reacted_s_to_your_story">Menghantar reaksi %1$s kepada cerita anda</string>
+  <!--Displayed in the conversation list when you reacted to someone\'s story-->
+  <string name="ThreadRecord__reacted_s_to_their_story">Menghantar reaksi %1$s kepada cerita mereka</string>
   <!--UpdateApkReadyListener-->
   <string name="UpdateApkReadyListener_Signal_update">Kemas kini Signal</string>
   <string name="UpdateApkReadyListener_a_new_version_of_signal_is_available_tap_to_update">Versi baru Signal tersedia, ketik untuk kemas kini</string>
@@ -2610,10 +2630,13 @@ Menerima mesej pertukaran kunci untuk versi protokol yang tidak sah.</string>
   <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">Anda berjaya memasukkan frasa laluan sandaran anda</string>
   <string name="BackupDialog_passphrase_was_not_correct">Frasa laluan tidak betul</string>
   <string name="LocalBackupJob_creating_signal_backup">Mencipta sandaran Signal…</string>
+  <!--Title for progress notification shown in a system notification while verifying a recent backup.-->
   <string name="LocalBackupJobApi29_backup_failed">Sandaran gagal</string>
   <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">Direktori sandaran anda telah dipadamkan atau telah dipindah.</string>
   <string name="LocalBackupJobApi29_your_backup_file_is_too_large">Fail sandaran anda terlalu besar untuk disimpan pada volum ini.</string>
   <string name="LocalBackupJobApi29_there_is_not_enough_space">Tidak ada cukup ruang untuk menyimpan sandaran anda.</string>
+  <!--Error message shown if a newly created backup could not be verified as accurate-->
+  <!--Error message shown if a very large attachment is encountered during the backup creation and causes the backup to fail-->
   <string name="LocalBackupJobApi29_tap_to_manage_backups">Ketik untuk menguruskan sandaran.</string>
   <string name="ProgressPreference_d_messages_so_far">%d mesej setakat ini</string>
   <string name="RegistrationActivity_wrong_number">Salah nombor</string>
@@ -2867,6 +2890,9 @@ Menerima mesej pertukaran kunci untuk versi protokol yang tidak sah.</string>
   <string name="CallParticipant__you">Anda</string>
   <string name="CallParticipant__you_on_another_device">Anda (pada peranti lain)</string>
   <string name="CallParticipant__s_on_another_device">%1$s (pada peranti lain)</string>
+  <!--WifiToCellularPopupWindow-->
+  <!--Message shown during a call when the WiFi network is unusable, and cellular data starts to be used for the call instead.-->
+  <string name="WifiToCellularPopupWindow__weak_wifi_switched_to_cellular">Wi-Fi lemah. Bertukar kepada selular.</string>
   <!--DeleteAccountFragment-->
   <string name="DeleteAccountFragment__deleting_your_account_will">Memadamkan akaun anda akan:</string>
   <string name="DeleteAccountFragment__enter_your_phone_number">Masukkan nombor telefon anda</string>
@@ -3753,6 +3779,8 @@ Menerima mesej pertukaran kunci untuk versi protokol yang tidak sah.</string>
   <string name="StoriesLandingItem__share">Kongsi…</string>
   <!--Context menu option to go to story chat-->
   <string name="StoriesLandingItem__go_to_chat">Pergi ke sembang</string>
+  <!--Context menu option to go to story info-->
+  <string name="StoriesLandingItem__info">Maklumat</string>
   <!--Label when a story is pending sending-->
   <string name="StoriesLandingItem__sending">Menghantar…</string>
   <!--Label when multiple stories are pending sending-->
@@ -3813,6 +3841,14 @@ Menerima mesej pertukaran kunci untuk versi protokol yang tidak sah.</string>
   <string name="StoryViewsFragment__enable_read_receipts_to_see_whos_viewed_your_story">Dayakan resit baca untuk lihat siapa yang telah menonton cerita anda.</string>
   <!--Button label displayed when user has disabled receipts-->
   <string name="StoryViewsFragment__go_to_settings">Pergi ke tetapan</string>
+  <!--Dialog action to remove viewer from a story-->
+  <string name="StoryViewsFragment__remove">Alih keluar</string>
+  <!--Dialog title when removing a viewer from a story-->
+  <string name="StoryViewsFragment__remove_viewer">Alih keluar penonton?</string>
+  <!--Dialog message when removing a viewer from a story-->
+  <string name="StoryViewsFragment__s_will_still_be_able">%1$s masih boleh melihat siaran ini, tapi tidak boleh melihat sebarang siaran akan datang yang anda kongsikan ke %2$s.</string>
+  <!--Story View context menu action to remove them from a story-->
+  <string name="StoryViewItem__remove_viewer">Alih keluar penonton</string>
   <!--Displayed when a story has no replies yet-->
   <string name="StoryGroupReplyFragment__no_replies_yet">Tiada balasan lagi</string>
   <!--Displayed for each user that reacted to a story when viewing replies-->
@@ -4021,7 +4057,7 @@ Menerima mesej pertukaran kunci untuk versi protokol yang tidak sah.</string>
   <!--Content description for expand contacts chevron-->
   <string name="ExpandModel__view_more">Lihat lebih lagi</string>
   <string name="StoriesLinkPopup__visit_link">Lawati pautan</string>
-  <!--Duration and price information-->
+  <!--Gift price and duration, formatted as: {price} dot {n} day duration-->
   <plurals name="GiftRowItem_s_dot_d_day_duration">
     <item quantity="other">%1$s . durasi %2$d hari</item>
   </plurals>
@@ -4158,7 +4194,9 @@ Menerima mesej pertukaran kunci untuk versi protokol yang tidak sah.</string>
   <!--Title of safety number review fragment-->
   <string name="SafetyNumberReviewConnectionsFragment__safety_number_changes">Nombor keselamatan ditukar</string>
   <!--Message of safety number review fragment-->
-  <string name="SafetyNumberReviewConnectionsFragment__d_recipients_may_have">%1$d penerima mungkin telah memasang semula Signal atau menukar peranti. Ketik penerima untuk mengesahkan nombor keselamatan. Ini adalah pilihan.</string>
+  <plurals name="SafetyNumberReviewConnectionsFragment__d_recipients_may_have">
+    <item quantity="other">%1$d penerima mungkin telah memasang semula Signal atau menukar peranti. Ketik penerima untuk mengesahkan nombor keselamatan baru. Ini adalah pilihan.</item>
+  </plurals>
   <!--Section header for 1:1 contacts in review fragment-->
   <string name="SafetyNumberBucketRowItem__contacts">Kenalan</string>
   <!--Context menu label for distribution list headers in review fragment-->
@@ -4175,5 +4213,17 @@ Menerima mesej pertukaran kunci untuk versi protokol yang tidak sah.</string>
   <string name="ChooseInitialMyStoryMembershipFragment__all_signal_connections_except">Semua hubungan Signal kecuali…</string>
   <!--Only with selected connections option for initial My Story settings configuration shown when sending to My Story for the first time-->
   <string name="ChooseInitialMyStoryMembershipFragment__only_share_with">Hanya berkongsi dengan…</string>
+  <!--Story info header sent heading-->
+  <string name="StoryInfoHeader__sent">Dihantar</string>
+  <!--Story info header received heading-->
+  <string name="StoryInfoHeader__received">Diterima</string>
+  <!--Story info header file size heading-->
+  <string name="StoryInfoHeader__file_size">Saiz Fail</string>
+  <!--Story info "Sent to" header-->
+  <string name="StoryInfoBottomSheetDialogFragment__sent_to">Dihantar kepada</string>
+  <!--Story info "Sent from" header-->
+  <string name="StoryInfoBottomSheetDialogFragment__sent_from">Dihantar daripada</string>
+  <!--Story Info context menu label-->
+  <string name="StoryInfoBottomSheetDialogFragment__info">Maklumat</string>
   <!--EOF-->
 </resources>
