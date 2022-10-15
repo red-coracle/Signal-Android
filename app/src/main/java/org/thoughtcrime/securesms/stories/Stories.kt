@@ -62,11 +62,16 @@ object Stories {
     return isFeatureAvailable() && !SignalStore.storyValues().isFeatureDisabled
   }
 
-  fun getHeaderAction(fragmentManager: FragmentManager): HeaderAction {
+  fun getHeaderAction(onClick: () -> Unit): HeaderAction {
     return HeaderAction(
       R.string.ContactsCursorLoader_new_story,
-      R.drawable.ic_plus_20
-    ) {
+      R.drawable.ic_plus_20,
+      onClick
+    )
+  }
+
+  fun getHeaderAction(fragmentManager: FragmentManager): HeaderAction {
+    return getHeaderAction {
       ChooseStoryTypeBottomSheet().show(fragmentManager, BottomSheetUtil.STANDARD_BOTTOM_SHEET_FRAGMENT_TAG)
     }
   }
@@ -126,7 +131,7 @@ object Stories {
       ApplicationDependencies.getJobManager().add(job)
     }
 
-    if (record.hasLinkPreview()) {
+    if (record.hasLinkPreview() && record.linkPreviews[0].attachmentId != null) {
       ApplicationDependencies.getJobManager().add(
         AttachmentDownloadJob(record.id, record.linkPreviews[0].attachmentId, true)
       )

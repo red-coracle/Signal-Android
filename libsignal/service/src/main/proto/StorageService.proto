@@ -71,8 +71,9 @@ message ContactRecord {
     UNVERIFIED = 2;
   }
 
-  string        serviceUuid         = 1;
+  string        serviceId           = 1;
   string        serviceE164         = 2;
+  string        servicePni          = 15;
   bytes         profileKey          = 3;
   bytes         identityKey         = 4;
   IdentityState identityState       = 5;
@@ -157,6 +158,10 @@ message AccountRecord {
            string                 subscriberCurrencyCode        = 22;
            bool                   displayBadgesOnProfile        = 23;
            bool                   subscriptionManuallyCancelled = 24;
+           bool                   keepMutedChatsArchived        = 25;
+           bool                   hasSetMyStoriesPrivacy        = 26;
+           bool                   hasViewedOnboardingStory      = 27;
+           bool                   storiesDisabled               = 28;
 }
 
 message StoryDistributionListRecord {

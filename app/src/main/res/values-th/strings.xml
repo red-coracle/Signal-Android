@@ -166,7 +166,8 @@
   <string name="ContactsCursorLoader_contacts">ผู้ติดต่อ</string>
   <string name="ContactsCursorLoader_groups">กลุ่ม</string>
   <string name="ContactsCursorLoader_phone_number_search">ค้นด้วยหมายเลขโทรศัพท์</string>
-  <string name="ContactsCursorLoader_username_search">ค้นหาด้วยชื่อผู้ใช้</string>
+  <!--Header for username search-->
+  <string name="ContactsCursorLoader_find_by_username">ค้นหาด้วยชื่อผู้ใช้</string>
   <!--Label for my stories when selecting who to send media to-->
   <string name="ContactsCursorLoader_my_stories">สตอรี่ของฉัน</string>
   <!--Action for creating a new story-->
@@ -409,8 +410,20 @@
   <string name="CreateProfileActivity_error_setting_profile_photo">การตั้งค่ารูปโปรไฟล์ผิดพลาด</string>
   <string name="CreateProfileActivity_problem_setting_profile">ปัญหาการตั้งค่าโปรไฟล์</string>
   <string name="CreateProfileActivity_set_up_your_profile">สร้างโปรไฟล์ของคุณ</string>
-  <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">โปรไฟล์ของคุณถูกเข้ารหัสลับจากต้นทางถึงปลายทาง เมื่อคุณเริ่มต้นหรือตอบรับบทสนทนาใหม่ และเมื่อคุณเข้าร่วมกลุ่มใหม่ ผู้ติดต่อของคุณจะมองเห็นโปรไฟล์และความเปลี่ยนแปลงที่เกิดขึ้นกับโปรไฟล์ของคุณ</string>
+  <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">ผู้ติดต่อ กลุ่ม และคนที่คุณส่งข้อความหาจะเห็นโปรไฟล์และความเปลี่ยนแปลงที่เกิดขึ้นกับโปรไฟล์ของคุณ</string>
   <string name="CreateProfileActivity_set_avatar_description">สร้างอวตาร</string>
+  <!--ProfileCreateFragment-->
+  <!--Displayed at the top of the screen and explains how profiles can be viewed.-->
+  <string name="ProfileCreateFragment__profiles_are_visible_to_contacts_and_people_you_message">ผู้ติดต่อ กลุ่ม และคนที่คุณส่งข้อความหาจะเห็นโปรไฟล์ของคุณ</string>
+  <!--Title of clickable row to select phone number privacy settings-->
+  <string name="ProfileCreateFragment__who_can_find_me">ใครบ้างที่สามารถค้นหาฉันด้วยหมายเลขโทรศัพท์ได้</string>
+  <!--WhoCanSeeMyPhoneNumberFragment-->
+  <!--Toolbar title for this screen-->
+  <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">ใครบ้างที่สามารถค้นหาฉันด้วยหมายเลขโทรศัพท์ได้</string>
+  <!--Description for radio item stating anyone can see your phone number-->
+  <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has">ใครก็ตามที่มีหมายเลขโทรศัพท์ของคุณอยู่ในรายชื่อผู้ติดต่อ จะเห็นคุณเป็นผู้ติดต่อบน Signal เช่นกัน ส่วนคนอื่นๆ จะสามารถค้นหาคุณได้โดยใช้หมายเลขโทรศัพท์</string>
+  <!--Description for radio item stating no one will be able to see your phone number-->
+  <string name="WhoCanSeeMyPhoneNumberFragment__nobody_on_signal">ไม่มีผู้ใช้ Signal คนใดที่สามารถค้นหาคุณได้โดยใช้หมายเลขโทรศัพท์</string>
   <!--ChooseBackupFragment-->
   <string name="ChooseBackupFragment__restore_from_backup">กู้คืนจากข้อมูลสำรองหรือไม่?</string>
   <string name="ChooseBackupFragment__restore_your_messages_and_media">กู้คืนข้อความและสื่อของคุณจากข้อมูลสำรองในเครื่อง หากคุณไม่กู้คืนตอนนี้ คุณจะไม่สามารถกู้คืนได้อีกในภายหลัง</string>
@@ -443,6 +456,7 @@
   <string name="BackupsPreferenceFragment__learn_more">เรียนรู้เพิ่มเติม</string>
   <string name="BackupsPreferenceFragment__in_progress">อยู่ระหว่างดำเนินการ…</string>
   <!--Status text shown in backup preferences when verifying a backup-->
+  <string name="BackupsPreferenceFragment__verifying_backup">กำลังตรวจยืนยันข้อมูลสำรอง…</string>
   <string name="BackupsPreferenceFragment__d_so_far">%1$d แล้ว…</string>
   <!--Show percentage of completion of backup-->
   <string name="BackupsPreferenceFragment__s_so_far">%1$s%% ในตอนนี้…</string>
@@ -695,6 +709,10 @@
   <string name="ManageProfileFragment_failed_to_set_avatar">ล้มเหลวในการสร้างภาพประจำตัว</string>
   <string name="ManageProfileFragment_badges">โล่</string>
   <string name="ManageProfileFragment__edit_photo">แก้ไขรูปภาพ</string>
+  <!--Snackbar message after creating username-->
+  <string name="ManageProfileFragment__username_created">สร้างชื่อผู้ใช้แล้ว</string>
+  <!--Snackbar message after copying username-->
+  <string name="ManageProfileFragment__username_copied">คัดลอกชื่อผู้ใช้แล้ว</string>
   <!--ManageRecipientActivity-->
   <string name="ManageRecipientActivity_no_groups_in_common">ไม่มีกลุ่มร่วมกัน</string>
   <plurals name="ManageRecipientActivity_d_groups_in_common">
@@ -1453,7 +1471,9 @@
   <!--Menu option to save a debug log file to disk.-->
   <string name="SubmitDebugLogActivity_save">บันทึก</string>
   <!--Error that is show in a toast when we fail to save a debug log file to disk.-->
+  <string name="SubmitDebugLogActivity_failed_to_save">บันทึกไม่สำเร็จ</string>
   <!--Toast that is show to notify that we have saved the debug log file to disk.-->
+  <string name="SubmitDebugLogActivity_save_complete">บันทึกสำเร็จ</string>
   <string name="SubmitDebugLogActivity_tap_a_line_to_delete_it">แตะที่เส้นเพื่อลบมัน</string>
   <string name="SubmitDebugLogActivity_submit">ส่ง</string>
   <string name="SubmitDebugLogActivity_failed_to_submit_logs">การส่งปูมล้มเหลว</string>
@@ -1521,6 +1541,10 @@
   <string name="UnverifiedSendDialog_send_message">ส่งข้อความหรือไม่?</string>
   <string name="UnverifiedSendDialog_send">ส่ง</string>
   <!--UsernameEditFragment-->
+  <!--Toolbar title when entering from registration-->
+  <string name="UsernameEditFragment__add_a_username">เพิ่มชื่อผู้ใช้</string>
+  <!--Instructional text at the top of the username edit screen-->
+  <string name="UsernameEditFragment__choose_your_username">เลือกชื่อผู้ใช้ของคุณ</string>
   <string name="UsernameEditFragment_username">ชื่อผู้ใช้</string>
   <string name="UsernameEditFragment_delete">ลบ</string>
   <string name="UsernameEditFragment_successfully_set_username">ตั้งชื่อผู้ใช้สำเร็จ</string>
@@ -1532,10 +1556,21 @@
   <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">ชื่อผู้ใช้ไม่สามารถเริ่มต้นด้วยตัวเลข</string>
   <string name="UsernameEditFragment_username_is_invalid">ชื่อผู้ใช้ไม่ถูกต้อง</string>
   <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">ชื่อผู้ใช้จะต้องมี %1$dถึง %2$d ตัวอักษร</string>
-  <string name="UsernameEditFragment_usernames_on_signal_are_optional">ชื่อผู้ใช้ใน Signal นั้นจะมีหรือไม่ก็ได้ ถ้าคุณเลือกสร้างชื่อผู้ใช้ ผู้ใช้ Signal คนอื่นจะสามารถหาและติดต่อคุณได้จากชื่อผู้ใช้นี้โดยไม่จำเป็นต้องรู้หมายเลขโทรศัพท์ของคุณ</string>
+  <!--Explanation about what usernames provide-->
+  <string name="UsernameEditFragment__usernames_let_others_message">ชื่อผู้ใช้จะช่วยให้ผู้ใช้รายอื่นส่งข้อความหาคุณได้โดยไม่จำเป็นต้องมีหมายเลขโทรศัพท์ของคุณ ชื่อผู้ใช้จะถูกผูกเข้ากับกลุ่มตัวเลขเพื่อช่วยรักษาความเป็นส่วนตัวของข้อมูลคุณ</string>
+  <!--Dialog title for explanation about numbers at the end of the username-->
+  <string name="UsernameEditFragment__what_is_this_number">ตัวเลขนี้คืออะไร</string>
+  <string name="UsernameEditFragment__these_digits_help_keep">ตัวเลขนี้จะช่วยรักษาความเป็นส่วนตัวให้ชื่อผู้ใช้ของคุณ ป้องกันไม่ให้คุณได้รับข้อความที่ไม่ต้องการ เราขอแนะนำให้แชร์ชื่อผู้ใช้ของคุณเฉพาะกับคนและกลุ่มที่คุณอยากติดต่อด้วยเท่านั้น โดยหากเปลี่ยนชื่อผู้ใช้ คุณจะได้รับตัวเลขใหม่</string>
+  <!--Button to allow user to skip-->
+  <string name="UsernameEditFragment__skip">ข้าม</string>
+  <!--Content description for done button-->
+  <string name="UsernameEditFragment__done">เสร็จสิ้น</string>
   <plurals name="UserNotificationMigrationJob_d_contacts_are_on_signal">
     <item quantity="other">มีผู้ติดต่อ %d คนใช้งาน Signal!</item>
   </plurals>
+  <!--UsernameShareBottomSheet-->
+  <!--Explanation of what the sheet enables the user to do-->
+  <string name="UsernameShareBottomSheet__copy_or_share_a_username_link">คัดลอกหรือแชร์ลิงก์ชื่อผู้ใช้</string>
   <!--VerifyIdentityActivity-->
   <string name="VerifyIdentityActivity_your_contact_is_running_an_old_version_of_signal">ผู้ติดต่อของคุณใช้ Signal รุ่นเก่า กรุณาขอให้เธอปรับรุ่นก่อนจะตรวจยืนยันหมายเลขความปลอดภัยของคุณ</string>
   <string name="VerifyIdentityActivity_your_contact_is_running_a_newer_version_of_Signal">ผู้ติดต่อของคุณใช้ Signal รุ่นใหม่กว่า และมีรูปแบบรหัส QR ที่เข้ากันไม่ได้กับของคุณ กรุณาปรับรุ่นเพื่อให้ใช้งานด้วยกันได้</string>
@@ -2109,6 +2144,8 @@
   <!--Preference label for making one-time donations to Signal-->
   <string name="preferences__one_time_donation">การบริจาคครั้งเดียว</string>
   <string name="preferences__privacy">ความเป็นส่วนตัว</string>
+  <!--Preference label for stories-->
+  <string name="preferences__stories">สตอรี่</string>
   <string name="preferences__mms_user_agent">MMS User Agent</string>
   <string name="preferences__advanced_mms_access_point_names">ตั้งค่า MMS เอง</string>
   <string name="preferences__mmsc_url">MMSC URL</string>
@@ -2121,6 +2158,8 @@
   <string name="preferences__data_and_storage">ข้อมูลและที่เก็บ</string>
   <string name="preferences__storage">พื้นที่จัดเก็บ</string>
   <string name="preferences__payments">การจ่ายเงิน</string>
+  <!--Privacy settings payments section description-->
+  <string name="preferences__payment_lock">การล็อกการชำระเงิน</string>
   <string name="preferences__payments_beta">การชำระเงิน (รุ่นทดสอบ)</string>
   <string name="preferences__conversation_length_limit">ขีดจำกัดความยาวของการสนทนา</string>
   <string name="preferences__keep_messages">เก็บข้อความ</string>
@@ -2186,6 +2225,8 @@
   <string name="preferences_app_protection__who_can">ใครสามารถ…</string>
   <string name="preferences_app_protection__app_access">การเข้าถึงแอป</string>
   <string name="preferences_app_protection__communication">การสื่อสาร</string>
+  <!--Privacy settings payments section title-->
+  <string name="preferences_app_protection__payments">การจ่ายเงิน</string>
   <string name="preferences_chats__chats">การพูดคุย</string>
   <string name="preferences_data_and_storage__manage_storage">จัดการพื้นที่จัดเก็บ</string>
   <string name="preferences_data_and_storage__calls">การโทร</string>
@@ -2287,6 +2328,14 @@
   <string name="PaymentsHomeFragment__activate">เปิดใช้</string>
   <string name="PaymentsHomeFragment__view_mobile_coin_terms">ดูเงื่อนไข MobileCoin</string>
   <string name="PaymentsHomeFragment__payments_not_available">ไม่สามารถชำระเงินใน Signal ได้อีกต่อไป คุณยังสามารถโอนเงินไปยังตลาดหลักทรัพย์ได้ แต่คุณจะไม่สามารถส่งและรับการชำระเงินหรือเพิ่มเงินได้อีก</string>
+  <!--Alert dialog title which shows up after a payment to turn on payment lock-->
+  <string name="PaymentsHomeFragment__turn_on">เปิดใช้ฟีเจอร์ล็อกการชำระเงินสำหรับการชำระในครั้งต่อไปหรือไม่</string>
+  <!--Alert dialog description for why payment lock should be enabled before sending payments-->
+  <string name="PaymentsHomeFragment__add_an_additional_layer">ยกระดับการรักษาความปลอดภัยขึ้นอีกขั้น และกำหนดให้ต้องมีการปลดล็อกหน้าจอหรือสแกนลายนิ้วมือในอุปกรณ์ Android เพื่อโอนเงิน</string>
+  <!--Alert dialog button to enable payment lock-->
+  <string name="PaymentsHomeFragment__enable">เปิดใช้</string>
+  <!--Alert dialog button to not enable payment lock for now-->
+  <string name="PaymentsHomeFragment__not_now">ไม่ใช่ตอนนี้</string>
   <!--PaymentsAddMoneyFragment-->
   <string name="PaymentsAddMoneyFragment__add_funds">เพิ่มเงิน</string>
   <string name="PaymentsAddMoneyFragment__your_wallet_address">ที่อยู่กระเป๋าเงินของคุณ</string>
@@ -2367,6 +2416,14 @@
   <string name="ConfirmPayment__payment_failed">การชำระเงินล้มเหลว</string>
   <string name="ConfirmPayment__payment_will_continue_processing">การชำระเงินจะดำเนินการต่อไป</string>
   <string name="ConfirmPaymentFragment__invalid_recipient">ผู้รับไม่ถูกต้อง</string>
+  <!--Biometric/Device authentication prompt title which comes up before sending a payment-->
+  <string name="ConfirmPaymentFragment__unlock_to_send_payment">ปลดล็อกเพื่อชำระเงิน</string>
+  <!--Title of a dialog show when we were unable to present the user\'s screenlock before sending a payment-->
+  <string name="ConfirmPaymentFragment__failed_to_show_payment_lock">ไม่สามารถแสดงหน้าจอล็อกการชำระเงินได้</string>
+  <!--Body of a dialog show when we were unable to present the user\'s screenlock before sending a payment-->
+  <string name="ConfirmPaymentFragment__you_enabled_payment_lock_in_the_settings">คุณได้เปิดใช้งานฟีเจอร์ล็อกการชำระเงินในการตั้งค่าแล้ว แต่ระบบไม่สามารถแสดงหน้าจอได้</string>
+  <!--Button in a dialog that will take the user to the privacy settings-->
+  <string name="ConfirmPaymentFragment__go_to_settings">ไปที่การตั้งค่า</string>
   <string name="ConfirmPaymentFragment__this_person_has_not_activated_payments">บุคคลนี้ไม่ได้เปิดใช้การชำระเงิน</string>
   <string name="ConfirmPaymentFragment__unable_to_request_a_network_fee">ไม่สามารถขอคำธรรมเนียมเครือข่ายได้ เพื่อชำระเงินนี้ต่อ แตะตกลงเพื่อลองอีกครั้ง</string>
   <!--CurrencyAmountFormatter_s_at_s-->
@@ -2640,12 +2697,15 @@
   <string name="BackupDialog_passphrase_was_not_correct">วลีรหัสผ่านไม่ถูกต้อง</string>
   <string name="LocalBackupJob_creating_signal_backup">กำลังสร้างข้อมูลสำรอง Signal…</string>
   <!--Title for progress notification shown in a system notification while verifying a recent backup.-->
+  <string name="LocalBackupJob_verifying_signal_backup">กำลังตรวจยืนยันข้อมูลสำรอง Signal…</string>
   <string name="LocalBackupJobApi29_backup_failed">สำรองข้อมูลไม่สำเร็จ</string>
   <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">ไดเรกทอรีสำหรับข้อมูลสำรองของคุณได้ถูกย้ายหรือลบ</string>
   <string name="LocalBackupJobApi29_your_backup_file_is_too_large">แฟ้มสำรองของคุณใหญ่เกินที่จะจัดเก็บไว้ในนี้ได้</string>
   <string name="LocalBackupJobApi29_there_is_not_enough_space">พื้นที่ไม่เพียงพอสำหรับจัดเก็บข้อมูลสำรองของคุณ</string>
   <!--Error message shown if a newly created backup could not be verified as accurate-->
+  <string name="LocalBackupJobApi29_your_backup_could_not_be_verified">ไม่สามารถสร้างและตรวจยืนยันข้อมูลสำรองล่าสุดของคุณได้ กรุณาสร้างข้อมูลสำรองใหม่</string>
   <!--Error message shown if a very large attachment is encountered during the backup creation and causes the backup to fail-->
+  <string name="LocalBackupJobApi29_your_backup_contains_a_very_large_file">ข้อมูลสำรองของคุณมีไฟล์ขนาดใหญ่ที่ไม่สามารถเก็บสำรองได้ กรุณาลบไฟล์ดังกล่าวและสร้างข้อมูลสำรองใหม่</string>
   <string name="LocalBackupJobApi29_tap_to_manage_backups">แตะเพื่อจัดการข้อมูลสำรอง</string>
   <string name="ProgressPreference_d_messages_so_far">%d ข้อความจนถึงตอนนี้</string>
   <string name="RegistrationActivity_wrong_number">หมายเลขไม่ถูกต้อง</string>
@@ -2943,6 +3003,8 @@
   <string name="ShareActivity__send">ส่ง</string>
   <string name="ShareActivity__comma_s">, %1$s</string>
   <string name="ShareActivity__sharing_to_multiple_chats_is">การแบ่งปันแชตหลายแชตพร้อมกันนั้นรองรับเฉพาะแค่ข้อความของ Signal</string>
+  <!--Toast when the incoming intent is invalid-->
+  <string name="ShareActivity__could_not_get_share_data_from_intent">ไม่สามารถดึงข้อมูลที่แชร์ได้จาก Intent</string>
   <!--MultiShareDialogs-->
   <string name="MultiShareDialogs__failed_to_send_to_some_users">การส่งไปยังผู้ใช้อื่นล้มเหลว</string>
   <string name="MultiShareDialogs__you_can_only_share_with_up_to">คุณสามารถแบ่งปันได้สูงสุดแค่ %1$d แชต เท่านั้น</string>
@@ -3143,6 +3205,12 @@
   <string name="ChatsSettingsFragment__enter_key_sends">กด Enter เพื่อส่ง</string>
   <!--SmsSettingsFragment-->
   <string name="SmsSettingsFragment__use_as_default_sms_app">ใช้เป็นแอป SMS หลัก</string>
+  <!--Preference title to export sms-->
+  <string name="SmsSettingsFragment__export_sms_messages">ส่งออกข้อความ SMS</string>
+  <!--Preference title to delete sms-->
+  <string name="SmsSettingsFragment__remove_sms_messages">ลบข้อความ SMS</string>
+  <!--Snackbar text to confirm deletion-->
+  <string name="SmsSettingsFragment__sms_messages_removed">ลบข้อความ SMS เรียบร้อยแล้ว</string>
   <!--NotificationsSettingsFragment-->
   <string name="NotificationsSettingsFragment__messages">ข้อความ</string>
   <string name="NotificationsSettingsFragment__calls">การโทร</string>
@@ -3169,6 +3237,19 @@
   <string name="PrivacySettingsFragment__signal_message_and_calls">Signal ส่งข้อความและโทร ถ่ายทอดการโทร และผู้ส่งที่ถูกปกปิด</string>
   <string name="PrivacySettingsFragment__default_timer_for_new_changes">ตัวจับเวลาค่าเริ่มต้นสำหรับแชตใหม่</string>
   <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">ตั้งค่าเริ่มต้นของตัวจับเวลาข้อความหายไปสำหรับแชตใหม่ที่คุณเริ่มต้น</string>
+  <!--Summary for stories preference to launch into story privacy settings-->
+  <string name="PrivacySettingsFragment__manage_your_stories">จัดการและกำหนดผู้ชมของสตอรี่คุณ</string>
+  <string name="PrivacySettingsFragment__payment_lock_require_lock">ต้องปลดล็อกหน้าจอหรือสแกนลายนิ้วมือในอุปกรณ์ Android เพื่อโอนเงิน</string>
+  <!--Alert dialog title when payment lock cannot be enabled-->
+  <string name="PrivacySettingsFragment__cant_enable_title">ไม่สามารถเปิดใช้การล็อกการชำระเงินได้</string>
+  <!--Alert dialog description to setup screen lock or fingerprint in phone settings-->
+  <string name="PrivacySettingsFragment__cant_enable_description">หากต้องการใช้งานฟีเจอร์ล็อกการชำระเงิน คุณต้องเปิดใช้การล็อกหน้าจอหรือสแกนลายนิ้วมือในการตั้งค่าของโทรศัพท์ก่อน</string>
+  <!--Shown in a toast when we can\'t navigate to the user\'s system fingerprint settings-->
+  <string name="PrivacySettingsFragment__failed_to_navigate_to_system_settings">ไม่สามารถไปยังการตั้งค่าระบบได้</string>
+  <!--Alert dialog button to go to phone settings-->
+  <string name="PrivacySettingsFragment__go_to_settings">ไปที่การตั้งค่า</string>
+  <!--Alert dialog button to cancel the dialog-->
+  <string name="PrivacySettingsFragment__cancel">ยกเลิก</string>
   <!--AdvancedPrivacySettingsFragment-->
   <string name="AdvancedPrivacySettingsFragment__show_status_icon">แสดงไอคอนสถานะ</string>
   <string name="AdvancedPrivacySettingsFragment__show_an_icon">แสดงไอคอนในรายละเอียดข้อความเมื่อเป็นข้อความที่ส่งโดยใช้ผู้ส่งที่ถูกปกปิด</string>
@@ -3276,6 +3357,8 @@
   <string name="EmojiSearchFragment__no_results_found">ไม่พบผลลัพธ์</string>
   <string name="NotificationsSettingsFragment__unknown_ringtone">เสียงเรียกเข้าที่ไม่รู้จัก</string>
   <!--ConversationSettingsFragment-->
+  <!--Error toasted when no activity can handle the add contact intent-->
+  <string name="ConversationSettingsFragment__contacts_app_not_found">ไม่พบแอปรายชื่อติดต่อ</string>
   <string name="ConversationSettingsFragment__send_message">ส่งข้อความ</string>
   <string name="ConversationSettingsFragment__start_video_call">เริ่มโทรวิดีโอ</string>
   <string name="ConversationSettingsFragment__start_audio_call">เริ่มโทรเสียง</string>
@@ -3392,6 +3475,8 @@
   <plurals name="MultiselectForwardFragment__couldnt_forward_messages">
     <item quantity="other">ไม่สามารถส่งต่อข้อความเพราะว่าข้อความไม่มีอยู่อีกต่อไปแล้ว</item>
   </plurals>
+  <!--Error message shown when attempting to select a group to forward/share but it\'s announcement only and you are not an admin-->
+  <string name="MultiselectForwardFragment__only_admins_can_send_messages_to_this_group">เฉพาะผู้ดูแลเท่านั้นที่ส่งข้อความไปยังกลุ่มนี้ได้</string>
   <string name="MultiselectForwardFragment__limit_reached">ถึงขีดจำกัดแล้ว</string>
   <!--Media V2-->
   <string name="MediaReviewFragment__add_a_message">เพิ่มข้อความ</string>
@@ -3551,13 +3636,13 @@
   <string name="NetworkFailure__network_error_check_your_connection_and_try_again">เครือข่ายมีข้อผิดพลาด ตรวจสอบการเชื่อมต่อแล้วลองใหม่อีกครั้ง</string>
   <string name="NetworkFailure__retry">ลองใหม่</string>
   <!--Displayed as a dialog title when the selected recipient for a gift doesn\'t support gifting-->
-  <string name="DonationsErrors__recipient_verification_failed">การตรวจยืนยันผู้รับล้มเหลว</string>
+  <string name="DonationsErrors__cant_send_gift">ไม่สามารถส่งของขวัญได้</string>
   <!--Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting-->
-  <string name="DonationsErrors__target_does_not_support_gifting">เป้าหมายไม่รองรับการให้ของขวัญ</string>
+  <string name="DonationsErrors__target_does_not_support_gifting">ผู้รับรายนี้ใช้ Signal เวอร์ชันที่ไม่สามารถรับโล่ของขวัญได้ โดยจะสามารถรับของขวัญได้เมื่ออัปเดตเป็นเวอร์ชันล่าสุด</string>
   <!--Displayed as a dialog title when the user\'s profile could not be fetched, likely due to lack of internet-->
-  <string name="DonationsErrors__could_not_verify_recipient">ไม่สามารถตรวจยืนยันผู้รับ</string>
+  <string name="DonationsErrors__couldnt_send_gift">ไม่สามารถส่งของขวัญได้</string>
   <!--Displayed as a dialog message when the user\'s profile could not be fetched, likely due to lack of internet-->
-  <string name="DonationsErrors__please_check_your_network_connection">กรุณาตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง</string>
+  <string name="DonationsErrors__please_check_your_network_connection">ไม่สามารถส่งของขวัญให้คุณได้เนื่องจากข้อผิดพลาดของเครือข่าย กรุณาตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</string>
   <!--Gift message view title-->
   <string name="GiftMessageView__gift_badge">โล่ของขวัญ</string>
   <!--Gift message view expiry information-->
@@ -3773,10 +3858,12 @@
   <string name="ConversationListTabs__stories">สตอรี่</string>
   <!--String for counts above 99 in conversation list tabs-->
   <string name="ConversationListTabs__99p">99+</string>
+  <!--Menu item on stories landing page-->
+  <string name="StoriesLandingFragment__story_privacy">ความเป็นส่วนตัวของสตอรี่</string>
   <!--Title for "My Stories" row item in Stories landing page-->
   <string name="StoriesLandingFragment__my_stories">สตอรี่ของฉัน</string>
   <!--Subtitle for "My Stories" row item when user has not added stories-->
-  <string name="StoriesLandingFragment__add_a_story">เพิ่มสตอรี่</string>
+  <string name="StoriesLandingFragment__tap_to_add_a_story">แตะเพื่อเพิ่มสตอรี่</string>
   <!--Displayed when there are no stories to display-->
   <string name="StoriesLandingFragment__no_recent_updates_to_show_right_now_tap_plus_to_add_to_your_story">ไม่มีการอัปเดตล่าสุดแสดงในตอนนี้ แตะ + เพื่อเพิ่มสตอรี่ของคุณ</string>
   <!--Context menu option to hide a story-->
@@ -3877,18 +3964,10 @@
   <string name="StoryGroupReplyItem__copy">คัดลอก</string>
   <!--Context menu item to delete a story response-->
   <string name="StoryGroupReplyItem__delete">ลบ</string>
-  <!--Story settings page title-->
-  <string name="StorySettingsFragment__story_settings">การตั้งค่าสตอรี่</string>
-  <!--Story settings private stories heading-->
-  <string name="StorySettingsFragment__private_stories">สตอรี่ส่วนตัว</string>
-  <!--Note at bottom of story settings regarding who can see private stories.-->
-  <string name="StorySettingsFragment__private_stories_can_only_be_viewed">สตอรี่ส่วนตัวจะสามารถดูได้เฉพาะคนที่คุณเพิ่มเข้าไปให้เท่านั้น มีเพียงคุณที่เห็นชื่อสตอรี่</string>
-  <!--Option label for creating a new private story-->
-  <string name="StorySettingsFragment__new_private_story">สตอรี่ส่วนตัวใหม่</string>
   <!--Page title for My Story options-->
   <string name="MyStorySettingsFragment__my_story">สตอรี่ของฉัน</string>
   <!--Section heading for story visibility-->
-  <string name="MyStorySettingsFragment__who_can_see_this_story">ใครที่เห็นสตอรี่นี้ได้บ้าง</string>
+  <string name="MyStorySettingsFragment__who_can_view_this_story">ใครเห็นสตอรี่นี้บ้าง</string>
   <!--Clickable option for selecting people to hide your story from-->
   <string name="MyStorySettingsFragment__hide_story_from">ซ่อนสตอรี่จาก</string>
   <!--Privacy setting title for sending stories to all your signal connections-->
@@ -3896,7 +3975,7 @@
   <!--Privacy setting description for sending stories to all your signal connections-->
   <string name="MyStorySettingsFragment__share_with_all_connections"> แบ่งปันกับผู้ติดต่อทั้งหมด</string>
   <!--Privacy setting title for sending stories to all except the specified connections-->
-  <string name="MyStorySettingsFragment__all_signal_connections_except">เครือข่าย Signal ทั้งหมด ยกเว้น…</string>
+  <string name="MyStorySettingsFragment__all_except">ทุกคน ยกเว้น…</string>
   <!--Privacy setting description for sending stories to all except the specified connections-->
   <string name="MyStorySettingsFragment__hide_your_story_from_specific_people">ซ่อนสตอรี่ของคุณจากบางคน</string>
   <!--Summary of clickable option displaying how many people you have excluded from your story-->
@@ -4069,7 +4148,7 @@
   <string name="StoriesLinkPopup__visit_link">ไปที่ลิงก์</string>
   <!--Gift price and duration, formatted as: {price} dot {n} day duration-->
   <plurals name="GiftRowItem_s_dot_d_day_duration">
-    <item quantity="other">ช่วงระยะเวลา %1$s · %2$d วัน</item>
+    <item quantity="other">%1$s · %2$d วัน</item>
   </plurals>
   <!--Tagline for gift row items-->
   <string name="GiftRowItem__send_a_gift_badge">ส่งโล่ของขวัญ</string>
@@ -4121,13 +4200,19 @@
   <string name="ExpiredGiftSheetConfiguration__make_a_monthly_donation">บริจาครายเดือน</string>
   <!--Expired gift sheet not now button-->
   <string name="ExpiredGiftSheetConfiguration__not_now">ไม่ใช่ตอนนี้</string>
+  <!--My Story label designating that we will only share with the selected viewers.-->
+  <string name="ContactSearchItems__only_share_with">แชร์ให้เฉพาะ</string>
   <!--Label under name for private stories-->
   <plurals name="ContactSearchItems__private_story_d_viewers">
-    <item quantity="other">สตอรี่ส่วนตัว · ผู้ชม %1$d</item>
+    <item quantity="other">สตอรี่ส่วนตัว · ผู้ชม %1$d คน</item>
   </plurals>
   <!--Label under name for group stories-->
   <plurals name="ContactSearchItems__group_story_d_viewers">
-    <item quantity="other">สตอรี่กลุ่ม · ผู้ชม %1$d </item>
+    <item quantity="other">สตอรี่กลุ่ม · ผู้ชม %1$d คน</item>
+  </plurals>
+  <!--Label under name for my story-->
+  <plurals name="ContactSearchItems__my_story_s_dot_d_viewers">
+    <item quantity="other">%1$s · ผู้ชม %2$d คน</item>
   </plurals>
   <!--Label under name for My Story when first sending to my story-->
   <string name="ContactSearchItems__tap_to_choose_your_viewers">แตะเพื่อเลือกผู้ชมสตอรี่ของคุณ</string>
@@ -4220,7 +4305,7 @@
   <!--All connections option for initial My Story settings configuration shown when sending to My Story for the first time-->
   <string name="ChooseInitialMyStoryMembershipFragment__all_signal_connections">เครือข่าย Signal ทั้งหมด</string>
   <!--All connections except option for initial My Story settings configuration shown when sending to My Story for the first time-->
-  <string name="ChooseInitialMyStoryMembershipFragment__all_signal_connections_except">เครือข่าย Signal ทั้งหมด ยกเว้น…</string>
+  <string name="ChooseInitialMyStoryMembershipFragment__all_except">ทุกคน ยกเว้น…</string>
   <!--Only with selected connections option for initial My Story settings configuration shown when sending to My Story for the first time-->
   <string name="ChooseInitialMyStoryMembershipFragment__only_share_with">แบ่งปันให้เฉพาะ…</string>
   <!--Story info header sent heading-->
@@ -4235,5 +4320,63 @@
   <string name="StoryInfoBottomSheetDialogFragment__sent_from">ส่งจาก</string>
   <!--Story Info context menu label-->
   <string name="StoryInfoBottomSheetDialogFragment__info">ข้อมูล</string>
+  <!--StoriesPrivacySettingsFragment-->
+  <!--Explanation about how stories are deleted and managed-->
+  <string name="StoriesPrivacySettingsFragment__stories_automatically_disappear">สตอรี่จะหายไปอัตโนมัติภายใน 24 ชั่วโมง เลือกได้ว่าจะให้ใครเห็นสตอรี่ของคุณ หรือสร้างสตอรี่ใหม่พร้อมกำหนดผู้ชมหรือกลุ่มเฉพาะ</string>
+  <!--Preference title to turn off stories-->
+  <string name="StoriesPrivacySettingsFragment__turn_off_stories">ปิดสตอรี่</string>
+  <!--Preference summary to turn off stories-->
+  <string name="StoriesPrivacySettingsFragment__if_you_opt_out">หากคุณปิดใช้งานสตอรี่ คุณจะไม่สามารถแชร์หรือรับชมสตอรี่ได้อีกต่อไป</string>
+  <!--Preference title to turn on stories-->
+  <string name="StoriesPrivacySettingsFragment__turn_on_stories">เปิดสตอรี่</string>
+  <!--Preference summary to turn on stories-->
+  <string name="StoriesPrivacySettingsFragment__share_and_view">แชร์และดูสตอรี่ของผู้อื่น สตอรี่จะหายไปโดยอัตโนมัติภายใน 24 ชั่วโมง</string>
+  <!--Dialog title to turn off stories-->
+  <string name="StoriesPrivacySettingsFragment__turn_off_stories_question">ปิดสตอรี่ใช่ไหม</string>
+  <!--Dialog message to turn off stories-->
+  <string name="StoriesPrivacySettingsFragment__you_will_no_longer_be_able_to">คุณจะไม่สามารถแชร์หรือดูสตอรี่ได้อีกต่อไป สตอรี่ที่คุณเพิ่งส่งจะยังปรากฏให้เห็นตามปกติจนกว่าสตอรี่นั้นจะหมดอายุ</string>
+  <!--Page title when launched from stories landing screen-->
+  <string name="StoriesPrivacySettingsFragment__story_privacy">ความเป็นส่วนตัวของสตอรี่</string>
+  <!--GroupStorySettingsFragment-->
+  <!--Section header for who can view a group story-->
+  <string name="GroupStorySettingsFragment__who_can_view_this_story">ใครเห็นสตอรี่นี้บ้าง</string>
+  <!--Explanation of who can view a group story-->
+  <string name="GroupStorySettingsFragment__members_of_the_group_s">สมาชิกในกลุ่ม \"%1$s\" จะดูและตอบกลับสตอรี่นี้ได้ คุณสามารถปรับเปลี่ยนการเป็นสมาชิกของแชทนี้ภายในกลุ่มได้</string>
+  <!--Preference label for removing this group story-->
+  <string name="GroupStorySettingsFragment__remove_group_story">ลบสตอรี่กลุ่ม</string>
+  <!--Generic title for overflow menus-->
+  <string name="OverflowMenu__overflow_menu">เมนูเพิ่มเติม</string>
+  <!--SMS Export Service-->
+  <!--Displayed in the notification while export is running-->
+  <string name="SignalSmsExportService__exporting_messages">กำลังส่งออกข้อความ…</string>
+  <!--ExportYourSmsMessagesFragment-->
+  <!--Title of the screen-->
+  <string name="ExportYourSmsMessagesFragment__export_your_sms_messages">ส่งออกข้อความ SMS ของคุณ</string>
+  <!--Button label to begin export-->
+  <string name="ExportYourSmsMessagesFragment__continue">ดำเนินการต่อ</string>
+  <!--ExportingSmsMessagesFragment-->
+  <!--Title of the screen-->
+  <string name="ExportingSmsMessagesFragment__exporting_sms_messages">กำลังส่งออกข้อความ SMS</string>
+  <!--Progress indicator for export-->
+  <string name="ExportingSmsMessagesFragment__exporting_d_of_d">กำลังส่งออก %1$d จาก %2$d…</string>
+  <!--ChooseANewDefaultSmsAppFragment-->
+  <!--Title of the screen-->
+  <string name="ChooseANewDefaultSmsAppFragment__choose_a_new">เลือกแอปใหม่ที่จะใช้เป็นแอป SMS เริ่มต้น</string>
+  <!--Button label to launch picker-->
+  <string name="ChooseANewDefaultSmsAppFragment__continue">ดำเนินการต่อ</string>
+  <!--RemoveSmsMessagesDialogFragment-->
+  <!--Action button to keep messages-->
+  <string name="RemoveSmsMessagesDialogFragment__keep_messages">เก็บข้อความ</string>
+  <!--Action button to remove messages-->
+  <string name="RemoveSmsMessagesDialogFragment__remove_messages">ลบข้อความ</string>
+  <!--Title of dialog-->
+  <string name="RemoveSmsMessagesDialogFragment__remove_sms_messages">ลบข้อความ SMS ออกจาก Signal หรือไม่</string>
+  <!--Message of dialog-->
+  <string name="RemoveSmsMessagesDialogFragment__you_have_changed">คุณได้เปลี่ยนแอป SMS เริ่มต้นเรียบร้อยแล้ว ต้องการลบข้อความ SMS ออกจาก Signal หรือไม่</string>
+  <!--SetSignalAsDefaultSmsAppFragment-->
+  <!--Title of the screen-->
+  <string name="SetSignalAsDefaultSmsAppFragment__first_set_signal_as_the_default_sms_app">อันดับแรก ให้ตั้ง Signal เป็นแอป SMS เริ่มต้น</string>
+  <!--Button label to start export-->
+  <string name="SetSignalAsDefaultSmsAppFragment__next">ถัดไป</string>
   <!--EOF-->
 </resources>

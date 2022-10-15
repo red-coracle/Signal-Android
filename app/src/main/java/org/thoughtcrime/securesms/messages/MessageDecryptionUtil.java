@@ -33,7 +33,7 @@ import org.thoughtcrime.securesms.groups.BadGroupIdException;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobs.AutomaticSessionResetJob;
-import org.thoughtcrime.securesms.jobs.RefreshPreKeysJob;
+import org.thoughtcrime.securesms.jobs.PreKeysSyncJob;
 import org.thoughtcrime.securesms.jobs.SendRetryReceiptJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.logsubmit.SubmitDebugLogActivity;
@@ -42,8 +42,8 @@ import org.thoughtcrime.securesms.messages.MessageContentProcessor.MessageState;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.notifications.NotificationIds;
 import org.thoughtcrime.securesms.recipients.Recipient;
+import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.FeatureFlags;
-import org.thoughtcrime.securesms.util.GroupUtil;
 import org.whispersystems.signalservice.api.InvalidMessageStructureException;
 import org.whispersystems.signalservice.api.SignalServiceAccountDataStore;
 import org.whispersystems.signalservice.api.crypto.ContentHint;
@@ -55,6 +55,7 @@ import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 import org.whispersystems.signalservice.internal.push.SignalServiceProtos;
 import org.whispersystems.signalservice.internal.push.UnsupportedDataMessageException;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -90,6 +91,16 @@ public final class MessageDecryptionUtil {
       destination = aci;
     }
 
+    if (destination.equals(pni)) {
+      if (envelope.hasSourceUuid()) {
+        RecipientId sender = RecipientId.from(envelope.getSourceAddress());
+        SignalDatabase.recipients().markNeedsPniSignature(sender);
+      } else {
+        Log.w(TAG, "[" + envelope.getTimestamp() + "] Got a sealed sender message to our PNI? Invalid message, ignoring.");
+        return DecryptionResult.forNoop(Collections.emptyList());
+      }
+    }
+
     if (!destination.equals(aci) && !destination.equals(pni)) {
       Log.w(TAG, "Destination of " + destination + " does not match our ACI (" + aci + ") or PNI (" + pni + ")! Defaulting to ACI.");
       destination = aci;
@@ -101,7 +112,7 @@ public final class MessageDecryptionUtil {
     List<Job>                     jobs          = new LinkedList<>();
 
     if (envelope.isPreKeySignalMessage()) {
-      jobs.add(new RefreshPreKeysJob());
+      PreKeysSyncJob.enqueue();
     }
 
     try {

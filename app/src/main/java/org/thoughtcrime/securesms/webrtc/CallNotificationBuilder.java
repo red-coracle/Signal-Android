@@ -39,10 +39,11 @@ public class CallNotificationBuilder {
   public static Notification getCallInProgressNotification(Context context, int type, Recipient recipient) {
     Intent contentIntent = new Intent(context, WebRtcCallActivity.class);
     contentIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    contentIntent.putExtra(WebRtcCallActivity.EXTRA_STARTED_FROM_FULLSCREEN, true);
 
     PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, contentIntent, 0);
 
-    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, getNotificationChannel(context, type))
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, getNotificationChannel(type))
                                                                .setSmallIcon(R.drawable.ic_call_secure_white_24dp)
                                                                .setContentIntent(pendingIntent)
                                                                .setOngoing(true)
@@ -118,8 +119,8 @@ public class CallNotificationBuilder {
     return notificationId == WEBRTC_NOTIFICATION || notificationId == WEBRTC_NOTIFICATION_RINGING;
   }
 
-  private static @NonNull String getNotificationChannel(@NonNull Context context, int type) {
-    if (callActivityRestricted() && type == TYPE_INCOMING_RINGING) {
+  private static @NonNull String getNotificationChannel(int type) {
+    if ((callActivityRestricted() && type == TYPE_INCOMING_RINGING) || type == TYPE_ESTABLISHED) {
       return NotificationChannels.CALLS;
     } else {
       return NotificationChannels.CALL_STATUS;

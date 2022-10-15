@@ -1,15 +1,19 @@
 package org.thoughtcrime.securesms.jobs;
 
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.documentfile.provider.DocumentFile;
+import androidx.documentfile.provider.DocumentFileHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.signal.core.util.Stopwatch;
+import org.signal.core.util.ThreadUtil;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.backup.BackupEvent;
@@ -28,10 +32,12 @@ import org.thoughtcrime.securesms.service.NotificationController;
 import org.thoughtcrime.securesms.util.BackupUtil;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Backup Job for installs requiring Scoped Storage.
@@ -46,6 +52,16 @@ public final class LocalBackupJobApi29 extends BaseJob {
 
   public static final String TEMP_BACKUP_FILE_PREFIX = ".backup";
   public static final String TEMP_BACKUP_FILE_SUFFIX = ".tmp";
+
+  private static final int MAX_STORAGE_ATTEMPTS = 5;
+
+  private static final long[] WAIT_FOR_SCOPED_STORAGE = new long[] {
+      TimeUnit.SECONDS.toMillis(0),
+      TimeUnit.SECONDS.toMillis(2),
+      TimeUnit.SECONDS.toMillis(10),
+      TimeUnit.SECONDS.toMillis(20),
+      TimeUnit.SECONDS.toMillis(30)
+  };
 
   LocalBackupJobApi29(@NonNull Parameters parameters) {
     super(parameters);
@@ -123,20 +139,17 @@ public final class LocalBackupJobApi29 extends BaseJob {
                                                               this::isCanceled);
         stopwatch.split("backup-create");
 
-        boolean valid = BackupVerifier.verifyFile(context.getContentResolver().openInputStream(temporaryFile.getUri()), backupPassword, finishedEvent.getCount());
+        boolean valid = verifyBackup(backupPassword, temporaryFile, finishedEvent);
+
         stopwatch.split("backup-verify");
         stopwatch.stop(TAG);
 
-        EventBus.getDefault().post(finishedEvent);
-
         if (valid) {
-          if (!temporaryFile.renameTo(fileName)) {
-            Log.w(TAG, "Failed to rename temp file");
-            throw new IOException("Renaming temporary backup file failed!");
-          }
+          renameBackup(fileName, temporaryFile);
         } else {
           BackupFileIOError.VERIFICATION_FAILED.postNotification(context);
         }
+        EventBus.getDefault().post(finishedEvent);
       } catch (FullBackupExporter.BackupCanceledException e) {
         EventBus.getDefault().post(new BackupEvent(BackupEvent.Type.FINISHED, 0, 0));
         Log.w(TAG, "Backup cancelled");
@@ -161,6 +174,40 @@ public final class LocalBackupJobApi29 extends BaseJob {
     } finally {
       EventBus.getDefault().unregister(updater);
       updater.setNotification(null);
+    }
+  }
+
+  private boolean verifyBackup(String backupPassword, DocumentFile temporaryFile, BackupEvent finishedEvent) {
+    Boolean valid    = null;
+    int     attempts = 0;
+
+    while (attempts < MAX_STORAGE_ATTEMPTS && valid == null) {
+      ThreadUtil.sleep(WAIT_FOR_SCOPED_STORAGE[attempts]);
+
+      try (InputStream cipherStream = context.getContentResolver().openInputStream(temporaryFile.getUri())) {
+        valid = BackupVerifier.verifyFile(cipherStream, backupPassword, finishedEvent.getCount());
+      } catch (IOException e) {
+        attempts++;
+        Log.w(TAG, "Unable to find backup file, attempt: " + attempts + "/" + MAX_STORAGE_ATTEMPTS);
+      }
+    }
+
+    return valid != null ? valid : false;
+  }
+
+  @SuppressLint("NewApi")
+  private void renameBackup(String fileName, DocumentFile temporaryFile) throws IOException {
+    int attempts = 0;
+
+    while (attempts < MAX_STORAGE_ATTEMPTS && !DocumentFileHelper.renameTo(context, temporaryFile, fileName)) {
+      ThreadUtil.sleep(WAIT_FOR_SCOPED_STORAGE[attempts]);
+      attempts++;
+      Log.w(TAG, "Unable to rename backup file, attempt: " + attempts + "/" + MAX_STORAGE_ATTEMPTS);
+    }
+
+    if (attempts >= MAX_STORAGE_ATTEMPTS) {
+      Log.w(TAG, "Failed to rename temp file");
+      throw new IOException("Renaming temporary backup file failed!");
     }
   }
 

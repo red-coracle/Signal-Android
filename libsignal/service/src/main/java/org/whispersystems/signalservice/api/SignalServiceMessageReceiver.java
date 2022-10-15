@@ -118,12 +118,6 @@ public class SignalServiceMessageReceiver {
     }
   }
 
-  public SignalServiceProfile retrieveProfileByUsername(String username, Optional<UnidentifiedAccess> unidentifiedAccess, Locale locale)
-      throws IOException
-  {
-    return socket.retrieveProfileByUsername(username, unidentifiedAccess, locale);
-  }
-
   public InputStream retrieveProfileAvatar(String path, File destination, ProfileKey profileKey, long maxSizeBytes)
       throws IOException
   {
@@ -220,7 +214,6 @@ public class SignalServiceMessageReceiver {
                                              Optional.of(address),
                                              entity.getSourceDevice(),
                                              entity.getTimestamp(),
-                                             entity.getMessage(),
                                              entity.getContent(),
                                              entity.getServerTimestamp(),
                                              messageResult.getServerDeliveredTimestamp(),
@@ -230,7 +223,6 @@ public class SignalServiceMessageReceiver {
       } else {
         envelope = new SignalServiceEnvelope(entity.getType(),
                                              entity.getTimestamp(),
-                                             entity.getMessage(),
                                              entity.getContent(),
                                              entity.getServerTimestamp(),
                                              messageResult.getServerDeliveredTimestamp(),

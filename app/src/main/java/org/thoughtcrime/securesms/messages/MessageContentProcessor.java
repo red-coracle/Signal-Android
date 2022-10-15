@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.messages;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.text.TextUtils;
 
@@ -381,6 +382,8 @@ public final class MessageContentProcessor {
       } else if (content.getDecryptionErrorMessage().isPresent()) {
         handleRetryReceipt(content, content.getDecryptionErrorMessage().get(), senderRecipient);
       } else if (content.getSenderKeyDistributionMessage().isPresent()) {
+        // Already handled, here in order to prevent unrecognized message log
+      } else if (content.getPniSignatureMessage().isPresent()) {
         // Already handled, here in order to prevent unrecognized message log
       } else {
         warn(String.valueOf(content.getTimestamp()), "Got unrecognized message!");
@@ -1472,9 +1475,25 @@ public final class MessageContentProcessor {
       ChatColor.LinearGradient.Builder     linearGradientBuilder = ChatColor.LinearGradient.newBuilder();
 
       linearGradientBuilder.setRotation(gradient.getAngle().orElse(0).floatValue());
-      linearGradientBuilder.addColors(gradient.getStartColor().get());
-      linearGradientBuilder.addColors(gradient.getEndColor().get());
-      linearGradientBuilder.addAllPositions(Arrays.asList(0f, 1f));
+
+      if (gradient.getPositions().size() > 1 && gradient.getColors().size() == gradient.getPositions().size()) {
+        ArrayList<Float> positions = new ArrayList<>(gradient.getPositions());
+
+        positions.set(0, 0f);
+        positions.set(positions.size() - 1, 1f);
+
+        linearGradientBuilder.addAllColors(new ArrayList<>(gradient.getColors()));
+        linearGradientBuilder.addAllPositions(positions);
+      } else if (!gradient.getColors().isEmpty()) {
+        Log.w(TAG, "Incoming text story has color / position mismatch. Defaulting to start and end colors.");
+        linearGradientBuilder.addColors(gradient.getColors().get(0));
+        linearGradientBuilder.addColors(gradient.getColors().get(gradient.getColors().size() - 1));
+        linearGradientBuilder.addAllPositions(Arrays.asList(0f, 1f));
+      } else {
+        Log.w(TAG, "Incoming text story did not have a valid linear gradient.");
+        linearGradientBuilder.addAllColors(Arrays.asList(Color.BLACK, Color.BLACK));
+        linearGradientBuilder.addAllPositions(Arrays.asList(0f, 1f));
+      }
 
       chatColorBuilder.setLinearGradient(linearGradientBuilder);
     }
@@ -2543,7 +2562,7 @@ public final class MessageContentProcessor {
                                      @NonNull SignalServiceReceiptMessage message,
                                      @NonNull Recipient senderRecipient)
   {
-    log(TAG, "Processing delivery receipts. Sender: " +  senderRecipient.getId() + ", Device: " + content.getSenderDevice() + ", Timestamps: " + Util.join(message.getTimestamps(), ", "));
+    log(content.getTimestamp(), "Processing delivery receipts. Sender: " +  senderRecipient.getId() + ", Device: " + content.getSenderDevice() + ", Timestamps: " + Util.join(message.getTimestamps(), ", "));
 
     List<SyncMessageId> ids = Stream.of(message.getTimestamps())
                                     .map(t -> new SyncMessageId(senderRecipient.getId(), t))
@@ -2560,6 +2579,7 @@ public final class MessageContentProcessor {
       PushProcessEarlyMessagesJob.enqueue();
     }
 
+    SignalDatabase.pendingPniSignatureMessages().acknowledgeReceipts(senderRecipient.getId(), message.getTimestamps(), content.getSenderDevice());
     SignalDatabase.messageLog().deleteEntriesForRecipient(message.getTimestamps(), senderRecipient.getId(), content.getSenderDevice());
   }
 
@@ -2685,13 +2705,27 @@ public final class MessageContentProcessor {
       return;
     }
 
-    if (!threadRecipient.isPushV2Group()) {
-      warn(content.getTimestamp(), "[RetryReceipt-SK] Thread recipient is not a v2 group! Skipping.");
+    if (!threadRecipient.isPushV2Group() && !threadRecipient.isDistributionList()) {
+      warn(content.getTimestamp(), "[RetryReceipt-SK] Thread recipient is not a V2 group or distribution list! Skipping.");
       return;
     }
 
-    GroupId.V2            groupId          = threadRecipient.requireGroupId().requireV2();
-    DistributionId        distributionId   = SignalDatabase.groups().getOrCreateDistributionId(groupId);
+    DistributionId distributionId;
+    GroupId.V2     groupId;
+
+    if (threadRecipient.isGroup()) {
+      groupId        = threadRecipient.requireGroupId().requireV2();
+      distributionId = SignalDatabase.groups().getOrCreateDistributionId(groupId);
+    } else {
+      groupId        = null;
+      distributionId = SignalDatabase.distributionLists().getDistributionId(threadRecipient.getId());
+    }
+
+    if (distributionId == null) {
+      Log.w(TAG, "[RetryReceipt-SK] Failed to find a distributionId! Skipping.");
+      return;
+    }
+
     SignalProtocolAddress requesterAddress = new SignalProtocolAddress(requester.requireServiceId().toString(), content.getSenderDevice());
 
     SignalDatabase.senderKeyShared().delete(distributionId, Collections.singleton(requesterAddress));
@@ -2707,22 +2741,8 @@ public final class MessageContentProcessor {
                                                                        groupId,
                                                                        distributionId));
     } else {
-      warn(content.getTimestamp(), "[RetryReceipt-SK] Unable to find MSL entry for " + requester.getId() + " (" + requesterAddress + ") with timestamp " + sentTimestamp + ".");
-
-      Optional<GroupRecord> groupRecord = SignalDatabase.groups().getGroup(groupId);
-
-      if (!groupRecord.isPresent()) {
-        warn(content.getTimestamp(), "[RetryReceipt-SK] Could not find a record for the group!");
-        return;
-      }
-
-      if (!groupRecord.get().getMembers().contains(requester.getId())) {
-        warn(content.getTimestamp(), "[RetryReceipt-SK] The requester is not in the group, so we cannot send them a SenderKeyDistributionMessage.");
-        return;
-      }
-
-      warn(content.getTimestamp(), "[RetryReceipt-SK] The requester is in the group, so we'll send them a SenderKeyDistributionMessage.");
-      ApplicationDependencies.getJobManager().add(new SenderKeyDistributionSendJob(requester.getId(), groupRecord.get().getId().requireV2()));
+      warn(content.getTimestamp(), "[RetryReceipt-SK] Unable to find MSL entry for " + requester.getId() + " (" + requesterAddress + ") with timestamp " + sentTimestamp + " for " + (groupId != null ? "group " + groupId : "distribution list") + ". Scheduling a job to send them the SenderKeyDistributionMessage. Membership will be checked there.");
+      ApplicationDependencies.getJobManager().add(new SenderKeyDistributionSendJob(requester.getId(), threadRecipient.getId()));
     }
   }
 

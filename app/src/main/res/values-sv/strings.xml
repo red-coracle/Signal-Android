@@ -167,7 +167,8 @@
   <string name="ContactsCursorLoader_contacts">Kontakter</string>
   <string name="ContactsCursorLoader_groups">Grupper</string>
   <string name="ContactsCursorLoader_phone_number_search">Telefonnummer-sökning</string>
-  <string name="ContactsCursorLoader_username_search">Användarnamn-sökning</string>
+  <!--Header for username search-->
+  <string name="ContactsCursorLoader_find_by_username">Hitta via användarnamn</string>
   <!--Label for my stories when selecting who to send media to-->
   <string name="ContactsCursorLoader_my_stories">Mina berättelser</string>
   <!--Action for creating a new story-->
@@ -430,8 +431,20 @@
   <string name="CreateProfileActivity_error_setting_profile_photo">Det gick inte att ställa in profilbild</string>
   <string name="CreateProfileActivity_problem_setting_profile">Problem med att ställa in profilen</string>
   <string name="CreateProfileActivity_set_up_your_profile">Ställ in din profil</string>
-  <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Din profil är ände-till-ände-krypterad. Din profil och ändringar av den kommer att synas för dina kontakter, när du initierar eller accepterar nya konversationer och när du går med i nya grupper.</string>
+  <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Din profil och ändringar till den kommer att vara synliga för personer som du skickar ett meddelande till, samt till dina kontakter och grupper.</string>
   <string name="CreateProfileActivity_set_avatar_description">Ställ in avatar</string>
+  <!--ProfileCreateFragment-->
+  <!--Displayed at the top of the screen and explains how profiles can be viewed.-->
+  <string name="ProfileCreateFragment__profiles_are_visible_to_contacts_and_people_you_message">Profiler är synliga för personer som du skickar ett meddelande till, samt till dina kontakter och grupper.</string>
+  <!--Title of clickable row to select phone number privacy settings-->
+  <string name="ProfileCreateFragment__who_can_find_me">Vem kan hitta mig med nummer?</string>
+  <!--WhoCanSeeMyPhoneNumberFragment-->
+  <!--Toolbar title for this screen-->
+  <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">Vem kan hitta mig med nummer?</string>
+  <!--Description for radio item stating anyone can see your phone number-->
+  <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has">Alla som har ditt telefonnummer i sina kontakter ser dig som en kontakt på Signal. Andra kommer att kunna hitta dig med ditt nummer i sökningen.</string>
+  <!--Description for radio item stating no one will be able to see your phone number-->
+  <string name="WhoCanSeeMyPhoneNumberFragment__nobody_on_signal">Ingen på Signal kommer kunna hitta dig med ditt telefonnummer.</string>
   <!--ChooseBackupFragment-->
   <string name="ChooseBackupFragment__restore_from_backup">Återställ från säkerhetskopia?</string>
   <string name="ChooseBackupFragment__restore_your_messages_and_media">Återställ dina meddelanden och media från en lokal säkerhetskopia. Om du inte återställer nu kommer du inte att kunna återställa senare.</string>
@@ -464,6 +477,7 @@
   <string name="BackupsPreferenceFragment__learn_more">Läs mer</string>
   <string name="BackupsPreferenceFragment__in_progress">Pågående…</string>
   <!--Status text shown in backup preferences when verifying a backup-->
+  <string name="BackupsPreferenceFragment__verifying_backup">Verifierar säkerhetskopia …</string>
   <string name="BackupsPreferenceFragment__d_so_far">%1$d hittills…</string>
   <!--Show percentage of completion of backup-->
   <string name="BackupsPreferenceFragment__s_so_far">%1$s%% hittills…</string>
@@ -734,6 +748,10 @@
   <string name="ManageProfileFragment_failed_to_set_avatar">Det gick inte att ställa in avataren</string>
   <string name="ManageProfileFragment_badges">Märken</string>
   <string name="ManageProfileFragment__edit_photo">Ändra foto</string>
+  <!--Snackbar message after creating username-->
+  <string name="ManageProfileFragment__username_created">Användarnamn skapat</string>
+  <!--Snackbar message after copying username-->
+  <string name="ManageProfileFragment__username_copied">Användarnamn kopierat</string>
   <!--ManageRecipientActivity-->
   <string name="ManageRecipientActivity_no_groups_in_common">Inga gemensamma grupper</string>
   <plurals name="ManageRecipientActivity_d_groups_in_common">
@@ -1520,7 +1538,9 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <!--Menu option to save a debug log file to disk.-->
   <string name="SubmitDebugLogActivity_save">Spara</string>
   <!--Error that is show in a toast when we fail to save a debug log file to disk.-->
+  <string name="SubmitDebugLogActivity_failed_to_save">Det gick inte att spara</string>
   <!--Toast that is show to notify that we have saved the debug log file to disk.-->
+  <string name="SubmitDebugLogActivity_save_complete">Sparad</string>
   <string name="SubmitDebugLogActivity_tap_a_line_to_delete_it">Tryck på en rad för att ta bort den</string>
   <string name="SubmitDebugLogActivity_submit">Skicka</string>
   <string name="SubmitDebugLogActivity_failed_to_submit_logs">Det gick inte att skicka loggar</string>
@@ -1588,6 +1608,10 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="UnverifiedSendDialog_send_message">Skicka meddelande?</string>
   <string name="UnverifiedSendDialog_send">Skicka</string>
   <!--UsernameEditFragment-->
+  <!--Toolbar title when entering from registration-->
+  <string name="UsernameEditFragment__add_a_username">Lägg till ett användarnamn</string>
+  <!--Instructional text at the top of the username edit screen-->
+  <string name="UsernameEditFragment__choose_your_username">Välj ditt användarnamn</string>
   <string name="UsernameEditFragment_username">Användarnamn</string>
   <string name="UsernameEditFragment_delete">Ta bort</string>
   <string name="UsernameEditFragment_successfully_set_username">Användarnamn angivet.</string>
@@ -1599,11 +1623,22 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">Användarnamn kan inte börja med en siffra.</string>
   <string name="UsernameEditFragment_username_is_invalid">Användarnamnet är ogiltigt.</string>
   <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">Användarnamn måste vara mellan %1$d och %2$d tecken.</string>
-  <string name="UsernameEditFragment_usernames_on_signal_are_optional">Användarnamn på Signal är valfria. Om du väljer att skapa ett användarnamn kan andra Signal-användare hitta dig med detta användarnamn och kontakta dig utan att veta ditt telefonnummer.</string>
+  <!--Explanation about what usernames provide-->
+  <string name="UsernameEditFragment__usernames_let_others_message">Användarnamn låter andra skicka meddelanden till dig utan att de behöver ditt telefonnummer. De kopplas till en uppsättning siffror för att hålla din adress privat.</string>
+  <!--Dialog title for explanation about numbers at the end of the username-->
+  <string name="UsernameEditFragment__what_is_this_number">Vad är det här för nummer?</string>
+  <string name="UsernameEditFragment__these_digits_help_keep">De här siffrorna håller ditt användarnamn privat, så du slipper få oönskade meddelanden. Dela endast ditt användarnamn med personer och grupper som du vill ha kontakt med. Du får nya siffror om du byter användarnamn.</string>
+  <!--Button to allow user to skip-->
+  <string name="UsernameEditFragment__skip">Hoppa över</string>
+  <!--Content description for done button-->
+  <string name="UsernameEditFragment__done">Klar</string>
   <plurals name="UserNotificationMigrationJob_d_contacts_are_on_signal">
     <item quantity="one">%d kontakt finns på Signal!</item>
     <item quantity="other">%d kontakter finns på Signal!</item>
   </plurals>
+  <!--UsernameShareBottomSheet-->
+  <!--Explanation of what the sheet enables the user to do-->
+  <string name="UsernameShareBottomSheet__copy_or_share_a_username_link">Kopiera eller dela en användarnamnslänk</string>
   <!--VerifyIdentityActivity-->
   <string name="VerifyIdentityActivity_your_contact_is_running_an_old_version_of_signal">Din kontakt använder en gammal version av Signal. Be kontakten att uppdatera innan de verifierar ditt säkerhetsnummer.</string>
   <string name="VerifyIdentityActivity_your_contact_is_running_a_newer_version_of_Signal">Din kontakt använder en nyare version av Signal med ett inkompatibelt QR-kodformat. Uppdatera för att jämföra dem.</string>
@@ -2189,6 +2224,8 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <!--Preference label for making one-time donations to Signal-->
   <string name="preferences__one_time_donation">Engångsdonation</string>
   <string name="preferences__privacy">Integritet</string>
+  <!--Preference label for stories-->
+  <string name="preferences__stories">Berättelser</string>
   <string name="preferences__mms_user_agent">MMS User Agent</string>
   <string name="preferences__advanced_mms_access_point_names">Manuella MMS-inställningar</string>
   <string name="preferences__mmsc_url">MMSC URL</string>
@@ -2201,6 +2238,8 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="preferences__data_and_storage">Data och lagring</string>
   <string name="preferences__storage">Lagring</string>
   <string name="preferences__payments">Betalningar</string>
+  <!--Privacy settings payments section description-->
+  <string name="preferences__payment_lock">Betalningssäkerhet</string>
   <string name="preferences__payments_beta">Betalningar (Beta)</string>
   <string name="preferences__conversation_length_limit">Gräns för konversationslängd</string>
   <string name="preferences__keep_messages">Spara meddelanden</string>
@@ -2266,6 +2305,8 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="preferences_app_protection__who_can">Vem kan…</string>
   <string name="preferences_app_protection__app_access">Appåtkomst</string>
   <string name="preferences_app_protection__communication">Kommunikation</string>
+  <!--Privacy settings payments section title-->
+  <string name="preferences_app_protection__payments">Betalningar</string>
   <string name="preferences_chats__chats">Chattar</string>
   <string name="preferences_data_and_storage__manage_storage">Hantera lagring</string>
   <string name="preferences_data_and_storage__calls">Samtal</string>
@@ -2367,6 +2408,14 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="PaymentsHomeFragment__activate">Aktivera</string>
   <string name="PaymentsHomeFragment__view_mobile_coin_terms">Visa MobileCoin-villkor</string>
   <string name="PaymentsHomeFragment__payments_not_available">Betalningar i Signal är inte längre tillgängliga. Du kan fortfarande överföra pengar till en börs men du kan inte längre skicka och ta emot betalningar eller lägga till pengar.</string>
+  <!--Alert dialog title which shows up after a payment to turn on payment lock-->
+  <string name="PaymentsHomeFragment__turn_on">Aktivera betalningssäkerhet för framtida överföringar?</string>
+  <!--Alert dialog description for why payment lock should be enabled before sending payments-->
+  <string name="PaymentsHomeFragment__add_an_additional_layer">Lägg till ett ytterligare säkerhetslager och kräv ett Android-skärmlås eller fingeravtryck för överföringar.</string>
+  <!--Alert dialog button to enable payment lock-->
+  <string name="PaymentsHomeFragment__enable">Slå på</string>
+  <!--Alert dialog button to not enable payment lock for now-->
+  <string name="PaymentsHomeFragment__not_now">Inte nu</string>
   <!--PaymentsAddMoneyFragment-->
   <string name="PaymentsAddMoneyFragment__add_funds">Lägg till pengar</string>
   <string name="PaymentsAddMoneyFragment__your_wallet_address">Din plånboksadress</string>
@@ -2447,6 +2496,14 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="ConfirmPayment__payment_failed">Betalning misslyckades</string>
   <string name="ConfirmPayment__payment_will_continue_processing">Betalningen fortsätter att bearbetas</string>
   <string name="ConfirmPaymentFragment__invalid_recipient">Ogiltig mottagare</string>
+  <!--Biometric/Device authentication prompt title which comes up before sending a payment-->
+  <string name="ConfirmPaymentFragment__unlock_to_send_payment">Lås upp för att skicka betalning</string>
+  <!--Title of a dialog show when we were unable to present the user\'s screenlock before sending a payment-->
+  <string name="ConfirmPaymentFragment__failed_to_show_payment_lock">Det gick inte att visa betalningssäkerhet</string>
+  <!--Body of a dialog show when we were unable to present the user\'s screenlock before sending a payment-->
+  <string name="ConfirmPaymentFragment__you_enabled_payment_lock_in_the_settings">Du aktiverade betalningssäkerhet i inställningarna men den kan inte visas.</string>
+  <!--Button in a dialog that will take the user to the privacy settings-->
+  <string name="ConfirmPaymentFragment__go_to_settings">Gå till inställningar</string>
   <string name="ConfirmPaymentFragment__this_person_has_not_activated_payments">Denna person har inte aktiverat betalningar</string>
   <string name="ConfirmPaymentFragment__unable_to_request_a_network_fee">Det går inte att begära en nätverksavgift. Fortsätt betalningen genom att trycka på okej för att försöka igen.</string>
   <!--CurrencyAmountFormatter_s_at_s-->
@@ -2728,12 +2785,15 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="BackupDialog_passphrase_was_not_correct">Lösenordet var inte korrekt</string>
   <string name="LocalBackupJob_creating_signal_backup">Skapar Signal-säkerhetskopia…</string>
   <!--Title for progress notification shown in a system notification while verifying a recent backup.-->
+  <string name="LocalBackupJob_verifying_signal_backup">Verifierar Signal-säkerhetskopia …</string>
   <string name="LocalBackupJobApi29_backup_failed">Säkerhetskopieringen misslyckades</string>
   <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">Din mapp för säkerhetskopior har tagits bort eller flyttats.</string>
   <string name="LocalBackupJobApi29_your_backup_file_is_too_large">Din säkerhetskopieringsfil är för stor för att lagras på denna volym.</string>
   <string name="LocalBackupJobApi29_there_is_not_enough_space">Det finns inte tillräckligt med utrymme för att lagra din säkerhetskopia.</string>
   <!--Error message shown if a newly created backup could not be verified as accurate-->
+  <string name="LocalBackupJobApi29_your_backup_could_not_be_verified">Din senaste säkerhetskopia kunde inte skapas och verifieras. Skapa en ny.</string>
   <!--Error message shown if a very large attachment is encountered during the backup creation and causes the backup to fail-->
+  <string name="LocalBackupJobApi29_your_backup_contains_a_very_large_file">Din säkerhetskopia innehåller en stor fil som inte kan säkerhetskopieras. Radera den och skapa en ny säkerhetskopia.</string>
   <string name="LocalBackupJobApi29_tap_to_manage_backups">Tryck för att hantera säkerhetskopior.</string>
   <string name="ProgressPreference_d_messages_so_far">%d meddelanden än så länge</string>
   <string name="RegistrationActivity_wrong_number">Fel nummer</string>
@@ -3034,6 +3094,8 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="ShareActivity__send">Skicka</string>
   <string name="ShareActivity__comma_s">, %1$s</string>
   <string name="ShareActivity__sharing_to_multiple_chats_is">Delning till flera chattar stöds endast för Signal-meddelanden</string>
+  <!--Toast when the incoming intent is invalid-->
+  <string name="ShareActivity__could_not_get_share_data_from_intent">Det gick inte att dela data från avsikt.</string>
   <!--MultiShareDialogs-->
   <string name="MultiShareDialogs__failed_to_send_to_some_users">Det gick inte att skicka till vissa användare</string>
   <string name="MultiShareDialogs__you_can_only_share_with_up_to">Du kan bara dela med upp till %1$d chattar</string>
@@ -3233,6 +3295,12 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="ChatsSettingsFragment__enter_key_sends">Enter-tangenten skickar</string>
   <!--SmsSettingsFragment-->
   <string name="SmsSettingsFragment__use_as_default_sms_app">Använd som standardapp för SMS</string>
+  <!--Preference title to export sms-->
+  <string name="SmsSettingsFragment__export_sms_messages">Exportera sms</string>
+  <!--Preference title to delete sms-->
+  <string name="SmsSettingsFragment__remove_sms_messages">Ta bort sms</string>
+  <!--Snackbar text to confirm deletion-->
+  <string name="SmsSettingsFragment__sms_messages_removed">Sms borttagna</string>
   <!--NotificationsSettingsFragment-->
   <string name="NotificationsSettingsFragment__messages">Meddelanden</string>
   <string name="NotificationsSettingsFragment__calls">Samtal</string>
@@ -3259,6 +3327,19 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="PrivacySettingsFragment__signal_message_and_calls">Signal-meddelanden och -samtal, vidarebefordra samtal och dold avsändare</string>
   <string name="PrivacySettingsFragment__default_timer_for_new_changes">Standard tidsgräns för nya chattar</string>
   <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">Ställ in en standardtidsgräns för försvinnande meddelanden för alla nya chattar som du startar.</string>
+  <!--Summary for stories preference to launch into story privacy settings-->
+  <string name="PrivacySettingsFragment__manage_your_stories">Hantera dina berättelser och vilka som kan visa dem</string>
+  <string name="PrivacySettingsFragment__payment_lock_require_lock">Kräv Andriod-skärmlås eller fingeravtryck för överföringar</string>
+  <!--Alert dialog title when payment lock cannot be enabled-->
+  <string name="PrivacySettingsFragment__cant_enable_title">Det går inte att aktivera betalningssäkerhet</string>
+  <!--Alert dialog description to setup screen lock or fingerprint in phone settings-->
+  <string name="PrivacySettingsFragment__cant_enable_description">För att använda betalningssäkerhet måste du först aktivera ett skärmlås eller fingeravtryck i din telefons inställningar.</string>
+  <!--Shown in a toast when we can\'t navigate to the user\'s system fingerprint settings-->
+  <string name="PrivacySettingsFragment__failed_to_navigate_to_system_settings">Det gick inte att navigera till systeminställningarna</string>
+  <!--Alert dialog button to go to phone settings-->
+  <string name="PrivacySettingsFragment__go_to_settings">Gå till inställningar</string>
+  <!--Alert dialog button to cancel the dialog-->
+  <string name="PrivacySettingsFragment__cancel">Avbryt</string>
   <!--AdvancedPrivacySettingsFragment-->
   <string name="AdvancedPrivacySettingsFragment__show_status_icon">Visa statusikon</string>
   <string name="AdvancedPrivacySettingsFragment__show_an_icon">Visa en ikon i meddelandedetaljer när de levererades med dold avsändare.</string>
@@ -3368,6 +3449,8 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="EmojiSearchFragment__no_results_found">Inga resultat hittades</string>
   <string name="NotificationsSettingsFragment__unknown_ringtone">Okänd ringsignal</string>
   <!--ConversationSettingsFragment-->
+  <!--Error toasted when no activity can handle the add contact intent-->
+  <string name="ConversationSettingsFragment__contacts_app_not_found">App för kontakter hittades inte</string>
   <string name="ConversationSettingsFragment__send_message">Skicka meddelande</string>
   <string name="ConversationSettingsFragment__start_video_call">Starta videosamtal</string>
   <string name="ConversationSettingsFragment__start_audio_call">Starta ljudsamtal</string>
@@ -3488,6 +3571,8 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
     <item quantity="one">Det gick inte att vidarebefordra meddelandet eftersom det inte längre är tillgängligt.</item>
     <item quantity="other">Det gick inte att vidarebefordra meddelanden eftersom de inte längre är tillgängliga.</item>
   </plurals>
+  <!--Error message shown when attempting to select a group to forward/share but it\'s announcement only and you are not an admin-->
+  <string name="MultiselectForwardFragment__only_admins_can_send_messages_to_this_group">Endast administratörer kan skicka meddelanden till denna grupp.</string>
   <string name="MultiselectForwardFragment__limit_reached">Gränsen nådd</string>
   <!--Media V2-->
   <string name="MediaReviewFragment__add_a_message">Lägg till ett meddelande</string>
@@ -3647,13 +3732,13 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Nätverksfel. Kontrollera din anslutning och försök igen.</string>
   <string name="NetworkFailure__retry">Försök igen</string>
   <!--Displayed as a dialog title when the selected recipient for a gift doesn\'t support gifting-->
-  <string name="DonationsErrors__recipient_verification_failed">Verifiering av mottagare misslyckades.</string>
+  <string name="DonationsErrors__cant_send_gift">Det går inte att skicka gåva</string>
   <!--Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting-->
-  <string name="DonationsErrors__target_does_not_support_gifting">Målet har inte stöd för gåvor.</string>
+  <string name="DonationsErrors__target_does_not_support_gifting">Mottagaren använder en version av Signal som inte kan ta emot gåvomärken. De kommer kunna ta emot gåvor när de uppdaterar till den senaste versionen.</string>
   <!--Displayed as a dialog title when the user\'s profile could not be fetched, likely due to lack of internet-->
-  <string name="DonationsErrors__could_not_verify_recipient">Det gick inte att verifiera mottagare.</string>
+  <string name="DonationsErrors__couldnt_send_gift">Det gick inte att skicka gåva</string>
   <!--Displayed as a dialog message when the user\'s profile could not be fetched, likely due to lack of internet-->
-  <string name="DonationsErrors__please_check_your_network_connection">Kontrollera din nätverksanslutning och försök igen.</string>
+  <string name="DonationsErrors__please_check_your_network_connection">Din gåva kunde inte skickas på grund av ett nätverksfel. Kontrollera din anslutning och försök igen.</string>
   <!--Gift message view title-->
   <string name="GiftMessageView__gift_badge">Gåvomärke</string>
   <!--Gift message view expiry information-->
@@ -3870,10 +3955,12 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="ConversationListTabs__stories">Berättelser</string>
   <!--String for counts above 99 in conversation list tabs-->
   <string name="ConversationListTabs__99p">99+</string>
+  <!--Menu item on stories landing page-->
+  <string name="StoriesLandingFragment__story_privacy">Berättelseintegritet</string>
   <!--Title for "My Stories" row item in Stories landing page-->
   <string name="StoriesLandingFragment__my_stories">Mina berättelser</string>
   <!--Subtitle for "My Stories" row item when user has not added stories-->
-  <string name="StoriesLandingFragment__add_a_story">Lägg till en berättelse</string>
+  <string name="StoriesLandingFragment__tap_to_add_a_story">Tryck för att lägga till en berättelse</string>
   <!--Displayed when there are no stories to display-->
   <string name="StoriesLandingFragment__no_recent_updates_to_show_right_now_tap_plus_to_add_to_your_story">Inga senaste uppdateringar att visa just nu. Tryck på + för att lägga till i din berättelse.</string>
   <!--Context menu option to hide a story-->
@@ -3977,18 +4064,10 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="StoryGroupReplyItem__copy">Kopiera</string>
   <!--Context menu item to delete a story response-->
   <string name="StoryGroupReplyItem__delete">Ta bort</string>
-  <!--Story settings page title-->
-  <string name="StorySettingsFragment__story_settings">Berättelse inställningar</string>
-  <!--Story settings private stories heading-->
-  <string name="StorySettingsFragment__private_stories">Privata berättelser</string>
-  <!--Note at bottom of story settings regarding who can see private stories.-->
-  <string name="StorySettingsFragment__private_stories_can_only_be_viewed">Privata stories kan bara ses av de personer du lägger till i dem. Bara du kan se storyns namn.</string>
-  <!--Option label for creating a new private story-->
-  <string name="StorySettingsFragment__new_private_story">Ny privat berättelse</string>
   <!--Page title for My Story options-->
   <string name="MyStorySettingsFragment__my_story">Min berättelse</string>
   <!--Section heading for story visibility-->
-  <string name="MyStorySettingsFragment__who_can_see_this_story">Vem kan se denna berättelse</string>
+  <string name="MyStorySettingsFragment__who_can_view_this_story">Vem kan visa den här berättelsen</string>
   <!--Clickable option for selecting people to hide your story from-->
   <string name="MyStorySettingsFragment__hide_story_from">Dölj berättelse från</string>
   <!--Privacy setting title for sending stories to all your signal connections-->
@@ -3996,7 +4075,7 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <!--Privacy setting description for sending stories to all your signal connections-->
   <string name="MyStorySettingsFragment__share_with_all_connections">Dela med alla förbindelser</string>
   <!--Privacy setting title for sending stories to all except the specified connections-->
-  <string name="MyStorySettingsFragment__all_signal_connections_except">Alla Signal-förbindelser utom …</string>
+  <string name="MyStorySettingsFragment__all_except">Alla utom …</string>
   <!--Privacy setting description for sending stories to all except the specified connections-->
   <string name="MyStorySettingsFragment__hide_your_story_from_specific_people">Dölj din berättelse för specifika personer</string>
   <!--Summary of clickable option displaying how many people you have excluded from your story-->
@@ -4225,6 +4304,8 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="ExpiredGiftSheetConfiguration__make_a_monthly_donation">Gör en månatlig donation</string>
   <!--Expired gift sheet not now button-->
   <string name="ExpiredGiftSheetConfiguration__not_now">Inte nu</string>
+  <!--My Story label designating that we will only share with the selected viewers.-->
+  <string name="ContactSearchItems__only_share_with">Dela endast med</string>
   <!--Label under name for private stories-->
   <plurals name="ContactSearchItems__private_story_d_viewers">
     <item quantity="one">Privat berättelse · %1$d tittare</item>
@@ -4234,6 +4315,11 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <plurals name="ContactSearchItems__group_story_d_viewers">
     <item quantity="one">Gruppberättelse · %1$d tittare</item>
     <item quantity="other">Gruppberättelse · %1$d tittare</item>
+  </plurals>
+  <!--Label under name for my story-->
+  <plurals name="ContactSearchItems__my_story_s_dot_d_viewers">
+    <item quantity="one">%1$s · %2$d tittare</item>
+    <item quantity="other">%1$s · %2$d tittare</item>
   </plurals>
   <!--Label under name for My Story when first sending to my story-->
   <string name="ContactSearchItems__tap_to_choose_your_viewers">Tryck för att välja dina tittare</string>
@@ -4330,7 +4416,7 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <!--All connections option for initial My Story settings configuration shown when sending to My Story for the first time-->
   <string name="ChooseInitialMyStoryMembershipFragment__all_signal_connections">Alla Signal-förbindelser</string>
   <!--All connections except option for initial My Story settings configuration shown when sending to My Story for the first time-->
-  <string name="ChooseInitialMyStoryMembershipFragment__all_signal_connections_except">Alla Signal-förbindelser utom …</string>
+  <string name="ChooseInitialMyStoryMembershipFragment__all_except">Alla utom …</string>
   <!--Only with selected connections option for initial My Story settings configuration shown when sending to My Story for the first time-->
   <string name="ChooseInitialMyStoryMembershipFragment__only_share_with">Dela endast med …</string>
   <!--Story info header sent heading-->
@@ -4345,5 +4431,63 @@ Tog emot meddelande för nyckelutbyte för ogiltig protokollversion.</string>
   <string name="StoryInfoBottomSheetDialogFragment__sent_from">Skickat från</string>
   <!--Story Info context menu label-->
   <string name="StoryInfoBottomSheetDialogFragment__info">Info</string>
+  <!--StoriesPrivacySettingsFragment-->
+  <!--Explanation about how stories are deleted and managed-->
+  <string name="StoriesPrivacySettingsFragment__stories_automatically_disappear">Berättelser försvinner automatiskt efter 24 timmar. Välj vilka som kan visa din berättelse eller skapa nya berättelser för specifika tittare eller grupper.</string>
+  <!--Preference title to turn off stories-->
+  <string name="StoriesPrivacySettingsFragment__turn_off_stories">Stäng av berättelser</string>
+  <!--Preference summary to turn off stories-->
+  <string name="StoriesPrivacySettingsFragment__if_you_opt_out">Du kommer inte längre kunna dela eller visa berättelser om du stänger av dem.</string>
+  <!--Preference title to turn on stories-->
+  <string name="StoriesPrivacySettingsFragment__turn_on_stories">Slå på berättelser</string>
+  <!--Preference summary to turn on stories-->
+  <string name="StoriesPrivacySettingsFragment__share_and_view">Dela och visa berättelser från andra. Berättelser försvinner automatiskt efter 24 timmar.</string>
+  <!--Dialog title to turn off stories-->
+  <string name="StoriesPrivacySettingsFragment__turn_off_stories_question">Stänga av berättelser?</string>
+  <!--Dialog message to turn off stories-->
+  <string name="StoriesPrivacySettingsFragment__you_will_no_longer_be_able_to">Du kommer inte längre att kunna dela eller visa berättelser. Alla berättelser som du nyligen har skickat kommer att fortsätta kunna visas tills tiden går ut för den.</string>
+  <!--Page title when launched from stories landing screen-->
+  <string name="StoriesPrivacySettingsFragment__story_privacy">Berättelseintegritet</string>
+  <!--GroupStorySettingsFragment-->
+  <!--Section header for who can view a group story-->
+  <string name="GroupStorySettingsFragment__who_can_view_this_story">Vem kan visa den här berättelsen</string>
+  <!--Explanation of who can view a group story-->
+  <string name="GroupStorySettingsFragment__members_of_the_group_s">Medlemmar i gruppen %1$s kan visa och svara på den här berättelsen. Du kan uppdatera medlemskapet för den här chatten i gruppen.</string>
+  <!--Preference label for removing this group story-->
+  <string name="GroupStorySettingsFragment__remove_group_story">Ta bort gruppberättelse</string>
+  <!--Generic title for overflow menus-->
+  <string name="OverflowMenu__overflow_menu">Överflödesmeny</string>
+  <!--SMS Export Service-->
+  <!--Displayed in the notification while export is running-->
+  <string name="SignalSmsExportService__exporting_messages">Exporterar meddelanden …</string>
+  <!--ExportYourSmsMessagesFragment-->
+  <!--Title of the screen-->
+  <string name="ExportYourSmsMessagesFragment__export_your_sms_messages">Exportera dina sms</string>
+  <!--Button label to begin export-->
+  <string name="ExportYourSmsMessagesFragment__continue">Fortsätt</string>
+  <!--ExportingSmsMessagesFragment-->
+  <!--Title of the screen-->
+  <string name="ExportingSmsMessagesFragment__exporting_sms_messages">Exporterar sms</string>
+  <!--Progress indicator for export-->
+  <string name="ExportingSmsMessagesFragment__exporting_d_of_d">Exporterar %1$d av %2$d …</string>
+  <!--ChooseANewDefaultSmsAppFragment-->
+  <!--Title of the screen-->
+  <string name="ChooseANewDefaultSmsAppFragment__choose_a_new">Välj en ny standardapp för sms</string>
+  <!--Button label to launch picker-->
+  <string name="ChooseANewDefaultSmsAppFragment__continue">Fortsätt</string>
+  <!--RemoveSmsMessagesDialogFragment-->
+  <!--Action button to keep messages-->
+  <string name="RemoveSmsMessagesDialogFragment__keep_messages">Spara meddelanden</string>
+  <!--Action button to remove messages-->
+  <string name="RemoveSmsMessagesDialogFragment__remove_messages">Ta bort meddelanden</string>
+  <!--Title of dialog-->
+  <string name="RemoveSmsMessagesDialogFragment__remove_sms_messages">Ta bort sms från Signal?</string>
+  <!--Message of dialog-->
+  <string name="RemoveSmsMessagesDialogFragment__you_have_changed">Du har ändrat standardapp för sms. Vill du ta bort sms från Signal?</string>
+  <!--SetSignalAsDefaultSmsAppFragment-->
+  <!--Title of the screen-->
+  <string name="SetSignalAsDefaultSmsAppFragment__first_set_signal_as_the_default_sms_app">Ställ först in Signal som din standardapp för sms</string>
+  <!--Button label to start export-->
+  <string name="SetSignalAsDefaultSmsAppFragment__next">Nästa</string>
   <!--EOF-->
 </resources>

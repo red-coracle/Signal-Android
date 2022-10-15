@@ -75,6 +75,7 @@ public class RecipientDetails {
   final Recipient.Capability         changeNumberCapability;
   final Recipient.Capability         storiesCapability;
   final Recipient.Capability         giftBadgesCapability;
+  final Recipient.Capability         pnpCapability;
   final InsightsBannerTier           insightsBannerTier;
   final byte[]                       storageId;
   final MentionSetting               mentionSetting;
@@ -88,6 +89,7 @@ public class RecipientDetails {
   final boolean                      hasGroupsInCommon;
   final List<Badge>                  badges;
   final boolean                      isReleaseChannel;
+  final boolean                      needsPniSignature;
 
   public RecipientDetails(@Nullable String groupName,
                           @Nullable String systemContactName,
@@ -138,6 +140,7 @@ public class RecipientDetails {
     this.changeNumberCapability       = record.getChangeNumberCapability();
     this.storiesCapability            = record.getStoriesCapability();
     this.giftBadgesCapability         = record.getGiftBadgesCapability();
+    this.pnpCapability                = record.getPnpCapability();
     this.insightsBannerTier           = record.getInsightsBannerTier();
     this.storageId                    = record.getStorageId();
     this.mentionSetting               = record.getMentionSetting();
@@ -153,6 +156,7 @@ public class RecipientDetails {
     this.hasGroupsInCommon            = record.hasGroupsInCommon();
     this.badges                       = record.getBadges();
     this.isReleaseChannel             = isReleaseChannel;
+    this.needsPniSignature            = record.needsPniSignature();
   }
 
   private RecipientDetails() {
@@ -197,6 +201,7 @@ public class RecipientDetails {
     this.changeNumberCapability       = Recipient.Capability.UNKNOWN;
     this.storiesCapability            = Recipient.Capability.UNKNOWN;
     this.giftBadgesCapability         = Recipient.Capability.UNKNOWN;
+    this.pnpCapability                = Recipient.Capability.UNKNOWN;
     this.storageId                    = null;
     this.mentionSetting               = MentionSetting.ALWAYS_NOTIFY;
     this.wallpaper                    = null;
@@ -210,6 +215,7 @@ public class RecipientDetails {
     this.hasGroupsInCommon            = false;
     this.badges                       = Collections.emptyList();
     this.isReleaseChannel             = false;
+    this.needsPniSignature            = false;
   }
 
   public static @NonNull RecipientDetails forIndividual(@NonNull Context context, @NonNull RecipientRecord settings) {

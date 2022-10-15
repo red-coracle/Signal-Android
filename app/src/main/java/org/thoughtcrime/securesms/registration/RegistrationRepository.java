@@ -159,11 +159,11 @@ public final class RegistrationRepository {
     }
 
     RecipientDatabase recipientDatabase = SignalDatabase.recipients();
-    RecipientId       selfId            = Recipient.externalPush(new SignalServiceAddress(aci, registrationData.getE164())).getId();
+    RecipientId       selfId            = Recipient.trustedPush(aci, pni, registrationData.getE164()).getId();
 
     recipientDatabase.setProfileSharing(selfId, true);
     recipientDatabase.markRegisteredOrThrow(selfId, aci);
-    recipientDatabase.setPni(selfId, pni);
+    recipientDatabase.linkIdsForSelf(aci, pni, registrationData.getE164());
     recipientDatabase.setProfileKey(selfId, registrationData.getProfileKey());
 
     ApplicationDependencies.getRecipientCache().clearSelf();
@@ -190,10 +190,11 @@ public final class RegistrationRepository {
                                           @NonNull PreKeyMetadataStore metadataStore)
       throws IOException
   {
-    SignedPreKeyRecord signedPreKey   = PreKeyUtil.generateAndStoreSignedPreKey(protocolStore, metadataStore, true);
+    SignedPreKeyRecord signedPreKey   = PreKeyUtil.generateAndStoreSignedPreKey(protocolStore, metadataStore);
     List<PreKeyRecord> oneTimePreKeys = PreKeyUtil.generateAndStoreOneTimePreKeys(protocolStore, metadataStore);
 
     accountManager.setPreKeys(serviceIdType, protocolStore.getIdentityKeyPair().getPublicKey(), signedPreKey, oneTimePreKeys);
+    metadataStore.setActiveSignedPreKeyId(signedPreKey.getId());
     metadataStore.setSignedPreKeyRegistered(true);
   }
 

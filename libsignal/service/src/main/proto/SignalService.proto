@@ -23,30 +23,32 @@ message Envelope {
   }
 
   optional Type   type            = 1;
-  optional string sourceE164      = 2;
+  reserved      /*sourceE164*/      2;
   optional string sourceUuid      = 11;
   optional uint32 sourceDevice    = 7;
   optional string destinationUuid = 13;
-  optional string relay           = 3;
+  reserved      /*relay*/           3;
   optional uint64 timestamp       = 5;
-  optional bytes  legacyMessage   = 6; // Contains an encrypted DataMessage
+  reserved      /*legacyMessage*/   6;
   optional bytes  content         = 8; // Contains an encrypted Content
   optional string serverGuid      = 9;
   optional uint64 serverTimestamp = 10;
   optional bool   urgent          = 14 [default = true];
-  // NEXT ID: 15
+  reserved      /*updatedPni*/      15; // Not used presently, may be used in the future
+  // NEXT ID: 16
 }
 
 message Content {
-  optional DataMessage    dataMessage                  = 1;
-  optional SyncMessage    syncMessage                  = 2;
-  optional CallMessage    callMessage                  = 3;
-  optional NullMessage    nullMessage                  = 4;
-  optional ReceiptMessage receiptMessage               = 5;
-  optional TypingMessage  typingMessage                = 6;
-  optional bytes          senderKeyDistributionMessage = 7;
-  optional bytes          decryptionErrorMessage       = 8;
-  optional StoryMessage   storyMessage                 = 9;
+  optional DataMessage         dataMessage                  = 1;
+  optional SyncMessage         syncMessage                  = 2;
+  optional CallMessage         callMessage                  = 3;
+  optional NullMessage         nullMessage                  = 4;
+  optional ReceiptMessage      receiptMessage               = 5;
+  optional TypingMessage       typingMessage                = 6;
+  optional bytes               senderKeyDistributionMessage = 7;
+  optional bytes               decryptionErrorMessage       = 8;
+  optional StoryMessage        storyMessage                 = 9;
+  optional PniSignatureMessage pniSignatureMessage          = 10;
 }
 
 message CallMessage {
@@ -390,9 +392,11 @@ message TextAttachment {
   }
 
   message Gradient {
-    optional uint32 startColor = 1;
-    optional uint32 endColor   = 2;
+    optional uint32 startColor = 1; // deprecated: this field will be removed in a future release.
+    optional uint32 endColor   = 2; // deprecated: this field will be removed in a future release.
     optional uint32 angle      = 3; // degrees
+    repeated uint32 colors     = 4;
+    repeated float  positions  = 5; // percent from 0 to 1
   }
 
   optional string  text                = 1;
@@ -709,4 +713,9 @@ message DecryptionErrorMessage {
   optional bytes  ratchetKey = 1;
   optional uint64 timestamp  = 2;
   optional uint32 deviceId   = 3;
+}
+
+message PniSignatureMessage {
+  optional bytes pni       = 1;
+  optional bytes signature = 2;
 }

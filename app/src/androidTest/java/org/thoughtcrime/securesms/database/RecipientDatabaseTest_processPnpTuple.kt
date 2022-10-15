@@ -61,13 +61,6 @@ class RecipientDatabaseTest_processPnpTuple {
   }
 
   @Test(expected = IllegalStateException::class)
-  fun noMatch_pniOnly() {
-    test {
-      process(null, PNI_A, null)
-    }
-  }
-
-  @Test(expected = IllegalStateException::class)
   fun noMatch_noData() {
     test {
       process(null, null, null)
@@ -417,7 +410,7 @@ class RecipientDatabaseTest_processPnpTuple {
     fun process(e164: String?, pni: PNI?, aci: ACI?) {
       SignalDatabase.rawDatabase.beginTransaction()
       try {
-        generatedIds += recipientDatabase.processPnpTuple(e164, pni, aci, pniVerified = false, pnpEnabled = true).finalId
+        generatedIds += recipientDatabase.processPnpTuple(e164, pni, aci, pniVerified = false).finalId
         SignalDatabase.rawDatabase.setTransactionSuccessful()
       } finally {
         SignalDatabase.rawDatabase.endTransaction()

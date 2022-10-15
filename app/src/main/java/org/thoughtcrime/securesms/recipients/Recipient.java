@@ -124,6 +124,7 @@ public class Recipient {
   private final Capability                   changeNumberCapability;
   private final Capability                   storiesCapability;
   private final Capability                   giftBadgesCapability;
+  private final Capability                   pnpCapability;
   private final InsightsBannerTier           insightsBannerTier;
   private final byte[]                       storageId;
   private final MentionSetting               mentionSetting;
@@ -138,6 +139,7 @@ public class Recipient {
   private final boolean                      hasGroupsInCommon;
   private final List<Badge>                  badges;
   private final boolean                      isReleaseNotesRecipient;
+  private final boolean                      needsPniSignature;
 
   /**
    * Returns a {@link LiveRecipient}, which contains a {@link Recipient} that may or may not be
@@ -216,26 +218,45 @@ public class Recipient {
   }
 
   /**
-   * Returns a fully-populated {@link Recipient} based off of a {@link SignalServiceAddress},
-   * creating one in the database if necessary. We special-case GV1 members because we want to
-   * prioritize E164 addresses and not use the UUIDs if possible.
-   */
-  @WorkerThread
-  public static @NonNull Recipient externalGV1Member(@NonNull SignalServiceAddress address) {
-    if (address.getNumber().isPresent()) {
-      return externalPush(null, address.getNumber().get());
-    } else {
-      return externalPush(address.getServiceId());
-    }
-  }
-
-  /**
    * Returns a fully-populated {@link Recipient} based off of a ServiceId, creating one
    * in the database if necessary.
    */
   @WorkerThread
   public static @NonNull Recipient externalPush(@NonNull ServiceId serviceId) {
     return externalPush(serviceId, null);
+  }
+
+  /**
+   * Create a recipient with a full (ACI, PNI, E164) tuple. It is assumed that the association between the PNI and serviceId is trusted.
+   * That means it must be from either storage service or a PNI verification message.
+   */
+  public static @NonNull Recipient trustedPush(@NonNull ServiceId serviceId, @Nullable PNI pni, @Nullable String e164) {
+    if (ServiceId.UNKNOWN.equals(serviceId)) {
+      throw new AssertionError("Unknown serviceId!");
+    }
+
+    RecipientDatabase db = SignalDatabase.recipients();
+
+    RecipientId recipientId;
+
+    if (FeatureFlags.phoneNumberPrivacy()) {
+      recipientId = db.getAndPossiblyMergePnpVerified(serviceId, pni, e164);
+    } else {
+      recipientId = db.getAndPossiblyMerge(serviceId, e164);
+    }
+
+    Recipient resolved = resolved(recipientId);
+
+    if (!resolved.getId().equals(recipientId)) {
+      Log.w(TAG, "Resolved " + recipientId + ", but got back a recipient with " + resolved.getId());
+    }
+
+    if (!resolved.isRegistered()) {
+      Log.w(TAG, "External push was locally marked unregistered. Marking as registered.");
+      db.markRegistered(recipientId, serviceId);
+    }
+
+    return resolved;
   }
 
   /**
@@ -359,6 +380,10 @@ public class Recipient {
     return ApplicationDependencies.getRecipientCache().getSelf();
   }
 
+  public static boolean isSelfSet() {
+    return ApplicationDependencies.getRecipientCache().getSelfId() != null;
+  }
+
   Recipient(@NonNull RecipientId id) {
     this.id                           = id;
     this.resolving                    = true;
@@ -402,6 +427,7 @@ public class Recipient {
     this.changeNumberCapability       = Capability.UNKNOWN;
     this.storiesCapability            = Capability.UNKNOWN;
     this.giftBadgesCapability         = Capability.UNKNOWN;
+    this.pnpCapability                = Capability.UNKNOWN;
     this.storageId                    = null;
     this.mentionSetting               = MentionSetting.ALWAYS_NOTIFY;
     this.wallpaper                    = null;
@@ -415,6 +441,7 @@ public class Recipient {
     this.hasGroupsInCommon            = false;
     this.badges                       = Collections.emptyList();
     this.isReleaseNotesRecipient      = false;
+    this.needsPniSignature            = false;
   }
 
   public Recipient(@NonNull RecipientId id, @NonNull RecipientDetails details, boolean resolved) {
@@ -460,6 +487,7 @@ public class Recipient {
     this.changeNumberCapability       = details.changeNumberCapability;
     this.storiesCapability            = details.storiesCapability;
     this.giftBadgesCapability         = details.giftBadgesCapability;
+    this.pnpCapability                = details.pnpCapability;
     this.storageId                    = details.storageId;
     this.mentionSetting               = details.mentionSetting;
     this.wallpaper                    = details.wallpaper;
@@ -473,6 +501,7 @@ public class Recipient {
     this.hasGroupsInCommon            = details.hasGroupsInCommon;
     this.badges                       = details.badges;
     this.isReleaseNotesRecipient      = details.isReleaseChannel;
+    this.needsPniSignature            = details.needsPniSignature;
   }
 
   public @NonNull RecipientId getId() {
@@ -544,6 +573,37 @@ public class Recipient {
   }
 
   public @NonNull String getDisplayName(@NonNull Context context) {
+    String name = getNameFromLocalData(context);
+
+    if (Util.isEmpty(name)) {
+      name = context.getString(R.string.Recipient_unknown);
+    }
+
+    return StringUtil.isolateBidi(name);
+  }
+
+  public @NonNull String getDisplayNameOrUsername(@NonNull Context context) {
+    String name = getNameFromLocalData(context);
+
+    if (Util.isEmpty(name)) {
+      name = StringUtil.isolateBidi(username);
+    }
+
+    if (Util.isEmpty(name)) {
+      name = StringUtil.isolateBidi(context.getString(R.string.Recipient_unknown));
+    }
+
+    return StringUtil.isolateBidi(name);
+  }
+
+  public boolean hasNonUsernameDisplayName(@NonNull Context context) {
+    return getNameFromLocalData(context) != null;
+  }
+
+  /**
+   * @return local name for user ignoring the username.
+   */
+  private @Nullable String getNameFromLocalData(@NonNull Context context) {
     String name = getGroupName(context);
 
     if (Util.isEmpty(name)) {
@@ -560,40 +620,6 @@ public class Recipient {
 
     if (Util.isEmpty(name)) {
       name = email;
-    }
-
-    if (Util.isEmpty(name)) {
-      name = context.getString(R.string.Recipient_unknown);
-    }
-
-    return StringUtil.isolateBidi(name);
-  }
-
-  public @NonNull String getDisplayNameOrUsername(@NonNull Context context) {
-    String name = getGroupName(context);
-
-    if (Util.isEmpty(name)) {
-      name = systemContactName;
-    }
-
-    if (Util.isEmpty(name)) {
-      name = StringUtil.isolateBidi(getProfileName().toString());
-    }
-
-    if (Util.isEmpty(name) && !Util.isEmpty(e164)) {
-      name = PhoneNumberFormatter.prettyPrint(e164);
-    }
-
-    if (Util.isEmpty(name)) {
-      name = StringUtil.isolateBidi(email);
-    }
-
-    if (Util.isEmpty(name)) {
-      name = StringUtil.isolateBidi(username);
-    }
-
-    if (Util.isEmpty(name)) {
-      name = StringUtil.isolateBidi(context.getString(R.string.Recipient_unknown));
     }
 
     return name;
@@ -1020,6 +1046,10 @@ public class Recipient {
     return giftBadgesCapability;
   }
 
+  public @NonNull Capability getPnpCapability() {
+    return pnpCapability;
+  }
+
   /**
    * True if this recipient supports the message retry system, or false if we should use the legacy session reset system.
    */
@@ -1182,6 +1212,10 @@ public class Recipient {
 
   public boolean showVerified() {
     return isReleaseNotesRecipient || isSelf;
+  }
+
+  public boolean needsPniSignature() {
+    return FeatureFlags.phoneNumberPrivacy() && needsPniSignature;
   }
 
   @Override
@@ -1353,7 +1387,7 @@ public class Recipient {
     }
 
     public @NonNull FallbackContactPhoto getPhotoForDistributionList() {
-      return new ResourceContactPhoto(R.drawable.ic_group_outline_34, R.drawable.ic_group_outline_20, R.drawable.ic_group_outline_48);
+      return new ResourceContactPhoto(R.drawable.ic_lock_24, R.drawable.ic_lock_24, R.drawable.ic_lock_40);
     }
   }
 

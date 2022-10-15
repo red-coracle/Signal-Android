@@ -376,8 +376,8 @@ public class FullBackupExporter extends FullBackupBase {
       }
     }
 
+    EventBus.getDefault().post(new BackupEvent(BackupEvent.Type.PROGRESS, ++count, estimatedCount));
     if (!TextUtils.isEmpty(data) && size > 0) {
-      EventBus.getDefault().post(new BackupEvent(BackupEvent.Type.PROGRESS, ++count, estimatedCount));
       try (InputStream inputStream = openAttachmentStream(attachmentSecret, random, data)) {
         outputStream.write(new AttachmentId(rowId, uniqueId), inputStream, size);
       } catch (FileNotFoundException e) {
@@ -413,7 +413,7 @@ public class FullBackupExporter extends FullBackupBase {
     return count;
   }
 
-  private static long calculateVeryOldStreamLength(@NonNull AttachmentSecret attachmentSecret, @Nullable byte[] random, @NonNull String data) throws IOException {
+  private static long calculateVeryOldStreamLength(@NonNull AttachmentSecret attachmentSecret, @Nullable byte[] random, @NonNull String data) {
     long result = 0;
 
     try (InputStream inputStream = openAttachmentStream(attachmentSecret, random, data)) {
@@ -423,6 +423,12 @@ public class FullBackupExporter extends FullBackupBase {
       while ((read = inputStream.read(buffer, 0, buffer.length)) != -1) {
         result += read;
       }
+    } catch (FileNotFoundException e) {
+      Log.w(TAG, "Missing attachment: " + e.getMessage());
+      return 0;
+    } catch (IOException e) {
+      Log.w(TAG, "Failed to determine stream length", e);
+      return 0;
     }
 
     return result;
@@ -706,6 +712,7 @@ public class FullBackupExporter extends FullBackupBase {
 
 
     public void close() throws IOException {
+      outputStream.flush();
       outputStream.close();
     }
   }

@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,7 +38,11 @@ import org.thoughtcrime.securesms.util.CommunicationActions;
 import org.thoughtcrime.securesms.util.SpanUtil;
 import org.thoughtcrime.securesms.util.navigation.SafeNavigation;
 
+import java.util.concurrent.TimeUnit;
+
 public class PaymentsHomeFragment extends LoggingFragment {
+  private static final int DAYS_UNTIL_REPROMPT_PAYMENT_LOCK = 30;
+  private static final int MAX_PAYMENT_LOCK_SKIP_COUNT      = 2;
 
   private static final String TAG = Log.tag(PaymentsHomeFragment.class);
 
@@ -48,6 +52,34 @@ public class PaymentsHomeFragment extends LoggingFragment {
 
   public PaymentsHomeFragment() {
     super(R.layout.payments_home_fragment);
+  }
+
+  @Override
+  public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    long    paymentLockTimestamp = SignalStore.paymentsValues().getPaymentLockTimestamp();
+    boolean enablePaymentLock    = PaymentsHomeFragmentArgs.fromBundle(getArguments()).getEnablePaymentLock();
+    boolean showPaymentLock      = SignalStore.paymentsValues().getPaymentLockSkipCount() < MAX_PAYMENT_LOCK_SKIP_COUNT &&
+                                   (System.currentTimeMillis() >= paymentLockTimestamp);
+
+    if (enablePaymentLock && showPaymentLock) {
+      long waitUntil = System.currentTimeMillis() + TimeUnit.DAYS.toMillis(DAYS_UNTIL_REPROMPT_PAYMENT_LOCK);
+
+      SignalStore.paymentsValues().setPaymentLockTimestamp(waitUntil);
+      new MaterialAlertDialogBuilder(requireContext())
+          .setTitle(getString(R.string.PaymentsHomeFragment__turn_on))
+          .setMessage(getString(R.string.PaymentsHomeFragment__add_an_additional_layer))
+          .setPositiveButton(R.string.PaymentsHomeFragment__enable, (dialog, which) ->
+              SafeNavigation.safeNavigate(NavHostFragment.findNavController(this), PaymentsHomeFragmentDirections.actionPaymentsHomeToPrivacySettings(true)))
+          .setNegativeButton(R.string.PaymentsHomeFragment__not_now, (dialog, which) -> setSkipCount())
+          .setCancelable(false)
+          .show();
+    }
+  }
+
+  private void setSkipCount() {
+      int skipCount = SignalStore.paymentsValues().getPaymentLockSkipCount();
+      SignalStore.paymentsValues().setPaymentLockSkipCount(++skipCount);
   }
 
   @Override
@@ -87,7 +119,7 @@ public class PaymentsHomeFragment extends LoggingFragment {
     PaymentsHomeAdapter adapter = new PaymentsHomeAdapter(new HomeCallbacks());
     recycler.setAdapter(adapter);
 
-    viewModel = ViewModelProviders.of(this, new PaymentsHomeViewModel.Factory()).get(PaymentsHomeViewModel.class);
+    viewModel = new ViewModelProvider(this, new PaymentsHomeViewModel.Factory()).get(PaymentsHomeViewModel.class);
 
     viewModel.getList().observe(getViewLifecycleOwner(), list -> {
       boolean hadPaymentItems = Stream.of(adapter.getCurrentList()).anyMatch(model -> model instanceof PaymentItem);
@@ -143,7 +175,7 @@ public class PaymentsHomeFragment extends LoggingFragment {
     });
 
     viewModel.getPaymentStateEvents().observe(getViewLifecycleOwner(), paymentStateEvent -> {
-      AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+      MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
 
       builder.setTitle(R.string.PaymentsHomeFragment__deactivate_payments_question);
       builder.setMessage(R.string.PaymentsHomeFragment__you_will_not_be_able_to_send);
@@ -168,7 +200,7 @@ public class PaymentsHomeFragment extends LoggingFragment {
         case DEACTIVATE_WITH_BALANCE:
           builder.setPositiveButton(getString(R.string.PaymentsHomeFragment__continue), (dialog, which) -> {
             dialog.dismiss();
-            SafeNavigation.safeNavigate(NavHostFragment.findNavController(this), R.id.deactivateWallet);
+            SafeNavigation.safeNavigate(NavHostFragment.findNavController(this), R.id.action_paymentsHome_to_deactivateWallet);
           });
           break;
         case ACTIVATED:

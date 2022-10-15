@@ -133,6 +133,7 @@ object RecipientDatabaseTestUtils {
         Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.CHANGE_NUMBER, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
         Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.STORIES, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
         Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.GIFT_BADGES, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
+        Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.PNP, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
         insightBannerTier,
         storageId,
         mentionSetting,
@@ -144,7 +145,8 @@ object RecipientDatabaseTestUtils {
         syncExtras,
         extras,
         hasGroupsInCommon,
-        badges
+        badges,
+        false
       ),
       participants,
       isReleaseChannel
