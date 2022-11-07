@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import app.cash.exhaustive.Exhaustive
+import org.signal.core.util.PendingIntentFlags
 import org.signal.smsexporter.ExportableMessage
 import org.signal.smsexporter.SmsExportService
 import org.thoughtcrime.securesms.R
@@ -11,8 +13,11 @@ import org.thoughtcrime.securesms.attachments.AttachmentId
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.MessageId
 import org.thoughtcrime.securesms.database.model.databaseprotos.MessageExportState
+import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
+import org.thoughtcrime.securesms.exporter.flow.SmsExportActivity
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.NotificationIds
+import org.thoughtcrime.securesms.notifications.v2.NotificationPendingIntentHelper
 import org.thoughtcrime.securesms.util.JsonUtils
 import java.io.InputStream
 
@@ -33,12 +38,43 @@ class SignalSmsExportService : SmsExportService() {
   private var reader: SignalSmsExportReader? = null
 
   override fun getNotification(progress: Int, total: Int): ExportNotification {
+    val pendingIntent = NotificationPendingIntentHelper.getActivity(
+      this,
+      0,
+      SmsExportActivity.createIntent(this),
+      PendingIntentFlags.mutable()
+    )
+
     return ExportNotification(
       NotificationIds.SMS_EXPORT_SERVICE,
       NotificationCompat.Builder(this, NotificationChannels.BACKUPS)
-        .setSmallIcon(R.drawable.ic_launcher_foreground)
+        .setSmallIcon(R.drawable.ic_signal_backup)
         .setContentTitle(getString(R.string.SignalSmsExportService__exporting_messages))
+        .setContentIntent(pendingIntent)
         .setProgress(total, progress, false)
+        .build()
+    )
+  }
+
+  override fun getExportCompleteNotification(): ExportNotification? {
+    if (ApplicationDependencies.getAppForegroundObserver().isForegrounded) {
+      return null
+    }
+
+    val pendingIntent = NotificationPendingIntentHelper.getActivity(
+      this,
+      0,
+      SmsExportActivity.createIntent(this),
+      PendingIntentFlags.mutable()
+    )
+
+    return ExportNotification(
+      NotificationIds.SMS_EXPORT_COMPLETE,
+      NotificationCompat.Builder(this, NotificationChannels.APP_ALERTS)
+        .setSmallIcon(R.drawable.ic_notification)
+        .setContentTitle(getString(R.string.SignalSmsExportService__signal_sms_export_complete))
+        .setContentText(getString(R.string.SignalSmsExportService__tap_to_return_to_signal))
+        .setContentIntent(pendingIntent)
         .build()
     )
   }
@@ -126,18 +162,22 @@ class SignalSmsExportService : SmsExportService() {
   }
 
   private fun ExportableMessage.getMessageId(): MessageId {
-    return when (this) {
-      is ExportableMessage.Mms -> MessageId(id.toLong(), true)
-      is ExportableMessage.Sms -> MessageId(id.toLong(), false)
+    @Exhaustive
+    val messageId: Any = when (this) {
+      is ExportableMessage.Mms<*> -> id
+      is ExportableMessage.Sms<*> -> id
+    }
+
+    if (messageId is MessageId) {
+      return messageId
+    } else {
+      throw AssertionError("Exportable message id must be type MessageId. Type: ${messageId.javaClass}")
     }
   }
 
   private fun ensureReader() {
     if (reader == null) {
-      reader = SignalSmsExportReader(
-        smsCursor = SignalDatabase.sms.unexportedInsecureMessages,
-        mmsCursor = SignalDatabase.mms.unexportedInsecureMessages
-      )
+      reader = SignalSmsExportReader()
     }
   }
 }

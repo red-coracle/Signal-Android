@@ -34,6 +34,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import net.zetetic.database.sqlcipher.SQLiteStatement;
 
 import org.signal.core.util.CursorUtil;
+import org.signal.core.util.SQLiteDatabaseExtensionsKt;
 import org.signal.core.util.SqlUtil;
 import org.signal.core.util.logging.Log;
 import org.signal.libsignal.protocol.util.Pair;
@@ -50,6 +51,7 @@ import org.thoughtcrime.securesms.database.model.StoryViewState;
 import org.thoughtcrime.securesms.database.model.databaseprotos.GroupCallUpdateDetails;
 import org.thoughtcrime.securesms.database.model.databaseprotos.MessageExportState;
 import org.thoughtcrime.securesms.database.model.databaseprotos.ProfileChangeDetails;
+import org.thoughtcrime.securesms.database.model.databaseprotos.ThreadMergeEvent;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.groups.GroupMigrationMembershipChange;
 import org.thoughtcrime.securesms.jobs.TrimThreadJob;
@@ -299,8 +301,8 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   private @NonNull SqlUtil.Query buildMeaningfulMessagesQuery(long threadId) {
-    String query = THREAD_ID + " = ? AND (NOT " + TYPE + " & ? AND " + TYPE + " != ? AND " + TYPE + " != ? AND " + TYPE + " != ? AND " + TYPE + " & " + GROUP_V2_LEAVE_BITS + " != " + GROUP_V2_LEAVE_BITS + ")";
-    return SqlUtil.buildQuery(query, threadId, IGNORABLE_TYPESMASK_WHEN_COUNTING, Types.PROFILE_CHANGE_TYPE, Types.CHANGE_NUMBER_TYPE, Types.BOOST_REQUEST_TYPE);
+    String query = THREAD_ID + " = ? AND (NOT " + TYPE + " & ? AND " + TYPE + " != ? AND " + TYPE + " != ? AND " + TYPE + " != ? AND " + TYPE + " != ? AND " + TYPE + " & " + GROUP_V2_LEAVE_BITS + " != " + GROUP_V2_LEAVE_BITS + ")";
+    return SqlUtil.buildQuery(query, threadId, IGNORABLE_TYPESMASK_WHEN_COUNTING, Types.PROFILE_CHANGE_TYPE, Types.CHANGE_NUMBER_TYPE, Types.SMS_EXPORT_TYPE, Types.BOOST_REQUEST_TYPE);
   }
 
   @Override
@@ -907,25 +909,14 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
-  public Cursor getUnexportedInsecureMessages() {
+  public Cursor getUnexportedInsecureMessages(int limit) {
     return queryMessages(
         SqlUtil.appendArg(MESSAGE_PROJECTION, EXPORT_STATE),
         getInsecureMessageClause() + " AND NOT " + EXPORTED,
         null,
         false,
-        -1
+        limit
     );
-  }
-
-  @Override
-  public int getInsecureMessageCount() {
-    try (Cursor cursor = getWritableDatabase().query(TABLE_NAME, SqlUtil.COUNT, getInsecureMessageClause(), null, null, null, null)) {
-      if (cursor.moveToFirst()) {
-        return cursor.getInt(0);
-      }
-    }
-
-    return 0;
   }
 
   @Override
@@ -1122,6 +1113,49 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
+  public void insertThreadMergeEvent(@NonNull RecipientId recipientId, long threadId, @NonNull ThreadMergeEvent event) {
+    ContentValues values = new ContentValues();
+    values.put(RECIPIENT_ID, recipientId.serialize());
+    values.put(ADDRESS_DEVICE_ID, 1);
+    values.put(DATE_RECEIVED, System.currentTimeMillis());
+    values.put(DATE_SENT, System.currentTimeMillis());
+    values.put(READ, 1);
+    values.put(TYPE, Types.THREAD_MERGE_TYPE);
+    values.put(THREAD_ID, threadId);
+    values.put(BODY, Base64.encodeBytes(event.toByteArray()));
+
+    getWritableDatabase().insert(TABLE_NAME, null, values);
+
+    ApplicationDependencies.getDatabaseObserver().notifyConversationListeners(threadId);
+  }
+
+  @Override
+  public void insertSmsExportMessage(@NonNull RecipientId recipientId, long threadId) {
+    ContentValues values = new ContentValues();
+    values.put(RECIPIENT_ID, recipientId.serialize());
+    values.put(ADDRESS_DEVICE_ID, 1);
+    values.put(DATE_RECEIVED, System.currentTimeMillis());
+    values.put(DATE_SENT, System.currentTimeMillis());
+    values.put(READ, 1);
+    values.put(TYPE, Types.SMS_EXPORT_TYPE);
+    values.put(THREAD_ID, threadId);
+    values.putNull(BODY);
+
+    boolean updated = SQLiteDatabaseExtensionsKt.withinTransaction(getWritableDatabase(), db -> {
+      if (SignalDatabase.sms().hasSmsExportMessage(threadId)) {
+        return false;
+      } else {
+        db.insert(TABLE_NAME, null, values);
+        return true;
+      }
+    });
+
+    if (updated) {
+      ApplicationDependencies.getDatabaseObserver().notifyConversationListeners(threadId);
+    }
+  }
+
+  @Override
   public Optional<InsertResult> insertMessageInbox(IncomingTextMessage message, long type) {
     boolean tryToCollapseJoinRequestEvents = false;
 
@@ -1175,7 +1209,8 @@ public class SmsDatabase extends MessageDatabase {
     boolean silent = message.isIdentityUpdate()   ||
                      message.isIdentityVerified() ||
                      message.isIdentityDefault()  ||
-                     message.isJustAGroupLeave();
+                     message.isJustAGroupLeave()  ||
+                     (type & Types.GROUP_UPDATE_BIT) > 0;
 
     boolean unread = !silent && (Util.isDefaultSmsProvider(context) ||
                                  message.isSecureMessage()          ||
@@ -1474,7 +1509,7 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
-  public boolean hasSelfReplyInGroupStory(long parentStoryId) {
+  public boolean hasGroupReplyOrReactionInStory(long parentStoryId) {
     throw new UnsupportedOperationException();
   }
 
@@ -1776,6 +1811,7 @@ public class SmsDatabase extends MessageDatabase {
   public MessageDatabase.Reader getMessages(Collection<Long> messageIds) {
     throw new UnsupportedOperationException();
   }
+
 
   public static class Status {
     public static final int STATUS_NONE     = -1;

@@ -45,13 +45,10 @@ public final class LocaleFeatureFlags {
   }
 
   /**
-   * Whether or not you should suggest SMS during onboarding.
+   * In story group for given country code
    */
-  public static boolean shouldSuggestSms() {
-    Set<String> blacklist   = new HashSet<>(Arrays.asList(FeatureFlags.suggestSmsBlacklist().split(",")));
-    String      countryCode = String.valueOf(PhoneNumberFormatter.getLocalCountryCode());
-
-    return !blacklist.contains(countryCode);
+  public static boolean isInStoriesCountry() {
+    return isEnabled(FeatureFlags.STORIES_LOCALE, FeatureFlags.storiesLocale());
   }
 
   public static boolean shouldShowReleaseNote(@NonNull String releaseNoteUuid, @NonNull String countries) {

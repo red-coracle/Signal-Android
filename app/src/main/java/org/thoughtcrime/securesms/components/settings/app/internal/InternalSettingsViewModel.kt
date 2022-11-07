@@ -59,6 +59,11 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
     refresh()
   }
 
+  fun setForceWebsocketMode(enabled: Boolean) {
+    preferenceDataStore.putBoolean(InternalValues.FORCE_WEBSOCKET_MODE, enabled)
+    refresh()
+  }
+
   fun setUseBuiltInEmoji(enabled: Boolean) {
     preferenceDataStore.putBoolean(InternalValues.FORCE_BUILT_IN_EMOJI, enabled)
     refresh()
@@ -94,12 +99,6 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
     refresh()
   }
 
-  fun toggleStories() {
-    val newState = !SignalStore.storyValues().isFeatureDisabled
-    SignalStore.storyValues().isFeatureDisabled = newState
-    store.update { getState().copy(disableStories = newState) }
-  }
-
   fun addSampleReleaseNote() {
     repository.addSampleReleaseNote()
   }
@@ -115,6 +114,7 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
     gv2ignoreServerChanges = SignalStore.internalValues().gv2IgnoreServerChanges(),
     gv2ignoreP2PChanges = SignalStore.internalValues().gv2IgnoreP2PChanges(),
     allowCensorshipSetting = SignalStore.internalValues().allowChangingCensorshipSetting(),
+    forceWebsocketMode = SignalStore.internalValues().isWebsocketModeForced,
     callingServer = SignalStore.internalValues().groupCallingServer(),
     callingAudioProcessingMethod = SignalStore.internalValues().callingAudioProcessingMethod(),
     callingBandwidthMode = SignalStore.internalValues().callingBandwidthMode(),
@@ -124,7 +124,6 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
     removeSenderKeyMinimium = SignalStore.internalValues().removeSenderKeyMinimum(),
     delayResends = SignalStore.internalValues().delayResends(),
     disableStorageService = SignalStore.internalValues().storageServiceDisabled(),
-    disableStories = SignalStore.storyValues().isFeatureDisabled,
     canClearOnboardingState = SignalStore.storyValues().hasDownloadedOnboardingStory && Stories.isFeatureEnabled()
   )
 

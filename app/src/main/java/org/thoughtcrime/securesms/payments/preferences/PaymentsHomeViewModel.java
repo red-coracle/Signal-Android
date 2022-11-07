@@ -188,7 +188,7 @@ public class PaymentsHomeViewModel extends ViewModel {
     return state.updatePayments(paymentItems, payments.size());
   }
 
-  public void onInfoCardDismissed() {
+  public void updateStore() {
     store.update(s -> s);
   }
 
@@ -203,6 +203,7 @@ public class PaymentsHomeViewModel extends ViewModel {
       @Override
       public void onComplete(@Nullable Void result) {
         store.update(state -> state.updatePaymentsEnabled(PaymentsHomeState.PaymentsState.ACTIVATED));
+        paymentStateEvents.postValue(PaymentStateEvent.ACTIVATED);
       }
 
       @Override

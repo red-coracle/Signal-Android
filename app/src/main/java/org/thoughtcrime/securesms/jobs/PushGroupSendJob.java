@@ -189,7 +189,7 @@ public final class PushGroupSendJob extends PushSendJob {
       log(TAG, String.valueOf(message.getSentTimeMillis()), "Sending message: " + messageId + ", Recipient: " + message.getRecipient().getId() + ", Thread: " + threadId + ", Attachments: " + buildAttachmentString(message.getAttachments()));
 
       if (!groupRecipient.resolve().isProfileSharing() && !database.isGroupQuitMessage(messageId)) {
-        RecipientUtil.shareProfileIfFirstSecureMessage(context, groupRecipient);
+        RecipientUtil.shareProfileIfFirstSecureMessage(groupRecipient);
       }
 
       List<Recipient>   target;
@@ -252,6 +252,10 @@ public final class PushGroupSendJob extends PushSendJob {
       if (message.getStoryType().isStory()) {
         Optional<GroupDatabase.GroupRecord> groupRecord = SignalDatabase.groups().getGroup(groupId);
 
+        if (groupRecord.isPresent() && groupRecord.get().isAnnouncementGroup() && !groupRecord.get().isAdmin(Recipient.self())) {
+          throw new UndeliverableMessageException("Non-admins cannot send stories in announcement groups!");
+        }
+
         if (groupRecord.isPresent()) {
           GroupDatabase.V2GroupProperties v2GroupProperties = groupRecord.get().requireV2GroupProperties();
           SignalServiceGroupV2 groupContext = SignalServiceGroupV2.newBuilder(v2GroupProperties.getGroupMasterKey())
@@ -292,7 +296,7 @@ public final class PushGroupSendJob extends PushSendJob {
                                                                               .withExpiration(groupRecipient.getExpiresInSeconds())
                                                                               .asGroupMessage(group)
                                                                               .build();
-          return GroupSendUtil.sendResendableDataMessage(context, groupRecipient.requireGroupId().requireV2(), destinations, isRecipientUpdate, ContentHint.IMPLICIT, new MessageId(messageId, true), groupDataMessage, message.isUrgent());
+          return GroupSendUtil.sendResendableDataMessage(context, groupRecipient.requireGroupId().requireV2(), null, destinations, isRecipientUpdate, ContentHint.IMPLICIT, new MessageId(messageId, true), groupDataMessage, message.isUrgent(), false);
         } else {
           throw new UndeliverableMessageException("Messages can no longer be sent to V1 groups!");
         }
@@ -347,12 +351,14 @@ public final class PushGroupSendJob extends PushSendJob {
 
         return GroupSendUtil.sendResendableDataMessage(context,
                                                        groupRecipient.getGroupId().map(GroupId::requireV2).orElse(null),
+                                                       null,
                                                        destinations,
                                                        isRecipientUpdate,
                                                        ContentHint.RESENDABLE,
                                                        new MessageId(messageId, true),
                                                        groupMessageBuilder.build(),
-                                                       message.isUrgent());
+                                                       message.isUrgent(),
+                                                       message.getStoryType().isStory() || message.getParentStoryId() != null);
       }
     } catch (ServerRejectedException e) {
       throw new UndeliverableMessageException(e);

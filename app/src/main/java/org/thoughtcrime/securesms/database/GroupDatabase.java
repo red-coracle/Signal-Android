@@ -14,6 +14,7 @@ import com.annimon.stream.Stream;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.signal.core.util.CursorUtil;
+import org.signal.core.util.SQLiteDatabaseExtensionsKt;
 import org.signal.core.util.SetUtil;
 import org.signal.core.util.SqlUtil;
 import org.signal.core.util.logging.Log;
@@ -25,6 +26,7 @@ import org.signal.storageservice.protos.groups.local.DecryptedGroup;
 import org.signal.storageservice.protos.groups.local.DecryptedGroupChange;
 import org.signal.storageservice.protos.groups.local.EnabledState;
 import org.thoughtcrime.securesms.contacts.paged.ContactSearchSortOrder;
+import org.thoughtcrime.securesms.contacts.paged.collections.ContactSearchIterator;
 import org.thoughtcrime.securesms.crypto.SenderKeyUtil;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.groups.BadGroupIdException;
@@ -52,6 +54,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -62,28 +65,29 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class GroupDatabase extends Database {
+public class GroupDatabase extends Database implements RecipientIdDatabaseReference {
 
   private static final String TAG = Log.tag(GroupDatabase.class);
 
-          static final String TABLE_NAME            = "groups";
-  private static final String ID                    = "_id";
-          static final String GROUP_ID              = "group_id";
-  public  static final String RECIPIENT_ID          = "recipient_id";
-  private static final String TITLE                 = "title";
-          static final String MEMBERS               = "members";
-  private static final String AVATAR_ID             = "avatar_id";
-  private static final String AVATAR_KEY            = "avatar_key";
-  private static final String AVATAR_CONTENT_TYPE   = "avatar_content_type";
-  private static final String AVATAR_RELAY          = "avatar_relay";
-  private static final String AVATAR_DIGEST         = "avatar_digest";
-  private static final String TIMESTAMP             = "timestamp";
-          static final String ACTIVE                = "active";
-          static final String MMS                   = "mms";
-  private static final String EXPECTED_V2_ID        = "expected_v2_id";
-  private static final String UNMIGRATED_V1_MEMBERS = "former_v1_members";
-  private static final String DISTRIBUTION_ID       = "distribution_id";
-  private static final String DISPLAY_AS_STORY      = "display_as_story";
+          static final String TABLE_NAME                  = "groups";
+  private static final String ID                          = "_id";
+          static final String GROUP_ID                    = "group_id";
+  public  static final String RECIPIENT_ID                = "recipient_id";
+  private static final String TITLE                       = "title";
+          static final String MEMBERS                     = "members";
+  private static final String AVATAR_ID                   = "avatar_id";
+  private static final String AVATAR_KEY                  = "avatar_key";
+  private static final String AVATAR_CONTENT_TYPE         = "avatar_content_type";
+  private static final String AVATAR_RELAY                = "avatar_relay";
+  private static final String AVATAR_DIGEST               = "avatar_digest";
+  private static final String TIMESTAMP                   = "timestamp";
+          static final String ACTIVE                      = "active";
+          static final String MMS                         = "mms";
+  private static final String EXPECTED_V2_ID              = "expected_v2_id";
+  private static final String UNMIGRATED_V1_MEMBERS       = "former_v1_members";
+  private static final String DISTRIBUTION_ID             = "distribution_id";
+  private static final String SHOW_AS_STORY_STATE         = "display_as_story";
+  private static final String LAST_FORCE_UPDATE_TIMESTAMP = "last_force_update_timestamp";
 
   /** Was temporarily used for PNP accept by pni but is no longer needed/updated */
   @Deprecated
@@ -98,27 +102,28 @@ public class GroupDatabase extends Database {
   /** Serialized {@link DecryptedGroup} protobuf */
   public  static final String V2_DECRYPTED_GROUP  = "decrypted_group";
 
-  public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + ID                    + " INTEGER PRIMARY KEY, " +
-                                                                                  GROUP_ID              + " TEXT, " +
-                                                                                  RECIPIENT_ID          + " INTEGER, " +
-                                                                                  TITLE                 + " TEXT, " +
-                                                                                  MEMBERS               + " TEXT, " +
-                                                                                  AVATAR_ID             + " INTEGER, " +
-                                                                                  AVATAR_KEY            + " BLOB, " +
-                                                                                  AVATAR_CONTENT_TYPE   + " TEXT, " +
-                                                                                  AVATAR_RELAY          + " TEXT, " +
-                                                                                  TIMESTAMP             + " INTEGER, " +
-                                                                                  ACTIVE                + " INTEGER DEFAULT 1, " +
-                                                                                  AVATAR_DIGEST         + " BLOB, " +
-                                                                                  MMS                   + " INTEGER DEFAULT 0, " +
-                                                                                  V2_MASTER_KEY         + " BLOB, " +
-                                                                                  V2_REVISION           + " BLOB, " +
-                                                                                  V2_DECRYPTED_GROUP    + " BLOB, " +
-                                                                                  EXPECTED_V2_ID        + " TEXT DEFAULT NULL, " +
-                                                                                  UNMIGRATED_V1_MEMBERS + " TEXT DEFAULT NULL, " +
-                                                                                  DISTRIBUTION_ID       + " TEXT DEFAULT NULL, " +
-                                                                                  DISPLAY_AS_STORY      + " INTEGER DEFAULT 0, " +
-                                                                                  AUTH_SERVICE_ID       + " TEXT DEFAULT NULL);";
+  public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + ID                          + " INTEGER PRIMARY KEY, " +
+                                                                                  GROUP_ID                    + " TEXT, " +
+                                                                                  RECIPIENT_ID                + " INTEGER, " +
+                                                                                  TITLE                       + " TEXT, " +
+                                                                                  MEMBERS                     + " TEXT, " +
+                                                                                  AVATAR_ID                   + " INTEGER, " +
+                                                                                  AVATAR_KEY                  + " BLOB, " +
+                                                                                  AVATAR_CONTENT_TYPE         + " TEXT, " +
+                                                                                  AVATAR_RELAY                + " TEXT, " +
+                                                                                  TIMESTAMP                   + " INTEGER, " +
+                                                                                  ACTIVE                      + " INTEGER DEFAULT 1, " +
+                                                                                  AVATAR_DIGEST               + " BLOB, " +
+                                                                                  MMS                         + " INTEGER DEFAULT 0, " +
+                                                                                  V2_MASTER_KEY               + " BLOB, " +
+                                                                                  V2_REVISION                 + " BLOB, " +
+                                                                                  V2_DECRYPTED_GROUP          + " BLOB, " +
+                                                                                  EXPECTED_V2_ID              + " TEXT DEFAULT NULL, " +
+                                                                                  UNMIGRATED_V1_MEMBERS       + " TEXT DEFAULT NULL, " +
+                                                                                  DISTRIBUTION_ID             + " TEXT DEFAULT NULL, " +
+                                                                                  SHOW_AS_STORY_STATE         + " INTEGER DEFAULT 0, " +
+                                                                                  AUTH_SERVICE_ID             + " TEXT DEFAULT NULL, " +
+                                                                                  LAST_FORCE_UPDATE_TIMESTAMP + " INTEGER DEFAULT 0);";
 
   public static final String[] CREATE_INDEXS = {
       "CREATE UNIQUE INDEX IF NOT EXISTS group_id_index ON " + TABLE_NAME + " (" + GROUP_ID + ");",
@@ -129,7 +134,7 @@ public class GroupDatabase extends Database {
 
   private static final String[] GROUP_PROJECTION = {
       GROUP_ID, RECIPIENT_ID, TITLE, MEMBERS, UNMIGRATED_V1_MEMBERS, AVATAR_ID, AVATAR_KEY, AVATAR_CONTENT_TYPE, AVATAR_RELAY, AVATAR_DIGEST,
-      TIMESTAMP, ACTIVE, MMS, V2_MASTER_KEY, V2_REVISION, V2_DECRYPTED_GROUP
+      TIMESTAMP, ACTIVE, MMS, V2_MASTER_KEY, V2_REVISION, V2_DECRYPTED_GROUP, LAST_FORCE_UPDATE_TIMESTAMP
   };
 
   static final List<String> TYPED_GROUP_PROJECTION = Stream.of(GROUP_PROJECTION).map(columnName -> TABLE_NAME + "." + columnName).toList();
@@ -952,6 +957,12 @@ public class GroupDatabase extends Database {
     database.update(TABLE_NAME, values, GROUP_ID + " = ?", new String[] {groupId.toString()});
   }
 
+  public void setLastForceUpdateTimestamp(@NonNull GroupId groupId, long timestamp) {
+    ContentValues values = new ContentValues();
+    values.put(LAST_FORCE_UPDATE_TIMESTAMP, timestamp);
+    getWritableDatabase().update(TABLE_NAME, values, GROUP_ID + " = ?", SqlUtil.buildArgs(groupId));
+  }
+
   @WorkerThread
   public boolean isCurrentMember(@NonNull GroupId.Push groupId, @NonNull RecipientId recipientId) {
     SQLiteDatabase database = databaseHelper.getSignalReadableDatabase();
@@ -1049,7 +1060,25 @@ public class GroupDatabase extends Database {
     return result;
   }
 
-  public static class Reader implements Closeable {
+  @Override
+  public void remapRecipient(@NonNull RecipientId fromId, @NonNull RecipientId toId) {
+    for (GroupRecord group : getGroupsContainingMember(fromId, false, true)) {
+      Set<RecipientId> newMembers = new LinkedHashSet<>(group.getMembers());
+      newMembers.remove(fromId);
+      newMembers.add(toId);
+
+      ContentValues groupValues = new ContentValues();
+      groupValues.put(GroupDatabase.MEMBERS, RecipientId.toSerializedList(newMembers));
+
+      getWritableDatabase().update(GroupDatabase.TABLE_NAME, groupValues, GroupDatabase.RECIPIENT_ID + " = ?", SqlUtil.buildArgs(group.recipientId));
+
+      if (group.isV2Group()) {
+        removeUnmigratedV1Members(group.id.requireV2(), Collections.singletonList(fromId));
+      }
+    }
+  }
+
+  public static class Reader implements Closeable, ContactSearchIterator<GroupRecord> {
 
     public final Cursor cursor;
 
@@ -1093,13 +1122,29 @@ public class GroupDatabase extends Database {
                              CursorUtil.requireBlob(cursor, V2_MASTER_KEY),
                              CursorUtil.requireInt(cursor, V2_REVISION),
                              CursorUtil.requireBlob(cursor, V2_DECRYPTED_GROUP),
-                             CursorUtil.getString(cursor, DISTRIBUTION_ID).map(DistributionId::from).orElse(null));
+                             CursorUtil.getString(cursor, DISTRIBUTION_ID).map(DistributionId::from).orElse(null),
+                             CursorUtil.requireLong(cursor, LAST_FORCE_UPDATE_TIMESTAMP));
     }
 
     @Override
     public void close() {
       if (this.cursor != null)
         this.cursor.close();
+    }
+
+    @Override
+    public void moveToPosition(int n) {
+      cursor.moveToPosition(n);
+    }
+
+    @Override
+    public boolean hasNext() {
+      return !cursor.isLast() && !cursor.isAfterLast();
+    }
+
+    @Override
+    public GroupRecord next() {
+      return getNext();
     }
   }
 
@@ -1119,6 +1164,7 @@ public class GroupDatabase extends Database {
               private final boolean           mms;
     @Nullable private final V2GroupProperties v2GroupProperties;
               private final DistributionId    distributionId;
+              private final long              lastForceUpdateTimestamp;
 
     public GroupRecord(@NonNull GroupId id,
                        @NonNull RecipientId recipientId,
@@ -1135,19 +1181,21 @@ public class GroupDatabase extends Database {
                        @Nullable byte[] groupMasterKeyBytes,
                        int groupRevision,
                        @Nullable byte[] decryptedGroupBytes,
-                       @Nullable DistributionId distributionId)
+                       @Nullable DistributionId distributionId,
+                       long lastForceUpdateTimestamp)
     {
-      this.id                = id;
-      this.recipientId       = recipientId;
-      this.title             = title;
-      this.avatarId          = avatarId;
-      this.avatarKey         = avatarKey;
-      this.avatarDigest      = avatarDigest;
-      this.avatarContentType = avatarContentType;
-      this.relay             = relay;
-      this.active            = active;
-      this.mms               = mms;
-      this.distributionId    = distributionId;
+      this.id                       = id;
+      this.recipientId              = recipientId;
+      this.title                    = title;
+      this.avatarId                 = avatarId;
+      this.avatarKey                = avatarKey;
+      this.avatarDigest             = avatarDigest;
+      this.avatarContentType        = avatarContentType;
+      this.relay                    = relay;
+      this.active                   = active;
+      this.mms                      = mms;
+      this.distributionId           = distributionId;
+      this.lastForceUpdateTimestamp = lastForceUpdateTimestamp;
 
       V2GroupProperties v2GroupProperties = null;
       if (groupMasterKeyBytes != null && decryptedGroupBytes != null) {
@@ -1254,6 +1302,10 @@ public class GroupDatabase extends Database {
 
     public @Nullable DistributionId getDistributionId() {
       return distributionId;
+    }
+
+    public long getLastForceUpdateTimestamp() {
+      return lastForceUpdateTimestamp;
     }
 
     public boolean isV1Group() {
@@ -1446,11 +1498,20 @@ public class GroupDatabase extends Database {
   }
 
   public @NonNull List<GroupId> getGroupsToDisplayAsStories() throws BadGroupIdException {
-    String[] selection = SqlUtil.buildArgs(GROUP_ID);
-    String   where     = DISPLAY_AS_STORY + " = ? AND " + ACTIVE + " = ?";
-    String[] whereArgs = SqlUtil.buildArgs(1, 1);
+    String query = "SELECT " + GROUP_ID + ", (" +
+                    "SELECT " + MmsDatabase.TABLE_NAME + "." + MmsDatabase.DATE_RECEIVED + " FROM " + MmsDatabase.TABLE_NAME +
+                      " WHERE " + MmsDatabase.TABLE_NAME + "." + MmsDatabase.RECIPIENT_ID + " = " + ThreadDatabase.TABLE_NAME + "." + ThreadDatabase.RECIPIENT_ID +
+                      " AND " + MmsDatabase.STORY_TYPE + " > 1 ORDER BY " + MmsDatabase.TABLE_NAME + "." + MmsDatabase.DATE_RECEIVED + " DESC LIMIT 1" +
+                    ") as active_timestamp" +
+                   " FROM " + TABLE_NAME +
+                   " INNER JOIN " + ThreadDatabase.TABLE_NAME + " ON " + ThreadDatabase.TABLE_NAME + "." + ThreadDatabase.RECIPIENT_ID + " = " + TABLE_NAME + "." + RECIPIENT_ID +
+                   " WHERE " + ACTIVE + " = 1 " +
+                   " AND (" +
+                    SHOW_AS_STORY_STATE + " = " + ShowAsStoryState.ALWAYS.code +
+                    " OR (" + SHOW_AS_STORY_STATE + " = " + ShowAsStoryState.IF_ACTIVE.code + " AND active_timestamp IS NOT NULL)" +
+                   ") ORDER BY active_timestamp DESC";
 
-    try (Cursor cursor = getReadableDatabase().query(TABLE_NAME, selection, where, whereArgs, null, null, null, null)) {
+    try (Cursor cursor = getReadableDatabase().query(query)) {
       if (cursor == null || cursor.getCount() == 0) {
         return Collections.emptyList();
       }
@@ -1464,15 +1525,41 @@ public class GroupDatabase extends Database {
     }
   }
 
-  public void markDisplayAsStory(@NonNull GroupId groupId) {
-    markDisplayAsStory(groupId, true);
+  public @NonNull ShowAsStoryState getShowAsStoryState(@NonNull GroupId groupId) {
+    String[] projection = SqlUtil.buildArgs(SHOW_AS_STORY_STATE);
+    String   where      = GROUP_ID + " = ?";
+    String[] whereArgs  = SqlUtil.buildArgs(groupId.toString());
+
+    try (Cursor cursor = getReadableDatabase().query(TABLE_NAME, projection, where, whereArgs, null, null, null)) {
+      if (!cursor.moveToFirst()) {
+        throw new AssertionError("Group does not exist.");
+      }
+
+      int serializedState = CursorUtil.requireInt(cursor, SHOW_AS_STORY_STATE);
+      return ShowAsStoryState.deserialize(serializedState);
+    }
   }
 
-  public void markDisplayAsStory(@NonNull GroupId groupId, boolean displayAsStory) {
+  public void setShowAsStoryState(@NonNull GroupId groupId, @NonNull ShowAsStoryState showAsStoryState) {
     ContentValues contentValues = new ContentValues(1);
-    contentValues.put(DISPLAY_AS_STORY, displayAsStory);
+    contentValues.put(SHOW_AS_STORY_STATE, showAsStoryState.code);
 
     getWritableDatabase().update(TABLE_NAME, contentValues, GROUP_ID + " = ?", SqlUtil.buildArgs(groupId.toString()));
+  }
+
+  public void setShowAsStoryState(@NonNull Collection<RecipientId> recipientIds, @NonNull ShowAsStoryState showAsStoryState) {
+    ContentValues       contentValues = new ContentValues(1);
+    List<SqlUtil.Query> queries       = SqlUtil.buildCollectionQuery(RECIPIENT_ID, recipientIds);
+
+    contentValues.put(SHOW_AS_STORY_STATE, showAsStoryState.code);
+
+    SQLiteDatabaseExtensionsKt.withinTransaction(getWritableDatabase(), db -> {
+        for (SqlUtil.Query query : queries) {
+          db.update(TABLE_NAME, contentValues, query.getWhere(), query.getWhereArgs());
+        }
+
+        return null;
+    });
   }
 
   public enum MemberSet {
@@ -1487,6 +1574,45 @@ public class GroupDatabase extends Database {
     MemberSet(boolean includeSelf, boolean includePending) {
       this.includeSelf    = includeSelf;
       this.includePending = includePending;
+    }
+  }
+
+  /**
+   * State object describing whether or not to display a story in a list.
+   */
+  public enum ShowAsStoryState {
+    /**
+     * The default value. Display the group as a story if the group has stories in it currently.
+     */
+    IF_ACTIVE(0),
+    /**
+     * Always display the group as a story unless explicitly removed. This state is entered if the
+     * user sends a story to a group or otherwise explicitly selects it to appear.
+     */
+    ALWAYS(1),
+    /**
+     * Never display the story as a group. This state is entered if the user removes the group from
+     * their list, and is only navigated away from if the user explicitly adds the group again.
+     */
+    NEVER(2);
+
+    private final int code;
+
+    ShowAsStoryState(int code) {
+      this.code = code;
+    }
+
+    private static @NonNull ShowAsStoryState deserialize(int code) {
+      switch (code) {
+        case 0:
+          return IF_ACTIVE;
+        case 1:
+          return ALWAYS;
+        case 2:
+          return NEVER;
+        default:
+          throw new IllegalArgumentException("Unknown code: " + code);
+      }
     }
   }
 

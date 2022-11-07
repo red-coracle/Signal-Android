@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.database;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -12,10 +13,11 @@ import org.thoughtcrime.securesms.util.MediaUtil;
 
 import java.util.List;
 
+@SuppressLint({"RecipientIdDatabaseReferenceUsage", "ThreadIdDatabaseReferenceUsage"}) // Not a real table, just a view
 public class MediaDatabase extends Database {
 
-    public  static final int    ALL_THREADS         = -1;
-    private static final String THREAD_RECIPIENT_ID = "THREAD_RECIPIENT_ID";
+  public  static final int    ALL_THREADS         = -1;
+  private static final String THREAD_RECIPIENT_ID = "THREAD_RECIPIENT_ID";
 
     private static final String BASE_MEDIA_QUERY = "SELECT " + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.ROW_ID + " AS " + AttachmentDatabase.ROW_ID + ", "
                                                    + AttachmentDatabase.TABLE_NAME + "." + AttachmentDatabase.CONTENT_TYPE + ", "
@@ -61,6 +63,7 @@ public class MediaDatabase extends Database {
                                                    + " FROM " + MmsDatabase.TABLE_NAME
                                                    + " WHERE " + MmsDatabase.THREAD_ID + " __EQUALITY__ ?) AND (%s) AND "
                                                    + MmsDatabase.VIEW_ONCE + " = 0 AND "
+                                                   + MmsDatabase.STORY_TYPE + " = 0 AND "
                                                    + AttachmentDatabase.DATA + " IS NOT NULL AND "
                                                    + "(" + AttachmentDatabase.QUOTE + " = 0 OR (" + AttachmentDatabase.QUOTE + " = 1 AND " + AttachmentDatabase.DATA_HASH + " IS NULL)) AND "
                                                    + AttachmentDatabase.STICKER_PACK_ID + " IS NULL AND "
@@ -190,7 +193,7 @@ public class MediaDatabase extends Database {
       this.outgoing          = outgoing;
     }
 
-    public static MediaRecord from(@NonNull Context context, @NonNull Cursor cursor) {
+    public static MediaRecord from(@NonNull Cursor cursor) {
       AttachmentDatabase       attachmentDatabase = SignalDatabase.attachments();
       List<DatabaseAttachment> attachments        = attachmentDatabase.getAttachments(cursor);
       RecipientId              recipientId        = RecipientId.from(cursor.getLong(cursor.getColumnIndexOrThrow(MmsDatabase.RECIPIENT_ID)));

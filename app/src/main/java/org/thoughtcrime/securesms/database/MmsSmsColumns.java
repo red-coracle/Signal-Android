@@ -81,6 +81,8 @@ public interface MmsSmsColumns {
     protected static final long BAD_DECRYPT_TYPE                   = 13;
     protected static final long CHANGE_NUMBER_TYPE                 = 14;
     protected static final long BOOST_REQUEST_TYPE                 = 15;
+    protected static final long THREAD_MERGE_TYPE                  = 16;
+    protected static final long SMS_EXPORT_TYPE                    = 17;
 
     protected static final long BASE_INBOX_TYPE                    = 20;
     protected static final long BASE_OUTBOX_TYPE                   = 21;
@@ -222,6 +224,10 @@ public interface MmsSmsColumns {
       return (type & BASE_TYPE_MASK) == BAD_DECRYPT_TYPE;
     }
 
+    public static boolean isThreadMergeType(long type) {
+      return (type & BASE_TYPE_MASK) == THREAD_MERGE_TYPE;
+    }
+
     public static boolean isSecureType(long type) {
       return (type & SECURE_MESSAGE_BIT) != 0;
     }
@@ -359,6 +365,10 @@ public interface MmsSmsColumns {
 
     public static boolean isBoostRequest(long type) {
       return type == BOOST_REQUEST_TYPE;
+    }
+
+    public static boolean isSmsExport(long type) {
+      return type == SMS_EXPORT_TYPE;
     }
 
     public static boolean isGroupV2LeaveOnly(long type) {

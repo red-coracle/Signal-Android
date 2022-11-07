@@ -26,10 +26,12 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Tracks;
 import com.google.android.exoplayer2.source.ClippingMediaSource;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -56,7 +58,7 @@ public class VideoPlayer extends FrameLayout {
   private final PlayerControlView         exoControls;
   private final DefaultMediaSourceFactory mediaSourceFactory;
 
-  private SimpleExoPlayer                     exoPlayer;
+  private ExoPlayer                           exoPlayer;
   private Window                              window;
   private PlayerStateCallback                 playerStateCallback;
   private PlayerPositionDiscontinuityCallback playerPositionDiscontinuityCallback;
@@ -65,6 +67,7 @@ public class VideoPlayer extends FrameLayout {
   private long                                clippedStartUs;
   private ExoPlayerListener                   exoPlayerListener;
   private Player.Listener                     playerListener;
+  private boolean                             muted;
 
   public VideoPlayer(Context context) {
     this(context, null);
@@ -124,45 +127,48 @@ public class VideoPlayer extends FrameLayout {
   private MediaItem mediaItem;
 
   public void setVideoSource(@NonNull VideoSlide videoSource, boolean autoplay, String poolTag) {
+    setVideoSource(videoSource, autoplay, poolTag, 0, 0);
+  }
+
+  public void setVideoSource(@NonNull VideoSlide videoSource, boolean autoplay, String poolTag, long clipStartMs, long clipEndMs) {
     if (exoPlayer == null) {
       exoPlayer = ApplicationDependencies.getExoPlayerPool().require(poolTag);
       exoPlayer.addListener(exoPlayerListener);
       exoPlayer.addListener(playerListener);
       exoView.setPlayer(exoPlayer);
       exoControls.setPlayer(exoPlayer);
+      if (muted) {
+        mute();
+      }
     }
 
-    mediaItem = MediaItem.fromUri(Objects.requireNonNull(videoSource.getUri()));
+    mediaItem = MediaItem.fromUri(Objects.requireNonNull(videoSource.getUri())).buildUpon()
+                         .setClippingConfiguration(getClippingConfiguration(clipStartMs, clipEndMs))
+                         .build();
+
     exoPlayer.setMediaItem(mediaItem);
     exoPlayer.prepare();
     exoPlayer.setPlayWhenReady(autoplay);
   }
 
   public void mute() {
-    if (exoPlayer != null && exoPlayer.getAudioComponent() != null) {
-      exoPlayer.getAudioComponent().setVolume(0f);
+    this.muted = true;
+    if (exoPlayer != null) {
+      exoPlayer.setVolume(0f);
     }
   }
 
   public void unmute() {
-    if (exoPlayer != null && exoPlayer.getAudioComponent() != null) {
-      exoPlayer.getAudioComponent().setVolume(1f);
+    this.muted = false;
+    if (exoPlayer != null) {
+      exoPlayer.setVolume(1f);
     }
   }
 
   public boolean hasAudioTrack() {
     if (exoPlayer != null) {
-      TrackGroupArray trackGroupArray = exoPlayer.getCurrentTrackGroups();
-      if (trackGroupArray != null) {
-        for (int i = 0; i < trackGroupArray.length; i++) {
-          for (int j = 0; j < trackGroupArray.get(i).length; j++) {
-            String sampleMimeType = trackGroupArray.get(i).getFormat(j).sampleMimeType;
-            if (MediaUtil.isAudioType(sampleMimeType)) {
-              return true;
-            }
-          }
-        }
-      }
+      Tracks tracks = exoPlayer.getCurrentTracks();
+      return tracks.containsType(C.TRACK_TYPE_AUDIO);
     }
 
     return false;
@@ -309,6 +315,14 @@ public class VideoPlayer extends FrameLayout {
         exoPlayer.seekTo(0);
       }
     }
+  }
+
+  private @NonNull MediaItem.ClippingConfiguration getClippingConfiguration(long startMs, long endMs) {
+    return startMs != endMs ? new MediaItem.ClippingConfiguration.Builder()
+                                                                 .setStartPositionMs(startMs)
+                                                                 .setEndPositionMs(endMs)
+                                                                 .build()
+                            : MediaItem.ClippingConfiguration.UNSET;
   }
 
   private class ExoPlayerListener implements Player.Listener {

@@ -33,6 +33,10 @@ class TestSmsExportService : SmsExportService() {
     )
   }
 
+  override fun getExportCompleteNotification(): ExportNotification? {
+    return null
+  }
+
   override fun getUnexportedMessageCount(): Int {
     return 50
   }
@@ -124,7 +128,7 @@ class TestSmsExportService : SmsExportService() {
       return message
     }
 
-    private fun getMmsMessage(it: Int): ExportableMessage.Mms {
+    private fun getMmsMessage(it: Int): ExportableMessage.Mms<*> {
       val me = "+15065550101"
       val addresses = setOf(me, "+15065550102", "+15065550121")
       val address = addresses.random()
@@ -144,7 +148,7 @@ class TestSmsExportService : SmsExportService() {
       )
     }
 
-    private fun getSmsMessage(it: Int): ExportableMessage.Sms {
+    private fun getSmsMessage(it: Int): ExportableMessage.Sms<*> {
       return ExportableMessage.Sms(
         id = it.toString(),
         exportState = SmsExportState(),

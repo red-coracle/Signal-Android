@@ -65,6 +65,7 @@ class UsernameEditViewModel extends ViewModel {
   protected void onCleared() {
     super.onCleared();
     disposables.clear();
+    uiState.dispose();
   }
 
   void onNicknameUpdated(@NonNull String nickname) {
@@ -261,7 +262,7 @@ class UsernameEditViewModel extends ViewModel {
     NETWORK_FAILURE, SUBMIT_SUCCESS, DELETE_SUCCESS, SUBMIT_FAIL_INVALID, SUBMIT_FAIL_TAKEN, SKIPPED
   }
 
-  static class Factory extends ViewModelProvider.NewInstanceFactory {
+  static class Factory implements ViewModelProvider.Factory {
 
     private final boolean isInRegistration;
 

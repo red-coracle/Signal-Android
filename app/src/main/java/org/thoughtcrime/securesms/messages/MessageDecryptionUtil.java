@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.signal.core.util.PendingIntentFlags;
 import org.signal.core.util.logging.Log;
 import org.signal.libsignal.metadata.InvalidMetadataMessageException;
 import org.signal.libsignal.metadata.InvalidMetadataVersionException;
@@ -126,7 +127,7 @@ public final class MessageDecryptionUtil {
         Log.w(TAG, String.valueOf(envelope.getTimestamp()), e, true);
         Recipient sender = Recipient.external(context, e.getSender());
 
-        if (sender.supportsMessageRetries() && Recipient.self().supportsMessageRetries() && FeatureFlags.retryReceipts()) {
+        if (FeatureFlags.retryReceipts()) {
           jobs.add(handleRetry(context, sender, envelope, e));
           postInternalErrorNotification(context);
         } else {
@@ -239,7 +240,7 @@ public final class MessageDecryptionUtil {
                                                                          .setSmallIcon(R.drawable.ic_notification)
                                                                          .setContentTitle(context.getString(R.string.MessageDecryptionUtil_failed_to_decrypt_message))
                                                                          .setContentText(context.getString(R.string.MessageDecryptionUtil_tap_to_send_a_debug_log))
-                                                                         .setContentIntent(PendingIntent.getActivity(context, 0, new Intent(context, SubmitDebugLogActivity.class), 0))
+                                                                         .setContentIntent(PendingIntent.getActivity(context, 0, new Intent(context, SubmitDebugLogActivity.class), PendingIntentFlags.mutable()))
                                                                          .build());
   }
 

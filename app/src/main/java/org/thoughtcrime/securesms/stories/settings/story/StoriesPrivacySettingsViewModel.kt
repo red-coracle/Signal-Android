@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
-import io.reactivex.rxjava3.subjects.PublishSubject
 import org.signal.paging.PagedData
 import org.signal.paging.PagingConfig
 import org.signal.paging.ProxyPagingController
@@ -17,7 +15,6 @@ import org.thoughtcrime.securesms.contacts.paged.ContactSearchPagedDataSource
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.stories.Stories
 import org.thoughtcrime.securesms.util.rx.RxStore
-import java.util.concurrent.TimeUnit
 
 class StoriesPrivacySettingsViewModel : ViewModel() {
 
@@ -36,20 +33,16 @@ class StoriesPrivacySettingsViewModel : ViewModel() {
     .build()
 
   private val disposables = CompositeDisposable()
-  private val headerActionRequestSubject = PublishSubject.create<Unit>()
 
   val state: Flowable<StoriesPrivacySettingsState> = store.stateFlowable.observeOn(AndroidSchedulers.mainThread())
+  val userHasActiveStories: Boolean get() = store.state.userHasStories
   val pagingController = ProxyPagingController<ContactSearchKey>()
-  val headerActionRequests: Observable<Unit> = headerActionRequestSubject.debounce(100, TimeUnit.MILLISECONDS)
 
   init {
     val configuration = ContactSearchConfiguration.build {
       addSection(
         ContactSearchConfiguration.Section.Stories(
-          includeHeader = true,
-          headerAction = Stories.getHeaderAction {
-            headerActionRequestSubject.onNext(Unit)
-          }
+          includeHeader = false,
         )
       )
     }
@@ -59,13 +52,16 @@ class StoriesPrivacySettingsViewModel : ViewModel() {
 
     pagingController.set(observablePagedData.controller)
 
-    store.update(observablePagedData.data.toFlowable(BackpressureStrategy.LATEST)) { data, state ->
+    updateUserHasStories()
+
+    disposables += store.update(observablePagedData.data.toFlowable(BackpressureStrategy.LATEST)) { data, state ->
       state.copy(storyContactItems = data)
     }
   }
 
   override fun onCleared() {
     disposables.clear()
+    store.dispose()
   }
 
   fun setStoriesEnabled(isEnabled: Boolean) {
@@ -77,12 +73,19 @@ class StoriesPrivacySettingsViewModel : ViewModel() {
           areStoriesEnabled = Stories.isFeatureEnabled()
         )
       }
+      updateUserHasStories()
     }
   }
 
   fun displayGroupsAsStories(recipientIds: List<RecipientId>) {
     disposables += repository.markGroupsAsStories(recipientIds).subscribe {
       pagingController.onDataInvalidated()
+    }
+  }
+
+  private fun updateUserHasStories() {
+    disposables += repository.userHasOutgoingStories().subscribe { userHasActiveStories ->
+      store.update { it.copy(userHasStories = userHasActiveStories) }
     }
   }
 }

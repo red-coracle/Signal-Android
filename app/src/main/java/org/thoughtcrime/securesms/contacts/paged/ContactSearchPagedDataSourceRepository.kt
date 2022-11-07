@@ -5,8 +5,10 @@ import android.database.Cursor
 import org.signal.core.util.CursorUtil
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.contacts.ContactRepository
+import org.thoughtcrime.securesms.contacts.paged.collections.ContactSearchIterator
 import org.thoughtcrime.securesms.database.DistributionListDatabase
 import org.thoughtcrime.securesms.database.GroupDatabase
+import org.thoughtcrime.securesms.database.GroupDatabase.GroupRecord
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.ThreadDatabase
 import org.thoughtcrime.securesms.database.model.DistributionListPrivacyMode
@@ -34,6 +36,10 @@ open class ContactSearchPagedDataSourceRepository(
     return contactRepository.querySignalContacts(query ?: "", includeSelf)
   }
 
+  open fun querySignalContactLetterHeaders(query: String?, includeSelf: Boolean): Map<RecipientId, String> {
+    return SignalDatabase.recipients.querySignalContactLetterHeaders(query ?: "", includeSelf)
+  }
+
   open fun queryNonSignalContacts(query: String?): Cursor? {
     return contactRepository.queryNonSignalContacts(query ?: "")
   }
@@ -42,10 +48,10 @@ open class ContactSearchPagedDataSourceRepository(
     return contactRepository.queryNonGroupContacts(query ?: "", includeSelf)
   }
 
-  open fun getGroupContacts(
+  open fun getGroupSearchIterator(
     section: ContactSearchConfiguration.Section.Groups,
     query: String?
-  ): Cursor? {
+  ): ContactSearchIterator<GroupRecord> {
     return SignalDatabase.groups.queryGroups(
       GroupDatabase.GroupQuery.Builder()
         .withSearchQuery(query)
@@ -54,7 +60,7 @@ open class ContactSearchPagedDataSourceRepository(
         .withV1Groups(section.includeV1)
         .withSortOrder(section.sortOrder)
         .build()
-    ).cursor
+    )
   }
 
   open fun getRecents(section: ContactSearchConfiguration.Section.Recents): Cursor? {
@@ -89,8 +95,8 @@ open class ContactSearchPagedDataSourceRepository(
     return Recipient.resolved(RecipientId.from(CursorUtil.requireLong(cursor, ContactRepository.ID_COLUMN)))
   }
 
-  open fun getRecipientFromGroupCursor(cursor: Cursor): Recipient {
-    return Recipient.resolved(RecipientId.from(CursorUtil.requireLong(cursor, GroupDatabase.RECIPIENT_ID)))
+  open fun getRecipientFromGroupRecord(groupRecord: GroupRecord): Recipient {
+    return Recipient.resolved(groupRecord.recipientId)
   }
 
   open fun getDistributionListMembershipCount(recipient: Recipient): Int {
@@ -105,7 +111,7 @@ open class ContactSearchPagedDataSourceRepository(
   }
 
   open fun recipientNameContainsQuery(recipient: Recipient, query: String?): Boolean {
-    return query.isNullOrBlank() || recipient.getDisplayName(context).contains(query)
+    return query.isNullOrBlank() || recipient.getDisplayName(context).contains(query, ignoreCase = true)
   }
 
   open fun myStoryContainsQuery(query: String): Boolean {
@@ -114,6 +120,6 @@ open class ContactSearchPagedDataSourceRepository(
     }
 
     val myStory = context.getString(R.string.Recipient_my_story)
-    return myStory.contains(query)
+    return myStory.contains(query, ignoreCase = true)
   }
 }

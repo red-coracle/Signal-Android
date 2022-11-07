@@ -78,15 +78,11 @@ public final class FeatureFlags {
   private static final String MEDIA_QUALITY_LEVELS              = "android.mediaQuality.levels";
   private static final String RETRY_RECEIPT_LIFESPAN            = "android.retryReceiptLifespan";
   private static final String RETRY_RESPOND_MAX_AGE             = "android.retryRespondMaxAge";
-  private static final String SENDER_KEY                        = "android.senderKey.5";
   private static final String SENDER_KEY_MAX_AGE                = "android.senderKeyMaxAge";
   private static final String RETRY_RECEIPTS                    = "android.retryReceipts";
-  private static final String SUGGEST_SMS_BLACKLIST             = "android.suggestSmsBlacklist";
   private static final String MAX_GROUP_CALL_RING_SIZE          = "global.calling.maxGroupCallRingSize";
   private static final String GROUP_CALL_RINGING                = "android.calling.groupCallRinging";
-  private static final String DONOR_BADGES                      = "android.donorBadges.6";
-  private static final String DONOR_BADGES_DISPLAY              = "android.donorBadges.display.4";
-  private static final String STORIES                           = "android.stories.2";
+  private static final String STORIES                           = "android.stories.4";
   private static final String STORIES_TEXT_FUNCTIONS            = "android.stories.text.functions";
   private static final String HARDWARE_AEC_BLOCKLIST_MODELS     = "android.calling.hardwareAecBlockList";
   private static final String SOFTWARE_AEC_BLOCKLIST_MODELS     = "android.calling.softwareAecBlockList";
@@ -101,10 +97,14 @@ public final class FeatureFlags {
   private static final String TELECOM_MANUFACTURER_ALLOWLIST    = "android.calling.telecomAllowList";
   private static final String TELECOM_MODEL_BLOCKLIST           = "android.calling.telecomModelBlockList";
   private static final String CAMERAX_MODEL_BLOCKLIST           = "android.cameraXModelBlockList";
+  private static final String CAMERAX_MIXED_MODEL_BLOCKLIST     = "android.cameraXMixedModelBlockList";
   private static final String RECIPIENT_MERGE_V2                = "android.recipientMergeV2";
   private static final String CDS_V2_LOAD_TEST                  = "android.cdsV2LoadTest";
-  private static final String SMS_EXPORTER                      = "android.sms.exporter";
-  private static final String CDS_V2_COMPAT                     = "android.cdsV2Compat.3";
+  private static final String SMS_EXPORTER                      = "android.sms.exporter.2";
+  private static final String CDS_V2_COMPAT                     = "android.cdsV2Compat.4";
+  public  static final String STORIES_LOCALE                    = "android.stories.locale";
+  private static final String HIDE_CONTACTS                     = "android.hide.contacts";
+  public  static final String MEDIA_PREVIEW_V2                  = "android.mediaPreviewV2";
 
   /**
    * We will only store remote values for flags in this set. If you want a flag to be controllable
@@ -136,14 +136,10 @@ public final class FeatureFlags {
       MEDIA_QUALITY_LEVELS,
       RETRY_RECEIPT_LIFESPAN,
       RETRY_RESPOND_MAX_AGE,
-      SENDER_KEY,
       RETRY_RECEIPTS,
-      SUGGEST_SMS_BLACKLIST,
       MAX_GROUP_CALL_RING_SIZE,
       GROUP_CALL_RINGING,
       SENDER_KEY_MAX_AGE,
-      DONOR_BADGES,
-      DONOR_BADGES_DISPLAY,
       STORIES,
       STORIES_TEXT_FUNCTIONS,
       HARDWARE_AEC_BLOCKLIST_MODELS,
@@ -158,10 +154,14 @@ public final class FeatureFlags {
       TELECOM_MANUFACTURER_ALLOWLIST,
       TELECOM_MODEL_BLOCKLIST,
       CAMERAX_MODEL_BLOCKLIST,
+      CAMERAX_MIXED_MODEL_BLOCKLIST,
       RECIPIENT_MERGE_V2,
       CDS_V2_LOAD_TEST,
       SMS_EXPORTER,
-      CDS_V2_COMPAT
+      CDS_V2_COMPAT,
+      STORIES_LOCALE,
+      HIDE_CONTACTS,
+      MEDIA_PREVIEW_V2
   );
 
   @VisibleForTesting
@@ -207,13 +207,10 @@ public final class FeatureFlags {
       MEDIA_QUALITY_LEVELS,
       RETRY_RECEIPT_LIFESPAN,
       RETRY_RESPOND_MAX_AGE,
-      SUGGEST_SMS_BLACKLIST,
       RETRY_RECEIPTS,
-      SENDER_KEY,
       MAX_GROUP_CALL_RING_SIZE,
       GROUP_CALL_RINGING,
       SENDER_KEY_MAX_AGE,
-      DONOR_BADGES_DISPLAY,
       DONATE_MEGAPHONE,
       HARDWARE_AEC_BLOCKLIST_MODELS,
       SOFTWARE_AEC_BLOCKLIST_MODELS,
@@ -227,7 +224,8 @@ public final class FeatureFlags {
       RECIPIENT_MERGE_V2,
       CDS_V2_LOAD_TEST,
       CDS_V2_COMPAT,
-      STORIES
+      STORIES,
+      MEDIA_PREVIEW_V2
   );
 
   /**
@@ -251,8 +249,10 @@ public final class FeatureFlags {
    */
   private static final Map<String, OnFlagChange> FLAG_CHANGE_LISTENERS = new HashMap<String, OnFlagChange>() {{
     put(MESSAGE_PROCESSOR_ALARM_INTERVAL, change -> MessageProcessReceiver.startOrUpdateAlarm(ApplicationDependencies.getApplication()));
-    put(SENDER_KEY, change -> ApplicationDependencies.getJobManager().startChain(new RefreshAttributesJob()).then(new RefreshOwnProfileJob()).enqueue());
-    put(STORIES, change -> ApplicationDependencies.getJobManager().startChain(new RefreshAttributesJob()).then(new RefreshOwnProfileJob()).enqueue());
+    put(STORIES, change -> {
+      ApplicationDependencies.getJobManager().startChain(new RefreshAttributesJob()).then(new RefreshOwnProfileJob()).enqueue();
+      ApplicationDependencies.resetAllNetworkConnections();
+    });
     put(GIFT_BADGE_RECEIVE_SUPPORT, change -> ApplicationDependencies.getJobManager().startChain(new RefreshAttributesJob()).then(new RefreshOwnProfileJob()).enqueue());
   }};
 
@@ -433,11 +433,6 @@ public final class FeatureFlags {
     return Math.min(getLong(SENDER_KEY_MAX_AGE, TimeUnit.DAYS.toMillis(14)), TimeUnit.DAYS.toMillis(90));
   }
 
-  /** A comma-delimited list of country codes that should not be told about SMS during onboarding. */
-  public static @NonNull String suggestSmsBlacklist() {
-    return getString(SUGGEST_SMS_BLACKLIST, "");
-  }
-
   /** Max group size that can be use group call ringing. */
   public static long maxGroupCallRingSize() {
     return getLong(MAX_GROUP_CALL_RING_SIZE, 16);
@@ -451,17 +446,6 @@ public final class FeatureFlags {
   /** A comma-separated list of country codes where payments should be disabled. */
   public static String paymentsCountryBlocklist() {
     return getString(PAYMENTS_COUNTRY_BLOCKLIST, "98,963,53,850,7");
-  }
-
-  /**
-   * Whether or not to show donor badges in the UI.
-   */
-  public static boolean donorBadges() {
-    if (Environment.IS_STAGING) {
-      return true;
-    } else {
-      return getBoolean(DONOR_BADGES, true) || SignalStore.donationsValues().getSubscriber() != null;
-    }
   }
 
   /**
@@ -483,10 +467,10 @@ public final class FeatureFlags {
   }
 
   /**
-   * Whether or not donor badges should be displayed throughout the app.
+   * List of locales in which stories have been enabled. Overridden by the stories flag.
    */
-  public static boolean displayDonorBadges() {
-    return getBoolean(DONOR_BADGES_DISPLAY, true);
+  public static @NonNull String storiesLocale() {
+    return getString(STORIES_LOCALE, "");
   }
 
   /** A comma-separated list of models that should *not* use hardware AEC for calling. */
@@ -512,6 +496,11 @@ public final class FeatureFlags {
   /** A comma-separated list of manufacturers that should *not* use CameraX. */
   public static @NonNull String cameraXModelBlocklist() {
     return getString(CAMERAX_MODEL_BLOCKLIST, "");
+  }
+
+  /** A comma-separated list of manufacturers that should *not* use CameraX mixed mode. */
+  public static @NonNull String cameraXMixedModelBlocklist() {
+    return getString(CAMERAX_MIXED_MODEL_BLOCKLIST, "");
   }
 
   /** Whether or not hardware AEC should be used for calling on devices older than API 29. */
@@ -578,6 +567,23 @@ public final class FeatureFlags {
    */
   public static boolean cdsV2Compat() {
     return getBoolean(CDS_V2_COMPAT, false);
+  }
+
+  /**
+   * Whether or not users can hide contacts.
+   *
+   * WARNING: This feature is intended to be enabled in tandem with other clients, as it modifies contact records.
+   * Here be dragons.
+   */
+  public static boolean hideContacts() {
+    return getBoolean(HIDE_CONTACTS, false);
+  }
+
+  /**
+   * Whether or not we should use the new media preview fragment implementation.
+   */
+  public static boolean mediaPreviewV2() {
+    return getBoolean(MEDIA_PREVIEW_V2, false);
   }
 
   /** Only for rendering debug info. */

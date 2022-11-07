@@ -149,6 +149,10 @@ public final class MultiShareArgs implements Parcelable {
   }
 
   public boolean isValidForStories() {
+    if (isViewOnce()) {
+      return false;
+    }
+
     return isTextStory ||
            (!media.isEmpty() && media.stream().allMatch(m -> MediaUtil.isStorySupportedType(m.getMimeType()))) ||
            MediaUtil.isStorySupportedType(dataType) ||
@@ -168,7 +172,7 @@ public final class MultiShareArgs implements Parcelable {
       BreakIteratorCompat breakIteratorCompat = BreakIteratorCompat.getInstance();
       breakIteratorCompat.setText(getDraftText());
 
-      if (breakIteratorCompat.countBreaks() > Stories.MAX_BODY_SIZE) {
+      if (breakIteratorCompat.countBreaks() > Stories.MAX_TEXT_STORY_SIZE) {
         return false;
       }
     }

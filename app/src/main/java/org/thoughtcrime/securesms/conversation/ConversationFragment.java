@@ -1380,7 +1380,7 @@ public class ConversationFragment extends LoggingFragment implements Multiselect
     }
 
     int position = getListLayoutManager().findFirstVisibleItemPosition();
-    if (position == getListAdapter().getItemCount() - 1) {
+    if (position == -1 || position == getListAdapter().getItemCount() - 1) {
       return;
     }
 
@@ -1486,6 +1486,7 @@ public class ConversationFragment extends LoggingFragment implements Multiselect
     void    onVoiceNotePlaybackSpeedChanged(@NonNull Uri uri, float speed);
     void    onRegisterVoiceNoteCallbacks(@NonNull Observer<VoiceNotePlaybackState> onPlaybackStartObserver);
     void    onUnregisterVoiceNoteCallbacks(@NonNull Observer<VoiceNotePlaybackState> onPlaybackStartObserver);
+    void    onInviteToSignal();
   }
 
   private class ConversationScrollListener extends OnScrollListener {
@@ -2078,6 +2079,11 @@ public class ConversationFragment extends LoggingFragment implements Multiselect
       if (getParentFragment() == null) return;
 
       RecipientBottomSheetDialogFragment.create(target, recipient.get().getGroupId().orElse(null)).show(getParentFragmentManager(), "BOTTOM");
+    }
+
+    @Override
+    public void onInviteToSignalClicked() {
+      listener.onInviteToSignal();
     }
 
     @Override

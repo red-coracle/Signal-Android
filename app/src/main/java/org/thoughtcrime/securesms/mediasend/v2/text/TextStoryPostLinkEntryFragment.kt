@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.mediasend.v2.text
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import android.widget.EditText
 import androidx.constraintlayout.widget.Group
@@ -22,7 +23,7 @@ class TextStoryPostLinkEntryFragment : KeyboardEntryDialogFragment(
   private lateinit var input: EditText
 
   private val linkPreviewViewModel: LinkPreviewViewModel by viewModels(
-    factoryProducer = { LinkPreviewViewModel.Factory(LinkPreviewRepository()) }
+    factoryProducer = { LinkPreviewViewModel.Factory(LinkPreviewRepository(), true) }
   )
 
   private val viewModel: TextStoryPostCreationViewModel by viewModels(
@@ -51,6 +52,7 @@ class TextStoryPostLinkEntryFragment : KeyboardEntryDialogFragment(
       }
     )
 
+    confirmButton.isEnabled = false
     confirmButton.setOnClickListener {
       val linkPreviewState = linkPreviewViewModel.linkPreviewState.value
       if (linkPreviewState != null) {
@@ -64,7 +66,7 @@ class TextStoryPostLinkEntryFragment : KeyboardEntryDialogFragment(
     linkPreviewViewModel.linkPreviewState.observe(viewLifecycleOwner) { state ->
       linkPreview.bind(state, useLargeThumbnail = false)
       shareALinkGroup.visible = !state.isLoading && !state.linkPreview.isPresent && (state.error == null && state.activeUrlForError == null)
-      confirmButton.isEnabled = state.linkPreview.isPresent || state.activeUrlForError != null
+      confirmButton.isEnabled = state.linkPreview.isPresent || !TextUtils.isEmpty(state.activeUrlForError)
     }
   }
 

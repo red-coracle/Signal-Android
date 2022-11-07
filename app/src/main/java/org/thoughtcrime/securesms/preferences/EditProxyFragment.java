@@ -1,6 +1,5 @@
 package org.thoughtcrime.securesms.preferences;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +14,8 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ShareCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.contactshare.SimpleTextWatcher;
@@ -72,7 +73,7 @@ public class EditProxyFragment extends Fragment {
 
     saveButton.setOnClickListener(v -> onSaveClicked());
     shareButton.setOnClickListener(v -> onShareClicked());
-    proxySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> viewModel.onToggleProxy(isChecked));
+    proxySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> viewModel.onToggleProxy(isChecked, proxyText.getText().toString()));
 
     LearnMoreTextView description = view.findViewById(R.id.edit_proxy_switch_title_description);
     description.setLearnMoreVisible(true);
@@ -102,6 +103,8 @@ public class EditProxyFragment extends Fragment {
       case ALL_ENABLED:
         proxyText.setEnabled(true);
         proxyText.setAlpha(1);
+        saveButton.setEnabled(true);
+        saveButton.setAlpha(1);
         proxyTitle.setAlpha(1);
         onProxyTextChanged(proxyText.getText().toString());
         break;
@@ -147,24 +150,24 @@ public class EditProxyFragment extends Fragment {
       case PROXY_SUCCESS:
         proxyStatus.setVisibility(View.VISIBLE);
         proxyText.setText(Optional.ofNullable(SignalStore.proxy().getProxy()).map(SignalProxy::getHost).orElse(""));
-        new AlertDialog.Builder(requireContext())
-                       .setTitle(R.string.preferences_success)
-                       .setMessage(R.string.preferences_you_are_connected_to_the_proxy)
-                       .setPositiveButton(android.R.string.ok, (d, i) -> {
-                         requireActivity().onBackPressed();
-                         d.dismiss();
-                       })
-                       .show();
+        new MaterialAlertDialogBuilder(requireContext())
+           .setTitle(R.string.preferences_success)
+           .setMessage(R.string.preferences_you_are_connected_to_the_proxy)
+           .setPositiveButton(android.R.string.ok, (d, i) -> {
+             requireActivity().onBackPressed();
+             d.dismiss();
+           })
+           .show();
         break;
       case PROXY_FAILURE:
         proxyStatus.setVisibility(View.INVISIBLE);
         proxyText.setText(Optional.ofNullable(SignalStore.proxy().getProxy()).map(SignalProxy::getHost).orElse(""));
         ViewUtil.focusAndMoveCursorToEndAndOpenKeyboard(proxyText);
-        new AlertDialog.Builder(requireContext())
-                       .setTitle(R.string.preferences_failed_to_connect)
-                       .setMessage(R.string.preferences_couldnt_connect_to_the_proxy)
-                       .setPositiveButton(android.R.string.ok, (d, i) -> d.dismiss())
-                       .show();
+        new MaterialAlertDialogBuilder(requireContext())
+           .setTitle(R.string.preferences_failed_to_connect)
+           .setMessage(R.string.preferences_couldnt_connect_to_the_proxy)
+           .setPositiveButton(android.R.string.ok, (d, i) -> d.dismiss())
+           .show();
         break;
     }
   }
@@ -181,7 +184,12 @@ public class EditProxyFragment extends Fragment {
   }
 
   private void onSaveClicked() {
-    viewModel.onSaveClicked(proxyText.getText().toString());
+    String text = proxyText.getText().toString();
+    if (Util.isEmpty(text)) {
+      proxySwitch.setChecked(false);
+    } else {
+      viewModel.onSaveClicked(text);
+    }
   }
 
   private void onShareClicked() {
@@ -194,14 +202,10 @@ public class EditProxyFragment extends Fragment {
 
   private void onProxyTextChanged(@NonNull String text) {
     if (Util.isEmpty(text)) {
-      saveButton.setEnabled(false);
-      saveButton.setAlpha(0.5f);
       shareButton.setEnabled(false);
       shareButton.setAlpha(0.5f);
       proxyStatus.setVisibility(View.INVISIBLE);
     } else {
-      saveButton.setEnabled(true);
-      saveButton.setAlpha(1);
       shareButton.setEnabled(true);
       shareButton.setAlpha(1);
 

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -13,7 +14,11 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.StringRes
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -25,6 +30,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import mobi.upod.timedurationpicker.TimeDurationPicker
 import mobi.upod.timedurationpicker.TimeDurationPickerDialog
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.BiometricDeviceAuthentication
+import org.thoughtcrime.securesms.BiometricDeviceLockContract
 import org.thoughtcrime.securesms.PassphraseChangeActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.ClickPreference
@@ -39,7 +46,6 @@ import org.thoughtcrime.securesms.crypto.MasterSecretUtil
 import org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues
 import org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues.PhoneNumberListingMode
 import org.thoughtcrime.securesms.service.KeyCachingService
-import org.thoughtcrime.securesms.stories.Stories
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.ConversationUtil
 import org.thoughtcrime.securesms.util.ExpirationUtil
@@ -59,6 +65,8 @@ private val TAG = Log.tag(PrivacySettingsFragment::class.java)
 class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privacy) {
 
   private lateinit var viewModel: PrivacySettingsViewModel
+  private lateinit var biometricAuth: BiometricDeviceAuthentication
+  private lateinit var biometricDeviceLockLauncher: ActivityResultLauncher<String>
 
   private val incognitoSummary: CharSequence by lazy {
     SpannableStringBuilder(getString(R.string.preferences__this_setting_is_not_a_guarantee))
@@ -70,9 +78,33 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
       )
   }
 
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    biometricDeviceLockLauncher = registerForActivityResult(BiometricDeviceLockContract()) { result: Int ->
+      if (result == BiometricDeviceAuthentication.AUTHENTICATED) {
+        viewModel.togglePaymentLock(false)
+      }
+    }
+    val promptInfo = PromptInfo.Builder()
+      .setAllowedAuthenticators(BiometricDeviceAuthentication.ALLOWED_AUTHENTICATORS)
+      .setTitle(requireContext().getString(R.string.BiometricDeviceAuthentication__signal))
+      .setConfirmationRequired(false)
+      .build()
+    biometricAuth = BiometricDeviceAuthentication(
+      BiometricManager.from(requireActivity()),
+      BiometricPrompt(requireActivity(), BiometricAuthenticationListener()),
+      promptInfo
+    )
+  }
+
   override fun onResume() {
     super.onResume()
     viewModel.refreshBlockedCount()
+  }
+
+  override fun onPause() {
+    super.onPause()
+    biometricAuth.cancelAuthentication()
   }
 
   override fun bindAdapter(adapter: MappingAdapter) {
@@ -300,18 +332,6 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
         summary = DSLSettingsText.from(incognitoSummary),
       )
 
-      if (Stories.isFeatureAvailable()) {
-        dividerPref()
-
-        clickPref(
-          title = DSLSettingsText.from(R.string.preferences__stories),
-          summary = DSLSettingsText.from(R.string.PrivacySettingsFragment__manage_your_stories),
-          onClick = {
-            findNavController().safeNavigate(PrivacySettingsFragmentDirections.actionPrivacySettingsFragmentToStoryPrivacySettings(R.string.preferences__stories))
-          }
-        )
-      }
-
       dividerPref()
 
       sectionHeaderPref(R.string.preferences_app_protection__payments)
@@ -323,8 +343,10 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
         onClick = {
           if (!ServiceUtil.getKeyguardManager(requireContext()).isKeyguardSecure) {
             showGoToPhoneSettings()
+          } else if (state.paymentLock) {
+            biometricAuth.authenticate(requireContext(), true) { biometricDeviceLockLauncher?.launch(getString(R.string.BiometricDeviceAuthentication__signal)) }
           } else {
-            viewModel.togglePaymentLock()
+            viewModel.togglePaymentLock(true)
           }
         }
       )
@@ -510,6 +532,22 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
       super.bind(model)
       clickPreferenceViewHolder.bind(model.clickPreference)
       valueText.text = model.value.resolve(context)
+    }
+  }
+
+  inner class BiometricAuthenticationListener : BiometricPrompt.AuthenticationCallback() {
+    override fun onAuthenticationError(errorCode: Int, errorString: CharSequence) {
+      Log.w(TAG, "Authentication error: $errorCode")
+      onAuthenticationFailed()
+    }
+
+    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+      Log.i(TAG, "onAuthenticationSucceeded")
+      viewModel.togglePaymentLock(false)
+    }
+
+    override fun onAuthenticationFailed() {
+      Log.w(TAG, "Unable to authenticate payment lock")
     }
   }
 }

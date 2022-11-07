@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import app.cash.exhaustive.Exhaustive
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import org.signal.core.util.concurrent.SimpleTask
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.contacts.paged.ContactSearchKey
 import org.thoughtcrime.securesms.conversation.MessageSendType
@@ -41,9 +42,10 @@ import org.thoughtcrime.securesms.mediasend.v2.stories.StoriesMultiselectForward
 import org.thoughtcrime.securesms.mms.SentMediaQuality
 import org.thoughtcrime.securesms.permissions.Permissions
 import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.scribbles.ImageEditorFragment
 import org.thoughtcrime.securesms.util.LifecycleDisposable
 import org.thoughtcrime.securesms.util.MediaUtil
-import org.thoughtcrime.securesms.util.ViewUtil
+import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import org.thoughtcrime.securesms.util.fragments.requireListener
 import org.thoughtcrime.securesms.util.views.TouchInterceptingFrameLayout
@@ -88,16 +90,11 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment) {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     postponeEnterTransition()
 
+    SystemWindowInsetsSetter.attach(view, viewLifecycleOwner)
+
     disposables.bindTo(viewLifecycleOwner)
 
     callback = requireListener()
-
-    view.setPadding(
-      0,
-      ViewUtil.getStatusBarHeight(view),
-      0,
-      ViewUtil.getNavigationBarHeight(view)
-    )
 
     drawToolButton = view.findViewById(R.id.draw_tool)
     cropAndRotateButton = view.findViewById(R.id.crop_and_rotate_tool)
@@ -163,17 +160,43 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment) {
     }
 
     sendButton.setOnClickListener {
+      val viewOnce: Boolean = sharedViewModel.state.value?.viewOnceToggleState == MediaSelectionState.ViewOnceToggleState.ONCE
+
       if (sharedViewModel.isContactSelectionRequired) {
         val args = MultiselectForwardFragmentArgs(
           false,
           title = R.string.MediaReviewFragment__send_to,
           storySendRequirements = sharedViewModel.getStorySendRequirements(),
-          isSearchEnabled = !sharedViewModel.isStory()
+          isSearchEnabled = !sharedViewModel.isStory(),
+          isViewOnce = viewOnce
         )
 
         if (sharedViewModel.isStory()) {
-          val previews = sharedViewModel.state.value?.selectedMedia?.take(2)?.map { it.uri } ?: emptyList()
-          storiesLauncher.launch(StoriesMultiselectForwardActivity.Args(args, previews))
+          val snapshot = sharedViewModel.state.value
+
+          if (snapshot != null) {
+            sendButton.isEnabled = false
+            SimpleTask.run(viewLifecycleOwner.lifecycle, {
+              snapshot.selectedMedia.take(2).map { media ->
+                val editorData = snapshot.editorStateMap[media.uri]
+                if (MediaUtil.isImageType(media.mimeType) && editorData != null && editorData is ImageEditorFragment.Data) {
+                  val model = editorData.readModel()
+                  if (model != null) {
+                    ImageEditorFragment.renderToSingleUseBlob(requireContext(), model)
+                  } else {
+                    media.uri
+                  }
+                } else {
+                  media.uri
+                }
+              }
+            }, {
+              sendButton.isEnabled = true
+              storiesLauncher.launch(StoriesMultiselectForwardActivity.Args(args, it))
+            })
+          } else {
+            storiesLauncher.launch(StoriesMultiselectForwardActivity.Args(args, emptyList()))
+          }
         } else {
           multiselectLauncher.launch(args)
         }

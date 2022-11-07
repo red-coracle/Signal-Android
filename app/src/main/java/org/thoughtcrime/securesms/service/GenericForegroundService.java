@@ -1,10 +1,12 @@
 package org.thoughtcrime.securesms.service;
 
+import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.DrawableRes;
@@ -13,10 +15,12 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import org.signal.core.util.PendingIntentFlags;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.MainActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
+import org.whispersystems.signalservice.api.util.Preconditions;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -111,7 +115,7 @@ public final class GenericForegroundService extends Service {
                                                            .setSmallIcon(active.iconRes)
                                                            .setContentTitle(active.title)
                                                            .setProgress(active.progressMax, active.progress, active.indeterminate)
-                                                           .setContentIntent(PendingIntent.getActivity(this, 0, MainActivity.clearTop(this), 0))
+                                                           .setContentIntent(PendingIntent.getActivity(this, 0, MainActivity.clearTop(this), PendingIntentFlags.mutable()))
                                                            .setVibrate(new long[]{0})
                                                            .build());
   }
@@ -125,20 +129,39 @@ public final class GenericForegroundService extends Service {
    * Waits for {@param delayMillis} ms before starting the foreground task.
    * <p>
    * The delayed notification controller can also shown on demand and promoted to a regular notification controller to update the message etc.
+   *
+   * Do not call this method on API > 31
    */
   public static DelayedNotificationController startForegroundTaskDelayed(@NonNull Context context, @NonNull String task, long delayMillis, @DrawableRes int iconRes) {
-    return DelayedNotificationController.create(delayMillis, () -> startForegroundTask(context, task, DEFAULTS.channelId, iconRes));
+    Preconditions.checkArgument(Build.VERSION.SDK_INT < 31);
+
+    return DelayedNotificationController.create(delayMillis, () -> {
+      try {
+        return startForegroundTask(context, task, DEFAULTS.channelId, iconRes);
+      } catch (UnableToStartException e) {
+        Log.w(TAG, "This should not happen on API < 31", e);
+        throw new AssertionError(e.getCause());
+      }
+    });
   }
 
-  public static NotificationController startForegroundTask(@NonNull Context context, @NonNull String task) {
+  public static NotificationController startForegroundTask(@NonNull Context context, @NonNull String task) throws UnableToStartException {
     return startForegroundTask(context, task, DEFAULTS.channelId);
   }
 
-  public static NotificationController startForegroundTask(@NonNull Context context, @NonNull String task, @NonNull String channelId) {
+  public static NotificationController startForegroundTask(@NonNull Context context, @NonNull String task, @NonNull String channelId)
+      throws UnableToStartException
+  {
     return startForegroundTask(context, task, channelId, DEFAULTS.iconRes);
   }
 
-  public static NotificationController startForegroundTask(@NonNull Context context, @NonNull String task, @NonNull String channelId, @DrawableRes int iconRes) {
+  public static NotificationController startForegroundTask(
+      @NonNull Context context,
+      @NonNull String task,
+      @NonNull String channelId,
+      @DrawableRes int iconRes)
+      throws UnableToStartException
+  {
     final int id = NEXT_ID.getAndIncrement();
 
     Intent intent = new Intent(context, GenericForegroundService.class);
@@ -149,7 +172,17 @@ public final class GenericForegroundService extends Service {
     intent.putExtra(EXTRA_ID, id);
 
     Log.i(TAG, String.format(Locale.US, "Starting foreground service (%s) id=%d", task, id));
-    ContextCompat.startForegroundService(context, intent);
+
+    if (Build.VERSION.SDK_INT < 31) {
+      ContextCompat.startForegroundService(context, intent);
+    } else {
+      try {
+        ContextCompat.startForegroundService(context, intent);
+      } catch (ForegroundServiceStartNotAllowedException e) {
+        Log.e(TAG, "Unable to start foreground service", e);
+        throw new UnableToStartException(e);
+      }
+    }
 
     return new NotificationController(context, id);
   }
@@ -286,6 +319,12 @@ public final class GenericForegroundService extends Service {
     GenericForegroundService getService() {
       // Return this instance of LocalService so clients can call public methods
       return GenericForegroundService.this;
+    }
+  }
+
+  public static final class UnableToStartException extends Exception {
+    public UnableToStartException(Throwable cause) {
+      super(cause);
     }
   }
 }

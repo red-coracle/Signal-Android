@@ -115,16 +115,19 @@ import org.thoughtcrime.securesms.database.ThreadDatabase;
 import org.thoughtcrime.securesms.database.model.ThreadRecord;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.events.ReminderUpdateEvent;
+import org.thoughtcrime.securesms.exporter.flow.SmsExportDialogs;
 import org.thoughtcrime.securesms.insights.InsightsLauncher;
 import org.thoughtcrime.securesms.jobs.ServiceOutageDetectionJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.lock.v2.CreateKbsPinActivity;
 import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder;
+import org.thoughtcrime.securesms.main.SearchBinder;
 import org.thoughtcrime.securesms.mediasend.v2.MediaSelectionActivity;
 import org.thoughtcrime.securesms.megaphone.Megaphone;
 import org.thoughtcrime.securesms.megaphone.MegaphoneActionController;
 import org.thoughtcrime.securesms.megaphone.MegaphoneViewBuilder;
 import org.thoughtcrime.securesms.megaphone.Megaphones;
+import org.thoughtcrime.securesms.megaphone.SmsExportMegaphoneActivity;
 import org.thoughtcrime.securesms.mms.GlideApp;
 import org.thoughtcrime.securesms.notifications.MarkReadReceiver;
 import org.thoughtcrime.securesms.notifications.profiles.NotificationProfile;
@@ -178,6 +181,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 
@@ -299,7 +303,6 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     initializeViewModel();
     initializeListAdapters();
     initializeTypingObserver();
-    initializeSearchListener();
     initializeVoiceNotePlayer();
 
     RatingManager.showRatingDialogIfNecessary(requireContext());
@@ -362,6 +365,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   public void onResume() {
     super.onResume();
 
+    initializeSearchListener();
     updateReminders();
     EventBus.getDefault().register(this);
     itemAnimator.disable();
@@ -436,6 +440,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   public void onPause() {
     super.onPause();
 
+    requireCallback().getSearchAction().setOnClickListener(null);
     fab.stopPulse();
     cameraFab.stopPulse();
     EventBus.getDefault().unregister(this);
@@ -510,11 +515,16 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    if (resultCode != RESULT_OK) {
-      return;
+    if (requestCode == SmsExportMegaphoneActivity.REQUEST_CODE && SignalStore.misc().getSmsExportPhase().isFullscreen()) {
+      ApplicationDependencies.getMegaphoneRepository().markSeen(Megaphones.Event.SMS_EXPORT);
+      if (resultCode == RESULT_CANCELED) {
+        Snackbar.make(fab, R.string.ConversationActivity__you_will_be_reminded_again_soon, Snackbar.LENGTH_LONG).show();
+      } else {
+        SmsExportDialogs.showSmsRemovalDialog(requireContext(), fab);
+      }
     }
 
-    if (requestCode == CreateKbsPinActivity.REQUEST_NEW_PIN) {
+    if (resultCode == RESULT_OK && requestCode == CreateKbsPinActivity.REQUEST_NEW_PIN) {
       Snackbar.make(fab, R.string.ConfirmKbsPinFragment__pin_created, Snackbar.LENGTH_LONG).show();
       viewModel.onMegaphoneCompleted(Megaphones.Event.PINS_FOR_ALL);
     }
@@ -619,8 +629,6 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     requireCallback().getSearchAction().setOnClickListener(v -> {
       fadeOutButtonsAndMegaphone(250);
       requireCallback().onSearchOpened();
-      requireCallback().getSearchToolbar().get().display(requireCallback().getSearchAction().getX() + (requireCallback().getSearchAction().getWidth() / 2.0f),
-                                                         requireCallback().getSearchAction().getY() + (requireCallback().getSearchAction().getHeight() / 2.0f));
 
       requireCallback().getSearchToolbar().get().setListener(new Material3SearchToolbar.Listener() {
         @Override
@@ -742,7 +750,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     ConversationListViewModel.Factory viewModelFactory = new ConversationListViewModel.Factory(isArchived(),
                                                                                                getString(R.string.note_to_self));
 
-    viewModel = new ViewModelProvider(this, viewModelFactory).get(ConversationListViewModel.class);
+    viewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) viewModelFactory).get(ConversationListViewModel.class);
 
     viewModel.getSearchResult().observe(getViewLifecycleOwner(), this::onSearchResultChanged);
     viewModel.getMegaphone().observe(getViewLifecycleOwner(), this::onMegaphoneChanged);
@@ -821,7 +829,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   }
 
   private void onMegaphoneChanged(@Nullable Megaphone megaphone) {
-    if (megaphone == null) {
+    if (megaphone == null || isArchived()) {
       if (megaphoneContainer.resolved()) {
         megaphoneContainer.get().setVisibility(View.GONE);
         megaphoneContainer.get().removeAllViews();
@@ -1672,12 +1680,8 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     }
   }
 
-  public interface Callback extends Material3OnScrollHelperBinder {
+  public interface Callback extends Material3OnScrollHelperBinder, SearchBinder {
     @NonNull Toolbar getToolbar();
-
-    @NonNull ImageView getSearchAction();
-
-    @NonNull Stub<Material3SearchToolbar> getSearchToolbar();
 
     @NonNull View getUnreadPaymentsDot();
 
@@ -1686,10 +1690,6 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     void updateNotificationProfileStatus(@NonNull List<NotificationProfile> notificationProfiles);
 
     void updateProxyStatus(@NonNull WebSocketConnectionState state);
-
-    void onSearchOpened();
-
-    void onSearchClosed();
 
     void onMultiSelectStarted();
 

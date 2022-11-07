@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 
 import org.thoughtcrime.securesms.database.model.databaseprotos.PendingChangeNumberMetadata;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 public final class MiscellaneousValues extends SignalStoreValues {
@@ -13,7 +13,6 @@ public final class MiscellaneousValues extends SignalStoreValues {
   private static final String LAST_PREKEY_REFRESH_TIME        = "last_prekey_refresh_time";
   private static final String MESSAGE_REQUEST_ENABLE_TIME     = "message_request_enable_time";
   private static final String LAST_PROFILE_REFRESH_TIME       = "misc.last_profile_refresh_time";
-  private static final String LAST_GV1_ROUTINE_MIGRATION_TIME = "misc.last_gv1_routine_migration_time";
   private static final String USERNAME_SHOW_REMINDER          = "username.show.reminder";
   private static final String CLIENT_DEPRECATED               = "misc.client_deprecated";
   private static final String OLD_DEVICE_TRANSFER_LOCKED      = "misc.old_device.transfer.locked";
@@ -27,6 +26,7 @@ public final class MiscellaneousValues extends SignalStoreValues {
   private static final String LAST_FCM_FOREGROUND_TIME        = "misc.last_fcm_foreground_time";
   private static final String LAST_FOREGROUND_TIME            = "misc.last_foreground_time";
   private static final String PNI_INITIALIZED_DEVICES         = "misc.pni_initialized_devices";
+  private static final String SMS_EXPORT_TIME                 = "misc.sms_export_time";
 
   MiscellaneousValues(@NonNull KeyValueStore store) {
     super(store);
@@ -39,7 +39,9 @@ public final class MiscellaneousValues extends SignalStoreValues {
 
   @Override
   @NonNull List<String> getKeysToIncludeInBackup() {
-    return Collections.emptyList();
+    return Arrays.asList(
+        SMS_EXPORT_TIME
+    );
   }
 
   public long getLastPrekeyRefreshTime() {
@@ -60,14 +62,6 @@ public final class MiscellaneousValues extends SignalStoreValues {
 
   public void setLastProfileRefreshTime(long time) {
     putLong(LAST_PROFILE_REFRESH_TIME, time);
-  }
-
-  public long getLastGv1RoutineMigrationTime() {
-    return getLong(LAST_GV1_ROUTINE_MIGRATION_TIME, 0);
-  }
-
-  public void setLastGv1RoutineMigrationTime(long time) {
-    putLong(LAST_GV1_ROUTINE_MIGRATION_TIME, time);
   }
 
   public void hideUsernameReminder() {
@@ -192,5 +186,16 @@ public final class MiscellaneousValues extends SignalStoreValues {
 
   public void setPniInitializedDevices(boolean value) {
     putBoolean(PNI_INITIALIZED_DEVICES, value);
+  }
+
+  public void setHasSeenSmsExportMegaphone() {
+    if (!getStore().containsKey(SMS_EXPORT_TIME)) {
+      putLong(SMS_EXPORT_TIME, System.currentTimeMillis());
+    }
+  }
+
+  public @NonNull SmsExportPhase getSmsExportPhase() {
+    long now = System.currentTimeMillis();
+    return SmsExportPhase.getCurrentPhase(now - getLong(SMS_EXPORT_TIME, now));
   }
 }

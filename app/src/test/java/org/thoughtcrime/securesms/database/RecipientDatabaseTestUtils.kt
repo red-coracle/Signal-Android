@@ -77,7 +77,8 @@ object RecipientDatabaseTestUtils {
       null,
       IdentityDatabase.VerifiedStatus.DEFAULT,
       false,
-      false
+      false,
+      0
     ),
     extras: Recipient.Extras? = null,
     hasGroupsInCommon: Boolean = false,
@@ -126,14 +127,16 @@ object RecipientDatabaseTestUtils {
         notificationChannel,
         unidentifiedAccessMode,
         forceSmsSelection,
-        capabilities,
-        Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.GROUPS_V1_MIGRATION, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
-        Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.SENDER_KEY, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
-        Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.ANNOUNCEMENT_GROUPS, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
-        Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.CHANGE_NUMBER, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
-        Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.STORIES, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
-        Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.GIFT_BADGES, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
-        Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.PNP, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
+        RecipientRecord.Capabilities(
+          capabilities,
+          Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.GROUPS_V1_MIGRATION, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
+          Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.SENDER_KEY, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
+          Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.ANNOUNCEMENT_GROUPS, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
+          Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.CHANGE_NUMBER, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
+          Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.STORIES, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
+          Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.GIFT_BADGES, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
+          Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientDatabase.Capabilities.PNP, RecipientDatabase.Capabilities.BIT_LENGTH).toInt()),
+        ),
         insightBannerTier,
         storageId,
         mentionSetting,
@@ -146,7 +149,8 @@ object RecipientDatabaseTestUtils {
         extras,
         hasGroupsInCommon,
         badges,
-        false
+        needsPniSignature = false,
+        isHidden = false
       ),
       participants,
       isReleaseChannel

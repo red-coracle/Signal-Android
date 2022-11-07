@@ -40,12 +40,12 @@ import org.thoughtcrime.securesms.megaphone.Megaphones
 import org.thoughtcrime.securesms.payments.DataExportUtil
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
 import org.thoughtcrime.securesms.util.ConversationUtil
-import org.thoughtcrime.securesms.util.FeatureFlags
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import java.util.Optional
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
+import kotlin.time.Duration.Companion.seconds
 
 class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__internal_preferences) {
 
@@ -201,6 +201,25 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
       dividerPref()
 
       sectionHeaderPref(R.string.preferences__internal_network)
+
+      switchPref(
+        title = DSLSettingsText.from("Force websocket mode"),
+        summary = DSLSettingsText.from("Pretend you have no Play Services. Ignores websocket messages and keeps the websocket open in a foreground service. You have to manually force-stop the app for changes to take effect."),
+        isChecked = state.forceWebsocketMode,
+        onClick = {
+          viewModel.setForceWebsocketMode(!state.forceWebsocketMode)
+          SimpleTask.run({
+            val jobState = ApplicationDependencies.getJobManager().runSynchronously(RefreshAttributesJob(), 10.seconds.inWholeMilliseconds)
+            return@run jobState.isPresent && jobState.get().isComplete
+          }, { success ->
+            if (success) {
+              Toast.makeText(context, "Successfully refreshed attributes. Force-stop the app for changes to take effect.", Toast.LENGTH_SHORT).show()
+            } else {
+              Toast.makeText(context, "Failed to refresh attributes.", Toast.LENGTH_SHORT).show()
+            }
+          })
+        }
+      )
 
       switchPref(
         title = DSLSettingsText.from(R.string.preferences__internal_allow_censorship_toggle),
@@ -365,7 +384,7 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
         }
       )
 
-      if (FeatureFlags.donorBadges() && SignalStore.donationsValues().getSubscriber() != null) {
+      if (SignalStore.donationsValues().getSubscriber() != null) {
         dividerPref()
 
         sectionHeaderPref(R.string.preferences__internal_badges)
@@ -463,20 +482,19 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
 
       sectionHeaderPref(R.string.ConversationListTabs__stories)
 
-      switchPref(
-        title = DSLSettingsText.from(R.string.preferences__internal_disable_stories),
-        isChecked = state.disableStories,
-        onClick = {
-          viewModel.toggleStories()
-        }
-      )
-
       clickPref(
         title = DSLSettingsText.from(R.string.preferences__internal_clear_onboarding_state),
         summary = DSLSettingsText.from(R.string.preferences__internal_clears_onboarding_flag_and_triggers_download_of_onboarding_stories),
         isEnabled = state.canClearOnboardingState,
         onClick = {
           viewModel.onClearOnboardingState()
+        }
+      )
+
+      clickPref(
+        title = DSLSettingsText.from(R.string.preferences__internal_stories_dialog_launcher),
+        onClick = {
+          findNavController().safeNavigate(InternalSettingsFragmentDirections.actionInternalSettingsFragmentToStoryDialogsLauncherFragment())
         }
       )
     }
