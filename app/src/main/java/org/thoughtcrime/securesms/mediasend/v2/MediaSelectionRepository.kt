@@ -13,9 +13,9 @@ import org.signal.core.util.logging.Log
 import org.signal.imageeditor.core.model.EditorModel
 import org.thoughtcrime.securesms.contacts.paged.ContactSearchKey
 import org.thoughtcrime.securesms.conversation.MessageSendType
-import org.thoughtcrime.securesms.database.AttachmentDatabase.TransformProperties
+import org.thoughtcrime.securesms.database.AttachmentTable.TransformProperties
 import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.database.ThreadDatabase
+import org.thoughtcrime.securesms.database.ThreadTable
 import org.thoughtcrime.securesms.database.model.Mention
 import org.thoughtcrime.securesms.database.model.StoryType
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -105,6 +105,8 @@ class MediaSelectionRepository(context: Context) {
       val singleRecipient: Recipient? = singleContact?.let { Recipient.resolved(it.recipientId) }
       val storyType: StoryType = if (singleRecipient?.isDistributionList == true) {
         SignalDatabase.distributionLists.getStoryType(singleRecipient.requireDistributionListId())
+      } else if (singleRecipient?.isGroup == true && singleContact.isStory) {
+        StoryType.STORY_WITH_REPLIES
       } else {
         StoryType.NONE
       }
@@ -255,9 +257,9 @@ class MediaSelectionRepository(context: Context) {
         emptyList(),
         if (recipient.isDistributionList) distributionListPreUploadSentTimestamps.getOrPut(preUploadResults.first()) { System.currentTimeMillis() } else System.currentTimeMillis(),
         -1,
-        TimeUnit.SECONDS.toMillis(recipient.expiresInSeconds.toLong()),
+        if (isStory) 0 else TimeUnit.SECONDS.toMillis(recipient.expiresInSeconds.toLong()),
         isViewOnce,
-        ThreadDatabase.DistributionTypes.DEFAULT,
+        ThreadTable.DistributionTypes.DEFAULT,
         storyType,
         null,
         false,
@@ -298,9 +300,9 @@ class MediaSelectionRepository(context: Context) {
                 listOf(MediaUploadRepository.asAttachment(context, it)),
                 if (recipient.isDistributionList) distributionListStoryClipsSentTimestamps.getOrPut(it.asKey()) { System.currentTimeMillis() } else System.currentTimeMillis(),
                 -1,
-                TimeUnit.SECONDS.toMillis(recipient.expiresInSeconds.toLong()),
+                0,
                 isViewOnce,
-                ThreadDatabase.DistributionTypes.DEFAULT,
+                ThreadTable.DistributionTypes.DEFAULT,
                 storyType,
                 null,
                 false,

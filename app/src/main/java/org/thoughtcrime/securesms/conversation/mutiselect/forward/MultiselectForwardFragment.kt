@@ -46,6 +46,7 @@ import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.safety.SafetyNumberBottomSheet
 import org.thoughtcrime.securesms.sharing.ShareSelectionAdapter
 import org.thoughtcrime.securesms.sharing.ShareSelectionMappingModel
+import org.thoughtcrime.securesms.stories.GroupStoryEducationSheet
 import org.thoughtcrime.securesms.stories.Stories
 import org.thoughtcrime.securesms.stories.Stories.getHeaderAction
 import org.thoughtcrime.securesms.stories.settings.create.CreateStoryFlowDialogFragment
@@ -56,6 +57,7 @@ import org.thoughtcrime.securesms.util.FeatureFlags
 import org.thoughtcrime.securesms.util.FullscreenHelper
 import org.thoughtcrime.securesms.util.LifecycleDisposable
 import org.thoughtcrime.securesms.util.Util
+import org.thoughtcrime.securesms.util.ViewUtil
 import org.thoughtcrime.securesms.util.fragments.findListener
 import org.thoughtcrime.securesms.util.fragments.requireListener
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog
@@ -79,6 +81,7 @@ class MultiselectForwardFragment :
   Fragment(R.layout.multiselect_forward_fragment),
   SafetyNumberBottomSheet.Callbacks,
   ChooseStoryTypeBottomSheet.Callback,
+  GroupStoryEducationSheet.Callback,
   WrapperDialogFragment.WrapperDialogFragmentCallback,
   ChooseInitialMyStoryMembershipBottomSheetDialogFragment.Callback {
 
@@ -169,6 +172,7 @@ class MultiselectForwardFragment :
     }
 
     sendButton.setOnClickListener {
+      ViewUtil.hideKeyboard(requireContext(), it)
       onSend(it)
     }
 
@@ -377,7 +381,6 @@ class MultiselectForwardFragment :
     }
 
     if (view != null && contactSet.any { it is ContactSearchKey.RecipientSearchKey && it.isStory }) {
-      @Suppress("NON_EXHAUSTIVE_WHEN_STATEMENT")
       when (storySendRequirements) {
         Stories.MediaTransform.SendRequirements.REQUIRES_CLIP -> {
           displayTooltip(view, R.string.MultiselectForwardFragment__videos_will_be_trimmed)
@@ -385,6 +388,7 @@ class MultiselectForwardFragment :
         Stories.MediaTransform.SendRequirements.CAN_NOT_SEND -> {
           displayTooltip(view, R.string.MultiselectForwardFragment__videos_sent_to_stories_cant)
         }
+        Stories.MediaTransform.SendRequirements.VALID_DURATION -> Unit
       }
     }
 
@@ -464,11 +468,19 @@ class MultiselectForwardFragment :
   }
 
   override fun onGroupStoryClicked() {
-    ChooseGroupStoryBottomSheet().show(parentFragmentManager, ChooseGroupStoryBottomSheet.GROUP_STORY)
+    if (SignalStore.storyValues().userHasSeenGroupStoryEducationSheet) {
+      onGroupStoryEducationSheetNext()
+    } else {
+      GroupStoryEducationSheet().show(childFragmentManager, GroupStoryEducationSheet.KEY)
+    }
   }
 
   override fun onNewStoryClicked() {
     CreateStoryFlowDialogFragment().show(parentFragmentManager, CreateStoryWithViewersFragment.REQUEST_KEY)
+  }
+
+  override fun onGroupStoryEducationSheetNext() {
+    ChooseGroupStoryBottomSheet().show(parentFragmentManager, ChooseGroupStoryBottomSheet.GROUP_STORY)
   }
 
   override fun onWrapperDialogFragmentDismissed() {

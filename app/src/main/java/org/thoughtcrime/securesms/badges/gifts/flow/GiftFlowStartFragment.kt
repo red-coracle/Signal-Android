@@ -9,7 +9,6 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
 import org.thoughtcrime.securesms.components.settings.DSLSettingsFragment
 import org.thoughtcrime.securesms.components.settings.DSLSettingsText
-import org.thoughtcrime.securesms.components.settings.app.subscription.DonationPaymentComponent
 import org.thoughtcrime.securesms.components.settings.app.subscription.models.CurrencySelection
 import org.thoughtcrime.securesms.components.settings.app.subscription.models.NetworkFailure
 import org.thoughtcrime.securesms.components.settings.configure
@@ -18,7 +17,6 @@ import org.thoughtcrime.securesms.components.settings.models.SplashImage
 import org.thoughtcrime.securesms.util.LifecycleDisposable
 import org.thoughtcrime.securesms.util.ViewUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
-import org.thoughtcrime.securesms.util.fragments.requireListener
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 
 /**
@@ -30,7 +28,9 @@ class GiftFlowStartFragment : DSLSettingsFragment(
 
   private val viewModel: GiftFlowViewModel by viewModels(
     ownerProducer = { requireActivity() },
-    factoryProducer = { GiftFlowViewModel.Factory(GiftFlowRepository(), requireListener<DonationPaymentComponent>().donationPaymentRepository) }
+    factoryProducer = {
+      GiftFlowViewModel.Factory(GiftFlowRepository())
+    }
   )
 
   private val lifecycleDisposable = LifecycleDisposable()

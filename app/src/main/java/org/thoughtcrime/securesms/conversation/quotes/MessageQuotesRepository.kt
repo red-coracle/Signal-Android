@@ -35,28 +35,30 @@ class MessageQuotesRepository {
       }
 
       val databaseObserver: DatabaseObserver = ApplicationDependencies.getDatabaseObserver()
-      val observer = DatabaseObserver.Observer { emitter.onNext(getMessageInQuoteChainSync(application, messageId)) }
+      val observer = DatabaseObserver.Observer { emitter.onNext(getMessagesInQuoteChainSync(application, messageId)) }
 
       databaseObserver.registerConversationObserver(threadId, observer)
 
       emitter.setCancellable { databaseObserver.unregisterObserver(observer) }
-      emitter.onNext(getMessageInQuoteChainSync(application, messageId))
+      emitter.onNext(getMessagesInQuoteChainSync(application, messageId))
     }
   }
 
   @WorkerThread
-  private fun getMessageInQuoteChainSync(application: Application, messageId: MessageId): List<ConversationMessage> {
-    val originalRecord: MessageRecord? = if (messageId.mms) {
-      SignalDatabase.mms.getMessageRecordOrNull(messageId.id)
+  private fun getMessagesInQuoteChainSync(application: Application, messageId: MessageId): List<ConversationMessage> {
+    val rootMessageId: MessageId = SignalDatabase.mmsSms.getRootOfQuoteChain(messageId)
+
+    var originalRecord: MessageRecord? = if (rootMessageId.mms) {
+      SignalDatabase.mms.getMessageRecordOrNull(rootMessageId.id)
     } else {
-      SignalDatabase.sms.getMessageRecordOrNull(messageId.id)
+      SignalDatabase.sms.getMessageRecordOrNull(rootMessageId.id)
     }
 
     if (originalRecord == null) {
       return emptyList()
     }
 
-    val replyRecords: List<MessageRecord> = SignalDatabase.mmsSms.getAllMessagesThatQuote(messageId)
+    val replyRecords: List<MessageRecord> = SignalDatabase.mmsSms.getAllMessagesThatQuote(rootMessageId)
 
     val replies: List<ConversationMessage> = ConversationDataSource.ReactionHelper()
       .apply {
@@ -66,13 +68,17 @@ class MessageQuotesRepository {
       .buildUpdatedModels(replyRecords)
       .map { replyRecord ->
         val replyQuote: Quote? = replyRecord.getQuote()
-        if (replyQuote != null && replyQuote.id == originalRecord.dateSent) {
+        if (replyQuote != null && replyQuote.id == originalRecord!!.dateSent) {
           (replyRecord as MediaMmsMessageRecord).withoutQuote()
         } else {
           replyRecord
         }
       }
       .map { ConversationMessageFactory.createWithUnresolvedData(application, it) }
+
+    if (originalRecord.isPaymentNotification) {
+      originalRecord = SignalDatabase.payments.updateMessageWithPayment(originalRecord)
+    }
 
     val originalMessage: List<ConversationMessage> = ConversationDataSource.ReactionHelper()
       .apply {

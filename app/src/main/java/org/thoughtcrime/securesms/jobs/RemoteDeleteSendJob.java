@@ -8,14 +8,13 @@ import com.annimon.stream.Stream;
 
 import org.signal.core.util.SetUtil;
 import org.signal.core.util.logging.Log;
-import org.thoughtcrime.securesms.database.MessageDatabase;
+import org.thoughtcrime.securesms.database.MessageTable;
 import org.thoughtcrime.securesms.database.NoSuchMessageException;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.DistributionListId;
 import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
-import org.thoughtcrime.securesms.database.model.StoryType;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.jobmanager.Data;
@@ -28,12 +27,12 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 import org.thoughtcrime.securesms.util.GroupUtil;
+import org.thoughtcrime.securesms.util.MessageRecordUtil;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.signalservice.api.crypto.ContentHint;
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException;
 import org.whispersystems.signalservice.api.messages.SendMessageResult;
 import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage;
-import org.whispersystems.signalservice.api.push.DistributionId;
 import org.whispersystems.signalservice.api.push.exceptions.ServerRejectedException;
 
 import java.io.IOException;
@@ -136,8 +135,8 @@ public class RemoteDeleteSendJob extends BaseJob {
       throw new NotPushRegisteredException();
     }
 
-    MessageDatabase db;
-    MessageRecord   message;
+    MessageTable  db;
+    MessageRecord message;
 
     if (isMms) {
       db      = SignalDatabase.mms();

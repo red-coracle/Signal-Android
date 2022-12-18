@@ -14,8 +14,8 @@ import org.signal.core.util.ThreadUtil
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.contacts.HeaderAction
-import org.thoughtcrime.securesms.database.AttachmentDatabase
-import org.thoughtcrime.securesms.database.AttachmentDatabase.TransformProperties
+import org.thoughtcrime.securesms.database.AttachmentTable
+import org.thoughtcrime.securesms.database.AttachmentTable.TransformProperties
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.DistributionListId
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord
@@ -34,8 +34,6 @@ import org.thoughtcrime.securesms.recipients.RecipientUtil
 import org.thoughtcrime.securesms.sms.MessageSender
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
 import org.thoughtcrime.securesms.util.BottomSheetUtil
-import org.thoughtcrime.securesms.util.FeatureFlags
-import org.thoughtcrime.securesms.util.LocaleFeatureFlags
 import org.thoughtcrime.securesms.util.MediaUtil
 import org.thoughtcrime.securesms.util.hasLinkPreview
 import java.util.Optional
@@ -62,24 +60,11 @@ object Stories {
   val MAX_VIDEO_DURATION_MILLIS: Long = (31.seconds - 1.milliseconds).inWholeMilliseconds
 
   /**
-   * Whether the feature is enabled at the flag level.
-   *
-   * `stories` will override `isInStoriesCountry` so as to not disable stories for those with
-   * that flag already enabled.
-   *
-   * Note: In general, you should prefer `isFeatureAvailable`.
-   */
-  @JvmStatic
-  fun isFeatureFlagEnabled(): Boolean {
-    return SignalStore.account().isRegistered && (FeatureFlags.stories() || LocaleFeatureFlags.isInStoriesCountry())
-  }
-
-  /**
    * Whether or not the user has the Stories feature enabled.
    */
   @JvmStatic
   fun isFeatureEnabled(): Boolean {
-    return isFeatureFlagEnabled() && !SignalStore.storyValues().isFeatureDisabled
+    return !SignalStore.storyValues().isFeatureDisabled
   }
 
   fun getHeaderAction(onClick: () -> Unit): HeaderAction {
@@ -352,11 +337,11 @@ object Stories {
           error("Illegal clip: $startTimeUs > $endTimeUs for clip $clipIndex")
         }
 
-        AttachmentDatabase.TransformProperties(false, true, startTimeUs, endTimeUs, SentMediaQuality.STANDARD.code)
+        AttachmentTable.TransformProperties(false, true, startTimeUs, endTimeUs, SentMediaQuality.STANDARD.code)
       }.map { transformMedia(media, it) }
     }
 
-    private fun transformMedia(media: Media, transformProperties: AttachmentDatabase.TransformProperties): Media {
+    private fun transformMedia(media: Media, transformProperties: AttachmentTable.TransformProperties): Media {
       Log.d(TAG, "Transforming media clip: ${transformProperties.videoTrimStartTimeUs.microseconds.inWholeSeconds}s to ${transformProperties.videoTrimEndTimeUs.microseconds.inWholeSeconds}s")
       return Media(
         media.uri,

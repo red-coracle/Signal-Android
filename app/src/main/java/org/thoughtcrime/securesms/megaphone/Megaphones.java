@@ -18,6 +18,7 @@ import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.badges.models.Badge;
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity;
+import org.thoughtcrime.securesms.components.settings.app.subscription.InAppDonations;
 import org.thoughtcrime.securesms.database.model.MegaphoneRecord;
 import org.thoughtcrime.securesms.database.model.RemoteMegaphoneRecord;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
@@ -36,7 +37,6 @@ import org.thoughtcrime.securesms.profiles.manage.ManageProfileActivity;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.LocaleFeatureFlags;
-import org.thoughtcrime.securesms.util.PlayServicesUtil;
 import org.thoughtcrime.securesms.util.ServiceUtil;
 import org.thoughtcrime.securesms.util.VersionTracker;
 import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWrapper;
@@ -69,8 +69,8 @@ public final class Megaphones {
   private static final MegaphoneSchedule ALWAYS = new ForeverSchedule(true);
   private static final MegaphoneSchedule NEVER  = new ForeverSchedule(false);
 
-  private static final Set<Event> DONATE_EVENTS                      = SetUtil.newHashSet(Event.BECOME_A_SUSTAINER, Event.DONATE_Q2_2022);
-  private static final long       MIN_TIME_BETWEEN_DONATE_MEGAPHONES = TimeUnit.DAYS.toMillis(30);
+  private static final Set<Event> DONATE_EVENTS                      = SetUtil.newHashSet();
+  private static final long       MIN_TIME_BETWEEN_DONATE_MEGAPHONES = TimeUnit.DAYS.toMillis(9999);
 
   private Megaphones() {}
 
@@ -112,7 +112,7 @@ public final class Megaphones {
       put(Event.BACKUP_SCHEDULE_PERMISSION, shouldShowBackupSchedulePermissionMegaphone(context) ? RecurringSchedule.every(TimeUnit.DAYS.toMillis(3)) : NEVER);
       put(Event.ONBOARDING, shouldShowOnboardingMegaphone(context) ? ALWAYS : NEVER);
       put(Event.TURN_OFF_CENSORSHIP_CIRCUMVENTION, shouldShowTurnOffCircumventionMegaphone() ? RecurringSchedule.every(TimeUnit.DAYS.toMillis(7)) : NEVER);
-      put(Event.DONATE_Q2_2022, shouldShowDonateMegaphone(context, Event.DONATE_Q2_2022, records) ? ShowForDurationSchedule.showForDays(7) : NEVER);
+      //put(Event.DONATE_Q2_2022, shouldShowDonateMegaphone(context, Event.DONATE_Q2_2022, records) ? ShowForDurationSchedule.showForDays(7) : NEVER);
       put(Event.REMOTE_MEGAPHONE, shouldShowRemoteMegaphone(records) ? RecurringSchedule.every(TimeUnit.DAYS.toMillis(1)) : NEVER);
       put(Event.PIN_REMINDER, new SignalPinReminderSchedule());
 
@@ -135,10 +135,10 @@ public final class Megaphones {
         return buildNotificationsMegaphone(context);
       case ADD_A_PROFILE_PHOTO:
         return buildAddAProfilePhotoMegaphone(context);
-      case BECOME_A_SUSTAINER:
-        return buildBecomeASustainerMegaphone(context);
-      case DONATE_Q2_2022:
-        return buildDonateQ2Megaphone(context);
+      //case BECOME_A_SUSTAINER:
+      //  return buildBecomeASustainerMegaphone(context);
+      //case DONATE_Q2_2022:
+      //  return buildDonateQ2Megaphone(context);
       case TURN_OFF_CENSORSHIP_CIRCUMVENTION:
         return buildTurnOffCircumventionMegaphone(context);
       case REMOTE_MEGAPHONE:
@@ -227,13 +227,13 @@ public final class Megaphones {
                         .setBody(R.string.NotificationsMegaphone_never_miss_a_message)
                         .setImage(R.drawable.megaphone_notifications_64)
                         .setActionButton(R.string.NotificationsMegaphone_turn_on, (megaphone, controller) -> {
-                          if (Build.VERSION.SDK_INT >= 26 && !NotificationChannels.isMessageChannelEnabled(context)) {
+                          if (Build.VERSION.SDK_INT >= 26 && !NotificationChannels.getInstance().isMessageChannelEnabled()) {
                             Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
-                            intent.putExtra(Settings.EXTRA_CHANNEL_ID, NotificationChannels.getMessagesChannel(context));
+                            intent.putExtra(Settings.EXTRA_CHANNEL_ID, NotificationChannels.getInstance().getMessagesChannel());
                             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
                             controller.onMegaphoneNavigationRequested(intent);
                           } else if (Build.VERSION.SDK_INT >= 26 &&
-                                     (!NotificationChannels.areNotificationsEnabled(context) || !NotificationChannels.isMessagesChannelGroupEnabled(context)))
+                                     (!NotificationChannels.getInstance().areNotificationsEnabled() || !NotificationChannels.getInstance().isMessagesChannelGroupEnabled()))
                           {
                             Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
                             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
@@ -391,17 +391,18 @@ public final class Megaphones {
   }
 
   private static boolean shouldShowDonateMegaphone(@NonNull Context context, @NonNull Event event, @NonNull Map<Event, MegaphoneRecord> records) {
-    long timeSinceLastDonatePrompt = timeSinceLastDonatePrompt(event, records);
+    /*long timeSinceLastDonatePrompt = timeSinceLastDonatePrompt(event, records);
 
     return timeSinceLastDonatePrompt > MIN_TIME_BETWEEN_DONATE_MEGAPHONES &&
            VersionTracker.getDaysSinceFirstInstalled(context) >= 7 &&
            LocaleFeatureFlags.isInDonateMegaphone() &&
-           PlayServicesUtil.getPlayServicesStatus(context) == PlayServicesUtil.PlayServicesStatus.SUCCESS &&
+           InAppDonations.INSTANCE.hasAtLeastOnePaymentMethodAvailable() &&
            Recipient.self()
                     .getBadges()
                     .stream()
                     .filter(Objects::nonNull)
-                    .noneMatch(badge -> badge.getCategory() == Badge.Category.Donor);
+                    .noneMatch(badge -> badge.getCategory() == Badge.Category.Donor);*/
+    return false;
   }
 
   private static boolean shouldShowOnboardingMegaphone(@NonNull Context context) {
@@ -415,9 +416,9 @@ public final class Megaphones {
 
   private static boolean shouldShowNotificationsMegaphone(@NonNull Context context) {
     boolean shouldShow = !SignalStore.settings().isMessageNotificationsEnabled() ||
-                         !NotificationChannels.isMessageChannelEnabled(context) ||
-                         !NotificationChannels.isMessagesChannelGroupEnabled(context) ||
-                         !NotificationChannels.areNotificationsEnabled(context);
+                         !NotificationChannels.getInstance().isMessageChannelEnabled() ||
+                         !NotificationChannels.getInstance().isMessagesChannelGroupEnabled() ||
+                         !NotificationChannels.getInstance().areNotificationsEnabled();
     if (shouldShow) {
       Locale locale = DynamicLanguageContextWrapper.getUsersSelectedLocale(context);
       if (!new TranslationDetection(context, locale)
@@ -449,8 +450,9 @@ public final class Megaphones {
 
   @WorkerThread
   private static boolean shouldShowRemoteMegaphone(@NonNull Map<Event, MegaphoneRecord> records) {
-    boolean canShowLocalDonate = timeSinceLastDonatePrompt(Event.REMOTE_MEGAPHONE, records) > MIN_TIME_BETWEEN_DONATE_MEGAPHONES;
-    return RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate);
+    /*boolean canShowLocalDonate = timeSinceLastDonatePrompt(Event.REMOTE_MEGAPHONE, records) > MIN_TIME_BETWEEN_DONATE_MEGAPHONES;
+    return RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate);*/
+    return false;
   }
 
   private static boolean shouldShowBackupSchedulePermissionMegaphone(@NonNull Context context) {

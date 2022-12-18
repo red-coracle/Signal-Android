@@ -12,7 +12,7 @@ import org.signal.libsignal.protocol.util.KeyHelper
 import org.signal.libsignal.protocol.util.Medium
 import org.thoughtcrime.securesms.crypto.IdentityKeyUtil
 import org.thoughtcrime.securesms.crypto.PreKeyUtil
-import org.thoughtcrime.securesms.database.IdentityDatabase
+import org.thoughtcrime.securesms.database.IdentityTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.databaseprotos.PendingChangeNumberMetadata
 import org.thoughtcrime.securesms.database.model.toProtoByteString
@@ -44,6 +44,7 @@ import org.whispersystems.signalservice.internal.push.exceptions.MismatchedDevic
 import java.io.IOException
 import java.security.MessageDigest
 import java.security.SecureRandom
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 
 private val TAG: String = Log.tag(ChangeNumberRepository::class.java)
@@ -90,6 +91,7 @@ class ChangeNumberRepository(
           emitter.onComplete()
         }
     }.subscribeOn(Schedulers.single())
+      .timeout(15, TimeUnit.SECONDS)
   }
 
   fun changeNumber(code: String, newE164: String, pniUpdateMode: Boolean = false): Single<ServiceResponse<VerifyAccountResponse>> {
@@ -235,7 +237,7 @@ class ChangeNumberRepository(
       pniProtocolStore.identities().saveIdentityWithoutSideEffects(
         Recipient.self().id,
         pniProtocolStore.identityKeyPair.publicKey,
-        IdentityDatabase.VerifiedStatus.VERIFIED,
+        IdentityTable.VerifiedStatus.VERIFIED,
         true,
         System.currentTimeMillis(),
         true

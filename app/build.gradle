@@ -11,7 +11,7 @@ apply from: 'static-ips.gradle'
 
 repositories {
     maven {
-        url "https://raw.github.com/signalapp/maven/master/sqlcipher/release/"
+        url "https://raw.githubusercontent.com/signalapp/maven/master/sqlcipher/release/"
         content {
             includeGroupByRegex "org\\.signal.*"
         }
@@ -50,8 +50,8 @@ ktlint {
     version = "0.43.2"
 }
 
-def canonicalVersionCode = 1158
-def canonicalVersionName = "6.1.1"
+def canonicalVersionCode = 1181
+def canonicalVersionName = "6.5.6"
 
 def postFixSize = 100
 def abiPostFix = ['universal'   : 0,
@@ -93,10 +93,6 @@ android {
         freeCompilerArgs = ["-Xallow-result-return-type"]
     }
 
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
-
     signingConfigs {
         if (keystores.debug != null) {
             debug {
@@ -113,6 +109,17 @@ android {
 
         unitTests {
             includeAndroidResources = true
+        }
+
+        managedDevices {
+            devices {
+                pixel3api30 (com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Pixel 3"
+                    apiLevel = 30
+                    systemImageSource = "google-atd"
+                    require64Bit = false
+                }
+            }
         }
     }
 
@@ -181,6 +188,7 @@ android {
         buildConfigField "String", "SIGNAL_SERVICE_STATUS_URL", "\"uptime.signal.org\""
         buildConfigField "String", "SIGNAL_KEY_BACKUP_URL", "\"https://api.backup.signal.org\""
         buildConfigField "String", "SIGNAL_SFU_URL", "\"https://sfu.voip.signal.org\""
+        buildConfigField "String", "SIGNAL_STAGING_SFU_URL", "\"https://sfu.staging.voip.signal.org\""
         buildConfigField "String[]", "SIGNAL_SFU_INTERNAL_NAMES", "new String[]{\"Test\", \"Staging\", \"Development\"}"
         buildConfigField "String[]", "SIGNAL_SFU_INTERNAL_URLS", "new String[]{\"https://sfu.test.voip.signal.org\", \"https://sfu.staging.voip.signal.org\", \"https://sfu.staging.test.voip.signal.org\"}"
         buildConfigField "String", "CONTENT_PROXY_HOST", "\"contentproxy.signal.org\""
@@ -616,20 +624,20 @@ def getLastCommitTimestamp() {
 
 def getGitHash() {
     if (!(new File('.git').exists())) {
-        return "abcd1234"
+        throw new IllegalStateException("Must be a git repository to guarantee reproducible builds! (git hash is part of APK)")
     }
 
     def stdout = new ByteArrayOutputStream()
     exec {
-        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        commandLine 'git', 'rev-parse', 'HEAD'
         standardOutput = stdout
     }
-    return stdout.toString().trim()
+    return stdout.toString().trim().substring(0, 12)
 }
 
 def getCurrentGitTag() {
     if (!(new File('.git').exists())) {
-        return ''
+        throw new IllegalStateException("Must be a git repository to guarantee reproducible builds! (git hash is part of APK)")
     }
 
     def stdout = new ByteArrayOutputStream()

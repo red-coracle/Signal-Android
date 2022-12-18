@@ -34,6 +34,28 @@ object SqlUtil {
   }
 
   @JvmStatic
+  fun getAllTriggers(db: SupportSQLiteDatabase): List<String> {
+    val tables: MutableList<String> = LinkedList()
+    db.query("SELECT name FROM sqlite_master WHERE type=?", arrayOf("trigger")).use { cursor ->
+      while (cursor.moveToNext()) {
+        tables.add(cursor.getString(0))
+      }
+    }
+    return tables
+  }
+
+  /**
+   * Given a table, this will return a set of tables that it has a foreign key dependency on.
+   */
+  @JvmStatic
+  fun getForeignKeyDependencies(db: SupportSQLiteDatabase, table: String): Set<String> {
+    return db.query("PRAGMA foreign_key_list($table)")
+      .readToSet{ cursor ->
+        cursor.requireNonNullString("table")
+      }
+  }
+
+  @JvmStatic
   fun isEmpty(db: SupportSQLiteDatabase, table: String): Boolean {
     db.query("SELECT COUNT(*) FROM $table", null).use { cursor ->
       return if (cursor.moveToFirst()) {

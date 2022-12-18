@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonParseException
 import org.json.JSONArray
 import org.json.JSONObject
 import org.signal.core.util.logging.Log
-import org.thoughtcrime.securesms.database.MessageDatabase
+import org.thoughtcrime.securesms.database.MessageTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.StoryType
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
@@ -16,7 +16,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.releasechannel.ReleaseChannel
 import org.thoughtcrime.securesms.s3.S3
-import org.thoughtcrime.securesms.stories.Stories.isFeatureFlagEnabled
 import org.thoughtcrime.securesms.transport.RetryLaterException
 import org.whispersystems.signalservice.api.push.exceptions.NonSuccessfulResponseCodeException
 import java.util.Locale
@@ -51,7 +50,7 @@ class StoryOnboardingDownloadJob private constructor(parameters: Parameters) : B
     }
 
     fun enqueueIfNeeded() {
-      if (SignalStore.storyValues().hasDownloadedOnboardingStory || !isFeatureFlagEnabled()) {
+      if (SignalStore.storyValues().hasDownloadedOnboardingStory) {
         return
       }
 
@@ -126,8 +125,8 @@ class StoryOnboardingDownloadJob private constructor(parameters: Parameters) : B
     val threadId = SignalDatabase.threads.getOrCreateThreadIdFor(Recipient.resolved(releaseChannelRecipientId))
 
     Log.i(TAG, "Inserting messages...")
-    val insertResults: List<MessageDatabase.InsertResult> = (0 until candidateArray.length()).mapNotNull {
-      val insertResult: MessageDatabase.InsertResult? = ReleaseChannel.insertReleaseChannelMessage(
+    val insertResults: List<MessageTable.InsertResult> = (0 until candidateArray.length()).mapNotNull {
+      val insertResult: MessageTable.InsertResult? = ReleaseChannel.insertReleaseChannelMessage(
         releaseChannelRecipientId,
         "",
         threadId,

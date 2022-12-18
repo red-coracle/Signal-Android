@@ -4,11 +4,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import org.thoughtcrime.securesms.attachments.Attachment
+import org.thoughtcrime.securesms.mediasend.Media
 import org.thoughtcrime.securesms.util.MediaUtil
 
 class MediaPreviewV2Adapter(val fragment: Fragment) : FragmentStateAdapter(fragment) {
   private var items: List<Attachment> = listOf()
-  private var autoPlayPosition = -1
 
   override fun getItemCount(): Int {
     return items.count()
@@ -22,7 +22,7 @@ class MediaPreviewV2Adapter(val fragment: Fragment) : FragmentStateAdapter(fragm
       MediaPreviewFragment.DATA_URI to attachment.uri,
       MediaPreviewFragment.DATA_CONTENT_TYPE to contentType,
       MediaPreviewFragment.DATA_SIZE to attachment.size,
-      MediaPreviewFragment.AUTO_PLAY to (position == autoPlayPosition),
+      MediaPreviewFragment.AUTO_PLAY to true,
       MediaPreviewFragment.VIDEO_GIF to attachment.isVideoGif,
     )
     val fragment = if (MediaUtil.isVideo(contentType)) {
@@ -38,14 +38,14 @@ class MediaPreviewV2Adapter(val fragment: Fragment) : FragmentStateAdapter(fragm
     return fragment
   }
 
+  fun findItemPosition(media: Media): Int {
+    return items.indexOfFirst { it.uri == media.uri }
+  }
+
   fun updateBackingItems(newItems: Collection<Attachment>) {
     if (newItems != items) {
       items = newItems.toList()
       notifyDataSetChanged()
     }
-  }
-
-  fun setAutoPlayItemPosition(position: Int) {
-    autoPlayPosition = position
   }
 }
