@@ -22,12 +22,14 @@ class StoryVideoLoader(
 
   fun load() {
     fragment.viewLifecycleOwner.lifecycle.addObserver(this)
-    videoPlayer.setVideoSource(VideoSlide(fragment.requireContext(), videoPost.videoUri, videoPost.size, false), true, TAG, videoPost.clipStart.inWholeMilliseconds, videoPost.clipEnd.inWholeMilliseconds)
+    videoPlayer.setVideoSource(VideoSlide(fragment.requireContext(), videoPost.videoUri, videoPost.size, false), false, TAG, videoPost.clipStart.inWholeMilliseconds, videoPost.clipEnd.inWholeMilliseconds)
+    videoPlayer.hideControls()
+    videoPlayer.setKeepContentOnPlayerReset(false)
   }
 
   fun clear() {
     fragment.viewLifecycleOwner.lifecycle.removeObserver(this)
-    videoPlayer.cleanup()
+    videoPlayer.stop()
   }
 
   override fun onResume(lifecycleOwner: LifecycleOwner) {
@@ -36,5 +38,6 @@ class StoryVideoLoader(
 
   override fun onPause(lifecycleOwner: LifecycleOwner) {
     callback.getVideoControlsDelegate()?.detachPlayer()
+    videoPlayer.pause()
   }
 }

@@ -64,13 +64,13 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.annimon.stream.Stream;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.collect.Sets;
 
 import org.signal.core.util.DimensionUnit;
 import org.signal.core.util.StringUtil;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.BindableConversationItem;
-import org.thoughtcrime.securesms.MediaPreviewActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment;
 import org.thoughtcrime.securesms.badges.BadgeImageView;
@@ -113,6 +113,7 @@ import org.thoughtcrime.securesms.jobs.SmsSendJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory;
+import org.thoughtcrime.securesms.mediapreview.MediaPreviewV2Fragment;
 import org.thoughtcrime.securesms.mms.GlideRequests;
 import org.thoughtcrime.securesms.mms.ImageSlide;
 import org.thoughtcrime.securesms.mms.PartAuthority;
@@ -2320,7 +2321,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
         performClick();
       } else if (!canPlayContent && mediaItem != null && eventListener != null) {
         eventListener.onPlayInlineContent(conversationMessage);
-      } else if (MediaPreviewActivity.isContentTypeSupported(slide.getContentType()) && slide.getUri() != null) {
+      } else if (MediaPreviewV2Fragment.isContentTypeSupported(slide.getContentType()) && slide.getUri() != null) {
         MediaIntentFactory.MediaPreviewArgs args = new MediaIntentFactory.MediaPreviewArgs(
             messageRecord.getThreadId(),
             messageRecord.getTimestamp(),
@@ -2331,7 +2332,8 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
             false,
             false,
             false,
-            MediaDatabase.Sorting.Newest.ordinal(),
+            false,
+            MediaDatabase.Sorting.Newest,
             slide.isVideoGif());
         context.startActivity(MediaIntentFactory.create(context, args));
       } else if (slide.getUri() != null) {
@@ -2347,6 +2349,25 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
           Log.w(TAG, "No activity existed to view the media.");
           Toast.makeText(context, R.string.ConversationItem_unable_to_open_media, Toast.LENGTH_LONG).show();
         }
+      } else if (slide.asAttachment().isPermanentlyFailed()) {
+        String failedMessage;
+
+        if (slide instanceof ImageSlide) {
+          failedMessage = messageRecord.isOutgoing() ? context.getString(R.string.ConversationItem_cant_download_image_you_will_need_to_send_it_again)
+                                                     : context.getString(R.string.ConversationItem_cant_download_image_s_will_need_to_send_it_again, messageRecord.getIndividualRecipient().getShortDisplayName(context));
+        } else if (slide instanceof VideoSlide) {
+          failedMessage = messageRecord.isOutgoing() ? context.getString(R.string.ConversationItem_cant_download_video_you_will_need_to_send_it_again)
+                                                     : context.getString(R.string.ConversationItem_cant_download_video_s_will_need_to_send_it_again, messageRecord.getIndividualRecipient().getShortDisplayName(context));
+        } else {
+          failedMessage = messageRecord.isOutgoing() ? context.getString(R.string.ConversationItem_cant_download_message_you_will_need_to_send_it_again)
+                                                     : context.getString(R.string.ConversationItem_cant_download_message_s_will_need_to_send_it_again, messageRecord.getIndividualRecipient().getShortDisplayName(context));
+        }
+
+        new MaterialAlertDialogBuilder(getContext())
+            .setMessage(failedMessage)
+            .setPositiveButton(android.R.string.ok, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .show();
       }
     }
   }

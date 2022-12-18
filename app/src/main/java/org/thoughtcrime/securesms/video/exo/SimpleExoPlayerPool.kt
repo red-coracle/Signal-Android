@@ -14,6 +14,7 @@ import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.net.ContentProxySelector
 import org.thoughtcrime.securesms.util.AppForegroundObserver
 import org.thoughtcrime.securesms.util.DeviceProperties
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * ExoPlayerPool concrete instance which helps to manage a pool of SimpleExoPlayer objects
@@ -59,6 +60,8 @@ class SimpleExoPlayerPool(context: Context) : ExoPlayerPool<ExoPlayer>(MAXIMUM_R
   override fun createPlayer(): ExoPlayer {
     return ExoPlayer.Builder(context)
       .setMediaSourceFactory(mediaSourceFactory)
+      .setSeekBackIncrementMs(SEEK_INTERVAL.inWholeMilliseconds)
+      .setSeekForwardIncrementMs(SEEK_INTERVAL.inWholeMilliseconds)
       .build()
   }
 
@@ -66,6 +69,7 @@ class SimpleExoPlayerPool(context: Context) : ExoPlayerPool<ExoPlayer>(MAXIMUM_R
     private const val MAXIMUM_RESERVED_PLAYERS = 1
     private const val MAXIMUM_SUPPORTED_PLAYBACK_PRE_23 = 6
     private const val MAXIMUM_SUPPORTED_PLAYBACK_PRE_23_LOW_MEM = 3
+    private val SEEK_INTERVAL = 15.seconds
   }
 }
 
@@ -136,7 +140,7 @@ abstract class ExoPlayerPool<T : ExoPlayer>(
       pool[player] = poolState
       player
     } else {
-      Log.d(TAG, "Failed to get an ExoPlayer instance for tag: $tag")
+      Log.d(TAG, "Failed to get an ExoPlayer instance for tag: $tag :: ${poolStats()}")
       null
     }?.apply {
       configureForVideoPlayback()

@@ -75,28 +75,16 @@ object Stories {
   }
 
   /**
-   * Whether or not the user has access to stories. This checks:
-   *
-   * - Registration status
-   * - Flag status
-   * - Capabilities
-   */
-  @JvmStatic
-  fun isFeatureAvailable(): Boolean {
-    return isFeatureFlagEnabled() && Recipient.self().storiesCapability == Recipient.Capability.SUPPORTED
-  }
-
-  /**
    * Whether or not the user has the Stories feature enabled.
    */
   @JvmStatic
   fun isFeatureEnabled(): Boolean {
-    return isFeatureAvailable() && !SignalStore.storyValues().isFeatureDisabled
+    return isFeatureFlagEnabled() && !SignalStore.storyValues().isFeatureDisabled
   }
 
   fun getHeaderAction(onClick: () -> Unit): HeaderAction {
     return HeaderAction(
-      R.string.ContactsCursorLoader_add_to,
+      R.string.ContactsCursorLoader_new,
       R.drawable.ic_plus_12,
       onClick
     )

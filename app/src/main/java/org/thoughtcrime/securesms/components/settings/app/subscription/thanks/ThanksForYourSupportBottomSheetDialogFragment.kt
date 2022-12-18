@@ -51,7 +51,6 @@ class ThanksForYourSupportBottomSheetDialogFragment : FixedRoundedCornerBottomSh
 
     val badgeView: BadgeImageView = view.findViewById(R.id.thanks_bottom_sheet_badge)
     val lottie: LottieAnimationView = view.findViewById(R.id.thanks_bottom_sheet_lottie)
-    val badgeName: TextView = view.findViewById(R.id.thanks_bottom_sheet_badge_name)
     val done: MaterialButton = view.findViewById(R.id.thanks_bottom_sheet_done)
     val controlText: TextView = view.findViewById(R.id.thanks_bottom_sheet_control_text)
     val controlNote: View = view.findViewById(R.id.thanks_bottom_sheet_featured_note)
@@ -63,7 +62,6 @@ class ThanksForYourSupportBottomSheetDialogFragment : FixedRoundedCornerBottomSh
     val args = ThanksForYourSupportBottomSheetDialogFragmentArgs.fromBundle(requireArguments())
 
     badgeView.setBadge(args.badge)
-    badgeName.text = args.badge.name
 
     if (args.badge.isBoost()) {
       if (Recipient.self().badges.any { !it.isBoost() }) {
@@ -96,7 +94,7 @@ class ThanksForYourSupportBottomSheetDialogFragment : FixedRoundedCornerBottomSh
       controlText.setText(R.string.SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge)
       controlNote.visible = true
       controlState = ControlState.FEATURE
-    } else if (hasOtherBadges && !displayingBadges) {
+    } else if (hasOtherBadges) {
       switch.isChecked = false
       controlText.setText(R.string.SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile)
       controlNote.visible = false

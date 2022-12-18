@@ -215,6 +215,7 @@ import org.thoughtcrime.securesms.keyboard.sticker.StickerKeyboardPageFragment;
 import org.thoughtcrime.securesms.keyboard.sticker.StickerSearchDialogFragment;
 import org.thoughtcrime.securesms.keyvalue.PaymentsValues;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
+import org.thoughtcrime.securesms.keyvalue.SmsExportPhase;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewRepository;
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewViewModel;
@@ -247,7 +248,6 @@ import org.thoughtcrime.securesms.mms.StickerSlide;
 import org.thoughtcrime.securesms.mms.VideoSlide;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.notifications.v2.ConversationId;
-import org.thoughtcrime.securesms.payments.CanNotSendPaymentDialog;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.profiles.spoofing.ReviewBannerView;
 import org.thoughtcrime.securesms.profiles.spoofing.ReviewCardDialogFragment;
@@ -310,7 +310,6 @@ import org.thoughtcrime.securesms.verify.VerifyIdentityActivity;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaperDimLevelUtil;
 import org.whispersystems.signalservice.api.SignalSessionLock;
-import org.whispersystems.signalservice.api.util.ExpiringProfileCredentialUtil;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -453,6 +452,7 @@ public class ConversationParentFragment extends Fragment
   private VoiceNotePlayerView          voiceNotePlayerView;
   private Material3OnScrollHelper      material3OnScrollHelper;
   private InlineQueryResultsController inlineQueryResultsController;
+  private OnBackPressedCallback        backPressedCallback;
 
   private LiveRecipient recipient;
   private long          threadId;
@@ -555,12 +555,13 @@ public class ConversationParentFragment extends Fragment
 
     disposables.add(viewModel.getStoryViewState().subscribe(titleView::setStoryRingFromState));
 
-    requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+    backPressedCallback = new OnBackPressedCallback(true) {
       @Override
       public void handleOnBackPressed() {
         onBackPressed();
       }
-    });
+    };
+    requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), backPressedCallback);
 
     if (isSearchRequested && savedInstanceState == null) {
       onCreateOptionsMenu(toolbar.getMenu(), requireActivity().getMenuInflater());
@@ -578,6 +579,7 @@ public class ConversationParentFragment extends Fragment
     WindowUtil.setLightStatusBarFromTheme(requireActivity());
 
     EventBus.getDefault().register(this);
+    backPressedCallback.setEnabled(true);
     viewModel.checkIfMmsIsEnabled();
     initializeIdentityRecords();
     composeText.setMessageSendType(sendButton.getSelectedSendType());
@@ -928,7 +930,7 @@ public class ConversationParentFragment extends Fragment
     if (isSingleConversation()) {
       if (viewModel.isPushAvailable())   {
         inflater.inflate(R.menu.conversation_callable_secure, menu);
-      } else if (!recipient.get().isReleaseNotes() && Util.isDefaultSmsProvider(requireContext()) && SignalStore.misc().getSmsExportPhase().isSmsSupported()) {
+      } else if (!recipient.get().isReleaseNotes() && SignalStore.misc().getSmsExportPhase().allowSmsFeatures()) {
         inflater.inflate(R.menu.conversation_callable_insecure, menu);
       }
     } else if (isGroupConversation()) {
@@ -1159,6 +1161,9 @@ public class ConversationParentFragment extends Fragment
       if (searchViewItem != null) {
         searchViewItem.collapseActionView();
       }
+    } else if (isInBubble()) {
+      backPressedCallback.setEnabled(false);
+      requireActivity().onBackPressed();
     } else {
       requireActivity().finish();
     }
@@ -1210,11 +1215,7 @@ public class ConversationParentFragment extends Fragment
         AttachmentManager.selectLocation(this, PICK_LOCATION, getSendButtonColor(sendButton.getSelectedSendType()));
         break;
       case PAYMENT:
-        /*if (ExpiringProfileCredentialUtil.isValid(recipient.get().getExpiringProfileKeyCredential())) {
-          AttachmentManager.selectPayment(this, recipient.getId());
-        } else {
-          CanNotSendPaymentDialog.show(requireActivity());
-        }*/
+        //AttachmentManager.selectPayment(this, recipient.get());
         break;
 
     }
@@ -1900,7 +1901,7 @@ public class ConversationParentFragment extends Fragment
         if (actionId == R.id.reminder_action_gv1_suggestion_add_members) {
           GroupsV1MigrationSuggestionsDialog.show(requireActivity(), recipient.get().requireGroupId().requireV2(), gv1MigrationSuggestions);
         } else if (actionId == R.id.reminder_action_gv1_suggestion_no_thanks) {
-          groupViewModel.onSuggestedMembersBannerDismissed(recipient.get().requireGroupId(), gv1MigrationSuggestions);
+          groupViewModel.onSuggestedMembersBannerDismissed(recipient.get().requireGroupId());
         }
       });
       reminderView.get().setOnDismissListener(() -> {
@@ -2051,7 +2052,7 @@ public class ConversationParentFragment extends Fragment
     inputPanel.setListener(this);
     inputPanel.setMediaListener(this);
 
-    attachmentManager = new AttachmentManager(requireActivity(), this);
+    attachmentManager = new AttachmentManager(requireContext(), view, this);
     audioRecorder     = new AudioRecorder(requireContext());
     typingTextWatcher = new ComposeTextWatcher();
 
@@ -2169,7 +2170,9 @@ public class ConversationParentFragment extends Fragment
       int toolbarTextAndIconColor = getResources().getColor(R.color.signal_colorNeutralInverse);
       toolbar.setTitleTextColor(toolbarTextAndIconColor);
       setToolbarActionItemTint(toolbar, toolbarTextAndIconColor);
-      WindowUtil.setNavigationBarColor(requireActivity(), getResources().getColor(R.color.conversation_navigation_wallpaper));
+      if (!smsExportStub.resolved()) {
+        WindowUtil.setNavigationBarColor(requireActivity(), getResources().getColor(R.color.conversation_navigation_wallpaper));
+      }
     } else {
       wallpaper.setImageDrawable(null);
       wallpaperDim.setVisibility(View.GONE);
@@ -2182,7 +2185,7 @@ public class ConversationParentFragment extends Fragment
       int toolbarTextAndIconColor = getResources().getColor(R.color.signal_colorOnSurface);
       toolbar.setTitleTextColor(toolbarTextAndIconColor);
       setToolbarActionItemTint(toolbar, toolbarTextAndIconColor);
-      if (!releaseChannelUnmute.resolved()) {
+      if (!releaseChannelUnmute.resolved() && !smsExportStub.resolved()) {
         WindowUtil.setNavigationBarColor(requireActivity(), getResources().getColor(R.color.signal_colorBackground));
       }
     }
@@ -2726,20 +2729,35 @@ public class ConversationParentFragment extends Fragment
       inputPanel.setHideForBlockedState(true);
       smsExportStub.setVisibility(View.GONE);
       registerButton.setVisibility(View.VISIBLE);
-    } else if (!conversationSecurityInfo.isPushAvailable() && !(SignalStore.misc().getSmsExportPhase().isSmsSupported() && conversationSecurityInfo.isDefaultSmsApplication()) && recipient.hasSmsAddress()) {
+    } else if (!conversationSecurityInfo.isPushAvailable() && !(SignalStore.misc().getSmsExportPhase().isSmsSupported() && conversationSecurityInfo.isDefaultSmsApplication()) && (recipient.hasSmsAddress() || recipient.isMmsGroup())) {
       unblockButton.setVisibility(View.GONE);
       inputPanel.setHideForBlockedState(true);
       smsExportStub.setVisibility(View.VISIBLE);
       registerButton.setVisibility(View.GONE);
 
+      int color = ContextCompat.getColor(requireContext(), recipient.hasWallpaper() ? R.color.wallpaper_bubble_color : R.color.signal_colorBackground);
+      smsExportStub.get().setBackgroundColor(color);
+      WindowUtil.setNavigationBarColor(requireActivity(), color);
+
       TextView       message      = smsExportStub.get().findViewById(R.id.export_sms_message);
       MaterialButton actionButton = smsExportStub.get().findViewById(R.id.export_sms_button);
-      if (conversationSecurityInfo.getHasUnexportedInsecureMessages()) {
-        message.setText(R.string.ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_you_can_export_your_messages_to_another_app_on_your_phone);
+      boolean        isPhase1     = SignalStore.misc().getSmsExportPhase() == SmsExportPhase.PHASE_1;
+
+      if (SignalStore.misc().getSmsExportPhase() == SmsExportPhase.PHASE_0) {
+        message.setText(getString(R.string.NewConversationActivity__s_is_not_a_signal_user, recipient.getDisplayName(requireContext())));
+        actionButton.setText(R.string.conversation_activity__enable_signal_for_sms);
+        actionButton.setOnClickListener(v -> {
+          handleMakeDefaultSms();
+        });
+      } else if (conversationSecurityInfo.getHasUnexportedInsecureMessages()) {
+        message.setText(isPhase1 ? R.string.ConversationActivity__sms_messaging_is_currently_disabled_you_can_export_your_messages_to_another_app_on_your_phone
+                                 : R.string.ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_you_can_export_your_messages_to_another_app_on_your_phone);
         actionButton.setText(R.string.ConversationActivity__export_sms_messages);
         actionButton.setOnClickListener(v -> startActivity(SmsExportActivity.createIntent(requireContext())));
       } else {
-        message.setText(requireContext().getString(R.string.ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here, recipient.getDisplayName(requireContext())));
+        message.setText(requireContext().getString(isPhase1 ? R.string.ConversationActivity__sms_messaging_is_currently_disabled_invite_s_to_to_signal_to_keep_the_conversation_here
+                                                            : R.string.ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here,
+                                                   recipient.getDisplayName(requireContext())));
         actionButton.setText(R.string.ConversationActivity__invite_to_signal);
         actionButton.setOnClickListener(v -> handleInviteLink());
       }

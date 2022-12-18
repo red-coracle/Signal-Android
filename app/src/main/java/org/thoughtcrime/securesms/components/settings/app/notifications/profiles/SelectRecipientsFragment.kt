@@ -106,7 +106,7 @@ class SelectRecipientsFragment : LoggingFragment(), ContactSelectionListFragment
       ContactsCursorLoader.DisplayMode.FLAG_HIDE_RECENT_HEADER or
       ContactsCursorLoader.DisplayMode.FLAG_GROUPS_AFTER_CONTACTS
 
-    if (Util.isDefaultSmsProvider(requireContext()) && SignalStore.misc().smsExportPhase.isSmsSupported()) {
+    if (Util.isDefaultSmsProvider(requireContext()) && SignalStore.misc().smsExportPhase.allowSmsFeatures()) {
       mode = mode or ContactsCursorLoader.DisplayMode.FLAG_SMS
     }
 

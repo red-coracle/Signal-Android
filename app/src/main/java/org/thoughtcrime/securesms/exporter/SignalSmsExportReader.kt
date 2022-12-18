@@ -132,14 +132,16 @@ class SignalSmsExportReader(
     }
 
     private fun readExportableMmsMessageFromRecord(record: MessageRecord, exportState: MessageExportState): ExportableMessage {
-      val threadRecipient: Recipient = SignalDatabase.threads.getRecipientForThreadId(record.threadId)!!
-      val addresses: Set<String> = if (threadRecipient.isMmsGroup) {
+      val threadRecipient: Recipient? = SignalDatabase.threads.getRecipientForThreadId(record.threadId)
+      val addresses: Set<String> = if (threadRecipient?.isMmsGroup == true) {
         Recipient
           .resolvedList(threadRecipient.participantIds)
           .map { r -> r.smsExportAddress() }
           .toSet()
-      } else {
+      } else if (threadRecipient != null) {
         setOf(threadRecipient.smsExportAddress())
+      } else {
+        setOf(record.individualRecipient.smsExportAddress())
       }
 
       val parts: MutableList<ExportableMessage.Mms.Part> = mutableListOf()
@@ -178,9 +180,9 @@ class SignalSmsExportReader(
     }
 
     private fun readExportableSmsMessageFromRecord(record: MessageRecord, exportState: MessageExportState): ExportableMessage {
-      val threadRecipient = SignalDatabase.threads.getRecipientForThreadId(record.threadId)!!
+      val threadRecipient = SignalDatabase.threads.getRecipientForThreadId(record.threadId)
 
-      return if (threadRecipient.isMmsGroup) {
+      return if (threadRecipient?.isMmsGroup == true) {
         readExportableMmsMessageFromRecord(record, exportState)
       } else {
         ExportableMessage.Sms(

@@ -33,6 +33,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import net.zetetic.database.sqlcipher.SQLiteStatement;
 
+import org.signal.core.util.CursorExtensionsKt;
 import org.signal.core.util.CursorUtil;
 import org.signal.core.util.SQLiteDatabaseExtensionsKt;
 import org.signal.core.util.SqlUtil;
@@ -42,11 +43,13 @@ import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatch;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatchSet;
 import org.thoughtcrime.securesms.database.documents.NetworkFailure;
 import org.thoughtcrime.securesms.database.model.GroupCallUpdateDetailsUtil;
+import org.thoughtcrime.securesms.database.model.MessageExportStatus;
 import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.ParentStoryId;
 import org.thoughtcrime.securesms.database.model.SmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.StoryResult;
+import org.thoughtcrime.securesms.database.model.StoryType;
 import org.thoughtcrime.securesms.database.model.StoryViewState;
 import org.thoughtcrime.securesms.database.model.databaseprotos.GroupCallUpdateDetails;
 import org.thoughtcrime.securesms.database.model.databaseprotos.MessageExportState;
@@ -146,7 +149,8 @@ public class SmsDatabase extends MessageDatabase {
     "CREATE INDEX IF NOT EXISTS sms_date_sent_index ON " + TABLE_NAME + " (" + DATE_SENT + ", " + RECIPIENT_ID + ", " + THREAD_ID + ");",
     "CREATE INDEX IF NOT EXISTS sms_date_server_index ON " + TABLE_NAME + " (" + DATE_SERVER + ");",
     "CREATE INDEX IF NOT EXISTS sms_thread_date_index ON " + TABLE_NAME + " (" + THREAD_ID + ", " + DATE_RECEIVED + ");",
-    "CREATE INDEX IF NOT EXISTS sms_reactions_unread_index ON " + TABLE_NAME + " (" + REACTIONS_UNREAD + ");"
+    "CREATE INDEX IF NOT EXISTS sms_reactions_unread_index ON " + TABLE_NAME + " (" + REACTIONS_UNREAD + ");",
+    "CREATE INDEX IF NOT EXISTS sms_exported_index ON " + TABLE_NAME + " (" + EXPORTED + ");"
   };
 
   private static final String[] MESSAGE_PROJECTION = new String[] {
@@ -511,7 +515,11 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
-  public @NonNull Set<MessageUpdate> incrementReceiptCount(SyncMessageId messageId, long timestamp, @NonNull ReceiptType receiptType, boolean storiesOnly) {
+  public @NonNull Set<MessageUpdate> incrementReceiptCount(SyncMessageId messageId, long timestamp, @NonNull ReceiptType receiptType, @NonNull MessageQualifier messageQualifier) {
+    if (messageQualifier == MessageQualifier.STORY) {
+      return Collections.emptySet();
+    }
+
     if (receiptType == ReceiptType.VIEWED) {
       return Collections.emptySet();
     }
@@ -732,10 +740,10 @@ public class SmsDatabase extends MessageDatabase {
 
         db.insert(TABLE_NAME, null, values);
 
-        SignalDatabase.threads().incrementUnread(threadId, 1);
+        SignalDatabase.threads().incrementUnread(threadId, 1, 0);
       }
-
-      SignalDatabase.threads().update(threadId, true);
+      boolean keepThreadArchived = SignalStore.settings().shouldKeepMutedChatsArchived() && recipient.isMuted();
+      SignalDatabase.threads().update(threadId, !keepThreadArchived);
 
       db.setTransactionSuccessful();
     } finally {
@@ -809,10 +817,11 @@ public class SmsDatabase extends MessageDatabase {
 
         db.insert(TABLE_NAME, null, values);
 
-        SignalDatabase.threads().incrementUnread(threadId, 1);
+        SignalDatabase.threads().incrementUnread(threadId, 1, 0);
       }
 
-      SignalDatabase.threads().update(threadId, true);
+      final boolean keepThreadArchived = SignalStore.settings().shouldKeepMutedChatsArchived() && recipient.isMuted();
+      SignalDatabase.threads().update(threadId, !keepThreadArchived);
 
       db.setTransactionSuccessful();
     } finally {
@@ -881,10 +890,10 @@ public class SmsDatabase extends MessageDatabase {
     long           messageId = db.insert(TABLE_NAME, null, values);
 
     if (unread) {
-      SignalDatabase.threads().incrementUnread(threadId, 1);
+      SignalDatabase.threads().incrementUnread(threadId, 1, 0);
     }
-
-    SignalDatabase.threads().update(threadId, true);
+    boolean keepThreadArchived = SignalStore.settings().shouldKeepMutedChatsArchived() && Recipient.resolved(recipientId).isMuted();
+    SignalDatabase.threads().update(threadId, !keepThreadArchived);
 
     notifyConversationListeners(threadId);
     TrimThreadJob.enqueueAsync(threadId);
@@ -920,17 +929,27 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
+  public long getUnexportedInsecureMessagesEstimatedSize() {
+    Cursor cursor = SQLiteDatabaseExtensionsKt.select(getReadableDatabase(), "SUM(LENGTH(" + BODY + "))")
+                                              .from(TABLE_NAME)
+                                              .where(getInsecureMessageClause() + " AND " + EXPORTED + " < ?", MessageExportStatus.EXPORTED)
+                                              .run();
+
+    return CursorExtensionsKt.readToSingleLong(cursor);
+  }
+
+  @Override
   public void deleteExportedMessages() {
     beginTransaction();
     try {
       List<Long> threadsToUpdate = new LinkedList<>();
-      try (Cursor cursor = getReadableDatabase().query(TABLE_NAME, THREAD_ID_PROJECTION, EXPORTED + " = ?", SqlUtil.buildArgs(1), THREAD_ID, null, null, null)) {
+      try (Cursor cursor = getReadableDatabase().query(TABLE_NAME, THREAD_ID_PROJECTION, EXPORTED + " = ?", SqlUtil.buildArgs(MessageExportStatus.EXPORTED), THREAD_ID, null, null, null)) {
         while (cursor.moveToNext()) {
           threadsToUpdate.add(CursorUtil.requireLong(cursor, THREAD_ID));
         }
       }
 
-      getWritableDatabase().delete(TABLE_NAME, EXPORTED + " = ?", SqlUtil.buildArgs(1));
+      getWritableDatabase().delete(TABLE_NAME, EXPORTED + " = ?", SqlUtil.buildArgs(MessageExportStatus.EXPORTED));
 
       for (final long threadId : threadsToUpdate) {
         SignalDatabase.threads().update(threadId, false);
@@ -1259,11 +1278,12 @@ public class SmsDatabase extends MessageDatabase {
       long           messageId = db.insert(TABLE_NAME, null, values);
 
       if (unread) {
-        SignalDatabase.threads().incrementUnread(threadId, 1);
+        SignalDatabase.threads().incrementUnread(threadId, 1, 0);
       }
 
       if (!silent) {
-        SignalDatabase.threads().update(threadId, true);
+        final boolean keepThreadArchived = SignalStore.settings().shouldKeepMutedChatsArchived() && recipient.isMuted();
+        SignalDatabase.threads().update(threadId, !keepThreadArchived);
       }
 
       if (message.getSubscriptionId() != -1) {
@@ -1305,8 +1325,9 @@ public class SmsDatabase extends MessageDatabase {
 
     long messageId = db.insert(TABLE_NAME, null, values);
 
-    SignalDatabase.threads().incrementUnread(threadId, 1);
-    SignalDatabase.threads().update(threadId, true);
+    SignalDatabase.threads().incrementUnread(threadId, 1, 0);
+    boolean keepThreadArchived = SignalStore.settings().shouldKeepMutedChatsArchived() && Recipient.resolved(recipientId).isMuted();
+    SignalDatabase.threads().update(threadId, !keepThreadArchived);
 
     notifyConversationListeners(threadId);
 
@@ -1329,8 +1350,9 @@ public class SmsDatabase extends MessageDatabase {
 
     databaseHelper.getSignalWritableDatabase().insert(TABLE_NAME, null, values);
 
-    SignalDatabase.threads().incrementUnread(threadId, 1);
-    SignalDatabase.threads().update(threadId, true);
+    SignalDatabase.threads().incrementUnread(threadId, 1, 0);
+    boolean keepThreadArchived = SignalStore.settings().shouldKeepMutedChatsArchived() && Recipient.resolved(recipientId).isMuted();
+    SignalDatabase.threads().update(threadId, !keepThreadArchived);
 
     notifyConversationListeners(threadId);
 
@@ -1470,7 +1492,17 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
+  public @NonNull List<MarkedMessageInfo> markAllIncomingStoriesRead() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public @NonNull List<StoryResult> getOrderedStoryRecipientsAndIds(boolean isOutgoingOnly) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void markOnboardingStoryRead() {
     throw new UnsupportedOperationException();
   }
 
@@ -1550,6 +1582,11 @@ public class SmsDatabase extends MessageDatabase {
 
   @Override
   public @NonNull List<MarkedMessageInfo> setGroupStoryMessagesReadSince(long threadId, long groupStoryId, long sinceTimestamp) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @NonNull List<StoryType> getStoryTypes(@NonNull List<MessageId> messageIds) {
     throw new UnsupportedOperationException();
   }
 

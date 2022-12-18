@@ -60,7 +60,6 @@ import androidx.core.view.ViewKt;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -72,6 +71,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 import org.signal.core.util.DimensionUnit;
+import org.signal.core.util.Stopwatch;
 import org.signal.core.util.StreamUtil;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.concurrent.SimpleTask;
@@ -90,6 +90,8 @@ import org.thoughtcrime.securesms.components.menu.ActionItem;
 import org.thoughtcrime.securesms.components.menu.SignalBottomActionBar;
 import org.thoughtcrime.securesms.components.recyclerview.SmoothScrollingLinearLayoutManager;
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity;
+import org.thoughtcrime.securesms.components.settings.app.subscription.donate.DonateToSignalFragment;
+import org.thoughtcrime.securesms.components.settings.app.subscription.donate.DonateToSignalType;
 import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaControllerOwner;
 import org.thoughtcrime.securesms.components.voice.VoiceNotePlaybackState;
 import org.thoughtcrime.securesms.contactshare.Contact;
@@ -140,6 +142,7 @@ import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder;
 import org.thoughtcrime.securesms.messagedetails.MessageDetailsFragment;
 import org.thoughtcrime.securesms.messagerequests.MessageRequestState;
 import org.thoughtcrime.securesms.messagerequests.MessageRequestViewModel;
+import org.thoughtcrime.securesms.mms.AttachmentManager;
 import org.thoughtcrime.securesms.mms.GlideApp;
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage;
 import org.thoughtcrime.securesms.mms.PartAuthority;
@@ -147,6 +150,7 @@ import org.thoughtcrime.securesms.mms.Slide;
 import org.thoughtcrime.securesms.mms.TextSlide;
 import org.thoughtcrime.securesms.notifications.profiles.NotificationProfile;
 import org.thoughtcrime.securesms.notifications.v2.ConversationId;
+import org.thoughtcrime.securesms.payments.preferences.PaymentsActivity;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.phonenumbers.PhoneNumberFormatter;
 import org.thoughtcrime.securesms.providers.BlobProvider;
@@ -172,6 +176,7 @@ import org.thoughtcrime.securesms.util.CommunicationActions;
 import org.thoughtcrime.securesms.util.HtmlUtil;
 import org.thoughtcrime.securesms.util.LifecycleDisposable;
 import org.thoughtcrime.securesms.util.MessageRecordUtil;
+import org.thoughtcrime.securesms.util.ProfileUtil;
 import org.thoughtcrime.securesms.util.Projection;
 import org.thoughtcrime.securesms.util.RemoteDeleteUtil;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask;
@@ -179,7 +184,6 @@ import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.thoughtcrime.securesms.util.SignalProxyUtil;
 import org.thoughtcrime.securesms.util.SnapToTopDataObserver;
 import org.thoughtcrime.securesms.util.StickyHeaderDecoration;
-import org.signal.core.util.Stopwatch;
 import org.thoughtcrime.securesms.util.StorageUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.TopToastPopup;
@@ -356,9 +360,9 @@ public class ConversationFragment extends LoggingFragment implements Multiselect
 
     giphyMp4ProjectionRecycler = initializeGiphyMp4();
 
-    this.groupViewModel         = new ViewModelProvider(getParentFragment(), new ConversationGroupViewModel.Factory()).get(ConversationGroupViewModel.class);
+    this.groupViewModel         = new ViewModelProvider(getParentFragment(), (ViewModelProvider.Factory) new ConversationGroupViewModel.Factory()).get(ConversationGroupViewModel.class);
     this.messageCountsViewModel = new ViewModelProvider(getParentFragment()).get(MessageCountsViewModel.class);
-    this.conversationViewModel  = new ViewModelProvider(getParentFragment(), new ConversationViewModel.Factory()).get(ConversationViewModel.class);
+    this.conversationViewModel  = new ViewModelProvider(getParentFragment(), (ViewModelProvider.Factory) new ConversationViewModel.Factory()).get(ConversationViewModel.class);
 
     disposables.add(conversationViewModel.getChatColors().subscribe(chatColors -> {
       recyclerViewColorizer.setChatColors(chatColors);
@@ -2057,11 +2061,9 @@ public class ConversationFragment extends LoggingFragment implements Multiselect
 
     @Override
     public void onDonateClicked() {
-      NavHostFragment navHostFragment = NavHostFragment.create(R.navigation.boosts);
-
       requireActivity().getSupportFragmentManager()
                        .beginTransaction()
-                       .add(navHostFragment, "boost_nav")
+                       .add(DonateToSignalFragment.Dialog.create(DonateToSignalType.ONE_TIME), "one_time_nav")
                        .commitNow();
     }
 
@@ -2104,6 +2106,17 @@ public class ConversationFragment extends LoggingFragment implements Multiselect
       if (messageRecord.isOutgoing() && MessageRecordUtil.hasGiftBadge(messageRecord)) {
         conversationViewModel.markGiftBadgeRevealed(messageRecord.getId());
       }
+    }
+
+    @Override
+    public void onActivatePaymentsClicked() {
+      Intent intent = new Intent(requireContext(), PaymentsActivity.class);
+      startActivity(intent);
+    }
+
+    @Override
+    public void onSendPaymentClicked(@NonNull RecipientId recipientId) {
+      AttachmentManager.selectPayment(ConversationFragment.this, recipient.get());
     }
   }
 
