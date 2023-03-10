@@ -45,7 +45,7 @@ import org.thoughtcrime.securesms.util.navigation.safeNavigate
  */
 class GiftFlowConfirmationFragment :
   DSLSettingsFragment(
-    titleId = R.string.GiftFlowConfirmationFragment__confirm_gift,
+    titleId = R.string.GiftFlowConfirmationFragment__confirm_donation,
     layoutId = R.layout.gift_flow_confirmation_fragment
   ),
   EmojiKeyboardPageFragment.Callback,
@@ -157,7 +157,7 @@ class GiftFlowConfirmationFragment :
           viewModel.setAdditionalMessage(it)
         },
         onEmojiToggleClicked = {
-          if (inputAwareLayout.isKeyboardOpen || (!inputAwareLayout.isKeyboardOpen && !inputAwareLayout.isInputOpen)) {
+          if ((inputAwareLayout.isKeyboardOpen && !emojiKeyboard.isEmojiSearchMode) || (!inputAwareLayout.isKeyboardOpen && !inputAwareLayout.isInputOpen)) {
             inputAwareLayout.show(it, emojiKeyboard)
             emojiToggle.setImageResource(R.drawable.ic_keyboard_24)
           } else {
@@ -221,7 +221,7 @@ class GiftFlowConfirmationFragment :
       )
 
       textPref(
-        summary = DSLSettingsText.from(R.string.GiftFlowConfirmationFragment__your_gift_will_be_sent_in)
+        summary = DSLSettingsText.from(R.string.GiftFlowConfirmationFragment__the_recipient_will_be_notified)
       )
     }
   }

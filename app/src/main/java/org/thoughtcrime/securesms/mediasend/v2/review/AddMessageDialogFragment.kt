@@ -147,8 +147,12 @@ class AddMessageDialogFragment : KeyboardEntryDialogFragment(R.layout.v2_media_a
 
   override fun onKeyboardShown() {
     super.onKeyboardShown()
-    if (emojiDrawerStub.resolved() && emojiDrawerStub.get().isShowing && !emojiDrawerStub.get().isEmojiSearchMode) {
-      emojiDrawerStub.get().hide(true)
+    if (emojiDrawerStub.resolved() && emojiDrawerStub.get().isShowing) {
+      if (emojiDrawerStub.get().isEmojiSearchMode) {
+        binding.content.emojiToggle.setToIme()
+      } else {
+        emojiDrawerStub.get().hide(true)
+      }
     }
   }
 
@@ -249,11 +253,7 @@ class AddMessageDialogFragment : KeyboardEntryDialogFragment(R.layout.v2_media_a
       binding.hud.showSoftkey(binding.content.addAMessageInput)
     } else {
       requestedEmojiDrawer = true
-      binding.hud.hideSoftkey(binding.content.addAMessageInput) {
-        binding.hud.post {
-          binding.hud.show(binding.content.addAMessageInput, emojiDrawerStub.get())
-        }
-      }
+      binding.hud.show(binding.content.addAMessageInput, emojiDrawerStub.get())
     }
   }
 
