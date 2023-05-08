@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.keyvalue
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
@@ -59,10 +60,13 @@ internal class AccountValues internal constructor(store: KeyValueStore) : Signal
 
     @VisibleForTesting
     const val KEY_E164 = "account.e164"
+
     @VisibleForTesting
     const val KEY_ACI = "account.aci"
+
     @VisibleForTesting
     const val KEY_PNI = "account.pni"
+
     @VisibleForTesting
     const val KEY_IS_REGISTERED = "account.is_registered"
   }
@@ -84,7 +88,7 @@ internal class AccountValues internal constructor(store: KeyValueStore) : Signal
       KEY_ACI_IDENTITY_PUBLIC_KEY,
       KEY_ACI_IDENTITY_PRIVATE_KEY,
       KEY_PNI_IDENTITY_PUBLIC_KEY,
-      KEY_PNI_IDENTITY_PRIVATE_KEY,
+      KEY_PNI_IDENTITY_PRIVATE_KEY
     )
   }
 
@@ -355,6 +359,8 @@ internal class AccountValues internal constructor(store: KeyValueStore) : Signal
   }
 
   /** Do not alter. If you need to migrate more stuff, create a new method. */
+  @SuppressLint("ApplySharedPref")
+  @Suppress("DEPRECATION")
   private fun migrateFromSharedPrefsV2(context: Context) {
     Log.i(TAG, "[V2] Migrating account values from shared prefs.")
 

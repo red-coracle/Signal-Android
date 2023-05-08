@@ -9,11 +9,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import org.signal.core.util.getParcelableCompat
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.KeyboardEntryDialogFragment
 import org.thoughtcrime.securesms.components.emoji.EmojiEventListener
 import org.thoughtcrime.securesms.components.emoji.MediaKeyboard
-import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord
 import org.thoughtcrime.securesms.keyboard.KeyboardPage
 import org.thoughtcrime.securesms.keyboard.KeyboardPagerViewModel
 import org.thoughtcrime.securesms.keyboard.emoji.EmojiKeyboardPageFragment
@@ -21,9 +21,7 @@ import org.thoughtcrime.securesms.keyboard.emoji.search.EmojiSearchFragment
 import org.thoughtcrime.securesms.reactions.any.ReactWithAnyEmojiBottomSheetDialogFragment
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel
-import org.thoughtcrime.securesms.stories.viewer.reply.composer.StoryReactionBar
 import org.thoughtcrime.securesms.stories.viewer.reply.composer.StoryReplyComposer
-import org.thoughtcrime.securesms.util.FragmentDialogs.displayInDialogAboveAnchor
 import org.thoughtcrime.securesms.util.LifecycleDisposable
 import org.thoughtcrime.securesms.util.ViewUtil
 
@@ -63,7 +61,7 @@ class StoryDirectReplyDialogFragment :
     get() = requireArguments().getLong(ARG_STORY_ID)
 
   private val recipientId: RecipientId?
-    get() = requireArguments().getParcelable(ARG_RECIPIENT_ID)
+    get() = requireArguments().getParcelableCompat(ARG_RECIPIENT_ID, RecipientId::class.java)
 
   override val withDim: Boolean = true
 
@@ -82,28 +80,13 @@ class StoryDirectReplyDialogFragment :
           }
       }
 
-      override fun onPickReactionClicked() {
-        displayInDialogAboveAnchor(composer.reactionButton, R.layout.stories_reaction_bar_layout) { dialog, view ->
-          view.findViewById<StoryReactionBar>(R.id.reaction_bar).apply {
-            callback = object : StoryReactionBar.Callback {
-              override fun onTouchOutsideOfReactionBar() {
-                dialog.dismiss()
-              }
+      override fun onReactionClicked(emoji: String) {
+        sendReaction(emoji)
+      }
 
-              override fun onReactionSelected(emoji: String) {
-                dialog.dismiss()
-                sendReaction(emoji)
-              }
-
-              override fun onOpenReactionPicker() {
-                dialog.dismiss()
-                isRequestingReactWithAny = true
-                ReactWithAnyEmojiBottomSheetDialogFragment.createForStory().show(childFragmentManager, null)
-              }
-            }
-            animateIn()
-          }
-        }
+      override fun onPickAnyReactionClicked() {
+        isRequestingReactWithAny = true
+        ReactWithAnyEmojiBottomSheetDialogFragment.createForStory().show(childFragmentManager, null)
       }
 
       override fun onInitializeEmojiDrawer(mediaKeyboard: MediaKeyboard) {
@@ -114,13 +97,9 @@ class StoryDirectReplyDialogFragment :
 
     viewModel.state.observe(viewLifecycleOwner) { state ->
       if (state.groupDirectReplyRecipient != null) {
-        composer.displayPrivacyChrome(state.groupDirectReplyRecipient)
+        composer.displayReplyHint(state.groupDirectReplyRecipient)
       } else if (state.storyRecord != null) {
-        composer.displayPrivacyChrome(state.storyRecord.recipient)
-      }
-
-      if (state.storyRecord != null) {
-        composer.setQuote(state.storyRecord as MediaMmsMessageRecord)
+        composer.displayReplyHint(state.storyRecord.recipient)
       }
     }
   }

@@ -56,9 +56,9 @@ public final class LocalBackupJob extends BaseJob {
                                                   .setQueue(QUEUE)
                                                   .setMaxInstancesForFactory(1)
                                                   .setMaxAttempts(3);
-    if (force || Build.VERSION.SDK_INT >= 31) {
+    if (force) {
       jobManager.cancelAllInQueue(QUEUE);
-    } else {
+    } else if (Build.VERSION.SDK_INT < 31) {
       parameters.addConstraint(ChargingConstraint.KEY);
     }
 
@@ -131,7 +131,7 @@ public final class LocalBackupJob extends BaseJob {
                                                               this::isCanceled);
         stopwatch.split("backup-create");
 
-        boolean valid = BackupVerifier.verifyFile(new FileInputStream(tempFile), backupPassword, finishedEvent.getCount());
+        boolean valid = BackupVerifier.verifyFile(new FileInputStream(tempFile), backupPassword, finishedEvent.getCount(), this::isCanceled);
         stopwatch.split("backup-verify");
         stopwatch.stop(TAG);
 

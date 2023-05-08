@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.components.settings.conversation
 
+import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -25,6 +26,7 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import org.signal.core.util.DimensionUnit
+import org.signal.core.util.getParcelableArrayListExtraCompat
 import org.thoughtcrime.securesms.AvatarPreviewActivity
 import org.thoughtcrime.securesms.BlockUnblockDialog
 import org.thoughtcrime.securesms.InviteActivity
@@ -54,7 +56,7 @@ import org.thoughtcrime.securesms.components.settings.conversation.preferences.L
 import org.thoughtcrime.securesms.components.settings.conversation.preferences.RecipientPreference
 import org.thoughtcrime.securesms.components.settings.conversation.preferences.SharedMediaPreference
 import org.thoughtcrime.securesms.components.settings.conversation.preferences.Utils.formatMutedUntil
-import org.thoughtcrime.securesms.contacts.ContactsCursorLoader
+import org.thoughtcrime.securesms.contacts.ContactSelectionDisplayMode
 import org.thoughtcrime.securesms.conversation.ConversationIntents
 import org.thoughtcrime.securesms.groups.ParcelableGroupId
 import org.thoughtcrime.securesms.groups.ui.GroupErrors
@@ -171,7 +173,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     when (requestCode) {
       REQUEST_CODE_ADD_MEMBERS_TO_GROUP -> if (data != null) {
-        val selected: List<RecipientId> = requireNotNull(data.getParcelableArrayListExtra(PushContactSelectionActivity.KEY_SELECTED_RECIPIENTS))
+        val selected: List<RecipientId> = requireNotNull(data.getParcelableArrayListExtraCompat(PushContactSelectionActivity.KEY_SELECTED_RECIPIENTS, RecipientId::class.java))
         val progress: SimpleProgressDialog.DismissibleDialog = SimpleProgressDialog.showDelayed(requireContext())
 
         viewModel.onAddToGroupComplete(selected) {
@@ -528,10 +530,13 @@ class ConversationSettingsFragment : DSLSettingsFragment(
           SharedMediaPreference.Model(
             mediaCursor = state.sharedMedia,
             mediaIds = state.sharedMediaIds,
-            onMediaRecordClick = { mediaRecord, isLtr ->
+            onMediaRecordClick = { view, mediaRecord, isLtr ->
+              view.transitionName = "thumb"
+              val options = ActivityOptions.makeSceneTransitionAnimation(requireActivity(), view, "thumb")
               startActivityForResult(
                 MediaIntentFactory.intentFromMediaRecord(requireContext(), mediaRecord, isLtr, allMediaInRail = true),
-                REQUEST_CODE_RETURN_FROM_MEDIA
+                REQUEST_CODE_RETURN_FROM_MEDIA,
+                options.toBundle()
               )
             }
           )
@@ -561,7 +566,6 @@ class ConversationSettingsFragment : DSLSettingsFragment(
         }
 
         if (recipientSettingsState.selfHasGroups && !state.recipient.isReleaseNotes) {
-
           dividerPref()
 
           val groupsInCommonCount = recipientSettingsState.allGroupsInCommon.size
@@ -768,7 +772,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
       AddMembersActivity.createIntent(
         requireContext(),
         addMembersToGroup.groupId,
-        ContactsCursorLoader.DisplayMode.FLAG_PUSH,
+        ContactSelectionDisplayMode.FLAG_PUSH,
         addMembersToGroup.selectionWarning,
         addMembersToGroup.selectionLimit,
         addMembersToGroup.isAnnouncementGroup,

@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.dependencies;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -46,7 +47,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.megaphone.MegaphoneRepository;
 import org.thoughtcrime.securesms.messages.BackgroundMessageRetriever;
 import org.thoughtcrime.securesms.messages.IncomingMessageObserver;
-import org.thoughtcrime.securesms.messages.IncomingMessageProcessor;
 import org.thoughtcrime.securesms.net.SignalWebSocketHealthMonitor;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.notifications.OptimizedMessageNotifier;
@@ -157,11 +157,6 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
   }
 
   @Override
-  public @NonNull IncomingMessageProcessor provideIncomingMessageProcessor() {
-    return new IncomingMessageProcessor(context);
-  }
-
-  @Override
   public @NonNull BackgroundMessageRetriever provideBackgroundMessageRetriever() {
     return new BackgroundMessageRetriever();
   }
@@ -191,6 +186,7 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
     return new FrameRateTracker(context);
   }
 
+  @SuppressLint("DiscouragedApi")
   public @NonNull MegaphoneRepository provideMegaphoneRepository() {
     return new MegaphoneRepository(context);
   }
