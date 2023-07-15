@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.findNavController
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.LoggingFragment
 import org.thoughtcrime.securesms.R
@@ -16,7 +17,6 @@ import org.thoughtcrime.securesms.components.settings.app.changenumber.ChangeNum
 import org.thoughtcrime.securesms.components.settings.app.changenumber.ChangeNumberUtil.getViewModel
 import org.thoughtcrime.securesms.registration.RegistrationSessionProcessor
 import org.thoughtcrime.securesms.registration.VerifyAccountRepository
-import org.thoughtcrime.securesms.util.LifecycleDisposable
 import org.thoughtcrime.securesms.util.dualsim.MccMncProducer
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 
@@ -73,11 +73,11 @@ class ChangeNumberVerifyFragment : LoggingFragment(R.layout.fragment_change_phon
           return@subscribe
         }
 
-        val processor = (result as RequestCodeResult.RequestedVerificationCode).processor
+        val processor: RegistrationSessionProcessor = (result as RequestCodeResult.RequestedVerificationCode).processor
 
         if (processor.hasResult()) {
           findNavController().safeNavigate(R.id.action_changePhoneNumberVerifyFragment_to_changeNumberEnterCodeFragment)
-        } else if (processor.captchaRequired()) {
+        } else if (processor.captchaRequired(viewModel.excludedChallenges)) {
           Log.i(TAG, "Unable to request sms code due to captcha required")
           findNavController().safeNavigate(R.id.action_changePhoneNumberVerifyFragment_to_captchaFragment, getCaptchaArguments())
           requestingCaptcha = true

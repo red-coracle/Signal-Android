@@ -36,6 +36,14 @@ import org.thoughtcrime.securesms.database.helpers.migration.V177_MessageSendLog
 import org.thoughtcrime.securesms.database.helpers.migration.V178_ReportingTokenColumnMigration
 import org.thoughtcrime.securesms.database.helpers.migration.V179_CleanupDanglingMessageSendLogMigration
 import org.thoughtcrime.securesms.database.helpers.migration.V180_RecipientNicknameMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V181_ThreadTableForeignKeyCleanup
+import org.thoughtcrime.securesms.database.helpers.migration.V182_CallTableMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V183_CallLinkTableMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V184_CallLinkReplaceIndexMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V185_MessageRecipientsAndEditMessageMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V186_ForeignKeyIndicesMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V187_MoreForeignKeyIndexesMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V188_FixMessageRecipientsAndEditMessageMigration
 
 /**
  * Contains all of the database migrations for [SignalDatabase]. Broken into a separate file for cleanliness.
@@ -44,7 +52,7 @@ object SignalDatabaseMigrations {
 
   val TAG: String = Log.tag(SignalDatabaseMigrations.javaClass)
 
-  const val DATABASE_VERSION = 180
+  const val DATABASE_VERSION = 188
 
   @JvmStatic
   fun migrate(context: Application, db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -174,6 +182,38 @@ object SignalDatabaseMigrations {
 
     if (oldVersion < 180) {
       V180_RecipientNicknameMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 181) {
+      V181_ThreadTableForeignKeyCleanup.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 182) {
+      V182_CallTableMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 183) {
+      V183_CallLinkTableMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 184) {
+      V184_CallLinkReplaceIndexMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 185) {
+      V185_MessageRecipientsAndEditMessageMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 186) {
+      V186_ForeignKeyIndicesMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 187) {
+      V187_MoreForeignKeyIndexesMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 188) {
+      V188_FixMessageRecipientsAndEditMessageMigration.migrate(context, db, oldVersion, newVersion)
     }
   }
 
