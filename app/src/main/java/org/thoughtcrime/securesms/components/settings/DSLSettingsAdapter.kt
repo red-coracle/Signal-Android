@@ -64,6 +64,7 @@ abstract class PreferenceViewHolder<T : PreferenceModel<T>>(itemView: View) : Ma
     val icon = model.icon?.resolve(context)
     iconView.setImageDrawable(icon)
     iconView.visible = icon != null
+    iconView.alpha = if (model.isEnabled) 1f else 0.5f
 
     val iconEnd = model.iconEnd?.resolve(context)
     iconEndView?.setImageDrawable(iconEnd)
@@ -211,8 +212,13 @@ class SwitchPreferenceViewHolder(itemView: View) : PreferenceViewHolder<SwitchPr
     switchWidget.setOnCheckedChangeListener(null)
 
     switchWidget.isChecked = model.isChecked
+    switchWidget.isEnabled = model.isEnabled
 
     switchWidget.setOnCheckedChangeListener { _, _ ->
+      model.onClick()
+    }
+
+    itemView.setOnClickListener {
       model.onClick()
     }
 
@@ -221,12 +227,6 @@ class SwitchPreferenceViewHolder(itemView: View) : PreferenceViewHolder<SwitchPr
     }
 
     super.bind(model)
-
-    switchWidget.isEnabled = model.isEnabled
-
-    itemView.setOnClickListener {
-      model.onClick()
-    }
   }
 }
 

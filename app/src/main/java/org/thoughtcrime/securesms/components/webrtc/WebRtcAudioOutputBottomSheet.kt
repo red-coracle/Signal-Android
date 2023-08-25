@@ -1,7 +1,6 @@
 package org.thoughtcrime.securesms.components.webrtc
 
 import android.content.DialogInterface
-import android.os.Bundle
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +30,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import org.signal.core.ui.BottomSheets
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.compose.ComposeBottomSheetDialogFragment
 import org.thoughtcrime.securesms.util.BottomSheetUtil
@@ -50,7 +50,7 @@ class WebRtcAudioOutputBottomSheet : ComposeBottomSheetDialogFragment(), DialogI
         .padding(16.dp)
         .wrapContentSize()
     ) {
-      Handle()
+      BottomSheets.Handle()
       DeviceList(audioOutputOptions = viewModel.audioRoutes.toImmutableList(), initialDeviceId = viewModel.defaultDeviceId, modifier = Modifier.fillMaxWidth(), onDeviceSelected = viewModel.onClick)
     }
   }
@@ -59,21 +59,26 @@ class WebRtcAudioOutputBottomSheet : ComposeBottomSheetDialogFragment(), DialogI
     dismiss()
   }
 
-  fun show(fm: FragmentManager, tag: String?, audioRoutes: List<AudioOutputOption>, selectedDeviceId: Int, onClick: (AudioOutputOption) -> Unit) {
+  fun show(fm: FragmentManager, tag: String?, audioRoutes: List<AudioOutputOption>, selectedDeviceId: Int, onClick: (AudioOutputOption) -> Unit, onDismiss: (DialogInterface) -> Unit) {
     super.showNow(fm, tag)
     viewModel.audioRoutes = audioRoutes
     viewModel.defaultDeviceId = selectedDeviceId
     viewModel.onClick = onClick
+    viewModel.onDismiss = onDismiss
+  }
+
+  override fun onDismiss(dialog: DialogInterface) {
+    super.onDismiss(dialog)
+    viewModel.onDismiss(dialog)
   }
 
   companion object {
     const val TAG = "WebRtcAudioOutputBottomSheet"
 
     @JvmStatic
-    fun show(fragmentManager: FragmentManager, audioRoutes: List<AudioOutputOption>, selectedDeviceId: Int, onClick: (AudioOutputOption) -> Unit): WebRtcAudioOutputBottomSheet {
+    fun show(fragmentManager: FragmentManager, audioRoutes: List<AudioOutputOption>, selectedDeviceId: Int, onClick: (AudioOutputOption) -> Unit, onDismiss: (DialogInterface) -> Unit): WebRtcAudioOutputBottomSheet {
       val bottomSheet = WebRtcAudioOutputBottomSheet()
-      val args = Bundle()
-      bottomSheet.show(fragmentManager, BottomSheetUtil.STANDARD_BOTTOM_SHEET_FRAGMENT_TAG, audioRoutes, selectedDeviceId, onClick)
+      bottomSheet.show(fragmentManager, BottomSheetUtil.STANDARD_BOTTOM_SHEET_FRAGMENT_TAG, audioRoutes, selectedDeviceId, onClick, onDismiss)
       return bottomSheet
     }
   }
@@ -134,6 +139,7 @@ class AudioOutputViewModel : ViewModel() {
   var audioRoutes: List<AudioOutputOption> = emptyList()
   var defaultDeviceId: Int = -1
   var onClick: (AudioOutputOption) -> Unit = {}
+  var onDismiss: (DialogInterface) -> Unit = {}
 }
 
 private fun getDrawableResourceForDeviceType(deviceType: SignalAudioManager.AudioDevice): Int {

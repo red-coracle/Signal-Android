@@ -3,9 +3,10 @@ package org.thoughtcrime.securesms.components.settings.conversation
 import android.database.Cursor
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -21,6 +22,7 @@ import org.thoughtcrime.securesms.components.settings.conversation.preferences.L
 import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.model.StoryViewState
+import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.LiveGroup
 import org.thoughtcrime.securesms.groups.v2.GroupAddMembersResult
@@ -29,6 +31,7 @@ import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.recipients.RecipientUtil
 import org.thoughtcrime.securesms.util.FeatureFlags
+import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.livedata.LiveDataUtil
 import org.thoughtcrime.securesms.util.livedata.Store
 import java.util.Optional
@@ -46,7 +49,8 @@ sealed class ConversationSettingsViewModel(
 
   protected val store = Store(
     ConversationSettingsState(
-      specificSettingsState = specificSettingsState
+      specificSettingsState = specificSettingsState,
+      isDeprecatedOrUnregistered = SignalStore.misc().isClientDeprecated || TextSecurePreferences.isUnauthorizedReceived(ApplicationDependencies.getApplication())
     )
   )
   protected val internalEvents: Subject<ConversationSettingsEvent> = PublishSubject.create()
@@ -59,7 +63,7 @@ sealed class ConversationSettingsViewModel(
   protected val disposable = CompositeDisposable()
 
   init {
-    val threadId: LiveData<Long> = Transformations.distinctUntilChanged(Transformations.map(state) { it.threadId })
+    val threadId: LiveData<Long> = state.map { it.threadId }.distinctUntilChanged()
     val updater: LiveData<Long> = LiveDataUtil.combineLatest(threadId, sharedMediaUpdateTrigger) { tId, _ -> tId }
 
     val sharedMedia: LiveData<Optional<Cursor>> = LiveDataUtil.mapAsync(SignalExecutors.BOUNDED, updater) { tId ->

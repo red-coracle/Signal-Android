@@ -6,10 +6,11 @@ import android.os.Build
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
-import org.thoughtcrime.securesms.jobs.ForegroundServiceUtil
 import org.thoughtcrime.securesms.jobs.PushNotificationReceiveJob
 import org.thoughtcrime.securesms.messages.WebSocketStrategy
+import org.thoughtcrime.securesms.util.SignalLocalMetrics
 import org.thoughtcrime.securesms.util.concurrent.SerialMonoLifoExecutor
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Our goals with FCM processing are as follows:
@@ -30,50 +31,39 @@ import org.thoughtcrime.securesms.util.concurrent.SerialMonoLifoExecutor
 object FcmFetchManager {
 
   private val TAG = Log.tag(FcmFetchManager::class.java)
-
   private val EXECUTOR = SerialMonoLifoExecutor(SignalExecutors.UNBOUNDED)
+
+  val WEBSOCKET_DRAIN_TIMEOUT = 5.minutes.inWholeMilliseconds
 
   @Volatile
   private var activeCount = 0
-
-  @Volatile
-  private var startedForeground = false
 
   /**
    * @return True if a service was successfully started, otherwise false.
    */
   @JvmStatic
-  fun enqueue(context: Context, foreground: Boolean): Boolean {
-    synchronized(this) {
-      try {
-        if (foreground) {
-          Log.i(TAG, "Starting in the foreground.")
-          ForegroundServiceUtil.startWhenCapableOrThrow(context, Intent(context, FcmFetchForegroundService::class.java))
-          startedForeground = true
-        } else {
-          Log.i(TAG, "Starting in the background.")
-          context.startService(Intent(context, FcmFetchBackgroundService::class.java))
-        }
+  fun startBackgroundService(context: Context) {
+    Log.i(TAG, "Starting in the background.")
+    context.startService(Intent(context, FcmFetchBackgroundService::class.java))
+  }
 
-        val performedReplace = EXECUTOR.enqueue { fetch(context) }
-
-        if (performedReplace) {
-          Log.i(TAG, "Already have one running and one enqueued. Ignoring.")
-        } else {
-          activeCount++
-          Log.i(TAG, "Incrementing active count to $activeCount")
-        }
-      } catch (e: Exception) {
-        Log.w(TAG, "Failed to start service!", e)
-        return false
-      }
-    }
-
-    return true
+  /**
+   * @return True if a service was successfully started, otherwise false.
+   */
+  @JvmStatic
+  fun startForegroundService(context: Context) {
+    Log.i(TAG, "Starting in the foreground.")
+    FcmFetchForegroundService.startServiceIfNecessary(context)
   }
 
   private fun fetch(context: Context) {
-    retrieveMessages(context)
+    val metricId = SignalLocalMetrics.PushWebsocketFetch.startFetch()
+    val success = retrieveMessages(context)
+    if (!success) {
+      SignalLocalMetrics.PushWebsocketFetch.onTimedOut(metricId)
+    } else {
+      SignalLocalMetrics.PushWebsocketFetch.onDrained(metricId)
+    }
 
     synchronized(this) {
       activeCount--
@@ -81,23 +71,27 @@ object FcmFetchManager {
       if (activeCount <= 0) {
         Log.i(TAG, "No more active. Stopping.")
         context.stopService(Intent(context, FcmFetchBackgroundService::class.java))
-
-        if (startedForeground) {
-          try {
-            context.startService(FcmFetchForegroundService.buildStopIntent(context))
-          } catch (e: IllegalStateException) {
-            Log.w(TAG, "Failed to stop the foreground notification!", e)
-          }
-
-          startedForeground = false
-        }
+        FcmFetchForegroundService.stopServiceIfNecessary(context)
       }
     }
   }
 
   @JvmStatic
-  fun retrieveMessages(context: Context) {
-    val success = ApplicationDependencies.getBackgroundMessageRetriever().retrieveMessages(context, WebSocketStrategy())
+  fun enqueueFetch(context: Context) {
+    synchronized(this) {
+      val performedReplace = EXECUTOR.enqueue { fetch(context) }
+      if (performedReplace) {
+        Log.i(TAG, "Already have one running and one enqueued. Ignoring.")
+      } else {
+        activeCount++
+        Log.i(TAG, "Incrementing active count to $activeCount")
+      }
+    }
+  }
+
+  @JvmStatic
+  fun retrieveMessages(context: Context): Boolean {
+    val success = ApplicationDependencies.getBackgroundMessageRetriever().retrieveMessages(context, WebSocketStrategy(WEBSOCKET_DRAIN_TIMEOUT))
 
     if (success) {
       Log.i(TAG, "Successfully retrieved messages.")
@@ -110,5 +104,7 @@ object FcmFetchManager {
         ApplicationDependencies.getJobManager().add(PushNotificationReceiveJob())
       }
     }
+
+    return success
   }
 }

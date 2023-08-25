@@ -51,7 +51,6 @@ import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.giph.mp4.GiphyMp4Playable;
 import org.thoughtcrime.securesms.giph.mp4.GiphyMp4PlaybackPolicyEnforcer;
 import org.thoughtcrime.securesms.mms.GlideRequests;
-import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.CachedInflater;
 import org.thoughtcrime.securesms.util.DateUtils;
@@ -78,7 +77,8 @@ import java.util.Set;
  */
 public class ConversationAdapter
     extends ListAdapter<ConversationMessage, RecyclerView.ViewHolder>
-    implements StickyHeaderDecoration.StickyHeaderAdapter<ConversationAdapter.StickyHeaderViewHolder>
+    implements StickyHeaderDecoration.StickyHeaderAdapter<ConversationAdapter.StickyHeaderViewHolder>,
+               ConversationAdapterBridge
 {
 
   private static final String TAG = Log.tag(ConversationAdapter.class);
@@ -105,8 +105,6 @@ public class ConversationAdapter
   private final LifecycleOwner    lifecycleOwner;
   private final GlideRequests     glideRequests;
   private final Locale            locale;
-  private final Recipient         recipient;
-
   private final Set<MultiselectPart>         selected;
   private final Calendar                     calendar;
 
@@ -129,7 +127,7 @@ public class ConversationAdapter
                       @NonNull GlideRequests glideRequests,
                       @NonNull Locale locale,
                       @Nullable ItemClickListener clickListener,
-                      @NonNull Recipient recipient,
+                      boolean hasWallpaper,
                       @NonNull Colorizer colorizer)
   {
     super(new DiffUtil.ItemCallback<ConversationMessage>() {
@@ -150,10 +148,9 @@ public class ConversationAdapter
     this.glideRequests                = glideRequests;
     this.locale                       = locale;
     this.clickListener                = clickListener;
-    this.recipient                    = recipient;
     this.selected                     = new HashSet<>();
     this.calendar                     = Calendar.getInstance();
-    this.hasWallpaper                 = recipient.hasWallpaper();
+    this.hasWallpaper                 = hasWallpaper;
     this.isMessageRequestAccepted     = true;
     this.colorizer                    = colorizer;
   }
@@ -292,7 +289,7 @@ public class ConversationAdapter
                                                   glideRequests,
                                                   locale,
                                                   selected,
-                                                  recipient,
+                                                  conversationMessage.getThreadRecipient(),
                                                   searchQuery,
                                                   conversationMessage == recordToPulse,
                                                   hasWallpaper && displayMode.displayWallpaper(),
@@ -340,8 +337,10 @@ public class ConversationAdapter
 
     if (scheduledMessagesMode) {
       calendar.setTimeInMillis(((MediaMmsMessageRecord) conversationMessage.getMessageRecord()).getScheduledDate());
-    } else {
+    } else if (condensedMode == ConversationItemDisplayMode.EDIT_HISTORY) {
       calendar.setTimeInMillis(conversationMessage.getMessageRecord().getDateSent());
+    } else {
+      calendar.setTimeInMillis(conversationMessage.getConversationTimestamp());
     }
     return calendar.get(Calendar.YEAR) * 1000L + calendar.get(Calendar.DAY_OF_YEAR);
   }
@@ -358,8 +357,10 @@ public class ConversationAdapter
 
     if (scheduledMessagesMode) {
       viewHolder.setText(DateUtils.getScheduledMessagesDateHeaderString(viewHolder.itemView.getContext(), locale, ((MediaMmsMessageRecord) conversationMessage.getMessageRecord()).getScheduledDate()));
-    } else {
+    } else if (condensedMode == ConversationItemDisplayMode.EDIT_HISTORY) {
       viewHolder.setText(DateUtils.getConversationDateHeaderString(viewHolder.itemView.getContext(), locale, conversationMessage.getMessageRecord().getDateSent()));
+    } else {
+      viewHolder.setText(DateUtils.getConversationDateHeaderString(viewHolder.itemView.getContext(), locale, conversationMessage.getConversationTimestamp()));
     }
 
     if (type == HEADER_TYPE_POPOVER_DATE) {
@@ -381,6 +382,10 @@ public class ConversationAdapter
     } else {
       viewHolder.setTextColor(ContextCompat.getColor(context, R.color.signal_colorOnSurfaceVariant));
     }
+  }
+
+  public @Nullable ConversationMessage getConversationMessage(int position) {
+    return getItem(position);
   }
 
   public @Nullable ConversationMessage getItem(int position) {
@@ -440,7 +445,8 @@ public class ConversationAdapter
   }
 
   public boolean isForRecipientId(@NonNull RecipientId recipientId) {
-    return recipient.getId().equals(recipientId);
+    // TODO [alex] -- This should be fine, since we now have a 1:1 relationship between fragment and recipient.
+    return true;
   }
 
   void onBindLastSeenViewHolder(StickyHeaderViewHolder viewHolder, long unreadCount) {
@@ -455,7 +461,7 @@ public class ConversationAdapter
     }
   }
 
-  boolean hasNoConversationMessages() {
+  public boolean hasNoConversationMessages() {
     return super.getItemCount() == 0;
   }
 
@@ -562,7 +568,7 @@ public class ConversationAdapter
    * Lets the adapter know that the wallpaper state has changed.
    * @return True if the internal wallpaper state changed, otherwise false.
    */
-  boolean onHasWallpaperChanged(boolean hasWallpaper) {
+  public boolean onHasWallpaperChanged(boolean hasWallpaper) {
     if (this.hasWallpaper != hasWallpaper) {
       Log.d(TAG, "Resetting adapter due to wallpaper change.");
       this.hasWallpaper = hasWallpaper;
@@ -824,37 +830,6 @@ public class ConversationAdapter
   private static class PlaceholderViewHolder extends RecyclerView.ViewHolder {
     PlaceholderViewHolder(@NonNull View itemView) {
       super(itemView);
-    }
-  }
-
-  public static class PulseRequest {
-    private final int     position;
-    private final boolean isOutgoing;
-
-    PulseRequest(int position, boolean isOutgoing) {
-      this.position   = position;
-      this.isOutgoing = isOutgoing;
-    }
-
-    public int getPosition() {
-      return position;
-    }
-
-    public boolean isOutgoing() {
-      return isOutgoing;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      final PulseRequest that = (PulseRequest) o;
-      return position == that.position;
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(position);
     }
   }
 

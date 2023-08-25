@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.jobs
 
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -20,6 +21,13 @@ class AccountConsistencyWorkerJob private constructor(parameters: Parameters) : 
     private val TAG = Log.tag(AccountConsistencyWorkerJob::class.java)
 
     const val KEY = "AccountConsistencyWorkerJob"
+
+    @JvmStatic
+    fun enqueueIfNecessary() {
+      if (System.currentTimeMillis() - SignalStore.misc().lastConsistencyCheckTime > 3.days.inWholeMilliseconds) {
+        ApplicationDependencies.getJobManager().add(AccountConsistencyWorkerJob())
+      }
+    }
   }
 
   constructor() : this(
@@ -43,6 +51,11 @@ class AccountConsistencyWorkerJob private constructor(parameters: Parameters) : 
       return
     }
 
+    if (!SignalStore.account().isRegistered || SignalStore.account().aci == null) {
+      Log.i(TAG, "Not yet registered, skipping.")
+      return
+    }
+
     val profile: SignalServiceProfile = ProfileUtil.retrieveProfileSync(context, Recipient.self(), SignalServiceProfile.RequestType.PROFILE, false).profile
     val encodedPublicKey = Base64.encodeBytes(SignalStore.account().aciIdentityKey.publicKey.serialize())
 
@@ -55,6 +68,8 @@ class AccountConsistencyWorkerJob private constructor(parameters: Parameters) : 
     } else {
       Log.i(TAG, "Everything matched.")
     }
+
+    SignalStore.misc().lastConsistencyCheckTime = System.currentTimeMillis()
   }
 
   override fun onShouldRetry(e: Exception): Boolean {

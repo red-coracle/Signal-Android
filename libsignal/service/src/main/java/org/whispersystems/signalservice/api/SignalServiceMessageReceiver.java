@@ -154,7 +154,7 @@ public class SignalServiceMessageReceiver {
     if (!pointer.getDigest().isPresent()) throw new InvalidMessageException("No attachment digest!");
 
     socket.retrieveAttachment(pointer.getCdnNumber(), pointer.getRemoteId(), destination, maxSizeBytes, listener);
-    return AttachmentCipherInputStream.createForAttachment(destination, pointer.getSize().orElse(0), pointer.getKey(), pointer.getDigest().get());
+    return AttachmentCipherInputStream.createForAttachment(destination, pointer.getSize().orElse(0), pointer.getKey(), pointer.getDigest().get(), pointer.getincrementalDigest().orElse(new byte[0]));
   }
 
   public InputStream retrieveSticker(byte[] packId, byte[] packKey, int stickerId)
@@ -179,11 +179,8 @@ public class SignalServiceMessageReceiver {
     byte[] manifestBytes = socket.retrieveStickerManifest(packId);
 
     InputStream           cipherStream = AttachmentCipherInputStream.createForStickerData(manifestBytes, packKey);
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-    Util.copy(cipherStream, outputStream);
-
-    StickerProtos.Pack                             pack     = StickerProtos.Pack.parseFrom(outputStream.toByteArray());
+    StickerProtos.Pack                             pack     = StickerProtos.Pack.parseFrom(Util.readFullyAsBytes(cipherStream));
     List<SignalServiceStickerManifest.StickerInfo> stickers = new ArrayList<>(pack.getStickersCount());
     SignalServiceStickerManifest.StickerInfo       cover    = pack.hasCover() ? new SignalServiceStickerManifest.StickerInfo(pack.getCover().getId(), pack.getCover().getEmoji(), pack.getCover().getContentType())
                                                                           : null;

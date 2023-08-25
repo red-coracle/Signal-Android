@@ -87,6 +87,7 @@ import org.whispersystems.signalservice.api.util.Uint64Util;
 import org.whispersystems.signalservice.api.util.UuidUtil;
 import org.whispersystems.signalservice.api.websocket.WebSocketUnavailableException;
 import org.whispersystems.signalservice.internal.configuration.SignalServiceConfiguration;
+import org.whispersystems.signalservice.internal.crypto.AttachmentDigest;
 import org.whispersystems.signalservice.internal.crypto.PaddingInputStream;
 import org.whispersystems.signalservice.internal.push.AttachmentV2UploadAttributes;
 import org.whispersystems.signalservice.internal.push.AttachmentV3UploadAttributes;
@@ -438,7 +439,7 @@ public class SignalServiceMessageSender {
                                            long targetSentTimestamp)
       throws UntrustedIdentityException, IOException
   {
-    Log.d(TAG, "[" + message.getTimestamp() + "] Sending an edit message.");
+    Log.d(TAG, "[" + message.getTimestamp() + "] Sending an edit message for " + targetSentTimestamp + ".");
 
     Content content = createEditMessageContent(new SignalServiceEditMessage(targetSentTimestamp, message));
 
@@ -641,12 +642,14 @@ public class SignalServiceMessageSender {
   public SendMessageResult sendSyncMessage(SignalServiceDataMessage dataMessage)
       throws IOException, UntrustedIdentityException
   {
+    Log.d(TAG, "[" + dataMessage.getTimestamp() + "] Sending self-sync message.");
     return sendSyncMessage(createSelfSendSyncMessage(dataMessage), Optional.empty());
   }
 
   public SendMessageResult sendSelfSyncEditMessage(SignalServiceEditMessage editMessage)
       throws IOException, UntrustedIdentityException
   {
+    Log.d(TAG, "[" + editMessage.getDataMessage().getTimestamp() + "] Sending self-sync edit message for " + editMessage.getTargetSentTimestamp() + ".");
     return sendSyncMessage(createSelfSendSyncEditMessage(editMessage), Optional.empty());
   }
 
@@ -658,8 +661,6 @@ public class SignalServiceMessageSender {
 
     if (message.getContacts().isPresent()) {
       content = createMultiDeviceContactsContent(message.getContacts().get().getContactsStream().asStream(), message.getContacts().get().isComplete());
-    } else if (message.getGroups().isPresent()) {
-      content = createMultiDeviceGroupsContent(message.getGroups().get().asStream());
     } else if (message.getRead().isPresent()) {
       content = createMultiDeviceReadContent(message.getRead().get());
       urgent  = true;
@@ -688,8 +689,6 @@ public class SignalServiceMessageSender {
     } else if (message.getRequest().isPresent()) {
       content = createRequestContent(message.getRequest().get().getRequest());
       urgent  = message.getRequest().get().isUrgent();
-    } else if (message.getPniIdentity().isPresent()) {
-      content = createPniIdentityContent(message.getPniIdentity().get());
     } else if (message.getCallEvent().isPresent()) {
       content = createCallEventContent(message.getCallEvent().get());
     } else {
@@ -712,7 +711,7 @@ public class SignalServiceMessageSender {
    * @param pniChangeNumber - Linked device specific updated PNI details
    * @return Encrypted {@link OutgoingPushMessage} to be included in the change number request sent to the server
    */
-  public @Nonnull OutgoingPushMessage getEncryptedSyncPniChangeNumberMessage(int deviceId, @Nonnull SyncMessage.PniChangeNumber pniChangeNumber)
+  public @Nonnull OutgoingPushMessage getEncryptedSyncPniInitializeDeviceMessage(int deviceId, @Nonnull SyncMessage.PniChangeNumber pniChangeNumber)
       throws UntrustedIdentityException, IOException, InvalidKeyException
   {
     SyncMessage.Builder syncMessage     = createSyncMessageBuilder().setPniChangeNumber(pniChangeNumber);
@@ -766,7 +765,7 @@ public class SignalServiceMessageSender {
       v2UploadAttributes = socket.getAttachmentV2UploadAttributes();
     }
 
-    Pair<Long, byte[]> attachmentIdAndDigest = socket.uploadAttachment(attachmentData, v2UploadAttributes);
+    Pair<Long, AttachmentDigest> attachmentIdAndDigest = socket.uploadAttachment(attachmentData, v2UploadAttributes);
 
     return new SignalServiceAttachmentPointer(0,
                                               new SignalServiceAttachmentRemoteId(attachmentIdAndDigest.first()),
@@ -775,7 +774,8 @@ public class SignalServiceMessageSender {
                                               Optional.of(Util.toIntExact(attachment.getLength())),
                                               attachment.getPreview(),
                                               attachment.getWidth(), attachment.getHeight(),
-                                              Optional.of(attachmentIdAndDigest.second()),
+                                              Optional.of(attachmentIdAndDigest.second().getDigest()),
+                                              Optional.of(attachmentIdAndDigest.second().getIncrementalDigest()),
                                               attachment.getFileName(),
                                               attachment.getVoiceNote(),
                                               attachment.isBorderless(),
@@ -815,7 +815,7 @@ public class SignalServiceMessageSender {
   }
 
   private SignalServiceAttachmentPointer uploadAttachmentV3(SignalServiceAttachmentStream attachment, byte[] attachmentKey, PushAttachmentData attachmentData) throws IOException {
-    byte[] digest = socket.uploadAttachment(attachmentData);
+    AttachmentDigest digest = socket.uploadAttachment(attachmentData);
     return new SignalServiceAttachmentPointer(attachmentData.getResumableUploadSpec().getCdnNumber(),
                                               new SignalServiceAttachmentRemoteId(attachmentData.getResumableUploadSpec().getCdnKey()),
                                               attachment.getContentType(),
@@ -824,7 +824,8 @@ public class SignalServiceMessageSender {
                                               attachment.getPreview(),
                                               attachment.getWidth(),
                                               attachment.getHeight(),
-                                              Optional.of(digest),
+                                              Optional.of(digest.getDigest()),
+                                              Optional.ofNullable(digest.getIncrementalDigest()),
                                               attachment.getFileName(),
                                               attachment.getVoiceNote(),
                                               attachment.isBorderless(),
@@ -1306,16 +1307,6 @@ public class SignalServiceMessageSender {
     return container.setSyncMessage(builder).build();
   }
 
-  private Content createMultiDeviceGroupsContent(SignalServiceAttachmentStream groups) throws IOException {
-    Content.Builder     container = Content.newBuilder();
-    SyncMessage.Builder builder   = createSyncMessageBuilder();
-
-    builder.setGroups(SyncMessage.Groups.newBuilder()
-                                        .setBlob(createAttachmentPointer(groups)));
-
-    return container.setSyncMessage(builder).build();
-  }
-
   private Content createMultiDeviceSentTranscriptContent(SentTranscriptMessage transcript, boolean unidentifiedAccess) throws IOException {
     SignalServiceAddress address = transcript.getDestination().get();
     Content              content = createMessageContent(transcript);
@@ -1652,13 +1643,6 @@ public class SignalServiceMessageSender {
     return container.setSyncMessage(builder).build();
   }
 
-  private Content createPniIdentityContent(SyncMessage.PniIdentity proto) {
-    Content.Builder     container = Content.newBuilder();
-    SyncMessage.Builder builder   = createSyncMessageBuilder().setPniIdentity(proto);
-
-    return container.setSyncMessage(builder).build();
-  }
-
   private Content createCallEventContent(SyncMessage.CallEvent proto) {
     Content.Builder     container = Content.newBuilder();
     SyncMessage.Builder builder   = createSyncMessageBuilder().setCallEvent(proto);
@@ -1871,24 +1855,28 @@ public class SignalServiceMessageSender {
         results.add(futureResult.get());
       } catch (ExecutionException e) {
         if (e.getCause() instanceof UntrustedIdentityException) {
-          Log.w(TAG, e);
+          Log.w(TAG, "[" + timestamp + "] Hit identity mismatch: " + recipient.getIdentifier(), e);
           results.add(SendMessageResult.identityFailure(recipient, ((UntrustedIdentityException) e.getCause()).getIdentityKey()));
         } else if (e.getCause() instanceof UnregisteredUserException) {
-          Log.w(TAG, "[" + timestamp + "] Found unregistered user.");
+          Log.w(TAG, "[" + timestamp + "] Hit unregistered user: " + recipient.getIdentifier());
           results.add(SendMessageResult.unregisteredFailure(recipient));
         } else if (e.getCause() instanceof PushNetworkException) {
-          Log.w(TAG, e);
+          Log.w(TAG, "[" + timestamp + "] Hit network failure: " + recipient.getIdentifier(), e);
           results.add(SendMessageResult.networkFailure(recipient));
         } else if (e.getCause() instanceof ServerRejectedException) {
-          Log.w(TAG, e);
+          Log.w(TAG, "[" + timestamp + "] Hit server rejection: " + recipient.getIdentifier(), e);
           throw ((ServerRejectedException) e.getCause());
         } else if (e.getCause() instanceof ProofRequiredException) {
-          Log.w(TAG, e);
+          Log.w(TAG, "[" + timestamp + "] Hit proof required: " + recipient.getIdentifier(), e);
           results.add(SendMessageResult.proofRequiredFailure(recipient, (ProofRequiredException) e.getCause()));
         } else if (e.getCause() instanceof RateLimitException) {
-          Log.w(TAG, e);
+          Log.w(TAG, "[" + timestamp + "] Hit rate limit: " + recipient.getIdentifier(), e);
           results.add(SendMessageResult.rateLimitFailure(recipient, (RateLimitException) e.getCause()));
+        } else if (e.getCause() instanceof InvalidPreKeyException) {
+          Log.w(TAG, "[" + timestamp + "] Hit invalid prekey: " + recipient.getIdentifier(), e);
+          results.add(SendMessageResult.invalidPreKeyFailure(recipient));
         } else {
+          Log.w(TAG, "[" + timestamp + "] Hit unknown exception: " + recipient.getIdentifier(), e);
           throw new IOException(e);
         }
       } catch (InterruptedException e) {
@@ -2339,10 +2327,10 @@ public class SignalServiceMessageSender {
 
   // Visible for testing only
   public OutgoingPushMessage getEncryptedMessage(SignalServiceAddress         recipient,
-                                                  Optional<UnidentifiedAccess> unidentifiedAccess,
-                                                  int                          deviceId,
-                                                  EnvelopeContent              plaintext,
-                                                  boolean                      story)
+                                                 Optional<UnidentifiedAccess> unidentifiedAccess,
+                                                 int                          deviceId,
+                                                 EnvelopeContent              plaintext,
+                                                 boolean                      story)
       throws IOException, InvalidKeyException, UntrustedIdentityException
   {
     SignalProtocolAddress signalProtocolAddress = new SignalProtocolAddress(recipient.getIdentifier(), deviceId);
@@ -2353,6 +2341,8 @@ public class SignalServiceMessageSender {
         List<PreKeyBundle> preKeys = getPreKeys(recipient, unidentifiedAccess, deviceId, story);
 
         for (PreKeyBundle preKey : preKeys) {
+          Log.d(TAG, "Initializing prekey session for " + signalProtocolAddress);
+
           try {
             SignalProtocolAddress preKeyAddress  = new SignalProtocolAddress(recipient.getIdentifier(), preKey.getDeviceId());
             SignalSessionBuilder  sessionBuilder = new SignalSessionBuilder(sessionLock, new SessionBuilder(aciStore, preKeyAddress));
@@ -2366,7 +2356,7 @@ public class SignalServiceMessageSender {
           eventListener.get().onSecurityEvent(recipient);
         }
       } catch (InvalidKeyException e) {
-        throw new IOException(e);
+        throw new InvalidPreKeyException(signalProtocolAddress, e);
       }
     }
 
@@ -2379,9 +2369,15 @@ public class SignalServiceMessageSender {
 
   private List<PreKeyBundle> getPreKeys(SignalServiceAddress recipient, Optional<UnidentifiedAccess> unidentifiedAccess, int deviceId, boolean story) throws IOException {
     try {
+      // If it's only unrestricted because it's a story send, then we know it'll fail
+      if (story && unidentifiedAccess.isPresent() && unidentifiedAccess.get().isUnrestrictedForStory()) {
+        unidentifiedAccess = Optional.empty();
+      }
+
       return socket.getPreKeys(recipient, unidentifiedAccess, deviceId);
     } catch (NonSuccessfulResponseCodeException e) {
       if (e.getCode() == 401 && story) {
+        Log.d(TAG, "Got 401 when fetching prekey for story. Trying without UD.");
         return socket.getPreKeys(recipient, Optional.empty(), deviceId);
       } else {
         throw e;

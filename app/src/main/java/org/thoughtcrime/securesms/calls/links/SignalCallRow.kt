@@ -1,3 +1,8 @@
+/**
+ * Copyright 2023 Signal Messenger, LLC
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package org.thoughtcrime.securesms.calls.links
 
 import androidx.compose.foundation.Image
@@ -15,12 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -28,15 +35,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.signal.core.ui.Buttons
 import org.signal.core.ui.theme.SignalTheme
+import org.signal.ringrtc.CallLinkRootKey
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.conversation.colors.AvatarColorPair
+import org.thoughtcrime.securesms.database.CallLinkTable
+import org.thoughtcrime.securesms.recipients.RecipientId
+import org.thoughtcrime.securesms.service.webrtc.links.CallLinkCredentials
+import org.thoughtcrime.securesms.service.webrtc.links.CallLinkRoomId
+import org.thoughtcrime.securesms.service.webrtc.links.SignalCallLinkState
+import java.time.Instant
 
 @Preview
 @Composable
 private fun SignalCallRowPreview() {
+  val callLink = remember {
+    val credentials = CallLinkCredentials.generate()
+    CallLinkTable.CallLink(
+      recipientId = RecipientId.UNKNOWN,
+      roomId = CallLinkRoomId.fromCallLinkRootKey(CallLinkRootKey(credentials.linkKeyBytes)),
+      credentials = credentials,
+      state = SignalCallLinkState(
+        name = "Call Name",
+        restrictions = org.signal.ringrtc.CallLinkState.Restrictions.NONE,
+        expiration = Instant.MAX,
+        revoked = false
+      )
+    )
+  }
   SignalTheme(false) {
     SignalCallRow(
-      callName = "Call Name",
-      callLink = "https://call.signal.org#blahblahblah",
+      callLink = callLink,
       onJoinClicked = {}
     )
   }
@@ -44,9 +72,8 @@ private fun SignalCallRowPreview() {
 
 @Composable
 fun SignalCallRow(
-  callName: String,
-  callLink: String,
-  onJoinClicked: () -> Unit,
+  callLink: CallLinkTable.CallLink,
+  onJoinClicked: (() -> Unit)?,
   modifier: Modifier = Modifier
 ) {
   Row(
@@ -60,15 +87,17 @@ fun SignalCallRow(
       )
       .padding(16.dp)
   ) {
+    val callColorPair = AvatarColorPair.create(LocalContext.current, callLink.avatarColor)
+
     Image(
       imageVector = ImageVector.vectorResource(id = R.drawable.symbol_video_display_bold_40),
       contentScale = ContentScale.Inside,
       contentDescription = null,
-      colorFilter = ColorFilter.tint(Color(0xFF5151F6)),
+      colorFilter = ColorFilter.tint(Color(callColorPair.foregroundColor)),
       modifier = Modifier
         .size(64.dp)
         .background(
-          color = Color(0xFFE5E5FE),
+          color = Color(callColorPair.backgroundColor),
           shape = CircleShape
         )
     )
@@ -81,22 +110,24 @@ fun SignalCallRow(
         .align(CenterVertically)
     ) {
       Text(
-        text = callName.ifEmpty { stringResource(id = R.string.CreateCallLinkBottomSheetDialogFragment__signal_call) }
+        text = callLink.state.name.ifEmpty { stringResource(id = R.string.CreateCallLinkBottomSheetDialogFragment__signal_call) }
       )
       Text(
-        text = callLink,
+        text = callLink.credentials?.let { CallLinks.url(it.linkKeyBytes) } ?: "",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant
       )
     }
 
-    Spacer(modifier = Modifier.width(10.dp))
+    if (onJoinClicked != null) {
+      Spacer(modifier = Modifier.width(10.dp))
 
-    Buttons.Small(
-      onClick = onJoinClicked,
-      modifier = Modifier.align(CenterVertically)
-    ) {
-      Text(text = stringResource(id = R.string.CreateCallLinkBottomSheetDialogFragment__join))
+      Buttons.Small(
+        onClick = onJoinClicked,
+        modifier = Modifier.align(CenterVertically)
+      ) {
+        Text(text = stringResource(id = R.string.CreateCallLinkBottomSheetDialogFragment__join))
+      }
     }
   }
 }

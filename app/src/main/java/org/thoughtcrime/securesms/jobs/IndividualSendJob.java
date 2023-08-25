@@ -33,6 +33,7 @@ import org.thoughtcrime.securesms.service.ExpiringMessageManager;
 import org.thoughtcrime.securesms.transport.InsecureFallbackApprovalException;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 import org.thoughtcrime.securesms.transport.UndeliverableMessageException;
+import org.thoughtcrime.securesms.util.ConversationUtil;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender.IndividualSendEvents;
@@ -152,7 +153,7 @@ public class IndividualSendJob extends PushSendJob {
     }
 
     try {
-      log(TAG, String.valueOf(message.getSentTimeMillis()), "Sending message: " + messageId + ", Recipient: " + message.getThreadRecipient().getId() + ", Thread: " + threadId + ", Attachments: " + buildAttachmentString(message.getAttachments()));
+      log(TAG, String.valueOf(message.getSentTimeMillis()), "Sending message: " + messageId + ", Recipient: " + message.getThreadRecipient().getId() + ", Thread: " + threadId + ", Attachments: " + buildAttachmentString(message.getAttachments()) + ", Editing: " + (originalEditedMessage != null ? originalEditedMessage.getDateSent() : "N/A"));
 
       RecipientUtil.shareProfileIfFirstSecureMessage(message.getThreadRecipient());
 
@@ -194,6 +195,8 @@ public class IndividualSendJob extends PushSendJob {
       if (message.isViewOnce()) {
         SignalDatabase.attachments().deleteAttachmentFilesForViewOnceMessage(messageId);
       }
+
+      ConversationShortcutRankingUpdateJob.enqueueForOutgoingIfNecessary(recipient);
 
       log(TAG, String.valueOf(message.getSentTimeMillis()), "Sent message: " + messageId);
 

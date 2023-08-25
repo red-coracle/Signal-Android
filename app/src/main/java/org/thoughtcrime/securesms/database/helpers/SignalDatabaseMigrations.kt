@@ -44,6 +44,16 @@ import org.thoughtcrime.securesms.database.helpers.migration.V185_MessageRecipie
 import org.thoughtcrime.securesms.database.helpers.migration.V186_ForeignKeyIndicesMigration
 import org.thoughtcrime.securesms.database.helpers.migration.V187_MoreForeignKeyIndexesMigration
 import org.thoughtcrime.securesms.database.helpers.migration.V188_FixMessageRecipientsAndEditMessageMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V189_CreateCallLinkTableColumnsAndRebuildFKReference
+import org.thoughtcrime.securesms.database.helpers.migration.V190_UniqueMessageMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V191_UniqueMessageMigrationV2
+import org.thoughtcrime.securesms.database.helpers.migration.V192_CallLinkTableNullableRootKeys
+import org.thoughtcrime.securesms.database.helpers.migration.V193_BackCallLinksWithRecipient
+import org.thoughtcrime.securesms.database.helpers.migration.V194_KyberPreKeyMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V195_GroupMemberForeignKeyMigration
+import org.thoughtcrime.securesms.database.helpers.migration.V196_BackCallLinksWithRecipientV2
+import org.thoughtcrime.securesms.database.helpers.migration.V197_DropAvatarColorFromCallLinks
+import org.thoughtcrime.securesms.database.helpers.migration.V198_AddMacDigestColumn
 
 /**
  * Contains all of the database migrations for [SignalDatabase]. Broken into a separate file for cleanliness.
@@ -52,7 +62,7 @@ object SignalDatabaseMigrations {
 
   val TAG: String = Log.tag(SignalDatabaseMigrations.javaClass)
 
-  const val DATABASE_VERSION = 188
+  const val DATABASE_VERSION = 198
 
   @JvmStatic
   fun migrate(context: Application, db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -214,6 +224,46 @@ object SignalDatabaseMigrations {
 
     if (oldVersion < 188) {
       V188_FixMessageRecipientsAndEditMessageMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 189) {
+      V189_CreateCallLinkTableColumnsAndRebuildFKReference.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 190) {
+      V190_UniqueMessageMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 191) {
+      V191_UniqueMessageMigrationV2.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 192) {
+      V192_CallLinkTableNullableRootKeys.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 193) {
+      V193_BackCallLinksWithRecipient.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 194) {
+      V194_KyberPreKeyMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 195) {
+      V195_GroupMemberForeignKeyMigration.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 196) {
+      V196_BackCallLinksWithRecipientV2.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 197) {
+      V197_DropAvatarColorFromCallLinks.migrate(context, db, oldVersion, newVersion)
+    }
+
+    if (oldVersion < 198) {
+      V198_AddMacDigestColumn.migrate(context, db, oldVersion, newVersion)
     }
   }
 

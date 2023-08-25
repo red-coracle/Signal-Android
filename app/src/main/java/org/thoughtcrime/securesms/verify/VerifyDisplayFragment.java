@@ -54,7 +54,7 @@ import org.thoughtcrime.securesms.database.IdentityTable;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.jobs.MultiDeviceVerifiedUpdateJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.thoughtcrime.securesms.qr.QrCode;
+import org.thoughtcrime.securesms.qr.QrCodeUtil;
 import org.thoughtcrime.securesms.recipients.LiveRecipient;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
@@ -408,7 +408,7 @@ public class VerifyDisplayFragment extends Fragment implements ViewTreeObserver.
 
     byte[] qrCodeData   = fingerprint.getScannableFingerprint().getSerialized();
     String qrCodeString = new String(qrCodeData, Charset.forName("ISO-8859-1"));
-    Bitmap qrCodeBitmap = QrCode.create(qrCodeString);
+    Bitmap qrCodeBitmap = QrCodeUtil.create(qrCodeString);
 
     qrCode.setImageBitmap(qrCodeBitmap);
 
@@ -543,6 +543,7 @@ public class VerifyDisplayFragment extends Fragment implements ViewTreeObserver.
             Log.i(TAG, "Saving identity: " + recipientId);
             ApplicationDependencies.getProtocolStore().aci().identities()
                                    .saveIdentityWithoutSideEffects(recipientId,
+                                                                   Recipient.resolved(recipientId).requireServiceId(),
                                                                    remoteIdentity,
                                                                    IdentityTable.VerifiedStatus.VERIFIED,
                                                                    false,

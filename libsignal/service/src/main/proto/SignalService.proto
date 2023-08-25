@@ -479,10 +479,6 @@ message SyncMessage {
     optional bool              complete = 2 [default = false];
   }
 
-  message Groups {
-    optional AttachmentPointer blob = 1;
-  }
-
   message Blocked {
     repeated string numbers  = 1;
     repeated string uuids    = 3;
@@ -493,7 +489,7 @@ message SyncMessage {
     enum Type {
       UNKNOWN       = 0;
       CONTACTS      = 1;
-      GROUPS        = 2;
+//      GROUPS        = 2;
       BLOCKED       = 3;
       CONFIGURATION = 4;
       KEYS          = 5;
@@ -556,11 +552,6 @@ message SyncMessage {
     optional bytes storageService = 1;
   }
 
-  message PniIdentity {
-    optional bytes publicKey  = 1;
-    optional bytes privateKey = 2;
-  }
-
   message MessageRequestResponse {
     enum Type {
       UNKNOWN          = 0;
@@ -599,9 +590,12 @@ message SyncMessage {
   }
 
   message PniChangeNumber {
-    optional bytes  identityKeyPair = 1; // Serialized libsignal-client IdentityKeyPair
-    optional bytes  signedPreKey    = 2; // Serialized libsignal-client SignedPreKeyRecord
-    optional uint32 registrationId  = 3;
+    optional bytes  identityKeyPair       = 1; // Serialized libsignal-client IdentityKeyPair
+    optional bytes  signedPreKey          = 2; // Serialized libsignal-client SignedPreKeyRecord
+    optional bytes  lastResortKyberPreKey = 5; // Serialized libsignal-client KyberPreKeyRecord
+    optional uint32 registrationId        = 3;
+    optional string newE164               = 4; // The e164 we have changed our number to
+    // Next ID: 6
   }
 
   message CallEvent {
@@ -634,9 +628,14 @@ message SyncMessage {
     optional Event     event          = 6;
   }
 
+  message CallLinkUpdate {
+    optional bytes rootKey      = 1;
+    optional bytes adminPassKey = 2;
+  }
+
   optional Sent                   sent                   = 1;
   optional Contacts               contacts               = 2;
-  optional Groups                 groups                 = 3;
+  reserved                      /*groups*/                 3;
   optional Request                request                = 4;
   repeated Read                   read                   = 5;
   optional Blocked                blocked                = 6;
@@ -650,9 +649,10 @@ message SyncMessage {
   optional MessageRequestResponse messageRequestResponse = 14;
   optional OutgoingPayment        outgoingPayment        = 15;
   repeated Viewed                 viewed                 = 16;
-  optional PniIdentity            pniIdentity            = 17;
+  reserved                      /*pniIdentity*/            17;
   optional PniChangeNumber        pniChangeNumber        = 18;
   optional CallEvent              callEvent              = 19;
+  optional CallLinkUpdate         callLinkUpdate         = 20;
 }
 
 message AttachmentPointer {
@@ -667,20 +667,21 @@ message AttachmentPointer {
     fixed64        cdnId           = 1;
     string         cdnKey          = 15;
   }
-  optional string  contentType     = 2;
-  optional bytes   key             = 3;
-  optional uint32  size            = 4;
-  optional bytes   thumbnail       = 5;
-  optional bytes   digest          = 6;
-  optional string  fileName        = 7;
-  optional uint32  flags           = 8;
-  optional uint32  width           = 9;
-  optional uint32  height          = 10;
-  optional string  caption         = 11;
-  optional string  blurHash        = 12;
-  optional uint64  uploadTimestamp = 13;
-  optional uint32  cdnNumber       = 14;
-  // Next ID: 16
+  optional string  contentType       = 2;
+  optional bytes   key               = 3;
+  optional uint32  size              = 4;
+  optional bytes   thumbnail         = 5;
+  optional bytes   digest            = 6;
+  optional bytes   incrementalDigest = 16;
+  optional string  fileName          = 7;
+  optional uint32  flags             = 8;
+  optional uint32  width             = 9;
+  optional uint32  height            = 10;
+  optional string  caption           = 11;
+  optional string  blurHash          = 12;
+  optional uint64  uploadTimestamp   = 13;
+  optional uint32  cdnNumber         = 14;
+  // Next ID: 17
 }
 
 message GroupContext {

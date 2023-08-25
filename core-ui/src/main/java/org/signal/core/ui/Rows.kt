@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -102,39 +103,47 @@ object Rows {
   fun TextRow(
     text: String,
     modifier: Modifier = Modifier,
-    icon: ImageVector? = null
+    iconModifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    foregroundTint: Color = MaterialTheme.colorScheme.onSurface,
+    onClick: (() -> Unit)? = null
   ) {
     if (icon != null) {
       Row(
         modifier = modifier
           .fillMaxWidth()
+          .clickable(enabled = onClick != null, onClick = onClick ?: {})
           .padding(defaultPadding())
       ) {
         Icon(
           imageVector = icon,
           contentDescription = null,
-          tint = MaterialTheme.colorScheme.onSurface
+          tint = foregroundTint,
+          modifier = iconModifier
         )
 
         Spacer(modifier = Modifier.width(24.dp))
 
         Text(
           text = text,
-          modifier = Modifier.weight(1f)
+          modifier = Modifier.weight(1f).align(CenterVertically),
+          color = foregroundTint
         )
       }
     } else {
       Text(
         text = text,
+        color = foregroundTint,
         modifier = modifier
           .fillMaxWidth()
+          .clickable(enabled = onClick != null, onClick = onClick ?: {})
           .padding(defaultPadding())
       )
     }
   }
 
   @Composable
-  private fun defaultPadding(): PaddingValues {
+  fun defaultPadding(): PaddingValues {
     return PaddingValues(
       horizontal = dimensionResource(id = R.dimen.core_ui__gutter),
       vertical = 16.dp
