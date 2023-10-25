@@ -33,8 +33,8 @@ import org.whispersystems.signalservice.api.payments.CurrencyConversions;
 import org.whispersystems.signalservice.api.profiles.AvatarUploadParams;
 import org.whispersystems.signalservice.api.profiles.ProfileAndCredential;
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfileWrite;
-import org.whispersystems.signalservice.api.push.ACI;
-import org.whispersystems.signalservice.api.push.PNI;
+import org.whispersystems.signalservice.api.push.ServiceId.ACI;
+import org.whispersystems.signalservice.api.push.ServiceId.PNI;
 import org.whispersystems.signalservice.api.push.ServiceId;
 import org.whispersystems.signalservice.api.push.ServiceIdType;
 import org.whispersystems.signalservice.api.push.exceptions.NoContentException;
@@ -61,6 +61,8 @@ import org.whispersystems.signalservice.internal.push.BackupAuthCheckResponse;
 import org.whispersystems.signalservice.internal.push.CdsiAuthResponse;
 import org.whispersystems.signalservice.internal.push.OneTimePreKeyCounts;
 import org.whispersystems.signalservice.internal.push.ProfileAvatarData;
+import org.whispersystems.signalservice.internal.push.ProvisionMessage;
+import org.whispersystems.signalservice.internal.push.ProvisioningVersion;
 import org.whispersystems.signalservice.internal.push.PushServiceSocket;
 import org.whispersystems.signalservice.internal.push.RegistrationSessionMetadataResponse;
 import org.whispersystems.signalservice.internal.push.RemoteConfigResponse;
@@ -103,9 +105,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import io.reactivex.rxjava3.core.Single;
-
-import static org.whispersystems.signalservice.internal.push.ProvisioningProtos.ProvisionMessage;
-import static org.whispersystems.signalservice.internal.push.ProvisioningProtos.ProvisioningVersion;
 
 /**
  * The main interface for creating, registering, and
@@ -662,17 +661,17 @@ public class SignalServiceAccountManager {
     Preconditions.checkArgument(pni != null, "Missing PNI!");
 
     PrimaryProvisioningCipher cipher  = new PrimaryProvisioningCipher(deviceKey);
-    ProvisionMessage.Builder  message = ProvisionMessage.newBuilder()
-                                                        .setAciIdentityKeyPublic(ByteString.copyFrom(aciIdentityKeyPair.getPublicKey().serialize()))
-                                                        .setAciIdentityKeyPrivate(ByteString.copyFrom(aciIdentityKeyPair.getPrivateKey().serialize()))
-                                                        .setPniIdentityKeyPublic(ByteString.copyFrom(pniIdentityKeyPair.getPublicKey().serialize()))
-                                                        .setPniIdentityKeyPrivate(ByteString.copyFrom(pniIdentityKeyPair.getPrivateKey().serialize()))
-                                                        .setAci(aci.toString())
-                                                        .setPni(pni.toString())
-                                                        .setNumber(e164)
-                                                        .setProfileKey(ByteString.copyFrom(profileKey.serialize()))
-                                                        .setProvisioningCode(code)
-                                                        .setProvisioningVersion(ProvisioningVersion.CURRENT_VALUE);
+    ProvisionMessage.Builder  message = new ProvisionMessage.Builder()
+                                                            .aciIdentityKeyPublic(okio.ByteString.of(aciIdentityKeyPair.getPublicKey().serialize()))
+                                                            .aciIdentityKeyPrivate(okio.ByteString.of(aciIdentityKeyPair.getPrivateKey().serialize()))
+                                                            .pniIdentityKeyPublic(okio.ByteString.of(pniIdentityKeyPair.getPublicKey().serialize()))
+                                                            .pniIdentityKeyPrivate(okio.ByteString.of(pniIdentityKeyPair.getPrivateKey().serialize()))
+                                                            .aci(aci.toString())
+                                                            .pni(pni.toStringWithoutPrefix())
+                                                            .number(e164)
+                                                            .profileKey(okio.ByteString.of(profileKey.serialize()))
+                                                            .provisioningCode(code)
+                                                            .provisioningVersion(ProvisioningVersion.CURRENT.getValue());
 
     byte[] ciphertext = cipher.encrypt(message.build());
     this.pushServiceSocket.sendProvisioningMessage(deviceIdentifier, ciphertext);
@@ -741,23 +740,23 @@ public class SignalServiceAccountManager {
                                                 new ProfileCipherOutputStreamFactory(profileKey));
     }
 
-    return this.pushServiceSocket.writeProfile(new SignalServiceProfileWrite(profileKey.getProfileKeyVersion(aci.uuid()).serialize(),
+    return this.pushServiceSocket.writeProfile(new SignalServiceProfileWrite(profileKey.getProfileKeyVersion(aci.getLibSignalAci()).serialize(),
                                                                              ciphertextName,
                                                                              ciphertextAbout,
                                                                              ciphertextEmoji,
                                                                              ciphertextMobileCoinAddress,
                                                                              avatar.hasAvatar,
                                                                              avatar.keepTheSame,
-                                                                             profileKey.getCommitment(aci.uuid()).serialize(),
+                                                                             profileKey.getCommitment(aci.getLibSignalAci()).serialize(),
                                                                              visibleBadgeIds),
                                                                              profileAvatarData);
   }
 
-  public Optional<ExpiringProfileKeyCredential> resolveProfileKeyCredential(ServiceId serviceId, ProfileKey profileKey, Locale locale)
+  public Optional<ExpiringProfileKeyCredential> resolveProfileKeyCredential(ACI serviceId, ProfileKey profileKey, Locale locale)
       throws NonSuccessfulResponseCodeException, PushNetworkException
   {
     try {
-      ProfileAndCredential credential = this.pushServiceSocket.retrieveVersionedProfileAndCredential(serviceId.uuid(), profileKey, Optional.empty(), locale).get(10, TimeUnit.SECONDS);
+      ProfileAndCredential credential = this.pushServiceSocket.retrieveVersionedProfileAndCredential(serviceId, profileKey, Optional.empty(), locale).get(10, TimeUnit.SECONDS);
       return credential.getExpiringProfileKeyCredential();
     } catch (InterruptedException | TimeoutException e) {
       throw new PushNetworkException(e);

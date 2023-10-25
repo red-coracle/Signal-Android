@@ -207,7 +207,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
   }
 
   override fun getMaterial3OnScrollHelper(toolbar: Toolbar?): Material3OnScrollHelper {
-    return object : Material3OnScrollHelper(requireActivity(), toolbar!!) {
+    return object : Material3OnScrollHelper(requireActivity(), toolbar!!, viewLifecycleOwner) {
       override val inactiveColorSet = ColorSet(
         toolbarColorRes = R.color.signal_colorBackground_0,
         statusBarColorRes = R.color.signal_colorBackground
@@ -543,13 +543,13 @@ class ConversationSettingsFragment : DSLSettingsFragment(
           }
         }
 
-        if (recipientState.identityRecord != null) {
+        if (!state.recipient.isReleaseNotes && !state.recipient.isSelf) {
           clickPref(
             title = DSLSettingsText.from(R.string.ConversationSettingsFragment__view_safety_number),
             icon = DSLSettingsIcon.from(R.drawable.ic_safety_number_24),
             isEnabled = !state.isDeprecatedOrUnregistered,
             onClick = {
-              startActivity(VerifyIdentityActivity.newIntent(requireActivity(), recipientState.identityRecord))
+              VerifyIdentityActivity.startOrShowExchangeMessagesDialog(requireActivity(), recipientState.identityRecord)
             }
           )
         }
@@ -586,7 +586,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
       }
 
       state.withRecipientSettingsState { recipientSettingsState ->
-        if (state.recipient.badges.isNotEmpty()) {
+        if (state.recipient.badges.isNotEmpty() && !state.recipient.isSelf) {
           dividerPref()
 
           sectionHeaderPref(R.string.ManageProfileFragment_badges)

@@ -401,12 +401,6 @@ class MultiselectItemDecoration(
           }
         }
       }
-
-      if (!SignalStore.internalValues().useConversationFragmentV2()) {
-        canvas.clipPath(path)
-        canvas.drawShade()
-        canvas.restore()
-      }
     }
   }
 
@@ -420,12 +414,6 @@ class MultiselectItemDecoration(
         if (child is Multiselectable && child.conversationMessage == inFocus.conversationMessage) {
           path.addRect(child.left.toFloat(), child.top.toFloat(), child.right.toFloat(), child.bottom.toFloat(), Path.Direction.CW)
         }
-      }
-
-      if (!SignalStore.internalValues().useConversationFragmentV2()) {
-        canvas.clipPath(path, Region.Op.DIFFERENCE)
-        canvas.drawShade()
-        canvas.restore()
       }
     }
   }
@@ -570,7 +558,7 @@ class MultiselectItemDecoration(
   }
 
   private fun RecyclerView.getMultiselectableChildren(): Sequence<Multiselectable> {
-    return if (SignalStore.internalValues().useConversationFragmentV2()) {
+    return if (SignalStore.internalValues().useConversationItemV2()) {
       children.map { getChildViewHolder(it) }.filterIsInstance<Multiselectable>()
     } else {
       children.filterIsInstance<Multiselectable>()
@@ -578,7 +566,7 @@ class MultiselectItemDecoration(
   }
 
   private fun RecyclerView.getInteractableChildren(): Sequence<InteractiveConversationElement> {
-    return if (SignalStore.internalValues().useConversationFragmentV2()) {
+    return if (SignalStore.internalValues().useConversationItemV2()) {
       children.map { getChildViewHolder(it) }.filterIsInstance<InteractiveConversationElement>()
     } else {
       children.filterIsInstance<InteractiveConversationElement>()
@@ -586,7 +574,7 @@ class MultiselectItemDecoration(
   }
 
   private fun resolveMultiselectable(parent: RecyclerView, child: View): Multiselectable? {
-    return if (SignalStore.internalValues().useConversationFragmentV2()) {
+    return if (SignalStore.internalValues().useConversationItemV2()) {
       parent.getChildViewHolder(child) as? Multiselectable
     } else {
       child as? Multiselectable

@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:jammy-20230624@sha256:b060fffe8e1561c9c3e6dea6db487b900100fc26830b9ea2ec966c151ab4c020
 
 COPY docker/ docker/
 COPY docker/apt.conf docker/sources.list /etc/apt/
@@ -13,11 +13,11 @@ RUN apt install -oAcquire::https::Verify-Peer=false -y ca-certificates
 #RUN apt-get update -y && apt-get -o Acquire::http::Dl-Limit=256 install -y $(cat docker/dependencies.txt)
 # Back to normal, verification back on
 RUN apt update
-RUN apt install -y git openjdk-11-jdk openjdk-17-jdk unzip wget git && git config --global --add safe.directory /project
+RUN apt install -y git openjdk-17-jdk unzip wget git && git config --global --add safe.directory /project
 
-ENV ANDROID_COMMAND_LINE_TOOLS_FILENAME commandlinetools-linux-7583922_latest.zip
-ENV ANDROID_API_LEVELS                  android-33
-ENV ANDROID_BUILD_TOOLS_VERSION         32.0.0
+ENV ANDROID_COMMAND_LINE_TOOLS_FILENAME commandlinetools-linux-10406996_latest.zip
+ENV ANDROID_API_LEVELS                  android-34
+ENV ANDROID_BUILD_TOOLS_VERSION         34.0.0
 
 ENV ANDROID_HOME /usr/local/android-sdk-linux
 ENV PATH         ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/cmdline-tools/bin

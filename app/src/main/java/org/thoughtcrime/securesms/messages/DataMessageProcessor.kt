@@ -55,10 +55,9 @@ import org.thoughtcrime.securesms.jobs.SendDeliveryReceiptJob
 import org.thoughtcrime.securesms.jobs.TrimThreadJob
 import org.thoughtcrime.securesms.linkpreview.LinkPreview
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewUtil
-import org.thoughtcrime.securesms.messages.MessageContentProcessor.StorageFailedException
-import org.thoughtcrime.securesms.messages.MessageContentProcessorV2.Companion.debug
-import org.thoughtcrime.securesms.messages.MessageContentProcessorV2.Companion.log
-import org.thoughtcrime.securesms.messages.MessageContentProcessorV2.Companion.warn
+import org.thoughtcrime.securesms.messages.MessageContentProcessor.Companion.debug
+import org.thoughtcrime.securesms.messages.MessageContentProcessor.Companion.log
+import org.thoughtcrime.securesms.messages.MessageContentProcessor.Companion.warn
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.groupMasterKey
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.hasGroupContext
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.hasRemoteDelete
@@ -77,6 +76,7 @@ import org.thoughtcrime.securesms.mms.QuoteModel
 import org.thoughtcrime.securesms.mms.StickerSlide
 import org.thoughtcrime.securesms.notifications.v2.ConversationId
 import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.recipients.Recipient.HiddenState
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.recipients.RecipientUtil
 import org.thoughtcrime.securesms.sms.IncomingEncryptedMessage
@@ -95,6 +95,7 @@ import org.thoughtcrime.securesms.util.isStory
 import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
 import org.whispersystems.signalservice.api.payments.Money
 import org.whispersystems.signalservice.api.push.ServiceId
+import org.whispersystems.signalservice.api.push.ServiceId.ACI
 import org.whispersystems.signalservice.api.util.OptionalUtil.asOptional
 import org.whispersystems.signalservice.internal.push.SignalServiceProtos.BodyRange
 import org.whispersystems.signalservice.internal.push.SignalServiceProtos.Content
@@ -127,10 +128,10 @@ object DataMessageProcessor {
     val groupSecretParams = if (message.hasGroupContext) GroupSecretParams.deriveFromMasterKey(message.groupV2.groupMasterKey) else null
     val groupId: GroupId.V2? = if (groupSecretParams != null) GroupId.v2(groupSecretParams.publicParams.groupIdentifier) else null
 
-    var groupProcessResult: MessageContentProcessorV2.Gv2PreProcessResult? = null
+    var groupProcessResult: MessageContentProcessor.Gv2PreProcessResult? = null
     if (groupId != null) {
-      groupProcessResult = MessageContentProcessorV2.handleGv2PreProcessing(context, envelope.timestamp, content, metadata, groupId, message.groupV2, senderRecipient, groupSecretParams)
-      if (groupProcessResult == MessageContentProcessorV2.Gv2PreProcessResult.IGNORE) {
+      groupProcessResult = MessageContentProcessor.handleGv2PreProcessing(context, envelope.timestamp, content, metadata, groupId, message.groupV2, senderRecipient, groupSecretParams)
+      if (groupProcessResult == MessageContentProcessor.Gv2PreProcessResult.IGNORE) {
         return
       }
       localMetrics?.onGv2Processed()
@@ -156,7 +157,7 @@ object DataMessageProcessor {
 
     if (groupId != null) {
       val unknownGroup = when (groupProcessResult) {
-        MessageContentProcessorV2.Gv2PreProcessResult.GROUP_UP_TO_DATE -> threadRecipient.isUnknownGroup
+        MessageContentProcessor.Gv2PreProcessResult.GROUP_UP_TO_DATE -> threadRecipient.isUnknownGroup
         else -> SignalDatabase.groups.isUnknownGroup(groupId)
       }
       if (unknownGroup) {
@@ -168,21 +169,25 @@ object DataMessageProcessor {
       handleProfileKey(envelope.timestamp, message.profileKey.toByteArray(), senderRecipient)
     }
 
+    if (groupId == null && senderRecipient.hiddenState == HiddenState.HIDDEN) {
+      SignalDatabase.recipients.markHidden(senderRecipient.id, clearProfileKey = false, showMessageRequest = true)
+    }
+
     if (metadata.sealedSender && messageId != null) {
       SignalExecutors.BOUNDED.execute { ApplicationDependencies.getJobManager().add(SendDeliveryReceiptJob(senderRecipient.id, message.timestamp, messageId)) }
     } else if (!metadata.sealedSender) {
       if (RecipientUtil.shouldHaveProfileKey(threadRecipient)) {
-        Log.w(MessageContentProcessorV2.TAG, "Received an unsealed sender message from " + senderRecipient.id + ", but they should already have our profile key. Correcting.")
+        Log.w(MessageContentProcessor.TAG, "Received an unsealed sender message from " + senderRecipient.id + ", but they should already have our profile key. Correcting.")
 
         if (groupId != null) {
-          Log.i(MessageContentProcessorV2.TAG, "Message was to a GV2 group. Ensuring our group profile keys are up to date.")
+          Log.i(MessageContentProcessor.TAG, "Message was to a GV2 group. Ensuring our group profile keys are up to date.")
           ApplicationDependencies
             .getJobManager()
             .startChain(RefreshAttributesJob(false))
             .then(GroupV2UpdateSelfProfileKeyJob.withQueueLimits(groupId))
             .enqueue()
         } else if (!threadRecipient.isGroup) {
-          Log.i(MessageContentProcessorV2.TAG, "Message was to a 1:1. Ensuring this user has our profile key.")
+          Log.i(MessageContentProcessor.TAG, "Message was to a 1:1. Ensuring this user has our profile key.")
           val profileSendJob = ProfileKeySendJob.create(SignalDatabase.threads.getOrCreateThreadIdFor(threadRecipient), true)
           if (profileSendJob != null) {
             ApplicationDependencies
@@ -368,7 +373,7 @@ object DataMessageProcessor {
       return null
     }
 
-    val authorServiceId: ServiceId = ServiceId.parseOrThrow(message.storyContext.authorUuid)
+    val authorServiceId: ServiceId = ServiceId.parseOrThrow(message.storyContext.authorAci)
     val sentTimestamp = message.storyContext.sentTimestamp
 
     SignalDatabase.messages.beginTransaction()
@@ -459,7 +464,7 @@ object DataMessageProcessor {
 
     val emoji: String = message.reaction.emoji
     val isRemove: Boolean = message.reaction.remove
-    val targetAuthorServiceId: ServiceId = ServiceId.parseOrThrow(message.reaction.targetAuthorUuid)
+    val targetAuthorServiceId: ServiceId = ServiceId.parseOrThrow(message.reaction.targetAuthorAci)
     val targetSentTimestamp = message.reaction.targetSentTimestamp
 
     if (targetAuthorServiceId.isUnknown) {
@@ -668,7 +673,7 @@ object DataMessageProcessor {
   ): MessageId? {
     log(envelope.timestamp, "Story reply.")
 
-    val authorServiceId: ServiceId = ServiceId.parseOrThrow(message.storyContext.authorUuid)
+    val authorServiceId: ServiceId = ServiceId.parseOrThrow(message.storyContext.authorAci)
     val sentTimestamp = message.storyContext.sentTimestamp
 
     SignalDatabase.messages.beginTransaction()
@@ -990,12 +995,12 @@ object DataMessageProcessor {
 
   fun getMentions(mentionBodyRanges: List<BodyRange>): List<Mention> {
     return mentionBodyRanges
-      .filter { it.hasMentionUuid() }
+      .filter { it.hasMentionAci() }
       .mapNotNull {
-        val serviceId = ServiceId.parseOrNull(it.mentionUuid)
+        val aci = ACI.parseOrNull(it.mentionAci)
 
-        if (serviceId != null && !serviceId.isUnknown) {
-          val id = Recipient.externalPush(serviceId).id
+        if (aci != null && !aci.isUnknown) {
+          val id = Recipient.externalPush(aci).id
           Mention(id, it.start, it.length)
         } else {
           null
@@ -1031,7 +1036,7 @@ object DataMessageProcessor {
       return null
     }
 
-    val authorId = Recipient.externalPush(ServiceId.parseOrThrow(quote.authorUuid)).id
+    val authorId = Recipient.externalPush(ServiceId.parseOrThrow(quote.authorAci)).id
     var quotedMessage = SignalDatabase.messages.getMessageFor(quote.id, authorId) as? MediaMmsMessageRecord
 
     if (quotedMessage != null && !quotedMessage.isRemoteDelete) {
@@ -1086,7 +1091,7 @@ object DataMessageProcessor {
       quote.attachmentsList.mapNotNull { PointerAttachment.forPointer(it).orNull() },
       getMentions(quote.bodyRangesList),
       QuoteModel.Type.fromProto(quote.type),
-      quote.bodyRangesList.filterNot { it.hasMentionUuid() }.toBodyRangeList()
+      quote.bodyRangesList.filterNot { it.hasMentionAci() }.toBodyRangeList()
     )
   }
 

@@ -9,13 +9,15 @@ import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
+import androidx.core.view.children
 import androidx.lifecycle.LifecycleOwner
+import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.exoplayer2.MediaItem
 import org.signal.core.util.logging.Log
 import org.signal.core.util.toOptional
 import org.thoughtcrime.securesms.BindableConversationItem
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.Unbindable
 import org.thoughtcrime.securesms.conversation.ConversationAdapter.ItemClickListener
 import org.thoughtcrime.securesms.conversation.ConversationAdapterBridge
 import org.thoughtcrime.securesms.conversation.ConversationHeaderView
@@ -57,7 +59,7 @@ import java.util.Optional
 
 class ConversationAdapterV2(
   private val lifecycleOwner: LifecycleOwner,
-  private val glideRequests: GlideRequests,
+  override val glideRequests: GlideRequests,
   override val clickListener: ItemClickListener,
   private var hasWallpaper: Boolean,
   private val colorizer: Colorizer,
@@ -81,8 +83,7 @@ class ConversationAdapterV2(
 
   private val condensedMode: ConversationItemDisplayMode? = null
 
-  // TODO [cfv2]
-  override val isMessageRequestAccepted: Boolean = true
+  override var isMessageRequestAccepted: Boolean = false
 
   init {
     registerFactory(ThreadHeader::class.java, ::ThreadHeaderViewHolder, R.layout.conversation_item_thread_header)
@@ -145,6 +146,21 @@ class ConversationAdapterV2(
       }
     }
   }
+
+  override fun onViewRecycled(holder: MappingViewHolder<*>) {
+    if (holder is ConversationViewHolder) {
+      holder.bindable.unbind()
+    }
+  }
+
+  /** Triggered when switching addapters or by setting adapter to null on [recyclerView] in [ConversationFragment] */
+  override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+    recyclerView
+      .children
+      .filterIsInstance<Unbindable>()
+      .forEach { it.unbind() }
+  }
+
   override val displayMode: ConversationItemDisplayMode
     get() = condensedMode ?: ConversationItemDisplayMode.STANDARD
 
@@ -169,11 +185,6 @@ class ConversationAdapterV2(
     notifyItemRangeChanged(0, itemCount)
   }
 
-  /** [messagePosition] is one-based index and adapter is zero-based. */
-  fun getAdapterPositionForMessagePosition(messagePosition: Int): Int {
-    return messagePosition - 1
-  }
-
   fun getLastVisibleConversationMessage(position: Int): ConversationMessage? {
     return try {
       getConversationMessage(position) ?: getConversationMessage(position - 1)
@@ -184,19 +195,16 @@ class ConversationAdapterV2(
   }
 
   fun canJumpToPosition(absolutePosition: Int): Boolean {
-    // todo [cody] handle typing indicator
-    val position = absolutePosition
-
-    if (position < 0) {
+    if (absolutePosition < 0) {
       return false
     }
 
-    if (position > super.getItemCount()) {
-      Log.d(TAG, "Could not access corrected position $position as it is out of bounds.")
+    if (absolutePosition > super.getItemCount()) {
+      Log.d(TAG, "Could not access corrected position $absolutePosition as it is out of bounds.")
       return false
     }
 
-    if (!isRangeAvailable(position - 10, position + 5)) {
+    if (!isRangeAvailable(absolutePosition - 10, absolutePosition + 5)) {
       getItem(absolutePosition)
       return false
     }
@@ -207,7 +215,7 @@ class ConversationAdapterV2(
   fun playInlineContent(conversationMessage: ConversationMessage?) {
     if (this.inlineContent !== conversationMessage) {
       this.inlineContent = conversationMessage
-      notifyDataSetChanged()
+      notifyItemRangeChanged(0, itemCount)
     }
   }
 
@@ -228,15 +236,12 @@ class ConversationAdapterV2(
    * Momentarily highlights a mention at the requested position.
    */
   fun pulseAtPosition(position: Int) {
-    if (position >= 0 && position < itemCount) {
-      // TODO [cfv2] adjust for typing indicator
-      val correctedPosition = position
-
-      recordToPulse = getConversationMessage(correctedPosition)
+    if (position in 0 until itemCount) {
+      recordToPulse = getConversationMessage(position)
       if (recordToPulse != null) {
         pulseRequest = ConversationAdapterBridge.PulseRequest(position, recordToPulse!!.messageRecord.isOutgoing)
       }
-      notifyItemChanged(correctedPosition)
+      notifyItemChanged(position)
     }
   }
 
@@ -246,12 +251,29 @@ class ConversationAdapterV2(
     return request
   }
 
-  fun onHasWallpaperChanged(hasChanged: Boolean) {
-    // todo [cody] implement
+  fun onHasWallpaperChanged(hasWallpaper: Boolean): Boolean {
+    return if (this.hasWallpaper != hasWallpaper) {
+      Log.d(TAG, "Resetting adapter due to wallpaper change.")
+      this.hasWallpaper = hasWallpaper
+      notifyItemRangeChanged(0, itemCount)
+      true
+    } else {
+      false
+    }
+  }
+
+  fun setMessageRequestIsAccepted(isMessageRequestAccepted: Boolean) {
+    val oldState = this.isMessageRequestAccepted
+    this.isMessageRequestAccepted = isMessageRequestAccepted
+
+    if (oldState != isMessageRequestAccepted) {
+      notifyItemRangeChanged(0, itemCount)
+    }
   }
 
   fun clearSelection() {
     _selected.clear()
+    updateSelected()
   }
 
   fun toggleSelection(multiselectPart: MultiselectPart) {
@@ -260,11 +282,34 @@ class ConversationAdapterV2(
     } else {
       _selected.add(multiselectPart)
     }
+    updateSelected()
+  }
+
+  fun removeFromSelection(expired: Set<MultiselectPart>) {
+    _selected.removeAll(expired)
+    updateSelected()
+  }
+
+  fun updateTimestamps() {
+    notifyItemRangeChanged(0, itemCount, ConversationAdapterBridge.PAYLOAD_TIMESTAMP)
+  }
+
+  fun updateNameColors() {
+    notifyItemRangeChanged(0, itemCount, ConversationAdapterBridge.PAYLOAD_NAME_COLORS)
+  }
+
+  private fun updateSelected() {
+    notifyItemRangeChanged(0, itemCount, ConversationAdapterBridge.PAYLOAD_SELECTED)
   }
 
   private inner class ConversationUpdateViewHolder(itemView: View) : ConversationViewHolder<ConversationUpdate>(itemView) {
     override fun bind(model: ConversationUpdate) {
       bindable.setEventListener(clickListener)
+
+      if (bindPayloadsIfAvailable()) {
+        return
+      }
+
       bindable.bind(
         lifecycleOwner,
         model.conversationMessage,
@@ -277,7 +322,7 @@ class ConversationAdapterV2(
         searchQuery,
         false,
         hasWallpaper && displayMode.displayWallpaper(),
-        true, // isMessageRequestAccepted,
+        isMessageRequestAccepted,
         model.conversationMessage == inlineContent,
         colorizer,
         displayMode
@@ -288,6 +333,11 @@ class ConversationAdapterV2(
   private inner class OutgoingTextOnlyViewHolder(itemView: View) : ConversationViewHolder<OutgoingTextOnly>(itemView) {
     override fun bind(model: OutgoingTextOnly) {
       bindable.setEventListener(clickListener)
+
+      if (bindPayloadsIfAvailable()) {
+        return
+      }
+
       bindable.bind(
         lifecycleOwner,
         model.conversationMessage,
@@ -300,7 +350,7 @@ class ConversationAdapterV2(
         searchQuery,
         false,
         hasWallpaper && displayMode.displayWallpaper(),
-        true, // isMessageRequestAccepted,
+        isMessageRequestAccepted,
         model.conversationMessage == inlineContent,
         colorizer,
         displayMode
@@ -311,6 +361,11 @@ class ConversationAdapterV2(
   private inner class OutgoingMediaViewHolder(itemView: View) : ConversationViewHolder<OutgoingMedia>(itemView) {
     override fun bind(model: OutgoingMedia) {
       bindable.setEventListener(clickListener)
+
+      if (bindPayloadsIfAvailable()) {
+        return
+      }
+
       bindable.bind(
         lifecycleOwner,
         model.conversationMessage,
@@ -323,7 +378,7 @@ class ConversationAdapterV2(
         searchQuery,
         false,
         hasWallpaper && displayMode.displayWallpaper(),
-        true, // isMessageRequestAccepted,
+        isMessageRequestAccepted,
         model.conversationMessage == inlineContent,
         colorizer,
         displayMode
@@ -334,6 +389,11 @@ class ConversationAdapterV2(
   private inner class IncomingTextOnlyViewHolder(itemView: View) : ConversationViewHolder<IncomingTextOnly>(itemView) {
     override fun bind(model: IncomingTextOnly) {
       bindable.setEventListener(clickListener)
+
+      if (bindPayloadsIfAvailable()) {
+        return
+      }
+
       bindable.bind(
         lifecycleOwner,
         model.conversationMessage,
@@ -346,7 +406,7 @@ class ConversationAdapterV2(
         searchQuery,
         false,
         hasWallpaper && displayMode.displayWallpaper(),
-        true, // isMessageRequestAccepted,
+        isMessageRequestAccepted,
         model.conversationMessage == inlineContent,
         colorizer,
         displayMode
@@ -357,6 +417,11 @@ class ConversationAdapterV2(
   private inner class IncomingMediaViewHolder(itemView: View) : ConversationViewHolder<IncomingMedia>(itemView) {
     override fun bind(model: IncomingMedia) {
       bindable.setEventListener(clickListener)
+
+      if (bindPayloadsIfAvailable()) {
+        return
+      }
+
       bindable.bind(
         lifecycleOwner,
         model.conversationMessage,
@@ -369,7 +434,7 @@ class ConversationAdapterV2(
         searchQuery,
         false,
         hasWallpaper && displayMode.displayWallpaper(),
-        true, // isMessageRequestAccepted,
+        isMessageRequestAccepted,
         model.conversationMessage == inlineContent,
         colorizer,
         displayMode
@@ -407,6 +472,27 @@ class ConversationAdapterV2(
         )
         true
       }
+    }
+
+    fun bindPayloadsIfAvailable(): Boolean {
+      var payloadApplied = false
+
+      if (payload.contains(ConversationAdapterBridge.PAYLOAD_TIMESTAMP)) {
+        bindable.updateTimestamps()
+        payloadApplied = true
+      }
+
+      if (payload.contains(ConversationAdapterBridge.PAYLOAD_NAME_COLORS)) {
+        bindable.updateContactNameColor()
+        payloadApplied = true
+      }
+
+      if (payload.contains(ConversationAdapterBridge.PAYLOAD_SELECTED)) {
+        bindable.updateSelectedState()
+        payloadApplied = true
+      }
+
+      return payloadApplied
     }
 
     override fun showProjectionArea() {
