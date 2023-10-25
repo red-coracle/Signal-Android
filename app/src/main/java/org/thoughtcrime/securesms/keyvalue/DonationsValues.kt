@@ -14,7 +14,10 @@ import org.signal.libsignal.zkgroup.receipts.ReceiptCredentialRequestContext
 import org.signal.libsignal.zkgroup.receipts.ReceiptSerial
 import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.badges.models.Badge
+import org.thoughtcrime.securesms.components.settings.app.subscription.PendingOneTimeDonationSerializer.isExpired
 import org.thoughtcrime.securesms.database.model.databaseprotos.BadgeList
+import org.thoughtcrime.securesms.database.model.databaseprotos.DonationCompletedQueue
+import org.thoughtcrime.securesms.database.model.databaseprotos.PendingOneTimeDonation
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.jobs.SubscriptionReceiptRequestResponseJob
 import org.thoughtcrime.securesms.payments.currency.CurrencyUtil
@@ -28,6 +31,7 @@ import org.whispersystems.signalservice.internal.util.JsonUtil
 import java.security.SecureRandom
 import java.util.Currency
 import java.util.Locale
+import java.util.Optional
 import java.util.concurrent.TimeUnit
 
 internal class DonationsValues internal constructor(store: KeyValueStore) : SignalStoreValues(store) {
@@ -108,6 +112,18 @@ internal class DonationsValues internal constructor(store: KeyValueStore) : Sign
      * awaiting the background task.
      */
     private const val IS_GOOGLE_PAY_READY = "subscription.is.google.pay.ready"
+
+    /**
+     * Appended to whenever we complete a donation redemption (or gift send) for a bank transfer.
+     * Popped from whenever we enter the conversation list.
+     */
+    private const val DONATION_COMPLETE_QUEUE = "donation.complete.queue"
+
+    /**
+     * The current one-time donation we are processing, if we are doing so. This is used for showing
+     * the donation processing / donation pending state in the ManageDonationsFragment.
+     */
+    private const val PENDING_ONE_TIME_DONATION = "pending.one.time.donation"
   }
 
   override fun onFirstEverAppLaunch() = Unit
@@ -134,6 +150,14 @@ internal class DonationsValues internal constructor(store: KeyValueStore) : Sign
 
   private val oneTimeCurrencyPublisher: Subject<Currency> by lazy { BehaviorSubject.createDefault(getOneTimeCurrency()) }
   val observableOneTimeCurrency: Observable<Currency> by lazy { oneTimeCurrencyPublisher }
+
+  private var _pendingOneTimeDonation: PendingOneTimeDonation? by protoValue(PENDING_ONE_TIME_DONATION, PendingOneTimeDonation.ADAPTER)
+  private val pendingOneTimeDonationPublisher: Subject<Optional<PendingOneTimeDonation>> by lazy { BehaviorSubject.createDefault(Optional.ofNullable(_pendingOneTimeDonation)) }
+  val observablePendingOneTimeDonation: Observable<Optional<PendingOneTimeDonation>> by lazy {
+    pendingOneTimeDonationPublisher.map { optionalPendingOneTimeDonation ->
+      optionalPendingOneTimeDonation.filter { !it.isExpired }
+    }
+  }
 
   fun getSubscriptionCurrency(): Currency {
     val currencyCode = getString(KEY_SUBSCRIPTION_CURRENCY_CODE, null)
@@ -240,7 +264,7 @@ internal class DonationsValues internal constructor(store: KeyValueStore) : Sign
 
   fun setExpiredBadge(badge: Badge?) {
     if (badge != null) {
-      putBlob(EXPIRED_BADGE, Badges.toDatabaseBadge(badge).toByteArray())
+      putBlob(EXPIRED_BADGE, Badges.toDatabaseBadge(badge).encode())
     } else {
       remove(EXPIRED_BADGE)
     }
@@ -249,12 +273,12 @@ internal class DonationsValues internal constructor(store: KeyValueStore) : Sign
   fun getExpiredBadge(): Badge? {
     val badgeBytes = getBlob(EXPIRED_BADGE, null) ?: return null
 
-    return Badges.fromDatabaseBadge(BadgeList.Badge.parseFrom(badgeBytes))
+    return Badges.fromDatabaseBadge(BadgeList.Badge.ADAPTER.decode(badgeBytes))
   }
 
   fun setExpiredGiftBadge(badge: Badge?) {
     if (badge != null) {
-      putBlob(EXPIRED_GIFT_BADGE, Badges.toDatabaseBadge(badge).toByteArray())
+      putBlob(EXPIRED_GIFT_BADGE, Badges.toDatabaseBadge(badge).encode())
     } else {
       remove(EXPIRED_GIFT_BADGE)
     }
@@ -263,7 +287,7 @@ internal class DonationsValues internal constructor(store: KeyValueStore) : Sign
   fun getExpiredGiftBadge(): Badge? {
     val badgeBytes = getBlob(EXPIRED_GIFT_BADGE, null) ?: return null
 
-    return Badges.fromDatabaseBadge(BadgeList.Badge.parseFrom(badgeBytes))
+    return Badges.fromDatabaseBadge(BadgeList.Badge.ADAPTER.decode(badgeBytes))
   }
 
   fun getLastKeepAliveLaunchTime(): Long {
@@ -469,6 +493,37 @@ internal class DonationsValues internal constructor(store: KeyValueStore) : Sign
   var subscriptionEndOfPeriodConversionStarted by longValue(SUBSCRIPTION_EOP_STARTED_TO_CONVERT, 0L)
   var subscriptionEndOfPeriodRedemptionStarted by longValue(SUBSCRIPTION_EOP_STARTED_TO_REDEEM, 0L)
   var subscriptionEndOfPeriodRedeemed by longValue(SUBSCRIPTION_EOP_REDEEMED, 0L)
+
+  fun appendToDonationCompletionList(donationCompleted: DonationCompletedQueue.DonationCompleted) {
+    synchronized(this) {
+      val pendingBytes = getBlob(DONATION_COMPLETE_QUEUE, null)
+      val queue: DonationCompletedQueue = pendingBytes?.let { DonationCompletedQueue.ADAPTER.decode(pendingBytes) } ?: DonationCompletedQueue()
+      val newQueue: DonationCompletedQueue = queue.copy(donationsCompleted = queue.donationsCompleted + donationCompleted)
+
+      putBlob(DONATION_COMPLETE_QUEUE, newQueue.encode())
+    }
+  }
+
+  fun consumeDonationCompletionList(): List<DonationCompletedQueue.DonationCompleted> {
+    synchronized(this) {
+      val pendingBytes = getBlob(DONATION_COMPLETE_QUEUE, null)
+      if (pendingBytes == null) {
+        return emptyList()
+      } else {
+        val queue: DonationCompletedQueue = DonationCompletedQueue.ADAPTER.decode(pendingBytes)
+        remove(DONATION_COMPLETE_QUEUE)
+
+        return queue.donationsCompleted
+      }
+    }
+  }
+
+  fun getPendingOneTimeDonation(): PendingOneTimeDonation? = _pendingOneTimeDonation.takeUnless { it?.isExpired == true }
+
+  fun setPendingOneTimeDonation(pendingOneTimeDonation: PendingOneTimeDonation?) {
+    this._pendingOneTimeDonation = pendingOneTimeDonation
+    pendingOneTimeDonationPublisher.onNext(Optional.ofNullable(pendingOneTimeDonation))
+  }
 
   private fun generateRequestCredential(): ReceiptCredentialRequestContext {
     Log.d(TAG, "Generating request credentials context for token redemption...", true)

@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.signal.core.util.dp
 import org.signal.core.util.money.FiatMoney
 import org.thoughtcrime.securesms.R
@@ -25,7 +26,9 @@ import org.thoughtcrime.securesms.components.settings.models.IndeterminateLoadin
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.help.HelpFragment
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.payments.FiatMoneyUtil
 import org.thoughtcrime.securesms.subscription.Subscription
+import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.Material3OnScrollHelper
 import org.thoughtcrime.securesms.util.SpanUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
@@ -67,6 +70,7 @@ class ManageDonationsFragment :
 
   override fun bindAdapter(adapter: MappingAdapter) {
     ActiveSubscriptionPreference.register(adapter)
+    OneTimeDonationPreference.register(adapter)
     IndeterminateLoadingCircle.register(adapter)
     BadgePreview.register(adapter)
     NetworkFailure.register(adapter)
@@ -126,32 +130,35 @@ class ManageDonationsFragment :
 
       space(16.dp)
 
-      if (state.transactionState is ManageDonationsState.TransactionState.NotInTransaction) {
-        val activeSubscription = state.transactionState.activeSubscription.activeSubscription
+      if (state.subscriptionTransactionState is ManageDonationsState.TransactionState.NotInTransaction) {
+        val activeSubscription = state.subscriptionTransactionState.activeSubscription.activeSubscription
+
         if (activeSubscription != null) {
           val subscription: Subscription? = state.availableSubscriptions.firstOrNull { it.level == activeSubscription.level }
           if (subscription != null) {
-            presentSubscriptionSettings(activeSubscription, subscription, state.getMonthlyDonorRedemptionState())
+            presentSubscriptionSettings(activeSubscription, subscription, state)
           } else {
             customPref(IndeterminateLoadingCircle)
           }
         } else if (state.hasOneTimeBadge) {
-          presentActiveOneTimeDonorSettings()
+          presentActiveOneTimeDonorSettings(state)
         } else {
           presentNotADonorSettings(state.hasReceipts)
         }
-      } else if (state.transactionState == ManageDonationsState.TransactionState.NetworkFailure) {
-        presentNetworkFailureSettings(state.getMonthlyDonorRedemptionState(), state.hasReceipts)
+      } else if (state.subscriptionTransactionState == ManageDonationsState.TransactionState.NetworkFailure) {
+        presentNetworkFailureSettings(state, state.hasReceipts)
       } else {
         customPref(IndeterminateLoadingCircle)
       }
     }
   }
 
-  private fun DSLConfiguration.presentActiveOneTimeDonorSettings() {
+  private fun DSLConfiguration.presentActiveOneTimeDonorSettings(state: ManageDonationsState) {
     dividerPref()
 
     sectionHeaderPref(R.string.ManageDonationsFragment__my_support)
+
+    presentPendingOrProcessingOneTimeDonationState(state)
 
     presentBadges()
 
@@ -160,16 +167,30 @@ class ManageDonationsFragment :
     presentMore()
   }
 
-  private fun DSLConfiguration.presentNetworkFailureSettings(redemptionState: ManageDonationsState.SubscriptionRedemptionState, hasReceipts: Boolean) {
+  private fun DSLConfiguration.presentPendingOrProcessingOneTimeDonationState(state: ManageDonationsState) {
+    val pendingOneTimeDonation = state.pendingOneTimeDonation
+    if (pendingOneTimeDonation != null) {
+      customPref(
+        OneTimeDonationPreference.Model(
+          pendingOneTimeDonation = pendingOneTimeDonation,
+          onPendingClick = {
+            displayPendingDialog(it)
+          }
+        )
+      )
+    }
+  }
+
+  private fun DSLConfiguration.presentNetworkFailureSettings(state: ManageDonationsState, hasReceipts: Boolean) {
     if (SignalStore.donationsValues().isLikelyASustainer()) {
-      presentSubscriptionSettingsWithNetworkError(redemptionState)
+      presentSubscriptionSettingsWithNetworkError(state)
     } else {
       presentNotADonorSettings(hasReceipts)
     }
   }
 
-  private fun DSLConfiguration.presentSubscriptionSettingsWithNetworkError(redemptionState: ManageDonationsState.SubscriptionRedemptionState) {
-    presentSubscriptionSettingsWithState(redemptionState) {
+  private fun DSLConfiguration.presentSubscriptionSettingsWithNetworkError(state: ManageDonationsState) {
+    presentSubscriptionSettingsWithState(state) {
       customPref(
         NetworkFailure.Model(
           onRetryClick = {
@@ -183,9 +204,9 @@ class ManageDonationsFragment :
   private fun DSLConfiguration.presentSubscriptionSettings(
     activeSubscription: ActiveSubscription.Subscription,
     subscription: Subscription,
-    redemptionState: ManageDonationsState.SubscriptionRedemptionState
+    state: ManageDonationsState
   ) {
-    presentSubscriptionSettingsWithState(redemptionState) {
+    presentSubscriptionSettingsWithState(state) {
       val activeCurrency = Currency.getInstance(activeSubscription.currency)
       val activeAmount = activeSubscription.amount.movePointLeft(activeCurrency.defaultFractionDigits)
 
@@ -194,19 +215,22 @@ class ManageDonationsFragment :
           price = FiatMoney(activeAmount, activeCurrency),
           subscription = subscription,
           renewalTimestamp = TimeUnit.SECONDS.toMillis(activeSubscription.endOfCurrentPeriod),
-          redemptionState = redemptionState,
+          redemptionState = state.getMonthlyDonorRedemptionState(),
           onContactSupport = {
             requireActivity().finish()
             requireActivity().startActivity(AppSettingsActivity.help(requireContext(), HelpFragment.DONATION_INDEX))
           },
-          activeSubscription = activeSubscription
+          activeSubscription = activeSubscription,
+          onPendingClick = {
+            displayPendingDialog(it)
+          }
         )
       )
     }
   }
 
   private fun DSLConfiguration.presentSubscriptionSettingsWithState(
-    redemptionState: ManageDonationsState.SubscriptionRedemptionState,
+    state: ManageDonationsState,
     subscriptionBlock: DSLConfiguration.() -> Unit
   ) {
     dividerPref()
@@ -215,10 +239,12 @@ class ManageDonationsFragment :
 
     subscriptionBlock()
 
+    presentPendingOrProcessingOneTimeDonationState(state)
+
     clickPref(
       title = DSLSettingsText.from(R.string.ManageDonationsFragment__manage_subscription),
       icon = DSLSettingsIcon.from(R.drawable.symbol_person_24),
-      isEnabled = redemptionState != ManageDonationsState.SubscriptionRedemptionState.IN_PROGRESS,
+      isEnabled = state.getMonthlyDonorRedemptionState() != ManageDonationsState.RedemptionState.IN_PROGRESS,
       onClick = {
         findNavController().safeNavigate(ManageDonationsFragmentDirections.actionManageDonationsFragmentToDonateToSignalFragment(DonateToSignalType.MONTHLY))
       }
@@ -285,6 +311,25 @@ class ManageDonationsFragment :
       icon = DSLSettingsIcon.from(R.drawable.symbol_help_24),
       linkId = R.string.donate_url
     )
+  }
+
+  private fun displayPendingDialog(fiatMoney: FiatMoney) {
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.MySupportPreference__payment_pending)
+      .setMessage(
+        getString(
+          R.string.MySupportPreference__your_bank_transfer_of_s,
+          FiatMoneyUtil.format(resources, fiatMoney, FiatMoneyUtil.formatOptions().trimZerosAfterDecimal())
+        )
+      )
+      .setPositiveButton(android.R.string.ok) { _, _ -> }
+      .setNegativeButton(R.string.MySupportPreference__learn_more) { _, _ ->
+        CommunicationActions.openBrowserLink(
+          requireContext(),
+          getString(R.string.pending_transfer_url)
+        )
+      }
+      .show()
   }
 
   override fun onMakeAMonthlyDonation() {

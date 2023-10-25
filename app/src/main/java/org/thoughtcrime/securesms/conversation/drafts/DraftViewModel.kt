@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Maybe
+import org.signal.core.util.Base64
 import org.thoughtcrime.securesms.components.location.SignalPlace
 import org.thoughtcrime.securesms.database.DraftTable.Draft
 import org.thoughtcrime.securesms.database.MentionUtil
@@ -12,7 +13,6 @@ import org.thoughtcrime.securesms.database.model.MessageId
 import org.thoughtcrime.securesms.database.model.databaseprotos.BodyRangeList
 import org.thoughtcrime.securesms.mms.QuoteId
 import org.thoughtcrime.securesms.recipients.RecipientId
-import org.thoughtcrime.securesms.util.Base64
 import org.thoughtcrime.securesms.util.rx.RxStore
 
 /**
@@ -62,7 +62,7 @@ class DraftViewModel @JvmOverloads constructor(
       } else if (mentionRanges == null) {
         styleBodyRanges
       } else {
-        styleBodyRanges.toBuilder().addAllRanges(mentionRanges.rangesList).build()
+        styleBodyRanges.newBuilder().apply { ranges += mentionRanges.ranges }.build()
       }
 
       saveDrafts(it.copy(textDraft = text.toTextDraft(), bodyRangesDraft = bodyRanges?.toDraft(), messageEditDraft = Draft(Draft.MESSAGE_EDIT, messageId.serialize())))
@@ -84,7 +84,7 @@ class DraftViewModel @JvmOverloads constructor(
       } else if (mentionRanges == null) {
         styleBodyRanges
       } else {
-        styleBodyRanges.toBuilder().addAllRanges(mentionRanges.rangesList).build()
+        styleBodyRanges.newBuilder().apply { ranges += mentionRanges.ranges }.build()
       }
 
       saveDrafts(it.copy(textDraft = text.toTextDraft(), bodyRangesDraft = bodyRanges?.toDraft()))
@@ -148,5 +148,5 @@ private fun String.toTextDraft(): Draft? {
 }
 
 private fun BodyRangeList.toDraft(): Draft {
-  return Draft(Draft.BODY_RANGES, Base64.encodeBytes(toByteArray()))
+  return Draft(Draft.BODY_RANGES, Base64.encodeWithPadding(encode()))
 }

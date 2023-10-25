@@ -5,6 +5,7 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.badges.Badges
+import org.thoughtcrime.securesms.components.settings.app.subscription.donate.gateway.GatewayRequest
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationError
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationErrorSource
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -79,9 +80,29 @@ class MonthlyDonationRepository(private val donationsService: DonationsService) 
     }.subscribeOn(Schedulers.io())
   }
 
-  fun ensureSubscriberId(): Completable {
-    Log.d(TAG, "Ensuring SubscriberId exists on Signal service...", true)
-    val subscriberId = SignalStore.donationsValues().getSubscriber()?.subscriberId ?: SubscriberId.generate()
+  /**
+   * Since PayPal and Stripe can't interoperate, we need to be able to rotate the subscriber ID
+   * in case of failures.
+   */
+  fun rotateSubscriberId(): Completable {
+    Log.d(TAG, "Rotating SubscriberId due to alternate payment processor...", true)
+    val cancelCompletable: Completable = if (SignalStore.donationsValues().getSubscriber() != null) {
+      cancelActiveSubscription().andThen(updateLocalSubscriptionStateAndScheduleDataSync())
+    } else {
+      Completable.complete()
+    }
+
+    return cancelCompletable.andThen(ensureSubscriberId(isRotation = true))
+  }
+
+  fun ensureSubscriberId(isRotation: Boolean = false): Completable {
+    Log.d(TAG, "Ensuring SubscriberId exists on Signal service {isRotation?$isRotation}...", true)
+    val subscriberId: SubscriberId = if (isRotation) {
+      SubscriberId.generate()
+    } else {
+      SignalStore.donationsValues().getSubscriber()?.subscriberId ?: SubscriberId.generate()
+    }
+
     return Single
       .fromCallable {
         donationsService.putSubscription(subscriberId)
@@ -127,7 +148,10 @@ class MonthlyDonationRepository(private val donationsService: DonationsService) 
     }
   }
 
-  fun setSubscriptionLevel(subscriptionLevel: String): Completable {
+  fun setSubscriptionLevel(gatewayRequest: GatewayRequest, isLongRunning: Boolean): Completable {
+    val subscriptionLevel = gatewayRequest.level.toString()
+    val uiSessionKey = gatewayRequest.uiSessionKey
+
     return getOrCreateLevelUpdateOperation(subscriptionLevel)
       .flatMapCompletable { levelUpdateOperation ->
         val subscriber = SignalStore.donationsValues().requireSubscriber()
@@ -166,11 +190,17 @@ class MonthlyDonationRepository(private val donationsService: DonationsService) 
             val countDownLatch = CountDownLatch(1)
             var finalJobState: JobTracker.JobState? = null
 
-            SubscriptionReceiptRequestResponseJob.createSubscriptionContinuationJobChain().enqueue { _, jobState ->
+            SubscriptionReceiptRequestResponseJob.createSubscriptionContinuationJobChain(uiSessionKey, isLongRunning).enqueue { _, jobState ->
               if (jobState.isComplete) {
                 finalJobState = jobState
                 countDownLatch.countDown()
               }
+            }
+
+            val timeoutError: DonationError = if (isLongRunning) {
+              DonationError.donationPending(DonationErrorSource.MONTHLY, gatewayRequest)
+            } else {
+              DonationError.timeoutWaitingForToken(DonationErrorSource.MONTHLY)
             }
 
             try {
@@ -182,20 +212,20 @@ class MonthlyDonationRepository(private val donationsService: DonationsService) 
                   }
                   JobTracker.JobState.FAILURE -> {
                     Log.d(TAG, "Subscription request response job chain failed permanently.", true)
-                    it.onError(DonationError.genericBadgeRedemptionFailure(DonationErrorSource.SUBSCRIPTION))
+                    it.onError(DonationError.genericBadgeRedemptionFailure(DonationErrorSource.MONTHLY))
                   }
                   else -> {
                     Log.d(TAG, "Subscription request response job chain ignored due to in-progress jobs.", true)
-                    it.onError(DonationError.timeoutWaitingForToken(DonationErrorSource.SUBSCRIPTION))
+                    it.onError(timeoutError)
                   }
                 }
               } else {
                 Log.d(TAG, "Subscription request response job timed out.", true)
-                it.onError(DonationError.timeoutWaitingForToken(DonationErrorSource.SUBSCRIPTION))
+                it.onError(timeoutError)
               }
             } catch (e: InterruptedException) {
               Log.w(TAG, "Subscription request response interrupted.", e, true)
-              it.onError(DonationError.timeoutWaitingForToken(DonationErrorSource.SUBSCRIPTION))
+              it.onError(timeoutError)
             }
           }
       }.doOnError {
@@ -220,6 +250,20 @@ class MonthlyDonationRepository(private val donationsService: DonationsService) 
       LevelUpdate.updateProcessingState(true)
       Log.d(TAG, "Reusing operation for $subscriptionLevel")
       levelUpdateOperation
+    }
+  }
+
+  /**
+   * Update local state information and schedule a storage sync for the change. This method
+   * assumes you've already properly called the DELETE method for the stored ID on the server.
+   */
+  private fun updateLocalSubscriptionStateAndScheduleDataSync(): Completable {
+    return Completable.fromAction {
+      Log.d(TAG, "Marking subscription cancelled...", true)
+      SignalStore.donationsValues().updateLocalStateForManualCancellation()
+      MultiDeviceSubscriptionSyncRequestJob.enqueue()
+      SignalDatabase.recipients.markNeedsSync(Recipient.self().id)
+      StorageSyncHelper.scheduleSyncForDataChange()
     }
   }
 }

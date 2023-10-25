@@ -35,7 +35,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -50,6 +49,7 @@ import androidx.transition.TransitionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
+import org.signal.core.util.concurrent.LifecycleDisposable;
 import org.signal.core.util.concurrent.SimpleTask;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.components.RecyclerViewFastScroller;
@@ -73,7 +73,6 @@ import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.CommunicationActions;
-import org.signal.core.util.concurrent.LifecycleDisposable;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.UsernameUtil;
 import org.thoughtcrime.securesms.util.ViewUtil;
@@ -85,6 +84,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -145,6 +145,8 @@ public final class ContactSelectionListFragment extends LoggingFragment {
   private           Set<RecipientId>                     currentSelection;
   private           boolean                              isMulti;
   private           boolean                              canSelectSelf;
+  private           boolean                              resetPositionOnCommit = false;
+
   private           ListClickListener                    listClickListener = new ListClickListener();
   @Nullable private SwipeRefreshLayout.OnRefreshListener onRefreshListener;
 
@@ -423,6 +425,10 @@ public final class ContactSelectionListFragment extends LoggingFragment {
     onRefreshListener = null;
   }
 
+  public int getSelectedMembersSize() {
+    return contactSearchMediator.getSelectedMembersSize();
+  }
+
   private @NonNull Bundle safeArguments() {
     return getArguments() != null ? getArguments() : new Bundle();
   }
@@ -519,12 +525,21 @@ public final class ContactSelectionListFragment extends LoggingFragment {
   }
 
   public void setQueryFilter(String filter) {
-    this.cursorFilter = filter;
+    if (Objects.equals(filter, this.cursorFilter)) {
+      return;
+    }
+
+    this.resetPositionOnCommit = true;
+    this.cursorFilter          = filter;
+
     contactSearchMediator.onFilterChanged(filter);
   }
 
   public void resetQueryFilter() {
     setQueryFilter(null);
+
+    this.resetPositionOnCommit = true;
+
     swipeRefresh.setRefreshing(false);
   }
 
@@ -542,11 +557,12 @@ public final class ContactSelectionListFragment extends LoggingFragment {
     headerActionView.setVisibility(View.GONE);
   }
 
-  public void setRecyclerViewPaddingBottom(@Px int paddingBottom) {
-    ViewUtil.setPaddingBottom(recyclerView, paddingBottom);
-  }
-
   private void onLoadFinished(int count) {
+    if (resetPositionOnCommit) {
+      resetPositionOnCommit = false;
+      recyclerView.scrollToPosition(0);
+    }
+
     swipeRefresh.setVisibility(View.VISIBLE);
     showContactsLayout.setVisibility(View.GONE);
 

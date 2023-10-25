@@ -44,6 +44,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" android:usesPermissionFlags="neverForLocation" />
+
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_CALL_STATE"/>
@@ -93,6 +95,10 @@
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS"/>
 
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
     <application android:name=".ApplicationContext"
                  android:icon="@mipmap/ic_launcher"
@@ -246,6 +252,7 @@
 
     <activity-alias android:name=".RoutingActivity"
                     android:targetActivity=".MainActivity"
+                    android:resizeableActivity="true"
                     android:exported="true">
 
         <intent-filter>
@@ -624,6 +631,7 @@
               android:launchMode="singleTask"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
               android:parentActivityName=".MainActivity"
+              android:resizeableActivity="true"
               android:exported="false">
         <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -1023,6 +1031,7 @@
     <activity android:name=".MainActivity"
               android:theme="@style/Theme.Signal.DayNight.NoActionBar"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
+              android:resizeableActivity="true"
               android:exported="false"/>
 
     <activity android:name=".pin.PinRestoreActivity"

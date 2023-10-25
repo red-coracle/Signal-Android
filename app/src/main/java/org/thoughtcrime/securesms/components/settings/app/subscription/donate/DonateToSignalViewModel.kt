@@ -17,7 +17,7 @@ import org.thoughtcrime.securesms.components.settings.app.subscription.MonthlyDo
 import org.thoughtcrime.securesms.components.settings.app.subscription.OneTimeDonationRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.boost.Boost
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.gateway.GatewayRequest
-import org.thoughtcrime.securesms.components.settings.app.subscription.manage.SubscriptionRedemptionJobWatcher
+import org.thoughtcrime.securesms.components.settings.app.subscription.manage.DonationRedemptionJobWatcher
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.jobmanager.JobTracker
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -58,6 +58,7 @@ class DonateToSignalViewModel(
 
   val state = store.stateFlowable.observeOn(AndroidSchedulers.mainThread())
   val actions: Observable<DonateToSignalAction> = _actions.observeOn(AndroidSchedulers.mainThread())
+  val uiSessionKey: Long = System.currentTimeMillis()
 
   init {
     initializeOneTimeDonationState(oneTimeDonationRepository)
@@ -105,7 +106,7 @@ class DonateToSignalViewModel(
   fun updateSubscription() {
     val snapshot = store.state
     if (snapshot.areFieldsEnabled) {
-      _actions.onNext(DonateToSignalAction.UpdateSubscription(createGatewayRequest(snapshot)))
+      _actions.onNext(DonateToSignalAction.UpdateSubscription(createGatewayRequest(snapshot), snapshot.isUpdateLongRunning))
     }
   }
 
@@ -178,6 +179,7 @@ class DonateToSignalViewModel(
   private fun createGatewayRequest(snapshot: DonateToSignalState): GatewayRequest {
     val amount = getAmount(snapshot)
     return GatewayRequest(
+      uiSessionKey = uiSessionKey,
       donateToSignalType = snapshot.donateToSignalType,
       badge = snapshot.badge!!,
       label = snapshot.badge!!.description,
@@ -205,6 +207,13 @@ class DonateToSignalViewModel(
   }
 
   private fun initializeOneTimeDonationState(oneTimeDonationRepository: OneTimeDonationRepository) {
+    oneTimeDonationDisposables += SignalStore.donationsValues().observablePendingOneTimeDonation
+      .map { it.isPresent }
+      .distinctUntilChanged()
+      .subscribe { hasPendingOneTimeDonation ->
+        store.update { it.copy(oneTimeDonationState = it.oneTimeDonationState.copy(isOneTimeDonationPending = hasPendingOneTimeDonation)) }
+      }
+
     oneTimeDonationDisposables += oneTimeDonationRepository.getBoostBadge().subscribeBy(
       onSuccess = { badge ->
         store.update { it.copy(oneTimeDonationState = it.oneTimeDonationState.copy(badge = badge)) }
@@ -272,7 +281,7 @@ class DonateToSignalViewModel(
   }
 
   private fun monitorLevelUpdateProcessing() {
-    val isTransactionJobInProgress: Observable<Boolean> = SubscriptionRedemptionJobWatcher.watch().map {
+    val isTransactionJobInProgress: Observable<Boolean> = DonationRedemptionJobWatcher.watchSubscriptionRedemption().map {
       it.map { jobState ->
         when (jobState) {
           JobTracker.JobState.PENDING -> true

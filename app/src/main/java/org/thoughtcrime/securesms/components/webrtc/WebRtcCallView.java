@@ -6,7 +6,6 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
-import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.constraintlayout.widget.Guideline;
 import androidx.core.util.Consumer;
-import androidx.core.util.Preconditions;
 import androidx.core.view.ViewKt;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -73,8 +71,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import kotlin.concurrent.ThreadsKt;
 
 public class WebRtcCallView extends ConstraintLayout {
 
@@ -477,6 +473,8 @@ public class WebRtcCallView extends ConstraintLayout {
       } else if (state.getGroupCallState().isRinging()) {
         callLinkWarningCard.setVisibility(View.GONE);
         setStatus(state.getIncomingRingingGroupDescription(getContext()));
+      } else {
+        callLinkWarningCard.setVisibility(View.GONE);
       }
     }
 
@@ -600,7 +598,15 @@ public class WebRtcCallView extends ConstraintLayout {
   public void setStatus(@Nullable String status) {
     ThreadUtil.assertMainThread();
     this.status.setText(status);
-    collapsedToolbar.setSubtitle(status);
+    try {
+      // Toolbar's subtitle view sometimes already has a parent somehow,
+      // so we clear it out first so that it removes the view from its parent.
+      // In addition, we catch the ISE to prevent a crash.
+      collapsedToolbar.setSubtitle(null);
+      collapsedToolbar.setSubtitle(status);
+    } catch (IllegalStateException e) {
+      Log.w(TAG, "IllegalStateException trying to set status on collapsed Toolbar.");
+    }
   }
 
   private void setStatus(@StringRes int statusRes) {

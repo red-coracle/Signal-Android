@@ -26,6 +26,7 @@ import org.thoughtcrime.securesms.components.settings.app.subscription.donate.Do
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.DonationCheckoutDelegate
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.DonationProcessorAction
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.gateway.GatewayRequest
+import org.thoughtcrime.securesms.components.settings.app.subscription.donate.gateway.GatewayResponse
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationErrorSource
 import org.thoughtcrime.securesms.components.settings.configure
 import org.thoughtcrime.securesms.components.settings.conversation.preferences.RecipientPreference
@@ -83,7 +84,7 @@ class GiftFlowConfirmationFragment :
 
     keyboardPagerViewModel.setOnlyPage(KeyboardPage.EMOJI)
 
-    donationCheckoutDelegate = DonationCheckoutDelegate(this, this, DonationErrorSource.GIFT)
+    donationCheckoutDelegate = DonationCheckoutDelegate(this, this, viewModel.uiSessionKey, DonationErrorSource.GIFT)
 
     processingDonationPaymentDialog = MaterialAlertDialogBuilder(requireContext())
       .setView(R.layout.processing_payment_dialog)
@@ -106,6 +107,7 @@ class GiftFlowConfirmationFragment :
         GiftFlowConfirmationFragmentDirections.actionGiftFlowConfirmationFragmentToGatewaySelectorBottomSheet(
           with(viewModel.snapshot) {
             GatewayRequest(
+              uiSessionKey = viewModel.uiSessionKey,
               donateToSignalType = DonateToSignalType.GIFT,
               badge = giftBadge!!,
               label = getString(R.string.preferences__one_time),
@@ -262,6 +264,10 @@ class GiftFlowConfirmationFragment :
     findNavController().safeNavigate(GiftFlowConfirmationFragmentDirections.actionGiftFlowConfirmationFragmentToCreditCardFragment(gatewayRequest))
   }
 
+  override fun navigateToBankTransferMandate(gatewayResponse: GatewayResponse) {
+    error("Unsupported operation")
+  }
+
   override fun onPaymentComplete(gatewayRequest: GatewayRequest) {
     val mainActivityIntent = MainActivity.clearTop(requireContext())
 
@@ -278,4 +284,6 @@ class GiftFlowConfirmationFragment :
   override fun onUserCancelledPaymentFlow() {
     findNavController().popBackStack(R.id.giftFlowConfirmationFragment, false)
   }
+
+  override fun navigateToDonationPending(gatewayRequest: GatewayRequest) = error("Unsupported operation")
 }

@@ -46,7 +46,7 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.sms.MessageSender.SendType;
 import org.thoughtcrime.securesms.stories.Stories;
-import org.thoughtcrime.securesms.util.Base64;
+import org.signal.core.util.Base64;
 import org.thoughtcrime.securesms.util.MediaUtil;
 import org.thoughtcrime.securesms.util.MessageUtil;
 import org.thoughtcrime.securesms.util.Util;
@@ -390,14 +390,14 @@ public final class MultiShareSender {
   {
     return OutgoingMessage.textStoryMessage(
         recipient,
-        Base64.encodeBytes(StoryTextPost.newBuilder()
-                                        .setBody(getBodyForTextStory(multiShareArgs.getDraftText(), multiShareArgs.getLinkPreview()))
-                                        .setStyle(StoryTextPost.Style.DEFAULT)
-                                        .setBackground(background.serialize())
-                                        .setTextBackgroundColor(0)
-                                        .setTextForegroundColor(Color.WHITE)
-                                        .build()
-                                        .toByteArray()),
+        Base64.encodeWithPadding(new StoryTextPost.Builder()
+                                            .body(getBodyForTextStory(multiShareArgs.getDraftText(), multiShareArgs.getLinkPreview()))
+                                            .style(StoryTextPost.Style.DEFAULT)
+                                            .background(background.serialize())
+                                            .textBackgroundColor(0)
+                                            .textForegroundColor(Color.WHITE)
+                                            .build()
+                                            .encode()),
         sentTimestamp,
         storyType.toTextStoryType(),
         buildLinkPreviews(context, multiShareArgs.getLinkPreview()),

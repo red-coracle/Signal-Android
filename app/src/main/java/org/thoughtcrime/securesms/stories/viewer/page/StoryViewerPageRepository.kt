@@ -6,11 +6,13 @@ import androidx.annotation.CheckResult
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import org.signal.core.util.Base64
 import org.signal.core.util.BreakIteratorCompat
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.conversation.ConversationMessage
 import org.thoughtcrime.securesms.database.DatabaseObserver
+import org.thoughtcrime.securesms.database.GroupReceiptTable
 import org.thoughtcrime.securesms.database.NoSuchMessageException
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.MessageId
@@ -25,7 +27,6 @@ import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.sms.MessageSender
 import org.thoughtcrime.securesms.stories.Stories
-import org.thoughtcrime.securesms.util.Base64
 
 /**
  * Open for testing.
@@ -77,12 +78,13 @@ open class StoryViewerPageRepository(context: Context, private val storyViewStat
     return Observable.create { emitter ->
       fun refresh(record: MessageRecord) {
         val recipient = Recipient.resolved(recipientId)
+        val viewedCount = SignalDatabase.groupReceipts.getGroupReceiptInfo(record.id).filter { it.status == GroupReceiptTable.STATUS_VIEWED }.size
         val story = StoryPost(
           id = record.id,
           sender = record.fromRecipient,
           group = if (recipient.isGroup) recipient else null,
           distributionList = if (record.toRecipient.isDistributionList) record.toRecipient else null,
-          viewCount = record.viewedReceiptCount,
+          viewCount = viewedCount,
           replyCount = SignalDatabase.messages.getNumberOfStoryReplies(record.id),
           dateInMilliseconds = record.dateSent,
           content = getContent(record as MmsMessageRecord),
@@ -224,7 +226,7 @@ open class StoryViewerPageRepository(context: Context, private val storyViewStat
   private fun getTextStoryLength(body: String): Int {
     return if (canParseToTextStory(body)) {
       val breakIteratorCompat = BreakIteratorCompat.getInstance()
-      breakIteratorCompat.setText(StoryTextPost.parseFrom(Base64.decode(body)).body)
+      breakIteratorCompat.setText(StoryTextPost.ADAPTER.decode(Base64.decode(body)).body)
       breakIteratorCompat.countBreaks()
     } else {
       0
@@ -234,7 +236,7 @@ open class StoryViewerPageRepository(context: Context, private val storyViewStat
   private fun canParseToTextStory(body: String): Boolean {
     return if (body.isNotEmpty()) {
       try {
-        StoryTextPost.parseFrom(Base64.decode(body))
+        StoryTextPost.ADAPTER.decode(Base64.decode(body))
         return true
       } catch (e: Exception) {
         false

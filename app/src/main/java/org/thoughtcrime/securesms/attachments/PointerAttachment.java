@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.attachments;
 
 import android.net.Uri;
+import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,12 +9,12 @@ import androidx.annotation.Nullable;
 import org.thoughtcrime.securesms.blurhash.BlurHash;
 import org.thoughtcrime.securesms.database.AttachmentTable;
 import org.thoughtcrime.securesms.stickers.StickerLocator;
-import org.thoughtcrime.securesms.util.Base64;
+import org.signal.core.util.Base64;
 import org.whispersystems.signalservice.api.InvalidMessageStructureException;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachment;
 import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage;
 import org.whispersystems.signalservice.api.util.AttachmentPointerUtil;
-import org.whispersystems.signalservice.internal.push.SignalServiceProtos;
+import org.whispersystems.signalservice.internal.push.DataMessage;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class PointerAttachment extends Attachment {
                             @Nullable String relay,
                             @Nullable byte[] digest,
                             @Nullable byte[] incrementalDigest,
+                            int incrementalMacChunkSize,
                             @Nullable String fastPreflightId,
                             boolean voiceNote,
                             boolean borderless,
@@ -42,7 +44,11 @@ public class PointerAttachment extends Attachment {
                             @Nullable StickerLocator stickerLocator,
                             @Nullable BlurHash blurHash)
   {
-    super(contentType, transferState, size, fileName, cdnNumber, location, key, relay, digest, incrementalDigest, fastPreflightId, voiceNote, borderless, videoGif, width, height, false, uploadTimestamp, caption, stickerLocator, blurHash, null, null);
+    super(contentType, transferState, size, fileName, cdnNumber, location, key, relay, digest, incrementalDigest, fastPreflightId, voiceNote, borderless, videoGif, width, height, incrementalMacChunkSize, false, uploadTimestamp, caption, stickerLocator, blurHash, null, null);
+  }
+
+  protected PointerAttachment(Parcel in) {
+    super(in);
   }
 
   @Nullable
@@ -102,7 +108,7 @@ public class PointerAttachment extends Attachment {
     String encodedKey = null;
 
     if (pointer.get().asPointer().getKey() != null) {
-      encodedKey = Base64.encodeBytes(pointer.get().asPointer().getKey());
+      encodedKey = Base64.encodeWithPadding(pointer.get().asPointer().getKey());
     }
 
     return Optional.of(new PointerAttachment(pointer.get().getContentType(),
@@ -111,9 +117,11 @@ public class PointerAttachment extends Attachment {
                                              pointer.get().asPointer().getFileName().orElse(null),
                                              pointer.get().asPointer().getCdnNumber(),
                                              pointer.get().asPointer().getRemoteId().toString(),
-                                             encodedKey, null,
+                                             encodedKey,
+                                             null,
                                              pointer.get().asPointer().getDigest().orElse(null),
                                              pointer.get().asPointer().getIncrementalDigest().orElse(null),
+                                             pointer.get().asPointer().getIncrementalMacChunkSize(),
                                              fastPreflightId,
                                              pointer.get().asPointer().getVoiceNote(),
                                              pointer.get().asPointer().isBorderless(),
@@ -136,10 +144,11 @@ public class PointerAttachment extends Attachment {
                                              pointer.getFileName(),
                                              thumbnail != null ? thumbnail.asPointer().getCdnNumber() : 0,
                                              thumbnail != null ? thumbnail.asPointer().getRemoteId().toString() : "0",
-                                             thumbnail != null && thumbnail.asPointer().getKey() != null ? Base64.encodeBytes(thumbnail.asPointer().getKey()) : null,
+                                             thumbnail != null && thumbnail.asPointer().getKey() != null ? Base64.encodeWithPadding(thumbnail.asPointer().getKey()) : null,
                                              null,
                                              thumbnail != null ? thumbnail.asPointer().getDigest().orElse(null) : null,
                                              thumbnail != null ? thumbnail.asPointer().getIncrementalDigest().orElse(null) : null,
+                                             thumbnail != null ? thumbnail.asPointer().getIncrementalMacChunkSize() : 0,
                                              null,
                                              false,
                                              false,
@@ -152,24 +161,25 @@ public class PointerAttachment extends Attachment {
                                              null));
   }
 
-  public static Optional<Attachment> forPointer(SignalServiceProtos.DataMessage.Quote.QuotedAttachment quotedAttachment) {
+  public static Optional<Attachment> forPointer(DataMessage.Quote.QuotedAttachment quotedAttachment) {
     SignalServiceAttachment thumbnail;
     try {
-      thumbnail = quotedAttachment.hasThumbnail() ? AttachmentPointerUtil.createSignalAttachmentPointer(quotedAttachment.getThumbnail()) : null;
+      thumbnail = quotedAttachment.thumbnail != null ? AttachmentPointerUtil.createSignalAttachmentPointer(quotedAttachment.thumbnail) : null;
     } catch (InvalidMessageStructureException e) {
       return Optional.empty();
     }
 
-    return Optional.of(new PointerAttachment(quotedAttachment.getContentType(),
+    return Optional.of(new PointerAttachment(quotedAttachment.contentType,
                                              AttachmentTable.TRANSFER_PROGRESS_PENDING,
                                              thumbnail != null ? thumbnail.asPointer().getSize().orElse(0) : 0,
-                                             quotedAttachment.getFileName(),
+                                             quotedAttachment.fileName,
                                              thumbnail != null ? thumbnail.asPointer().getCdnNumber() : 0,
                                              thumbnail != null ? thumbnail.asPointer().getRemoteId().toString() : "0",
-                                             thumbnail != null && thumbnail.asPointer().getKey() != null ? Base64.encodeBytes(thumbnail.asPointer().getKey()) : null,
+                                             thumbnail != null && thumbnail.asPointer().getKey() != null ? Base64.encodeWithPadding(thumbnail.asPointer().getKey()) : null,
                                              null,
                                              thumbnail != null ? thumbnail.asPointer().getDigest().orElse(null) : null,
                                              thumbnail != null ? thumbnail.asPointer().getIncrementalDigest().orElse(null) : null,
+                                             thumbnail != null ? thumbnail.asPointer().getIncrementalMacChunkSize() : 0,
                                              null,
                                              false,
                                              false,

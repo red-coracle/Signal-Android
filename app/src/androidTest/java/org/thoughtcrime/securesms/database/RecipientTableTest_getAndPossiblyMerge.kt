@@ -14,6 +14,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.signal.core.util.Base64
 import org.signal.core.util.SqlUtil
 import org.signal.core.util.exists
 import org.signal.core.util.requireLong
@@ -39,7 +40,6 @@ import org.thoughtcrime.securesms.notifications.profiles.NotificationProfile
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.sms.IncomingTextMessage
-import org.thoughtcrime.securesms.util.Base64
 import org.thoughtcrime.securesms.util.FeatureFlags
 import org.thoughtcrime.securesms.util.FeatureFlagsAccessor
 import org.thoughtcrime.securesms.util.Util
@@ -140,6 +140,30 @@ class RecipientTableTest_getAndPossiblyMerge {
 
     test("no match, no data", exception = java.lang.IllegalArgumentException::class.java) {
       process(null, null, null)
+    }
+
+    test("pni matches, pni+aci provided, no pni session") {
+      given(E164_A, PNI_A, null)
+      process(null, PNI_A, ACI_A)
+      expect(E164_A, PNI_A, ACI_A)
+
+      expectNoSessionSwitchoverEvent()
+    }
+
+    test("pni matches, pni+aci provided, pni session") {
+      given(E164_A, PNI_A, null, pniSession = true)
+      process(null, PNI_A, ACI_A)
+      expect(E164_A, PNI_A, ACI_A)
+
+      expectSessionSwitchoverEvent(E164_A)
+    }
+
+    test("pni matches, pni+aci provided, pni session, pni-verified") {
+      given(E164_A, PNI_A, null, pniSession = true)
+      process(null, PNI_A, ACI_A, pniVerified = true)
+      expect(E164_A, PNI_A, ACI_A)
+
+      expectNoSessionSwitchoverEvent()
     }
 
     test("no match, all fields") {
@@ -498,6 +522,18 @@ class RecipientTableTest_getAndPossiblyMerge {
 
       expect(null, PNI_A, null)
       expect(E164_A, null, ACI_A)
+
+      expectNoSessionSwitchoverEvent()
+    }
+
+    test("steal, e164+pni+aci * pni+aci, all provided, aci sessions but not pni sessions, no SSE expected") {
+      given(E164_A, PNI_A, ACI_A, createThread = true, aciSession = true, pniSession = false)
+      given(null, PNI_B, ACI_B, createThread = false, aciSession = true, pniSession = false)
+
+      process(E164_A, PNI_B, ACI_A)
+
+      expect(E164_A, PNI_B, ACI_A)
+      expect(null, null, ACI_B)
 
       expectNoSessionSwitchoverEvent()
     }
@@ -1228,7 +1264,7 @@ class RecipientTableTest_getAndPossiblyMerge {
       .use { cursor: Cursor ->
         if (cursor.moveToFirst()) {
           val bytes = Base64.decode(cursor.requireNonNullString(MessageTable.BODY))
-          ThreadMergeEvent.parseFrom(bytes)
+          ThreadMergeEvent.ADAPTER.decode(bytes)
         } else {
           null
         }
@@ -1246,7 +1282,7 @@ class RecipientTableTest_getAndPossiblyMerge {
       .use { cursor: Cursor ->
         if (cursor.moveToFirst()) {
           val bytes = Base64.decode(cursor.requireNonNullString(MessageTable.BODY))
-          SessionSwitchoverEvent.parseFrom(bytes)
+          SessionSwitchoverEvent.ADAPTER.decode(bytes)
         } else {
           null
         }

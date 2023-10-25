@@ -16,7 +16,6 @@ import org.thoughtcrime.securesms.components.settings.DSLSettingsAdapter
 import org.thoughtcrime.securesms.components.settings.DSLSettingsBottomSheetFragment
 import org.thoughtcrime.securesms.components.settings.DSLSettingsIcon
 import org.thoughtcrime.securesms.components.settings.DSLSettingsText
-import org.thoughtcrime.securesms.components.settings.NO_TINT
 import org.thoughtcrime.securesms.components.settings.app.subscription.DonationPaymentComponent
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.DonateToSignalType
 import org.thoughtcrime.securesms.components.settings.app.subscription.models.GooglePayButton
@@ -73,49 +72,111 @@ class GatewaySelectorBottomSheet : DSLSettingsBottomSheetFragment() {
         return@configure
       }
 
-      if (state.isGooglePayAvailable) {
-        customPref(
-          GooglePayButton.Model(
-            isEnabled = true,
-            onClick = {
-              findNavController().popBackStack()
-              val response = GatewayResponse(GatewayResponse.Gateway.GOOGLE_PAY, args.request)
-              setFragmentResult(REQUEST_KEY, bundleOf(REQUEST_KEY to response))
-            }
-          )
-        )
-      }
-
-      if (state.isPayPalAvailable) {
-        space(8.dp)
-
-        customPref(
-          PayPalButton.Model(
-            onClick = {
-              findNavController().popBackStack()
-              val response = GatewayResponse(GatewayResponse.Gateway.PAYPAL, args.request)
-              setFragmentResult(REQUEST_KEY, bundleOf(REQUEST_KEY to response))
-            },
-            isEnabled = true
-          )
-        )
-      }
-
-      if (state.isCreditCardAvailable) {
-        space(8.dp)
-
-        primaryButton(
-          text = DSLSettingsText.from(R.string.GatewaySelectorBottomSheet__credit_or_debit_card),
-          icon = DSLSettingsIcon.from(R.drawable.credit_card, NO_TINT),
-          onClick = {
-            findNavController().popBackStack()
-            val response = GatewayResponse(GatewayResponse.Gateway.CREDIT_CARD, args.request)
-            setFragmentResult(REQUEST_KEY, bundleOf(REQUEST_KEY to response))
-          }
-        )
+      state.gatewayOrderStrategy.orderedGateways.forEachIndexed { index, gateway ->
+        val isFirst = index == 0
+        when (gateway) {
+          GatewayResponse.Gateway.GOOGLE_PAY -> renderGooglePayButton(state, isFirst)
+          GatewayResponse.Gateway.PAYPAL -> renderPayPalButton(state, isFirst)
+          GatewayResponse.Gateway.CREDIT_CARD -> renderCreditCardButton(state, isFirst)
+          GatewayResponse.Gateway.SEPA_DEBIT -> renderSEPADebitButton(state, isFirst)
+          GatewayResponse.Gateway.IDEAL -> renderIDEALButton(state, isFirst)
+        }
       }
 
       space(16.dp)
+    }
+  }
+
+  private fun DSLConfiguration.renderGooglePayButton(state: GatewaySelectorState, isFirstButton: Boolean) {
+    if (state.isGooglePayAvailable) {
+      if (!isFirstButton) {
+        space(8.dp)
+      }
+
+      customPref(
+        GooglePayButton.Model(
+          isEnabled = true,
+          onClick = {
+            findNavController().popBackStack()
+            val response = GatewayResponse(GatewayResponse.Gateway.GOOGLE_PAY, args.request)
+            setFragmentResult(REQUEST_KEY, bundleOf(REQUEST_KEY to response))
+          }
+        )
+      )
+    }
+  }
+
+  private fun DSLConfiguration.renderPayPalButton(state: GatewaySelectorState, isFirstButton: Boolean) {
+    if (state.isPayPalAvailable) {
+      if (!isFirstButton) {
+        space(8.dp)
+      }
+
+      customPref(
+        PayPalButton.Model(
+          onClick = {
+            findNavController().popBackStack()
+            val response = GatewayResponse(GatewayResponse.Gateway.PAYPAL, args.request)
+            setFragmentResult(REQUEST_KEY, bundleOf(REQUEST_KEY to response))
+          },
+          isEnabled = true
+        )
+      )
+    }
+  }
+
+  private fun DSLConfiguration.renderCreditCardButton(state: GatewaySelectorState, isFirstButton: Boolean) {
+    if (state.isCreditCardAvailable) {
+      if (!isFirstButton) {
+        space(8.dp)
+      }
+
+      primaryButton(
+        text = DSLSettingsText.from(R.string.GatewaySelectorBottomSheet__credit_or_debit_card),
+        icon = DSLSettingsIcon.from(R.drawable.credit_card, R.color.signal_colorOnCustom),
+        onClick = {
+          findNavController().popBackStack()
+          val response = GatewayResponse(GatewayResponse.Gateway.CREDIT_CARD, args.request)
+          setFragmentResult(REQUEST_KEY, bundleOf(REQUEST_KEY to response))
+        }
+      )
+    }
+  }
+
+  private fun DSLConfiguration.renderSEPADebitButton(state: GatewaySelectorState, isFirstButton: Boolean) {
+    if (state.isSEPADebitAvailable) {
+      if (!isFirstButton) {
+        space(8.dp)
+      }
+
+      tonalButton(
+        text = DSLSettingsText.from(R.string.GatewaySelectorBottomSheet__bank_transfer),
+        icon = DSLSettingsIcon.from(R.drawable.bank_transfer),
+        onClick = {
+          findNavController().popBackStack()
+          val response = GatewayResponse(GatewayResponse.Gateway.SEPA_DEBIT, args.request)
+          setFragmentResult(REQUEST_KEY, bundleOf(REQUEST_KEY to response))
+        }
+      )
+    }
+  }
+
+  private fun DSLConfiguration.renderIDEALButton(state: GatewaySelectorState, isFirstButton: Boolean) {
+    if (state.isIDEALAvailable) {
+      if (!isFirstButton) {
+        space(8.dp)
+      }
+
+      // TODO [sepa] -- Final assets and copy
+      tonalButton(
+        text = DSLSettingsText.from(R.string.GatewaySelectorBottomSheet__ideal),
+        icon = DSLSettingsIcon.from(R.drawable.bank_transfer),
+        onClick = {
+          findNavController().popBackStack()
+          val response = GatewayResponse(GatewayResponse.Gateway.IDEAL, args.request)
+          setFragmentResult(REQUEST_KEY, bundleOf(REQUEST_KEY to response))
+        }
+      )
     }
   }
 

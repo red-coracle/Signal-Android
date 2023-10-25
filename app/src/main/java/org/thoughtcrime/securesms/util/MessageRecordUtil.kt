@@ -23,6 +23,9 @@ fun MessageRecord.isMediaMessage(): Boolean {
     slideDeck.stickerSlide == null
 }
 
+fun MessageRecord.hasNonTextSlide(): Boolean =
+  isMms && (this as MmsMessageRecord).slideDeck.slides.any { slide -> slide !is TextSlide }
+
 fun MessageRecord.hasSticker(): Boolean =
   isMms && (this as MmsMessageRecord).slideDeck.stickerSlide != null
 
@@ -54,7 +57,7 @@ fun MessageRecord.isBorderless(context: Context): Boolean {
 }
 
 fun MessageRecord.hasNoBubble(context: Context): Boolean =
-  hasSticker() || isBorderless(context) || (isTextOnly(context) && isJumbomoji(context) && (messageRanges?.rangesList?.isEmpty() ?: true))
+  hasSticker() || isBorderless(context) || (isTextOnly(context) && isJumbomoji(context) && (messageRanges?.ranges?.isEmpty() ?: true))
 
 fun MessageRecord.hasOnlyThumbnail(context: Context): Boolean {
   return hasThumbnail() &&

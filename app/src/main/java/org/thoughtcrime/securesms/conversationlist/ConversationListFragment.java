@@ -111,6 +111,7 @@ import org.thoughtcrime.securesms.components.reminder.ServiceOutageReminder;
 import org.thoughtcrime.securesms.components.reminder.UnauthorizedReminder;
 import org.thoughtcrime.securesms.components.reminder.UsernameOutOfSyncReminder;
 import org.thoughtcrime.securesms.components.settings.app.notifications.manual.NotificationProfileSelectionFragment;
+import org.thoughtcrime.securesms.components.settings.app.subscription.completed.DonationCompletedBottomSheet;
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.UnexpectedSubscriptionCancellation;
 import org.thoughtcrime.securesms.components.spoiler.SpoilerAnnotation;
 import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaControllerOwner;
@@ -133,6 +134,7 @@ import org.thoughtcrime.securesms.database.MessageTable.MarkedMessageInfo;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.ThreadTable;
 import org.thoughtcrime.securesms.database.model.ThreadRecord;
+import org.thoughtcrime.securesms.database.model.databaseprotos.DonationCompletedQueue;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.events.ReminderUpdateEvent;
 import org.thoughtcrime.securesms.exporter.flow.SmsExportDialogs;
@@ -175,7 +177,6 @@ import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.thoughtcrime.securesms.util.SignalProxyUtil;
 import org.thoughtcrime.securesms.util.SnapToTopDataObserver;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
-import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.ViewUtil;
 import org.thoughtcrime.securesms.util.WindowUtil;
 import org.thoughtcrime.securesms.util.adapter.mapping.PagingMappingAdapter;
@@ -522,6 +523,11 @@ public class ConversationListFragment extends MainFragment implements ActionMode
             unexpectedSubscriptionCancellation,
             SignalStore.donationsValues().getUnexpectedSubscriptionCancelationChargeFailure(),
             getParentFragmentManager());
+      }
+    } else {
+      List<DonationCompletedQueue.DonationCompleted> donationCompletedList = SignalStore.donationsValues().consumeDonationCompletionList();
+      for (DonationCompletedQueue.DonationCompleted donationCompleted : donationCompletedList) {
+        DonationCompletedBottomSheet.show(getParentFragmentManager(), donationCompleted);
       }
     }
     */
@@ -986,7 +992,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
       FrameLayout parent = new FrameLayout(context);
       parent.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
 
-      if (SignalStore.internalValues().useConversationItemV2()) {
+      if (FeatureFlags.useTextOnlyConversationItemV2()) {
         CachedInflater.from(context).cacheUntilLimit(R.layout.v2_conversation_item_text_only_incoming, parent, 25);
         CachedInflater.from(context).cacheUntilLimit(R.layout.v2_conversation_item_text_only_outgoing, parent, 25);
       } else {

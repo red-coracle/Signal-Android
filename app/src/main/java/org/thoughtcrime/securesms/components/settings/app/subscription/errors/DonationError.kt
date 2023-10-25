@@ -8,6 +8,8 @@ import org.signal.core.util.logging.Log
 import org.signal.donations.PaymentSourceType
 import org.signal.donations.StripeDeclineCode
 import org.signal.donations.StripeError
+import org.signal.donations.StripeFailureCode
+import org.thoughtcrime.securesms.components.settings.app.subscription.donate.gateway.GatewayRequest
 
 sealed class DonationError(val source: DonationErrorSource, cause: Throwable) : Exception(cause) {
 
@@ -64,6 +66,11 @@ sealed class DonationError(val source: DonationErrorSource, cause: Throwable) : 
     class StripeDeclinedError(source: DonationErrorSource, cause: Throwable, val declineCode: StripeDeclineCode, val method: PaymentSourceType.Stripe) : PaymentSetupError(source, cause)
 
     /**
+     * Bank Transfer failed, with a specific reason told to us by Stripe
+     */
+    class StripeFailureCodeError(source: DonationErrorSource, cause: Throwable, val failureCode: StripeFailureCode, val method: PaymentSourceType.Stripe) : PaymentSetupError(source, cause)
+
+    /**
      * Payment setup failed in some way, which we are told about by PayPal.
      */
     class PayPalCodedError(source: DonationErrorSource, cause: Throwable, val errorCode: Int) : PaymentSetupError(source, cause)
@@ -89,6 +96,12 @@ sealed class DonationError(val source: DonationErrorSource, cause: Throwable) : 
    */
   sealed class BadgeRedemptionError(source: DonationErrorSource, cause: Throwable) : DonationError(source, cause) {
     /**
+     * Timeout elapsed while the user was waiting for badge redemption to complete for a long-running payment.
+     * This is not an indication that redemption failed, just that it could take a few days to process the payment.
+     */
+    class DonationPending(source: DonationErrorSource, val gatewayRequest: GatewayRequest) : BadgeRedemptionError(source, Exception("Long-running donation is still pending."))
+
+    /**
      * Timeout elapsed while the user was waiting for badge redemption to complete. This is not an indication that
      * redemption failed, just that it is taking longer than we can reasonably show a spinner.
      */
@@ -113,9 +126,38 @@ sealed class DonationError(val source: DonationErrorSource, cause: Throwable) : 
       source to PublishSubject.create()
     }
 
+    private val donationErrorsSubjectUiSessionMap: MutableMap<Long, Subject<DonationError>> = mutableMapOf()
+
     @JvmStatic
     fun getErrorsForSource(donationErrorSource: DonationErrorSource): Observable<DonationError> {
       return donationErrorSubjectSourceMap[donationErrorSource]!!
+    }
+
+    fun getErrorsForUiSessionKey(uiSessionKey: Long): Observable<DonationError> {
+      val subject: Subject<DonationError> = donationErrorsSubjectUiSessionMap[uiSessionKey] ?: PublishSubject.create()
+      donationErrorsSubjectUiSessionMap[uiSessionKey] = subject
+
+      return subject
+    }
+
+    @JvmStatic
+    fun routeBackgroundError(context: Context, uiSessionKey: Long, error: DonationError) {
+      if (error.source == DonationErrorSource.GIFT_REDEMPTION) {
+        routeDonationError(context, error)
+        return
+      }
+
+      val subject: Subject<DonationError>? = donationErrorsSubjectUiSessionMap[uiSessionKey]
+      when {
+        subject != null && subject.hasObservers() -> {
+          Log.i(TAG, "Routing background donation error to uiSessionKey $uiSessionKey dialog", error)
+          subject.onNext(error)
+        }
+        else -> {
+          Log.i(TAG, "Routing background donation error to uiSessionKey $uiSessionKey notification", error)
+          DonationErrorNotifications.displayErrorNotification(context, error)
+        }
+      }
     }
 
     /**
@@ -149,17 +191,25 @@ sealed class DonationError(val source: DonationErrorSource, cause: Throwable) : 
      */
     @JvmStatic
     fun getPaymentSetupError(source: DonationErrorSource, throwable: Throwable, method: PaymentSourceType): DonationError {
-      return if (throwable is StripeError.PostError) {
-        val declineCode: StripeDeclineCode? = throwable.declineCode
-        val errorCode: String? = throwable.errorCode
-
-        when {
-          declineCode != null && method is PaymentSourceType.Stripe -> PaymentSetupError.StripeDeclinedError(source, throwable, declineCode, method)
-          errorCode != null && method is PaymentSourceType.Stripe -> PaymentSetupError.StripeCodedError(source, throwable, errorCode)
-          else -> PaymentSetupError.GenericError(source, throwable)
+      return when (throwable) {
+        is StripeError.PostError.Generic -> {
+          val errorCode: String? = throwable.errorCode
+          if (errorCode != null) {
+            PaymentSetupError.StripeCodedError(source, throwable, errorCode)
+          } else {
+            PaymentSetupError.GenericError(source, throwable)
+          }
         }
-      } else {
-        PaymentSetupError.GenericError(source, throwable)
+        is StripeError.PostError.Declined -> PaymentSetupError.StripeDeclinedError(source, throwable, throwable.declineCode, method as PaymentSourceType.Stripe)
+        is StripeError.PostError.Failed -> PaymentSetupError.StripeFailureCodeError(source, throwable, throwable.failureCode, method as PaymentSourceType.Stripe)
+
+        is UserCancelledPaymentError -> {
+          return throwable
+        }
+
+        else -> {
+          PaymentSetupError.GenericError(source, throwable)
+        }
       }
     }
 
@@ -174,6 +224,9 @@ sealed class DonationError(val source: DonationErrorSource, cause: Throwable) : 
 
     @JvmStatic
     fun timeoutWaitingForToken(source: DonationErrorSource): DonationError = BadgeRedemptionError.TimeoutWaitingForTokenError(source)
+
+    @JvmStatic
+    fun donationPending(source: DonationErrorSource, gatewayRequest: GatewayRequest) = BadgeRedemptionError.DonationPending(source, gatewayRequest)
 
     @JvmStatic
     fun genericBadgeRedemptionFailure(source: DonationErrorSource): DonationError = BadgeRedemptionError.GenericError(source)

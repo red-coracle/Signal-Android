@@ -172,12 +172,12 @@ class FullSignalAudioManagerApi31(context: Context, eventListener: EventListener
       if (result) {
         eventListener?.onAudioDeviceChanged(AudioDeviceMapping.fromPlatformType(candidate.type), availableCommunicationDevices.map { AudioDeviceMapping.fromPlatformType(it.type) }.toSet())
       } else {
-        Log.w(TAG, "Failed to set ${candidate.id} as communication device.")
+        Log.w(TAG, "Failed to set ${candidate.id} of type ${candidate.type}as communication device.")
       }
     } else {
       val searchOrder: List<AudioDevice> = listOf(AudioDevice.BLUETOOTH, AudioDevice.WIRED_HEADSET, defaultAudioDevice, AudioDevice.EARPIECE, AudioDevice.SPEAKER_PHONE, AudioDevice.NONE).distinct()
       for (deviceType in searchOrder) {
-        candidate = availableCommunicationDevices.find { AudioDeviceMapping.fromPlatformType(it.type) == deviceType }
+        candidate = availableCommunicationDevices.filterNot { it.productName.contains(" Watch", true) }.find { AudioDeviceMapping.fromPlatformType(it.type) == deviceType }
         if (candidate != null) {
           break
         }

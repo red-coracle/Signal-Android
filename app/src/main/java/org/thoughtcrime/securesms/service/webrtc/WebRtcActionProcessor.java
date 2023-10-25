@@ -61,7 +61,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.thoughtcrime.securesms.service.webrtc.WebRtcData.AnswerMetadata;
 import static org.thoughtcrime.securesms.service.webrtc.WebRtcData.HangupMetadata;
@@ -404,13 +403,13 @@ public abstract class WebRtcActionProcessor {
   }
 
   protected final @NonNull WebRtcServiceState handleSendHangup(@NonNull WebRtcServiceState currentState,
-                                                         @NonNull CallMetadata callMetadata,
-                                                         @NonNull HangupMetadata hangupMetadata,
-                                                         boolean broadcast)
+                                                               @NonNull CallMetadata callMetadata,
+                                                               @NonNull HangupMetadata hangupMetadata,
+                                                               boolean broadcast)
   {
     Log.i(tag, "handleSendHangup(): id: " + callMetadata.getCallId().format(callMetadata.getRemoteDevice()));
 
-    HangupMessage            hangupMessage       = new HangupMessage(callMetadata.getCallId().longValue(), hangupMetadata.getType(), hangupMetadata.getDeviceId(), hangupMetadata.isLegacy());
+    HangupMessage            hangupMessage       = new HangupMessage(callMetadata.getCallId().longValue(), hangupMetadata.getType(), hangupMetadata.getDeviceId());
     Integer                  destinationDeviceId = broadcast ? null : callMetadata.getRemoteDevice();
     SignalServiceCallMessage callMessage         = SignalServiceCallMessage.forHangup(hangupMessage, true, destinationDeviceId);
 
