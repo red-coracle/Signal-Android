@@ -16,6 +16,7 @@
   <!-- Removed by excludeNonTranslatables <string name="username_support_url" translatable="false">https://support.signal.org/hc/articles/5389476324250</string> -->
   <!-- Removed by excludeNonTranslatables <string name="export_account_data_url" translatable="false">https://support.signal.org/hc/articles/5538911756954</string> -->
   <!-- Removed by excludeNonTranslatables <string name="pending_transfer_url" translatable="false">https://support.signal.org/hc/articles/360031949872#pending</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="donate_faq_url" translatable="false">https://support.signal.org/hc/articles/360031949872#donate</string> -->
 
     <string name="yes">Po</string>
     <string name="no">Jo</string>
@@ -153,11 +154,11 @@
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">One time %1$s</string>
+    <string name="OneTimeDonationPreference__one_time_s">Një herë %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Donation pending</string>
+    <string name="OneTimeDonationPreference__donation_pending">Dhurimi në pritje</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Donation processing</string>
+    <string name="OneTimeDonationPreference__donation_processing">Përpunimi i dhurimit</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Blloko dhe largohu nga %1$s?</string>
@@ -322,8 +323,12 @@
     <string name="ConversationItem_cant_download_image_you_will_need_to_send_it_again">Imazhi nuk mund të shkarkohet. Duhet ta dërgosh përsëri.</string>
     <!-- Dialog error message shown when user can\'t download a their own video message via a linked device due to a permanent failure (e.g., unable to decrypt) -->
     <string name="ConversationItem_cant_download_video_you_will_need_to_send_it_again">Videoja nuk mund të shkarkohet. Duhet ta dërgosh përsëri.</string>
-    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. The timestamp will go from \'11m\' to \'edited 11m\' -->
-    <string name="ConversationItem_edited_timestamp_footer">Përpunuar %1$s</string>
+    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. The timestamp represents a message that has been edited within the last minute. -->
+    <string name="ConversationItem_edited_now_timestamp_footer">Përpuno tani</string>
+    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. This is displayed when the edit has occurred between 1-59 minutes ago. -->
+    <string name="ConversationItem_edited_relative_timestamp_footer">Modifikuar në %1$s</string>
+    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. This is displayed when the edit occurred at least 1 hour ago. -->
+    <string name="ConversationItem_edited_absolute_timestamp_footer">Modifikuar në %1$s</string>
     <!-- Displayed if the link preview in the conversation item is for a call link call -->
     <string name="ConversationItem__join_call">Bashkoju thirrjes</string>
 
@@ -357,6 +362,8 @@
     <string name="ConversationActivity_transport_insecure_mms">MMS i pasigurt</string>
     <!-- A title for the option to send an SMS with a placeholder to put the name of their SIM card -->
     <string name="ConversationActivity_transport_signal">Mesazh Signal</string>
+    <!-- The content description for button to send a message in a conversation -->
+    <string name="ConversationActivity_send_message_content_description">Dërgoni mesazh</string>
     <string name="ConversationActivity_lets_switch_to_signal">Le të kalojmë tek Signal %1$s</string>
     <string name="ConversationActivity_specify_recipient">Ju lutemi, zgjidhni një kontakt</string>
     <string name="ConversationActivity_attachment_exceeds_size_limits">Bashkëngjitja tejkalon kufijtë e madhësisë për llojin e mesazhit që po dërgoni.</string>
@@ -404,6 +411,8 @@
 
     <string name="ConversationActivity_error_sending_media">Ka ndodhur një gabim gjatë dërgimit të medias</string>
 
+    <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Mesazhet SMS nuk mbështeten më në Signal.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Mesazhet SMS nuk mbështeten më nga Signal. Fto %1$s te Signal për ta vazhduar bisedën këtu.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
@@ -642,6 +651,8 @@
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">%1$s%% deri më tani…</string>
     <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Që të mund të krijohen kopjeruajtje, Signal-i lyp leje mbi depozitë të jashtme, por kjo i është mohuar. Ju lutemi, kaloni te rregullime aplikacioni, përzgjidhni \"Leje\" dhe aktivizoni \"Depozitim\".</string>
+    <!-- Title of dialog shown when picking the time to perform a chat backup -->
+    <string name="BackupsPreferenceFragment__set_backup_time">Vendos kohën e kopjeruajtjes</string>
 
 
     <!-- CustomDefaultPreference -->
@@ -988,12 +999,15 @@
     <string name="ManageProfileFragment_profile_name">Emër profili</string>
     <string name="ManageProfileFragment_username">Përdoruesi</string>
     <string name="ManageProfileFragment_about">Rreth</string>
-    <string name="ManageProfileFragment_write_a_few_words_about_yourself">Shkruani dy rreshta rreth vetes</string>
-    <string name="ManageProfileFragment_your_name">Emri juaj</string>
-    <string name="ManageProfileFragment_your_username">Emri juaj i përdoruesit</string>
     <string name="ManageProfileFragment_failed_to_set_avatar">S\\’u arrit të caktohej avatar</string>
     <string name="ManageProfileFragment_badges">Distinktivët</string>
+    <!-- Text for a button that will take the user to the screen to manage their username link and QR code -->
+    <string name="ManageProfileFragment_link_setting_text">Kodi QR ose lidhja</string>
     <string name="ManageProfileFragment__edit_photo">Përpunoni foton</string>
+    <!-- Title of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_title">Shpërndaj emrin tënd të përdoruesit</string>
+    <!-- Body of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_body">Lejo të tjerët të fillojnë një bisedë me ty duke ndarë kodin QR ose lidhjen tënde unike.</string>
     <!-- Snackbar message after creating username -->
     <string name="ManageProfileFragment__username_created">Emri i përdoruesit u krijua</string>
     <!-- Snackbar message after copying username -->
@@ -1002,10 +1016,16 @@
     <string name="ManageProfileFragment__couldnt_delete_username">Emri i përdoruesit nuk mund të fshihet. Provo sërish më vonë.</string>
     <!-- Snackbar message after successful deletion of username -->
     <string name="ManageProfileFragment__username_deleted">Emri i përdoruesit u fshi</string>
+    <!-- The title of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_title">Të fshihet emri i përdoruesit?</string>
+    <!-- The body of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_body">"Kjo do të heqë emrin e përdoruesit e do të çaktivizojë kodin QR dhe lidhjen. %1$s do të jetë i disponueshëm për t\'u përdorur nga të tjerët. Je i sigurt?"</string>
 
     <!-- UsernameOutOfSyncReminder -->
     <!-- Displayed above the conversation list when a user needs to address an issue with their username -->
-    <string name="UsernameOutOfSyncReminder__something_went_wrong">Ka ndodhur një gabim me emrin tënd të përdoruesit, i cili nuk është më i lidhur me llogarinë tënde. Mund të provosh dhe ta vendosësh sërish ose të zgjedhësh një të ri.</string>
+    <string name="UsernameOutOfSyncReminder__username_and_link_corrupt">Ka ndodhur një gabim me emrin tënd të përdoruesit, i cili nuk është më i lidhur me llogarinë tënde. Mund të provosh dhe ta vendosësh sërish ose të zgjedhësh një të ri.</string>
+    <!-- Displayed above the conversation list when a user needs to address an issue with their username link -->
+    <string name="UsernameOutOfSyncReminder__link_corrupt">Ndodhi një gabim me kodin QR dhe lidhjen e emrit të përdoruesit; nuk janë më të vlefshëm. Krijo lidhje të re për ta shpërndarë me të tjerët.</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">Rregulloje tani</string>
 
@@ -1263,6 +1283,10 @@
     <string name="MessageRecord_missed_voice_call">Thirrje zanore e humbur</string>
     <!-- Update message shown when receiving an incoming 1:1 video call and not answered -->
     <string name="MessageRecord_missed_video_call">Thirrje video e humbur</string>
+    <!-- Update message shown when receiving an incoming voice call and declined due to notification profile -->
+    <string name="MessageRecord_missed_voice_call_notification_profile">Missed voice call while notification profile on</string>
+    <!-- Update message shown when receiving an incoming video call and declined due to notification profile -->
+    <string name="MessageRecord_missed_video_call_notification_profile">Missed video call while notification profile on</string>
     <!-- Update message shown when receiving an incoming 1:1 voice/audio call and explicitly declined -->
     <string name="MessageRecord_you_declined_a_voice_call">Refuzove thirrjen zanore</string>
     <!-- Update message shown when receiving an incoming 1:1 video call and explicitly declined -->
@@ -1521,7 +1545,7 @@
     <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_wont_receive_any_messages_until_you_unblock_them_SMS">Dëshiron që %1$s të të dërgojnë mesazh? Nuk do të marrësh asnjë mesazh derisa t\'i zhbllokosh.</string>
     <string name="MessageRequestBottomView_get_updates_and_news_from_s_you_wont_receive_any_updates_until_you_unblock_them">Dëshiron të marrësh përditësime dhe lajme nga %1$s? Nuk do të marrësh asnjë përditësim derisa t\'i zhbllokosh.</string>
     <string name="MessageRequestBottomView_continue_your_conversation_with_this_group_and_share_your_name_and_photo">Dëshiron të vazhdosh bisedën me këtë grup dhe të ndash me anëtarët e tij emri dhe foton tënde?</string>
-    <string name="MessageRequestBottomView_upgrade_this_group_to_activate_new_features">Përmirësojeni këtë grup, që të aktivizohen veçori të reja, të tilla si @përmendje dhe përgjegjës. Anëtarët që nuk kanë dhënë emrin ose foton e tyre te ky grup, do të ftohen të bëhen pjesë.</string>
+    <string name="MessageRequestBottomView_upgrade_this_group_to_activate_new_features">Grupi i trashëguar nuk mund të përdoret më. Krijo grup të ri për të aktivizuar veçori të reja si @përmendjet dhe administratorët.</string>
     <string name="MessageRequestBottomView_this_legacy_group_can_no_longer_be_used">Ky Grup i Dikurshëm s\\’mund të përdoret më, ngaqë është shumë i madh. Madhësia maksimum për grupet është %1$d.</string>
     <string name="MessageRequestBottomView_continue_your_conversation_with_s_and_share_your_name_and_photo">Dëshiron të vazhdosh bisedën me %1$s dhe të ndash me to emrin dhe foton tënde?</string>
     <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Të bëhet anëtarësim në këtë grup dhe të ndahet emri dhe fotoja juaj me anëtarët e tij? S\\’do ta dinë se i keni parë mesazhet e tyre, para se të pranoni këtë.</string>
@@ -1814,6 +1838,8 @@
     <string name="WebRtcCallView__toggle_camera">Ndrysho kamerën</string>
     <!-- Toggle content description for toggling mute state  -->
     <string name="WebRtcCallView__toggle_mute">Aktivizo zërin</string>
+    <!-- Content description for additional actions menu button -->
+    <string name="WebRtcCallView__additional_actions">Veprime të tjera</string>
     <!-- Content description for end-call button -->
     <string name="WebRtcCallView__end_call">Përfundoje thirrjen</string>
 
@@ -1830,10 +1856,68 @@
     <!-- A text description of the earpiece icon, used for accessibility. -->
     <string name="WebRtcAudioOutputBottomSheet__earpiece_icon_content_description">Ikonë që përfaqëson kufjen e një pajisjeje.</string>
 
+    <!-- A clickable button to "raise your hand" in a group call to signify you have something to say -->
+    <string name="CallOverflowPopupWindow__raise_hand">Ngri dorën</string>
+    <!-- A description of a clickable image representing a raised hand -->
+    <string name="CallOverflowPopupWindow__raise_hand_illustration_content_description">Ngri dorën</string>
+    <!-- A dialog prompt to confirm you want to lower your hand -->
+    <string name="CallOverflowPopupWindow__lower_your_hand">Ul dorën?</string>
+    <!-- A dialog button to confirm you would like to lower your hand -->
+    <string name="CallOverflowPopupWindow__lower_hand">Ul dorën</string>
+    <!-- A negative button for a dialog confirming the user wants to lower their hand (withdraw a raised hand) -->
+    <string name="CallOverflowPopupWindow__cancel">Anulo</string>
+    <!-- A notification to the user that they successfully raised their hand -->
+    <string name="CallOverflowPopupWindow__you_raised_your_hand">Ke ngritur dorën</string>
+    <!-- A button to take you to a list of participants with raised hands -->
+    <string name="CallOverflowPopupWindow__view">Shihni</string>
+
+    <!-- A notification to the user that one or more participants in the call successfully raised their hand. In the singular case, it is a name. In the plural case, it is a name or "You" -->
+    <plurals name="CallOverflowPopupWindow__raised_a_hand">
+        <item quantity="one">%1$s ka ngritur dorën</item>
+        <item quantity="other">%1$s + %2$d kanë ngritur dorën</item>
+    </plurals>
+
+    <!-- A badge to show how many hands are raised. The first string may be a name or "You" -->
+    <plurals name="CallRaiseHandSnackbar_raised_hands">
+        <item quantity="one">%1$s</item>
+        <item quantity="other">%1$s +%2$d</item>
+    </plurals>
+
+    <!-- An accessibility label for screen readers on a view that can be expanded -->
+    <string name="CallOverflowPopupWindow__expand_snackbar_accessibility_label">Zgjero pamjen e dorës së ngritur</string>
+
+    <!-- AboutSheet -->
+    <!-- Displayed in a sheet row and allows user to open signal connection explanation on tap -->
+    <string name="AboutSheet__signal_connection">Lidhja e Signal</string>
+    <!-- Explains that the given user (placeholder is short name) is in the users system contact -->
+    <string name="AboutSheet__s_is_in_your_system_contacts">%1$s është në kontaktet e sistemit</string>
+    <!-- Notice in a row when user has no groups in common -->
+    <string name="AboutSheet__you_have_no_groups_in_common">Nuk keni grupe të përbashkëta</string>
+    <!-- Notice when a user is not a connection to review requests carefully -->
+    <string name="AboutSheet__review_requests_carefully">Shqyrtoni me kujdes kërkesat</string>
+    <!-- Text used when user has groups in common. Placeholder is the count -->
+    <string name="AboutSheet__d_groups_in_common">%1$d grupe të përbashkët</string>
+    <!-- Text displayed in title for external recipients -->
+    <string name="AboutSheet__about">Rreth</string>
+    <!-- Text displayed in title for you -->
+    <string name="AboutSheet__you">Ju</string>
+
     <!-- CallParticipantsListDialog -->
-    <plurals name="CallParticipantsListDialog_in_this_call_d_people">
-        <item quantity="one">Në këtë thirrje · %1$d person</item>
-        <item quantity="other">Në këtë thirrje · %1$d vetë</item>
+    <plurals name="CallParticipantsListDialog_in_this_call">
+        <item quantity="one">Në këtë telefonatë (%1$d)</item>
+        <item quantity="other">Në këtë telefonatë (%1$d)</item>
+    </plurals>
+    <plurals name="CallParticipantsListDialog__signal_will_ring">
+        <item quantity="one">Do të bjerë zilja e Signal (%1$d)</item>
+        <item quantity="other">Do të bjerë zilja e Signal (%1$d)</item>
+    </plurals>
+    <plurals name="CallParticipantsListDialog__signal_will_notify">
+        <item quantity="one">Do të të vijë një njoftim në Signal (%1$d)</item>
+        <item quantity="other">Do të të vijë një njoftim në Signal (%1$d)</item>
+    </plurals>
+    <plurals name="CallParticipantsListDialog__raised_hands">
+        <item quantity="one">Dorë e ngritur (%1$d)</item>
+        <item quantity="other">Duar të ngritura (%1$d)</item>
     </plurals>
 
     <!-- CallParticipantView -->
@@ -1946,6 +2030,12 @@
     <string name="RevealableMessageView_view_video">Shiheni Videon</string>
     <string name="RevealableMessageView_viewed">Parë</string>
     <string name="RevealableMessageView_media">Media</string>
+
+    <!-- ReviewBannerView -->
+    <!-- ReviewBannerView text when a name conflict has been found -->
+    <string name="ReviewBannerView__name_conflict_found">Ka përplasje emri</string>
+    <!-- Button label to view name conflicts -->
+    <string name="ReviewBannerView__view">Shihni</string>
 
     <!-- Search -->
     <string name="SearchFragment_no_results">S\\’u gjetën përfundime për \'%1$s\'</string>
@@ -2096,9 +2186,13 @@
     <!--  Displayed in the conversation list when identities have been merged. The first placeholder is a phone number, and the second is a person\'s name -->
     <string name="ThreadRecord_s_belongs_to_s">%1$s i përket %2$s</string>
 
-    <!-- UpdateApkReadyListener -->
-    <string name="UpdateApkReadyListener_Signal_update">Përditësim i Signal-it</string>
-    <string name="UpdateApkReadyListener_a_new_version_of_signal_is_available_tap_to_update">Është gati një version i ri i Signal-it, prekeni që të përditësohet</string>
+    <!-- ApkUpdateNotifications -->
+    <string name="ApkUpdateNotifications_prompt_install_title">Përditësim i Signal-it</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">Një version i ri i Signal është i disponueshëm. Kliko për ta përditësuar.</string>
+    <string name="ApkUpdateNotifications_failed_general_title">Signal nuk u përditësua</string>
+    <string name="ApkUpdateNotifications_failed_general_body">Do të provojmë përsëri më vonë.</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Signal u përditësua me sukses</string>
+    <string name="ApkUpdateNotifications_auto_update_success_body">Je përditësuar automatikisht në versionin %1$s.</string>
 
     <!-- UntrustedSendDialog -->
     <string name="UntrustedSendDialog_send_message">Të dërgohet mesazhi?</string>
@@ -2109,6 +2203,8 @@
     <string name="UnverifiedSendDialog_send">Dërgoje</string>
 
     <!-- UsernameEditFragment -->
+    <!-- Placeholder text for custom discriminator -->
+    <string name="UsernameEditFragment__00">00</string>
     <!-- Toolbar title when entering from registration -->
     <string name="UsernameEditFragment__add_a_username">Shto një emër përdoruesi</string>
     <!-- Instructional text at the top of the username edit screen -->
@@ -2131,6 +2227,12 @@
     <string name="UsernameEditFragment__skip">Anashkaloje</string>
     <!-- Content description for done button -->
     <string name="UsernameEditFragment__done">U bë</string>
+    <!-- Displayed when the chosen discriminator is not available for the given nickname -->
+    <string name="UsernameEditFragment__this_username_is_not_available_try_another_number">This username is not available, try another number.</string>
+    <!-- Displayed when the chosen discriminator is too short -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_minimum_of_d_digits">Invalid username, enter a minimum of %1$d digits.</string>
+    <!-- Displayed when the chosen discriminator is too long -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_maximum_of_d_digits">Invalid username, enter a maximum of %1$d digits.</string>
 
     <plurals name="UserNotificationMigrationJob_d_contacts_are_on_signal">
         <item quantity="one">%1$d kontakt është në Signal!</item>
@@ -2328,6 +2430,10 @@
     </plurals>
     <!-- Status update label used while the device is transcoding video as a prerequisite to uploading -->
     <string name="TransferControlView__processing">Në përpunim</string>
+    <!-- Status update label used while the device is transmitting data over the network. Will take the form of "1.0 MB/2.0 MB" -->
+    <string name="TransferControlView__download_progress">%1$1.1f MB/%2$2.1f MB</string>
+    <!-- Attachment file size label for not-yet-downloaded images and video. Will take the form of "1.0 MB" -->
+    <string name="TransferControlView__filesize">%1$1.1f MB</string>
 
 
     <!-- UnauthorizedReminder -->
@@ -2352,6 +2458,8 @@
     <string name="WebRtcCallActivity__answered_on_a_linked_device">U përgjigj në një pajisje të lidhur.</string>
     <string name="WebRtcCallActivity__declined_on_a_linked_device">Hedhur tej në një pajisje të lidhur.</string>
     <string name="WebRtcCallActivity__busy_on_a_linked_device">I zënë në një pajisje të lidhur.</string>
+    <!-- Tooltip message shown first time user is in a video call after switch camera button moved -->
+    <string name="WebRtcCallActivity__flip_camera_tooltip">Kamera e kthimit është zhvendosur këtu, kliko videon për ta provuar</string>
 
     <string name="GroupCallSafetyNumberChangeNotification__someone_has_joined_this_call_with_a_safety_number_that_has_changed">Dikush ka hyrë në këtë thirrje me një numër sigurie që ka ndryshuar.</string>
 
@@ -2706,24 +2814,13 @@
 
     <!-- verify_display_fragment -->
     <!-- Explanation of how to verify the safety numbers. %s is replaced with the name of the other recipient -->
-    <string name="verify_display_fragment__pnp_verify_safety_numbers_explanation_with_s">Për të verifikuar kodimin nga skaji në skaj me %1$s, përputh kartën e mësipërme të ngjyrave me pajisjen e tyre dhe krahaso numrat. Nëse këto nuk përputhen, shfleto dhe provo çiftin tjetër të numrave të sigurisë. Vetëm një palë duhet të përputhet.</string>
+    <string name="verify_display_fragment__pnp_verify_safety_numbers_explanation_with_s">Për të verifikuar kodimin nga skaji në skaj me %1$s, krahaso numrat e mësipërm me pajisjen e tyre. Mund të skanosh edhe kodin në pajisjen e tyre.</string>
     <string name="verify_display_fragment__tap_to_scan">Prekeni që të skanohet</string>
     <string name="verify_display_fragment__successful_match">Përputhje e suksesshme</string>
     <string name="verify_display_fragment__failed_to_verify_safety_number">S\\’u arri të verifikohet numër sigurie</string>
     <string name="verify_display_fragment__loading">Po ngarkohet…</string>
     <string name="verify_display_fragment__mark_as_verified">Vëri shenjë si i verifikuar</string>
     <string name="verify_display_fragment__clear_verification">Spastroje verifikimin</string>
-    <!-- Banner at top of safety numbers screen explaining that we\'re updating how safety numbers work. -->
-    <string name="verify_display_fragment__safety_numbers_are_updating_banner_no_learn_more">Numrat e sigurisë po përditësohen.</string>
-
-    <!-- Title for dialog explaining for how safety numbers are transitioning to support usernames -->
-    <string name="PnpSafetyNumberEducationDialog__title">Ndryshimet në numrat e sigurisë</string>
-    <!-- Message for dialog explaining for how safety numbers are transitioning to support usernames -->
-    <string name="PnpSafetyNumberEducationDialog__body">Numrat e sigurisë po përditësohen gjatë një periudhe tranzicioni për të aktivizuar veçoritë e ardhshme të privatësisë në Signal.\n\nPër të verifikuar numrat e sigurisë, përputh kartën e ngjyrave me pajisjen e kontaktit tënd. Nëse këto nuk përputhen, shfleto dhe provo çiftin tjetër të numrave të sigurisë. Vetëm një palë duhet të përputhet.</string>
-    <!-- Button for more information about the safety number changes. Takes user to support article -->
-    <string name="PnpSafetyNumberEducationDialog__help">Ju duhet ndihmë?</string>
-    <!-- Confirmation button for educating users about new safety number changes -->
-    <string name="PnpSafetyNumberEducationDialog__confirm">E kuptova</string>
 
     <!-- verity_scan_fragment -->
     <string name="verify_scan_fragment__scan_the_qr_code_on_your_contact">Skanoni kodin QR te pajisja e kontaktit tuaj.</string>
@@ -3019,6 +3116,7 @@
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Pagesa</string>
     <string name="preferences_chats__chats">Bisedat</string>
+    <string name="preferences_app_updates__title">Përditësime aplikacioni</string>
     <string name="preferences_data_and_storage__manage_storage">Administroni depozitim</string>
     <string name="preferences_data_and_storage__use_less_data_for_calls">Përdor më pak të dhënë për thirrjet</string>
     <string name="preferences_data_and_storage__never">Kurrë</string>
@@ -3917,14 +4015,16 @@
     <string name="ReviewCardDialogFragment__failed_to_remove_group_member">S’u hoq dot anëtari i grupit.</string>
 
     <!-- ReviewCard -->
-    <string name="ReviewCard__member">Anëtar</string>
     <string name="ReviewCard__request">Kërkesë</string>
     <string name="ReviewCard__your_contact">Kontakti juaj</string>
     <string name="ReviewCard__remove_from_group">Hiqe nga grupi</string>
     <string name="ReviewCard__update_contact">Përditësoni kontaktin</string>
     <string name="ReviewCard__block">Blloko</string>
     <string name="ReviewCard__delete">Fshije</string>
-    <string name="ReviewCard__recently_changed">Ndryshoi së fundi emrin e vet të profilit nga %1$s në %2$s</string>
+    <!-- Displayed when a recent name change has occurred. First placeholder is new short name, second is previous name, third is new name. -->
+    <string name="ReviewCard__s_recently_changed">%1$s ka ndryshuar së fundmi emrin e profilit nga %2$s në %3$s</string>
+    <!-- Displayed when a review user is in your system contacts. Placeholder is short name. -->
+    <string name="ReviewCard__s_is_in_your_system_contacts">%1$s është në kontaktet e sistemit</string>
 
     <!-- CallParticipantsListUpdatePopupWindow -->
     <string name="CallParticipantsListUpdatePopupWindow__s_joined">Erdhi %1$s</string>
@@ -4570,6 +4670,13 @@
     <string name="NewConversationActivity__view_contact">Shiko kontaktin</string>
     <!-- Error message shown when looking up a person by phone number and that phone number is not associated with a signal account -->
     <string name="NewConversationActivity__s_is_not_a_signal_user">%1$s nuk është përdorues i Signal</string>
+    <!-- Error message shown when we could not get a user from the username link -->
+    <string name="NewConversationActivity__">%1$s nuk është përdorues i Signal</string>
+    <!-- Error message shown in a dialog when trying to create a new group with non-signal users (e.g., unregistered or phone number only contacts) -->
+    <plurals name="CreateGroupActivity_not_signal_users">
+        <item quantity="one">%1$s nuk është përdorues i Signal</item>
+        <item quantity="other">%1$s nuk janë përdorues të Signal</item>
+    </plurals>
 
     <!-- ContactFilterView -->
     <string name="ContactFilterView__search_name_or_number">Kërkoni emër ose numër</string>
@@ -4755,6 +4862,12 @@
     <string name="ManageDonationsFragment__other_ways_to_give">Rrugë të tjera për të dhuruar</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Dhuro për një mik</string>
+    <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">Dhurimi nuk mund të konfirmohej</string>
+    <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed">Dhurimi yt %1$s/muaj nuk mund të konfirmohej. Kontrollo aplikacionin bankar për të miratuar pagesën iDEAL.</string>
+    <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed">Dhurimi prej %1$s që bëhet vetëm një herë nuk mund të konfirmohej. Kontrollo aplikacionin bankar për të miratuar pagesën iDEAL.</string>
 
     <string name="Boost__enter_custom_amount">Vendos shumën e personalizuar</string>
     <!-- Error label when the amount is smaller than what we can accept -->
@@ -4767,9 +4880,9 @@
     <string name="MySupportPreference__couldnt_add_badge_s">Distinktivi nuk mundi të shtohej. %1$s</string>
     <string name="MySupportPreference__please_contact_support">Ju lutemi, lidhuni me ata të asistencës.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Payment pending</string>
+    <string name="MySupportPreference__payment_pending">Pagesa në pritje</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Your bank transfer of %1$s is pending. Bank transfers usually take 1 business day to complete.  </string>
+    <string name="MySupportPreference__your_bank_transfer_of_s">Transferta bankare prej %1$s është në pritje. Kryerja e transfertave bankare zgjat zakonisht 1 ditë pune.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
     <string name="MySupportPreference__learn_more">Mëso më shumë</string>
 
@@ -4821,12 +4934,16 @@
     <string name="Subscription__contact_support">Lidhuni Me Asistencën</string>
     <string name="Subscription__get_a_s_badge">Merr një distinktiv %1$s</string>
 
-    <string name="SubscribeFragment__processing_payment">Po kryhet pagesa…</string>
+    <string name="SubscribeFragment__processing_payment">Dhurimi po përpunohet…</string>
     <!-- Displayed in notification when user payment fails to process on Stripe -->
-    <string name="DonationsErrors__error_processing_payment">Gabim në përpunim pagese</string>
+    <string name="DonationsErrors__error_processing_payment">Gabim gjatë përpunimit të dhurimit</string>
+    <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">Provoni një metodë tjetër pagese, ose lidhuni me bankën tuaj për më tepër informacion.</string>
+    <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">Mëso më shumë</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Gabim në përpunim pagese. %1$s</string>
-    <string name="DonationsErrors__your_payment">Pagesa jote nuk mundi të përpunohej dhe nuk të është mbajtur. Të lutem, provo përsëri.</string>
+    <string name="DonationsErrors__error_processing_payment_s">Gabim gjatë përpunimit të dhurimit. %1$s</string>
+    <string name="DonationsErrors__your_payment">Dhurimi nuk mund të përpunohej dhe nuk je tarifuar. Provo sërish.</string>
     <string name="DonationsErrors__still_processing">Ende në përpunim</string>
     <string name="DonationsErrors__couldnt_add_badge">Distinktivi nuk mundi të shtohej</string>
     <!-- Displayed when badge credential couldn\'t be verified -->
@@ -4836,9 +4953,9 @@
     <!-- Displayed as title when some generic error happens during sending donation on behalf of another user -->
     <string name="DonationsErrors__donation_failed">Dhurimi dështoi</string>
     <!-- Displayed as message when some generic error happens during sending donation on behalf of another user -->
-    <string name="DonationsErrors__your_payment_was_processed_but">Pagesa u krye, por Signal nuk e dërgoi dot mesazhin tënd dhuratë. Kontakto ndihmën.</string>
+    <string name="DonationsErrors__your_payment_was_processed_but">Dhurimi u përpunua, por Signal nuk e dërgoi dot mesazhin tënd dhuratë. Kontakto ndihmën.</string>
     <string name="DonationsErrors__your_badge_could_not">Distinktivi nuk mundi të shtohej në llogarinë tënde, por mund të të jetë mbajtur pagesa. Të lutemi, lidhu me ndihmën.</string>
-    <string name="DonationsErrors__your_payment_is_still">Pagesa juaj ende po përpunohet. Kjo mund të zërë ca minuta, varet nga lidhja juaj.</string>
+    <string name="DonationsErrors__your_payment_is_still">Dhurimi është ende duke u përpunuar. Kjo mund të zgjasë disa minuta në varësi të lidhjes.</string>
     <string name="DonationsErrors__failed_to_cancel_subscription">Anulimi i abonimit dështoi</string>
     <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Anulimi i abonimit kërkon lidhje interneti.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support_google_pay_so_you_can_t_subscribe_to_earn_a_badge_you_can_still_support_signal_by_making_a_donation_on_our_website">Pajisja jote nuk e mbështet Google Pay, kështu që nuk mund të abonohesh për të fituar një distinktiv. Ende mund ta mbështesësh Signal duke bërë një dhurim në faqen tonë të internetit.</string>
@@ -4850,6 +4967,8 @@
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Ky përdorues nuk mund të marrë dhurata derisa të përditësojë Signal.</string>
     <!-- Displayed as a dialog message when the user\'s profile could not be fetched, likely due to lack of internet -->
     <string name="DonationsErrors__your_donation_could_not_be_sent">Dhurata jote nuk u dërgua dot për shkak të një gabimi në rrjet. Kontrollo lidhjen e internetit dhe riprovo.</string>
+    <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_couldnt_be_processed">Dhurimi yt iDEAL nuk mund të përpunohej. Provo një metodë tjetër pagese ose lidhu me bankën për më shumë informacion.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Dhurim në emër të %1$s</string>
@@ -4894,7 +5013,7 @@
     <!-- Stripe decline code incorrect expiration year -->
     <string name="DeclineCode__the_expiration_year">Viti i skadimit në metodën tuaj të pagesës është i pasaktë. Përditësojeni në Google Pay dhe riprovoni.</string>
     <!-- Stripe decline code issuer not available -->
-    <string name="DeclineCode__try_completing_the_payment_again">Riprovoni të plotësoni pagesën, ose lidhuni me bankën tuaj për më tepër informacion.</string>
+    <string name="DeclineCode__try_completing_the_payment_again">Provo të ribësh pagesën, ose lidhu me bankën për më shumë informacion.</string>
     <!-- Stripe decline code processing error -->
     <string name="DeclineCode__try_again">Riprovoni, ose lidhuni me bankën tuaj për më tepër informacion.</string>
 
@@ -4916,15 +5035,15 @@
 
     <!-- Stripe Failure Codes for failed bank transfers -->
     <!-- Failure code text for insufficient funds, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__the_bank_account_provided">The bank account provided has insufficient funds to complete this purchase, try again or contact your bank for more information.</string>
+    <string name="StripeFailureCode__the_bank_account_provided">Llogaria e dhënë bankare ka fonde të pamjaftueshme për kryerjen e kësaj blerjeje; provo përsëri ose kontakto bankën për më shumë informacion.</string>
     <!-- Failure code text for revoked authorization of payment, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__this_payment_was_revoked">This payment was revoked by the account holder and could not be processed. You haven\'t been charged.</string>
+    <string name="StripeFailureCode__this_payment_was_revoked">Dhurimi u anulua nga mbajtësi i llogarisë dhe nuk mund të përpunohej. Nuk je tarifuar.</string>
     <!-- Failure code text for a payment lacking an authorized mandate or incorrect mandate, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__an_error_occurred_while_processing_this_payment">An error occurred while processing this payment, please try again.</string>
+    <string name="StripeFailureCode__an_error_occurred_while_processing_this_payment">Ndodhi një gabim gjatë përpunimit të dhurimit; provo sërish.</string>
     <!-- Failure code text for a closed account, deceased recipient, or one with blocked direct debits, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__the_bank_details_provided_could_not_be_processed">The bank details provided could not be processed, contact your bank for more information.</string>
+    <string name="StripeFailureCode__the_bank_details_provided_could_not_be_processed">Të dhënat bankare nuk mund të përpunoheshin, kontakto bankën për më shumë informacion.</string>
     <!-- Failure code text for a non-existent bank branch, invalid account holder, invalid iban, generic failure, or unknown bank failure, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__verify_your_bank_details_are_correct">Verify your bank details are correct and try again. If the problem continues, contact your bank.</string>
+    <string name="StripeFailureCode__verify_your_bank_details_are_correct">Kontrollo që të dhënat e bankës të jenë të sakta dhe provo përsëri. Nëse problemi vazhdon, kontakto bankën.</string>
 
     <!-- Title of create notification profile screen -->
     <string name="EditNotificationProfileFragment__name_your_profile">Jepni emër për profilin tuaj</string>
@@ -4961,6 +5080,12 @@
     <string name="AddAllowedMembers__add_people_and_groups_you_want_notifications_and_calls_from_when_this_profile_is_on">Shtoni persona dhe grupe prej të cilëve doni njoftimeve dhe thirrje, kur ky profil është i aktivizuar</string>
     <!-- Button text that launches the contact picker to select from -->
     <string name="AddAllowedMembers__add_people_or_groups">Shtoni njerëz ose grupe</string>
+    <!-- Title for exceptions section of add people to notification profile screen in create flow -->
+    <string name="AddAllowedMembers__exceptions">Përjashtime</string>
+    <!-- List preference to toggle that allows calls through the notification profile during create flow -->
+    <string name="AddAllowedMembers__allow_all_calls">Lejoji krejt thirrjet</string>
+    <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
+    <string name="AddAllowedMembers__notify_for_all_mentions">Njofto për krejt përmendjet</string>
 
     <!-- Call to action button on contact picker for adding to profile -->
     <string name="SelectRecipientsFragment__add">Shtoje</string>
@@ -5082,10 +5207,10 @@
     <string name="DonationReceiptListFragment__recurring">E ripërsëritshme</string>
     <!-- Donation receipts one-time tab label -->
     <string name="DonationReceiptListFragment__one_time">Një herë</string>
+    <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">Për një mik</string>
     <!-- Donation receipts gift tab label -->
     <string name="DonationReceiptListFragment__donation_for_a_friend">Dhurim për një mik</string>
-    <!-- Donation receipts boost row label -->
-    <!-- Donation receipts details title -->
     <!-- Donation receipts donation type heading -->
     <string name="DonationReceiptDetailsFragment__donation_type">Lloji i dhurimit</string>
     <!-- Donation receipts date paid heading -->
@@ -5574,7 +5699,10 @@
     <!-- Message of safety number changes bottom sheet when not showing individual records and user has seen review screen -->
     <string name="SafetyNumberBottomSheetFragment__all_connections_have_been_reviewed">Të gjitha kontaktet janë shqyrtuar; kliko dërgo për të vazhduar.</string>
     <!-- Message of safety number changes bottom sheet when not showing individual records -->
-    <string name="SafetyNumberBottomSheetFragment__you_have_d_connections">Ke %1$d kontakte që mund të kenë instaluar sërish Signal ose të kenë ndryshuar pajisje. Para se të shpërndash postimin e përkohshëm me ta, rishiko numrat e tyre të sigurisë ose shih mundësinë e heqjes së tyre nga postimi i përkohshëm.</string>
+    <plurals name="SafetyNumberBottomSheetFragment__you_have_d_connections_plural">
+        <item quantity="one">%1$d connection may have reinstalled Signal or changed devices. You may review their safety number or continue with the send.</item>
+        <item quantity="other">%1$d connections may have reinstalled Signal or changed devices. You may review their safety numbers or continue with the send.</item>
+    </plurals>
     <!-- Menu action to launch safety number verification screen -->
     <string name="SafetyNumberBottomSheetFragment__verify_safety_number">Verifiko numër siguri</string>
     <!-- Menu action to remove user from story -->
@@ -5817,6 +5945,23 @@
     <string name="DonateToSignalFragment__continue">Vazhdo</string>
     <!-- Description below title -->
     <string name="DonateToSignalFragment__private_messaging">Mesazhe private, financuar nga ti. Pa reklama, pa gjurmim, pa kompromise. Dhuro tani për të mbështetur Signal.</string>
+    <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">Ke një dhurim në pritje</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Përpunimi i transfertave bankare zgjat zakonisht 1 ditë pune. Të lutem, prit derisa të përfundojë kjo pagesë përpara se të përditësosh abonimin tënd.</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Përpunimi i transfertave bankare zgjat zakonisht 1 ditë pune. Të lutem, prit derisa të përfundojë kjo pagesë përpara se të bësh një dhurim tjetër.</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Dhurimi është ende duke u përpunuar. Kjo mund të zgjasë disa minuta në varësi të lidhjes. Para se të përditësosh abonimin, prit derisa të përfundojë pagesa.</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Dhurimi është ende duke u përpunuar. Kjo mund të zgjasë disa minuta në varësi të lidhjes. Para se të bësh dhurim tjetër, prit derisa të përfundojë pagesa.</string>
+    <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_payment_is_still_processing">Dhurimi yt iDEAL është ende në përpunim. Kontrollo aplikacionin tënd bankar për të miratuar pagesën tënde përpara se të bësh një dhurim tjetër.</string>
+    <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">Vlerë shumë e lartë dhurimi</string>
+    <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Mund të dërgosh deri në %1$s me transfertë bankare. Provo vlerë ose mënyrë tjetër pagese.</string>
+
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">I përmuajshëm</string>
     <!-- Donation pill toggle one-time text -->
@@ -5843,6 +5988,10 @@
     <!-- Button label for paying with iDEAL -->
     <string name="GatewaySelectorBottomSheet__ideal">iDEAL</string>
 
+    <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Largohu nga Signal për të konfirmuar dhurimin?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Pasi të konfirmohet, kthehu te Signal për të përfunduar përpunimin e dhurimit.</string>
+
     <!-- IdealBank -->
     <!-- iDEAL bank name -->
     <string name="IdealBank__abn_amro">ABN AMRO</string>
@@ -5867,7 +6016,7 @@
     <!-- iDEAL bank name -->
     <string name="IdealBank__triodos_bank">Triodos Bank</string>
     <!-- iDEAL bank name -->
-    <string name="IdealBank__van_lanchot">Van Lanchot Kempen</string>
+    <string name="IdealBank__van_lanschot">Van Lanschot Kempen</string>
     <!-- iDEAL bank name -->
     <string name="IdealBank__yoursafe">Yoursafe</string>
 
@@ -5879,11 +6028,15 @@
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
     <string name="BankTransferMandateFragment__learn_more">Mëso më shumë</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__continue">Vazhdo</string>
+    <string name="BankTransferMandateFragment__agree">Pranoj</string>
+    <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">Lexoni më tepër</string>
+    <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">Ngarkimi i mandatit dështoi</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Vendos të dhënat e tua bankare dhe adresën e emailit. Emaili yt përdoret nga Stripe për të të dërguar përditësime rreth dhurimit tënd. %1$s</string>
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">Vendos të dhënat bankare dhe emailin. Stripe e përdor këtë email për të të dërguar përditësime rreth dhurimit. %1$s</string>
     <!-- Subtext learn more link text -->
     <string name="BankTransferDetailsFragment__learn_more">Mëso më shumë</string>
     <!-- Text field label for name on bank account -->
@@ -5892,26 +6045,32 @@
     <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
     <string name="BankTransferDetailsFragment__email">Email</string>
-    <!-- Text label for button to show user how to find their IBAN number -->
-    <string name="BankTransferDetailsFragment__find_account_info">Find account info</string>
+    <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">Gjej të dhënat e llogarisë</string>
     <!-- Donate button label for monthly subscription -->
     <string name="BankTransferDetailsFragment__donate_s_month">Dhuro %1$s/muaj</string>
     <!-- Donate button label for one-time -->
     <string name="BankTransferDetailsFragment__donate_s">Dhuro %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_nubmer_is_too_short">Numri IBAN është shumë i shkurtër</string>
+    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN është shumë i shkurtër</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_nubmer_is_too_long">Numri IBAN është shumë i gjatë</string>
+    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN është shumë i gjatë</string>
     <!-- Error label for IBAN field when country is not supported -->
     <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Kodi i shtetit IBAN nuk mbështetet</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban_nubmer">I pavlefshëm numri IBAN</string>
+    <string name="BankTransferDetailsFragment__invalid_iban">IBAN i pavlefshëm</string>
+    <!-- Error label for name field when name is not at least two characters long -->
+    <string name="BankTransferDetailsFragment__minimum_2_characters">Minimumi 2 karaktere</string>
+    <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">Adresë e pavlefshme emaili</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Title of the screen, displayed in the toolbar -->
     <string name="IdealTransferDetailsFragment__ideal">iDEAL</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Enter your bank, name and email. Stripe uses this email to send you updates about your donation. %1$s</string>
+    <string name="IdealTransferDetailsFragment__enter_your_bank">Shkruaj emrin e bankës, emrin tënd dhe emailin. Stripe e përdor këtë email për të të dërguar përditësime rreth dhurimit. %1$s</string>
+    <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Vendos të dhënat e tua bankare. Signal nuk mbledh dhe as nuk ruan të dhënat e tua personale. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
     <string name="IdealTransferDetailsFragment__learn_more">Mëso më shumë</string>
     <!-- Hint label for text entry box for name on bank account -->
@@ -5919,34 +6078,43 @@
     <!-- Hint label for text entry box for email -->
     <string name="IdealTransferDetailsFragment__email">Email</string>
     <!-- Default label for bank selection -->
-    <string name="IdealTransferDetailsFragment__choose_your_bank">Choose your bank</string>
+    <string name="IdealTransferDetailsFragment__choose_your_bank">Zgjidh bankën</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
     <!-- Title of the screen, displayed in the toolbar -->
-    <string name="IdealTransferDetailsBankSelectionDialogFragment__choose_your_bank">Choose your bank</string>
+    <string name="IdealTransferDetailsBankSelectionDialogFragment__choose_your_bank">Zgjidh bankën</string>
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Find your account information</string>
+    <string name="FindAccountInfoSheet__find_your_account_information">Gjej të dhënat e llogarisë tënde</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban">Look for your IBAN number at the top of your bank statement. IBAN numbers contain up to 34 characters. The name you enter should match your full name on your bank account. Contact your bank for more information.</string>
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">Kërko IBAN-in tënd në krye të pasqyrës tënde bankare. Numrat IBAN përmbajnë deri në 34 karaktere. Emri që vendos duhet të përputhet me emrin tënd të plotë në llogarinë bankare. Kontakto bankën për më shumë informacion.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Donation pending</string>
+    <string name="DonationPendingBottomSheet__donation_pending">Dhurimi në pritje</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Your monthly donation is pending. You’ll be able to display the %1$s badge on your profile when your donation is received.</string>
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Dhurimi mujor është në pritje. Distinktivi do të shfaqet %1$s në profil kur të merret dhurimi.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Your one-time donation is pending. You’ll be able to display the %1$s badge on your profile when your donation is received.</string>
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Dhurimi që bëhet një herë të vetme është në pritje. Distinktivi do të shfaqet %1$s në profil kur të merret dhurimi.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Bank transfers usually take 1 business day to process. %1$s</string>
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Përpunimi i transfertave bankare zgjat zakonisht 1 ditë pune. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
     <string name="DonationPendingBottomSheet__learn_more">Mëso më shumë</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
     <string name="DonationPendingBottomSheet__done">U bë</string>
 
+    <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Dhurimi nuk mund të përpunohej</string>
+    <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">Kemi probleme me përpunimin e transfertës tënde bankare. Nuk të është mbajtur shuma. Provo një metodë tjetër pagese ose lidhu me bankën për më shumë informacion.</string>
+    <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">Riprovo</string>
+    <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">Jo tani</string>
+
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Donation Complete</string>
+    <string name="DonationCompletedBottomSheet__donation_complete">Dhurimi përfundoi</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Your bank transfer was received. You can choose to display this badge on your profile to show off your support.</string>
+    <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Transferta bankare u krye. Mund të zgjedhësh ta shfaqësh distinktivin në profil për të treguar mbështetjen.</string>
     <!-- Button text of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed to dismiss sheet -->
     <string name="DonationCompleteBottomSheet__done">U bë</string>
 
@@ -6088,6 +6256,8 @@
     <string name="CallLogAdapter__outgoing">Dalëse</string>
     <!-- Displayed for missed calls -->
     <string name="CallLogAdapter__missed">E humbur</string>
+    <!-- Displayed for missed calls declined by notification profile -->
+    <string name="CallLogAdapter__missed_notification_profile">Missed while notification profile on</string>
     <!-- Displayed on Group Call button if user is not in the call -->
     <string name="CallLogAdapter__join">Bashkohu</string>
     <!-- Displayed on Group Call button if user is in the call -->
@@ -6195,6 +6365,8 @@
     <string name="CallPreference__group_call">Thirrje grupi</string>
     <!-- Missed group call in call info -->
     <string name="CallPreference__missed_group_call">Thirrje e humbur në grup</string>
+    <!-- Missed group call while notification profile on in call info -->
+    <string name="CallPreference__missed_group_call_notification_profile">Missed group call while notification profile on</string>
     <!-- Incoming group call in call info -->
     <string name="CallPreference__incoming_group_call">Thirrje hyrëse në grup</string>
     <!-- Outgoing group call in call info -->
@@ -6341,6 +6513,13 @@
     <!-- Body of a dialog that is displayed when we failed to reset your username link because of a transient network issue. -->
     <string name="UsernameLinkSettings_reset_link_result_network_error">Ndodhi një gabim në rrjet gjatë përpjekjes për të rivendosur lidhjen tënde. Provo sërish më vonë.</string>
 
+    <!-- Explanatory text at the top of a bottom sheet describing how username links work -->
+    <string name="UsernameLinkShareBottomSheet_title">Kushdo që e ka këtë lidhje mund të shikojë emrin tënd të përdoruesit dhe të fillojë një bisedë me ty. Ndaje vetëm me njerëzit e besueshëm.</string>
+    <!-- A button label for a button that, when pressed, will copy your username link to the clipboard -->
+    <string name="UsernameLinkShareBottomSheet_copy_link">Kopjo linkun</string>
+    <!-- A button label for a button that, when pressed, will open a share sheet for sharing your username link -->
+    <string name="UsernameLinkShareBottomSheet_share">Ndajeni Me të Tjerë</string>
+
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->
     <string name="PendingParticipantsView__would_like_to_join">Dëshiron t\'i bashkohesh…</string>
@@ -6364,17 +6543,28 @@
     <string name="PendingParticipantsBottomSheet__approve">Miratoje</string>
 
     <!-- Title of a megaphone shown at the bottom of the chat list when a user has disable the system setting for showing full screen notifications used showing incoming calls -->
-    <string name="GrantFullScreenIntentPermission_megaphone_title">Turn on full screen notifications?</string>
+    <string name="GrantFullScreenIntentPermission_megaphone_title">Të aktivizohen njoftimet me ekran të plotë?</string>
     <!-- Body of a megaphone shown at the bottom of the chat list when a user has disable the system setting for showing full screen notifications used showing incoming calls -->
-    <string name="GrantFullScreenIntentPermission_megaphone_body">Never miss a call from your contacts and groups.</string>
+    <string name="GrantFullScreenIntentPermission_megaphone_body">Mos humb kurrë një thirrje nga kontaktet dhe grupet e tua.</string>
     <!-- Button on the megaphone megaphone shown at the bottom of the chat list when a user has disable the system setting for showing full screen notifications used showing incoming calls that starts the fix process -->
-    <string name="GrantFullScreenIntentPermission_megaphone_turn_on">Turn on</string>
+    <string name="GrantFullScreenIntentPermission_megaphone_turn_on">Aktivizo</string>
     <!-- Title of bottom sheet shown after tapping "Turn on" from the megaphone to re-enable full screen notifications for incoming call notifications -->
-    <string name="GrantFullScreenIntentPermission_bottomsheet_title">Turn on full screen notifications</string>
+    <string name="GrantFullScreenIntentPermission_bottomsheet_title">Aktivizo njoftimet me ekran të plotë</string>
     <!-- Subtitle of bottom sheet shown after tapping "Turn on" from the megaphone to re-enable full screen notifications for incoming call notifications -->
-    <string name="GrantFullScreenIntentPermission_bottomsheet_subtitle">To receive call notifications from your contacts and groups:</string>
+    <string name="GrantFullScreenIntentPermission_bottomsheet_subtitle">Për të marrë njoftimet e thirrjeve nga kontaktet dhe grupet e tua:</string>
     <!-- Step 2 of bottom sheet shown after tapping "Turn on" from the megaphone to re-enable full screen notifications for incoming call notifications, it indicates the name of the setting that needs to be re-enabled -->
-    <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Allow full screen notifications</string>
+    <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Lejo njoftimet në ekran të plotë</string>
+
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">Dhurimi mujor u anulua</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">Dhurimi mujor periodik u anulua. %1$s\n\nDistinktivi nuk do të të shfaqet më në profil. %2$s</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">Mëso më shumë</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">Rinovo abonimin</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">Jo tani</string>
 
     <!-- EOF -->
 </resources>

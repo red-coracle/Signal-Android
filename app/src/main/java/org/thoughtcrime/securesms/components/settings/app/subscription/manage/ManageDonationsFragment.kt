@@ -1,7 +1,9 @@
 package org.thoughtcrime.securesms.components.settings.app.subscription.manage
 
 import android.content.Intent
+import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -18,11 +20,15 @@ import org.thoughtcrime.securesms.components.settings.DSLSettingsFragment
 import org.thoughtcrime.securesms.components.settings.DSLSettingsIcon
 import org.thoughtcrime.securesms.components.settings.DSLSettingsText
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
+import org.thoughtcrime.securesms.components.settings.app.subscription.DonationSerializationHelper.toFiatMoney
 import org.thoughtcrime.securesms.components.settings.app.subscription.MonthlyDonationRepository
+import org.thoughtcrime.securesms.components.settings.app.subscription.completed.TerminalDonationDelegate
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.DonateToSignalType
 import org.thoughtcrime.securesms.components.settings.app.subscription.models.NetworkFailure
 import org.thoughtcrime.securesms.components.settings.configure
 import org.thoughtcrime.securesms.components.settings.models.IndeterminateLoadingCircle
+import org.thoughtcrime.securesms.database.model.databaseprotos.DonationErrorValue
+import org.thoughtcrime.securesms.database.model.databaseprotos.PendingOneTimeDonation
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.help.HelpFragment
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -47,6 +53,11 @@ class ManageDonationsFragment :
   ),
   ExpiredGiftSheet.Callback {
 
+  companion object {
+    private val alertedIdealDonations = mutableSetOf<Long>()
+    const val DONATE_TROUBLESHOOTING_URL = "https://support.signal.org/hc/articles/360031949872#fix"
+  }
+
   private val supportTechSummary: CharSequence by lazy {
     SpannableStringBuilder(SpanUtil.color(ContextCompat.getColor(requireContext(), R.color.signal_colorOnSurfaceVariant), requireContext().getString(R.string.DonateToSignalFragment__private_messaging)))
       .append(" ")
@@ -62,6 +73,11 @@ class ManageDonationsFragment :
       ManageDonationsViewModel.Factory(MonthlyDonationRepository(ApplicationDependencies.getDonationsService()))
     }
   )
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    viewLifecycleOwner.lifecycle.addObserver(TerminalDonationDelegate(childFragmentManager, viewLifecycleOwner))
+    super.onViewCreated(view, savedInstanceState)
+  }
 
   override fun onResume() {
     super.onResume()
@@ -83,6 +99,33 @@ class ManageDonationsFragment :
 
     viewModel.state.observe(viewLifecycleOwner) { state ->
       adapter.submitList(getConfiguration(state).toMappingModelList())
+
+      if (state.nonVerifiedMonthlyDonation?.checkedVerification == true &&
+        !alertedIdealDonations.contains(state.nonVerifiedMonthlyDonation.timestamp)
+      ) {
+        alertedIdealDonations += state.nonVerifiedMonthlyDonation.timestamp
+
+        val amount = FiatMoneyUtil.format(resources, state.nonVerifiedMonthlyDonation.price)
+
+        MaterialAlertDialogBuilder(requireContext())
+          .setTitle(R.string.ManageDonationsFragment__couldnt_confirm_donation)
+          .setMessage(getString(R.string.ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed, amount))
+          .setPositiveButton(android.R.string.ok, null)
+          .show()
+      } else if (state.pendingOneTimeDonation?.pendingVerification == true &&
+        state.pendingOneTimeDonation.checkedVerification &&
+        !alertedIdealDonations.contains(state.pendingOneTimeDonation.timestamp)
+      ) {
+        alertedIdealDonations += state.pendingOneTimeDonation.timestamp
+
+        val amount = FiatMoneyUtil.format(resources, state.pendingOneTimeDonation.amount!!.toFiatMoney(), FiatMoneyUtil.formatOptions().trimZerosAfterDecimal())
+
+        MaterialAlertDialogBuilder(requireContext())
+          .setTitle(R.string.ManageDonationsFragment__couldnt_confirm_donation)
+          .setMessage(getString(R.string.ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed, amount))
+          .setPositiveButton(android.R.string.ok, null)
+          .show()
+      }
     }
   }
 
@@ -140,7 +183,14 @@ class ManageDonationsFragment :
           } else {
             customPref(IndeterminateLoadingCircle)
           }
-        } else if (state.hasOneTimeBadge) {
+        } else if (state.nonVerifiedMonthlyDonation != null) {
+          val subscription: Subscription? = state.availableSubscriptions.firstOrNull { it.level == state.nonVerifiedMonthlyDonation.level }
+          if (subscription != null) {
+            presentNonVerifiedSubscriptionSettings(state.nonVerifiedMonthlyDonation, subscription, state)
+          } else {
+            customPref(IndeterminateLoadingCircle)
+          }
+        } else if (state.hasOneTimeBadge || state.pendingOneTimeDonation != null) {
           presentActiveOneTimeDonorSettings(state)
         } else {
           presentNotADonorSettings(state.hasReceipts)
@@ -175,6 +225,9 @@ class ManageDonationsFragment :
           pendingOneTimeDonation = pendingOneTimeDonation,
           onPendingClick = {
             displayPendingDialog(it)
+          },
+          onErrorClick = {
+            displayPendingOneTimeDonationErrorDialog(it, pendingOneTimeDonation.paymentMethodType == PendingOneTimeDonation.PaymentMethodType.IDEAL)
           }
         )
       )
@@ -224,6 +277,25 @@ class ManageDonationsFragment :
           onPendingClick = {
             displayPendingDialog(it)
           }
+        )
+      )
+    }
+  }
+
+  private fun DSLConfiguration.presentNonVerifiedSubscriptionSettings(
+    nonVerifiedMonthlyDonation: NonVerifiedMonthlyDonation,
+    subscription: Subscription,
+    state: ManageDonationsState
+  ) {
+    presentSubscriptionSettingsWithState(state) {
+      customPref(
+        ActiveSubscriptionPreference.Model(
+          price = nonVerifiedMonthlyDonation.price,
+          subscription = subscription,
+          redemptionState = ManageDonationsState.RedemptionState.IN_PROGRESS,
+          onContactSupport = {},
+          activeSubscription = null,
+          onPendingClick = {}
         )
       )
     }
@@ -309,7 +381,7 @@ class ManageDonationsFragment :
     externalLinkPref(
       title = DSLSettingsText.from(R.string.ManageDonationsFragment__subscription_faq),
       icon = DSLSettingsIcon.from(R.drawable.symbol_help_24),
-      linkId = R.string.donate_url
+      linkId = R.string.donate_faq_url
     )
   }
 
@@ -330,6 +402,46 @@ class ManageDonationsFragment :
         )
       }
       .show()
+  }
+
+  private fun displayPendingOneTimeDonationErrorDialog(error: DonationErrorValue, isIdeal: Boolean) {
+    when (error.type) {
+      DonationErrorValue.Type.REDEMPTION -> {
+        MaterialAlertDialogBuilder(requireContext())
+          .setTitle(R.string.DonationsErrors__couldnt_add_badge)
+          .setMessage(R.string.DonationsErrors__your_badge_could_not)
+          .setNegativeButton(R.string.DonationsErrors__learn_more) { _, _ ->
+            CommunicationActions.openBrowserLink(requireContext(), DONATE_TROUBLESHOOTING_URL)
+          }
+          .setPositiveButton(R.string.Subscription__contact_support) { _, _ ->
+            requireActivity().finish()
+            startActivity(AppSettingsActivity.help(requireContext(), HelpFragment.DONATION_INDEX))
+          }
+          .setOnDismissListener {
+            SignalStore.donationsValues().setPendingOneTimeDonation(null)
+          }
+          .show()
+      }
+      else -> {
+        val message = if (isIdeal) {
+          R.string.DonationsErrors__your_ideal_couldnt_be_processed
+        } else {
+          R.string.DonationsErrors__try_another_payment_method
+        }
+
+        MaterialAlertDialogBuilder(requireContext())
+          .setTitle(R.string.DonationsErrors__error_processing_payment)
+          .setMessage(message)
+          .setNegativeButton(R.string.DonationsErrors__learn_more) { _, _ ->
+            CommunicationActions.openBrowserLink(requireContext(), DONATE_TROUBLESHOOTING_URL)
+          }
+          .setPositiveButton(android.R.string.ok, null)
+          .setOnDismissListener {
+            SignalStore.donationsValues().setPendingOneTimeDonation(null)
+          }
+          .show()
+      }
+    }
   }
 
   override fun onMakeAMonthlyDonation() {

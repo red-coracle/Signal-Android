@@ -16,6 +16,7 @@
   <!-- Removed by excludeNonTranslatables <string name="username_support_url" translatable="false">https://support.signal.org/hc/articles/5389476324250</string> -->
   <!-- Removed by excludeNonTranslatables <string name="export_account_data_url" translatable="false">https://support.signal.org/hc/articles/5538911756954</string> -->
   <!-- Removed by excludeNonTranslatables <string name="pending_transfer_url" translatable="false">https://support.signal.org/hc/articles/360031949872#pending</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="donate_faq_url" translatable="false">https://support.signal.org/hc/articles/360031949872#donate</string> -->
 
     <string name="yes">Да</string>
     <string name="no">Нет</string>
@@ -153,11 +154,11 @@
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">One time %1$s</string>
+    <string name="OneTimeDonationPreference__one_time_s">Один раз %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Donation pending</string>
+    <string name="OneTimeDonationPreference__donation_pending">Пожертвование на рассмотрении</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Donation processing</string>
+    <string name="OneTimeDonationPreference__donation_processing">Пожертвование обрабатывается</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Заблокировать и покинуть %1$s?</string>
@@ -324,8 +325,12 @@
     <string name="ConversationItem_cant_download_image_you_will_need_to_send_it_again">Невозможно загрузить изображение. Вам нужно отправить его снова.</string>
     <!-- Dialog error message shown when user can\'t download a their own video message via a linked device due to a permanent failure (e.g., unable to decrypt) -->
     <string name="ConversationItem_cant_download_video_you_will_need_to_send_it_again">Невозможно загрузить видео. Вам нужно отправить его снова.</string>
-    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. The timestamp will go from \'11m\' to \'edited 11m\' -->
-    <string name="ConversationItem_edited_timestamp_footer">Изменено %1$s</string>
+    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. The timestamp represents a message that has been edited within the last minute. -->
+    <string name="ConversationItem_edited_now_timestamp_footer">Изменено только что</string>
+    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. This is displayed when the edit has occurred between 1-59 minutes ago. -->
+    <string name="ConversationItem_edited_relative_timestamp_footer">Изменено %1$s</string>
+    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. This is displayed when the edit occurred at least 1 hour ago. -->
+    <string name="ConversationItem_edited_absolute_timestamp_footer">Изменено %1$s</string>
     <!-- Displayed if the link preview in the conversation item is for a call link call -->
     <string name="ConversationItem__join_call">Присоединиться к звонку</string>
 
@@ -363,6 +368,8 @@
     <string name="ConversationActivity_transport_insecure_mms">Незащищённое MMS</string>
     <!-- A title for the option to send an SMS with a placeholder to put the name of their SIM card -->
     <string name="ConversationActivity_transport_signal">Сообщение Signal</string>
+    <!-- The content description for button to send a message in a conversation -->
+    <string name="ConversationActivity_send_message_content_description">Отправить сообщение</string>
     <string name="ConversationActivity_lets_switch_to_signal">Давайте перейдем на Signal %1$s</string>
     <string name="ConversationActivity_specify_recipient">Пожалуйста, выберите контакт</string>
     <string name="ConversationActivity_attachment_exceeds_size_limits">Вложение превышает предельный размер для того типа сообщения, которое вы отправляете.</string>
@@ -410,6 +417,8 @@
 
     <string name="ConversationActivity_error_sending_media">Ошибка при отправке медиафайла</string>
 
+    <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Обмен SMS-сообщениями больше не поддерживается в Signal.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Обмен SMS-сообщениями больше не поддерживается в Signal. Пригласите %1$s в Signal, чтобы продолжить разговор здесь.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
@@ -674,6 +683,8 @@
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">Уже %1$s%%…</string>
     <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Signal требуется разрешение на доступ к хранилищу для создания резервных копий, но оно было вами отклонено. Нажмите «Продолжить», чтобы перейти в настройки приложения, откройте «Разрешения» и включите «Хранилище».</string>
+    <!-- Title of dialog shown when picking the time to perform a chat backup -->
+    <string name="BackupsPreferenceFragment__set_backup_time">Задать время резервного копирования</string>
 
 
     <!-- CustomDefaultPreference -->
@@ -1056,12 +1067,15 @@
     <string name="ManageProfileFragment_profile_name">Имя профиля</string>
     <string name="ManageProfileFragment_username">Имя пользователя</string>
     <string name="ManageProfileFragment_about">Обо мне</string>
-    <string name="ManageProfileFragment_write_a_few_words_about_yourself">Напишите несколько слов о себе</string>
-    <string name="ManageProfileFragment_your_name">Ваше имя</string>
-    <string name="ManageProfileFragment_your_username">Ваше имя пользователя</string>
     <string name="ManageProfileFragment_failed_to_set_avatar">Не удалось установить аватар</string>
     <string name="ManageProfileFragment_badges">Значки</string>
+    <!-- Text for a button that will take the user to the screen to manage their username link and QR code -->
+    <string name="ManageProfileFragment_link_setting_text">QR-код или ссылка</string>
     <string name="ManageProfileFragment__edit_photo">Редактировать фото</string>
+    <!-- Title of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_title">Поделитесь вашим именем пользователя</string>
+    <!-- Body of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_body">Позвольте другим начать чат с вами, поделившись вашим уникальным QR-кодом или ссылкой.</string>
     <!-- Snackbar message after creating username -->
     <string name="ManageProfileFragment__username_created">Имя пользователя создано</string>
     <!-- Snackbar message after copying username -->
@@ -1070,10 +1084,16 @@
     <string name="ManageProfileFragment__couldnt_delete_username">Не удалось удалить имя пользователя. Попробуйте ещё раз позже.</string>
     <!-- Snackbar message after successful deletion of username -->
     <string name="ManageProfileFragment__username_deleted">Имя пользователя удалено</string>
+    <!-- The title of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_title">Удалить имя пользователя?</string>
+    <!-- The body of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_body">"Это приведет к удалению имени пользователя и отключению QR-кода и ссылки. Имя пользователя «%1$s» будет доступно для других желающих. Вы уверены?"</string>
 
     <!-- UsernameOutOfSyncReminder -->
     <!-- Displayed above the conversation list when a user needs to address an issue with their username -->
-    <string name="UsernameOutOfSyncReminder__something_went_wrong">Что-то пошло не так с вашим именем пользователя, оно больше не закреплено за вашей учётной записью. Вы можете попробовать установить его снова или выбрать новое.</string>
+    <string name="UsernameOutOfSyncReminder__username_and_link_corrupt">Что-то пошло не так с вашим именем пользователя, оно больше не закреплено за вашей учётной записью. Вы можете попробовать установить его снова или выбрать новое.</string>
+    <!-- Displayed above the conversation list when a user needs to address an issue with their username link -->
+    <string name="UsernameOutOfSyncReminder__link_corrupt">Что-то пошло не так с QR-кодом и ссылкой на ваше имя пользователя, они больше не действительны. Создайте новую ссылку, чтобы делиться ей с другими.</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">Исправить сейчас</string>
 
@@ -1351,6 +1371,10 @@
     <string name="MessageRecord_missed_voice_call">Пропущенный голосовой звонок</string>
     <!-- Update message shown when receiving an incoming 1:1 video call and not answered -->
     <string name="MessageRecord_missed_video_call">Пропущенный видеозвонок</string>
+    <!-- Update message shown when receiving an incoming voice call and declined due to notification profile -->
+    <string name="MessageRecord_missed_voice_call_notification_profile">Missed voice call while notification profile on</string>
+    <!-- Update message shown when receiving an incoming video call and declined due to notification profile -->
+    <string name="MessageRecord_missed_video_call_notification_profile">Missed video call while notification profile on</string>
     <!-- Update message shown when receiving an incoming 1:1 voice/audio call and explicitly declined -->
     <string name="MessageRecord_you_declined_a_voice_call">Вы отклонили голосовой звонок</string>
     <!-- Update message shown when receiving an incoming 1:1 video call and explicitly declined -->
@@ -1629,7 +1653,7 @@
     <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_wont_receive_any_messages_until_you_unblock_them_SMS">Разрешить %1$s отправлять вам сообщения? Вы не получите никаких сообщений, пока не разблокируете этого человека.</string>
     <string name="MessageRequestBottomView_get_updates_and_news_from_s_you_wont_receive_any_updates_until_you_unblock_them">Получать обновления и новости от %1$s? Вы не будете получать никаких сообщений, пока не разблокируете этого человека.</string>
     <string name="MessageRequestBottomView_continue_your_conversation_with_this_group_and_share_your_name_and_photo">Продолжить ваш чат с этой группой и открыть ваше имя и фото её участникам?</string>
-    <string name="MessageRequestBottomView_upgrade_this_group_to_activate_new_features">Обновите эту группу, чтобы активировать такие новые функции, как @упоминания и администраторы групп. Участники, которые ещё не открыли свои имена или фото этой группе получат приглашение присоединиться.</string>
+    <string name="MessageRequestBottomView_upgrade_this_group_to_activate_new_features">Эта Старая группа больше не может использоваться. Создайте новую группу, чтобы активировать такие новые функции, как @упоминания и администраторы групп.</string>
     <string name="MessageRequestBottomView_this_legacy_group_can_no_longer_be_used">Эта Старая группа больше не может быть использована, потому что она слишком большая. Максимальный размер группы — %1$d.</string>
     <string name="MessageRequestBottomView_continue_your_conversation_with_s_and_share_your_name_and_photo">Продолжить ваш чат с %1$s и открыть ваши имя и фото этому человеку?</string>
     <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Присоединиться к этой группе и открыть ваше имя и фото её участникам? Они не узнают, что вы видели их сообщения, пока вы не примете запрос.</string>
@@ -1956,6 +1980,8 @@
     <string name="WebRtcCallView__toggle_camera">Переключение камеры</string>
     <!-- Toggle content description for toggling mute state  -->
     <string name="WebRtcCallView__toggle_mute">Отключение звука</string>
+    <!-- Content description for additional actions menu button -->
+    <string name="WebRtcCallView__additional_actions">Дополнительные действия</string>
     <!-- Content description for end-call button -->
     <string name="WebRtcCallView__end_call">Завершить звонок</string>
 
@@ -1972,12 +1998,80 @@
     <!-- A text description of the earpiece icon, used for accessibility. -->
     <string name="WebRtcAudioOutputBottomSheet__earpiece_icon_content_description">Значок, изображающий наушник устройства.</string>
 
+    <!-- A clickable button to "raise your hand" in a group call to signify you have something to say -->
+    <string name="CallOverflowPopupWindow__raise_hand">Поднять руку</string>
+    <!-- A description of a clickable image representing a raised hand -->
+    <string name="CallOverflowPopupWindow__raise_hand_illustration_content_description">Поднять руку</string>
+    <!-- A dialog prompt to confirm you want to lower your hand -->
+    <string name="CallOverflowPopupWindow__lower_your_hand">Опустить руку?</string>
+    <!-- A dialog button to confirm you would like to lower your hand -->
+    <string name="CallOverflowPopupWindow__lower_hand">Опустить руку</string>
+    <!-- A negative button for a dialog confirming the user wants to lower their hand (withdraw a raised hand) -->
+    <string name="CallOverflowPopupWindow__cancel">Отменить</string>
+    <!-- A notification to the user that they successfully raised their hand -->
+    <string name="CallOverflowPopupWindow__you_raised_your_hand">Вы подняли руку</string>
+    <!-- A button to take you to a list of participants with raised hands -->
+    <string name="CallOverflowPopupWindow__view">Просмотреть</string>
+
+    <!-- A notification to the user that one or more participants in the call successfully raised their hand. In the singular case, it is a name. In the plural case, it is a name or "You" -->
+    <plurals name="CallOverflowPopupWindow__raised_a_hand">
+        <item quantity="one">%1$s поднял(-а) руку</item>
+        <item quantity="few">%1$s и %2$d подняли руку</item>
+        <item quantity="many">%1$s и %2$d подняли руку</item>
+        <item quantity="other">%1$s и %2$d подняли руку</item>
+    </plurals>
+
+    <!-- A badge to show how many hands are raised. The first string may be a name or "You" -->
+    <plurals name="CallRaiseHandSnackbar_raised_hands">
+        <item quantity="one">%1$s</item>
+        <item quantity="few">%1$s +%2$d</item>
+        <item quantity="many">%1$s +%2$d</item>
+        <item quantity="other">%1$s +%2$d</item>
+    </plurals>
+
+    <!-- An accessibility label for screen readers on a view that can be expanded -->
+    <string name="CallOverflowPopupWindow__expand_snackbar_accessibility_label">Развернуть вид поднявших руку</string>
+
+    <!-- AboutSheet -->
+    <!-- Displayed in a sheet row and allows user to open signal connection explanation on tap -->
+    <string name="AboutSheet__signal_connection">Контакт Signal</string>
+    <!-- Explains that the given user (placeholder is short name) is in the users system contact -->
+    <string name="AboutSheet__s_is_in_your_system_contacts">%1$s есть в ваших системных контактах</string>
+    <!-- Notice in a row when user has no groups in common -->
+    <string name="AboutSheet__you_have_no_groups_in_common">У вас нет общих групп</string>
+    <!-- Notice when a user is not a connection to review requests carefully -->
+    <string name="AboutSheet__review_requests_carefully">Внимательно проверяйте запросы</string>
+    <!-- Text used when user has groups in common. Placeholder is the count -->
+    <string name="AboutSheet__d_groups_in_common">%1$d общие группы</string>
+    <!-- Text displayed in title for external recipients -->
+    <string name="AboutSheet__about">Обо мне</string>
+    <!-- Text displayed in title for you -->
+    <string name="AboutSheet__you">Вы</string>
+
     <!-- CallParticipantsListDialog -->
-    <plurals name="CallParticipantsListDialog_in_this_call_d_people">
-        <item quantity="one">В этом звонке · %1$d человек</item>
-        <item quantity="few">В этом звонке · %1$d человека</item>
-        <item quantity="many">В этом звонке · %1$d человек</item>
-        <item quantity="other">В этом звонке · %1$d человек</item>
+    <plurals name="CallParticipantsListDialog_in_this_call">
+        <item quantity="one">В этом звонке (%1$d)</item>
+        <item quantity="few">В этом звонке (%1$d)</item>
+        <item quantity="many">В этом звонке (%1$d)</item>
+        <item quantity="other">В этом звонке (%1$d)</item>
+    </plurals>
+    <plurals name="CallParticipantsListDialog__signal_will_ring">
+        <item quantity="one">Signal будет звонить (%1$d)</item>
+        <item quantity="few">Signal будет звонить (%1$d)</item>
+        <item quantity="many">Signal будет звонить (%1$d)</item>
+        <item quantity="other">Signal будет звонить (%1$d)</item>
+    </plurals>
+    <plurals name="CallParticipantsListDialog__signal_will_notify">
+        <item quantity="one">Signal вышлет уведомление (%1$d)</item>
+        <item quantity="few">Signal вышлет уведомление (%1$d)</item>
+        <item quantity="many">Signal вышлет уведомление (%1$d)</item>
+        <item quantity="other">Signal вышлет уведомление (%1$d)</item>
+    </plurals>
+    <plurals name="CallParticipantsListDialog__raised_hands">
+        <item quantity="one">Поднятые руки (%1$d)</item>
+        <item quantity="few">Поднятые руки (%1$d)</item>
+        <item quantity="many">Поднятые руки (%1$d)</item>
+        <item quantity="other">Поднятые руки (%1$d)</item>
     </plurals>
 
     <!-- CallParticipantView -->
@@ -2092,6 +2186,12 @@
     <string name="RevealableMessageView_view_video">Просмотреть видео</string>
     <string name="RevealableMessageView_viewed">Просмотрено</string>
     <string name="RevealableMessageView_media">Медиа</string>
+
+    <!-- ReviewBannerView -->
+    <!-- ReviewBannerView text when a name conflict has been found -->
+    <string name="ReviewBannerView__name_conflict_found">Найден конфликт имен</string>
+    <!-- Button label to view name conflicts -->
+    <string name="ReviewBannerView__view">Просмотреть</string>
 
     <!-- Search -->
     <string name="SearchFragment_no_results">Не найдено результатов для «%1$s»</string>
@@ -2242,9 +2342,13 @@
     <!--  Displayed in the conversation list when identities have been merged. The first placeholder is a phone number, and the second is a person\'s name -->
     <string name="ThreadRecord_s_belongs_to_s">%1$s принадлежит %2$s</string>
 
-    <!-- UpdateApkReadyListener -->
-    <string name="UpdateApkReadyListener_Signal_update">Обновление Signal</string>
-    <string name="UpdateApkReadyListener_a_new_version_of_signal_is_available_tap_to_update">Доступна новая версия Signal. Обновиться?</string>
+    <!-- ApkUpdateNotifications -->
+    <string name="ApkUpdateNotifications_prompt_install_title">Обновление Signal</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">Доступна новая версия Signal. Нажмите, чтобы обновить.</string>
+    <string name="ApkUpdateNotifications_failed_general_title">Не удалось обновить Signal</string>
+    <string name="ApkUpdateNotifications_failed_general_body">Мы попробуем ещё раз позже.</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Signal успешно обновлён</string>
+    <string name="ApkUpdateNotifications_auto_update_success_body">Вы были автоматически обновлены до версии %1$s.</string>
 
     <!-- UntrustedSendDialog -->
     <string name="UntrustedSendDialog_send_message">Отправить сообщение?</string>
@@ -2255,6 +2359,8 @@
     <string name="UnverifiedSendDialog_send">Отправить</string>
 
     <!-- UsernameEditFragment -->
+    <!-- Placeholder text for custom discriminator -->
+    <string name="UsernameEditFragment__00">00</string>
     <!-- Toolbar title when entering from registration -->
     <string name="UsernameEditFragment__add_a_username">Добавить имя пользователя</string>
     <!-- Instructional text at the top of the username edit screen -->
@@ -2277,6 +2383,12 @@
     <string name="UsernameEditFragment__skip">Пропустить</string>
     <!-- Content description for done button -->
     <string name="UsernameEditFragment__done">Готово</string>
+    <!-- Displayed when the chosen discriminator is not available for the given nickname -->
+    <string name="UsernameEditFragment__this_username_is_not_available_try_another_number">This username is not available, try another number.</string>
+    <!-- Displayed when the chosen discriminator is too short -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_minimum_of_d_digits">Invalid username, enter a minimum of %1$d digits.</string>
+    <!-- Displayed when the chosen discriminator is too long -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_maximum_of_d_digits">Invalid username, enter a maximum of %1$d digits.</string>
 
     <plurals name="UserNotificationMigrationJob_d_contacts_are_on_signal">
         <item quantity="one">%1$d ваш контакт уже в Signal!</item>
@@ -2482,6 +2594,10 @@
     </plurals>
     <!-- Status update label used while the device is transcoding video as a prerequisite to uploading -->
     <string name="TransferControlView__processing">Обработка…</string>
+    <!-- Status update label used while the device is transmitting data over the network. Will take the form of "1.0 MB/2.0 MB" -->
+    <string name="TransferControlView__download_progress">%1$1.1f MB/%2$2.1f MB</string>
+    <!-- Attachment file size label for not-yet-downloaded images and video. Will take the form of "1.0 MB" -->
+    <string name="TransferControlView__filesize">%1$1.1f MB</string>
 
 
     <!-- UnauthorizedReminder -->
@@ -2506,6 +2622,8 @@
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Принят на привязанном устройстве.</string>
     <string name="WebRtcCallActivity__declined_on_a_linked_device">Отклонён на привязанном устройстве.</string>
     <string name="WebRtcCallActivity__busy_on_a_linked_device">Занято на привязанном устройстве.</string>
+    <!-- Tooltip message shown first time user is in a video call after switch camera button moved -->
+    <string name="WebRtcCallActivity__flip_camera_tooltip">Флип-камера была перемещена сюда. Нажмите на ваше видео, чтобы попробовать её в действии</string>
 
     <string name="GroupCallSafetyNumberChangeNotification__someone_has_joined_this_call_with_a_safety_number_that_has_changed">Кто-то с изменившимся кодом безопасности присоединился к этому звонку.</string>
 
@@ -2880,24 +2998,13 @@
 
     <!-- verify_display_fragment -->
     <!-- Explanation of how to verify the safety numbers. %s is replaced with the name of the other recipient -->
-    <string name="verify_display_fragment__pnp_verify_safety_numbers_explanation_with_s">Чтобы удостовериться в наличии сквозного шифрования с %1$s, сопоставьте цветную карточку выше с устройством вашего собеседника и сравните цифры. Если они не совпадают, свайпните и попробуйте другую пару кодов безопасности. Как минимум одна пара кодов должна совпадать.</string>
+    <string name="verify_display_fragment__pnp_verify_safety_numbers_explanation_with_s">Чтобы подтвердить ваше сквозное шифрование с %1$s, сравните цифры, указанные выше, с устройством собеседника. Вы также можете отсканировать код на вашем устройстве.</string>
     <string name="verify_display_fragment__tap_to_scan">Сканировать</string>
     <string name="verify_display_fragment__successful_match">Успешное совпадение</string>
     <string name="verify_display_fragment__failed_to_verify_safety_number">Не удалось подтвердить код безопасности</string>
     <string name="verify_display_fragment__loading">Загружаем…</string>
     <string name="verify_display_fragment__mark_as_verified">Отметить как подтверждённый</string>
     <string name="verify_display_fragment__clear_verification">Сбросить подтверждение</string>
-    <!-- Banner at top of safety numbers screen explaining that we\'re updating how safety numbers work. -->
-    <string name="verify_display_fragment__safety_numbers_are_updating_banner_no_learn_more">Коды безопасности обновляются.</string>
-
-    <!-- Title for dialog explaining for how safety numbers are transitioning to support usernames -->
-    <string name="PnpSafetyNumberEducationDialog__title">Изменения в кодах безопасности</string>
-    <!-- Message for dialog explaining for how safety numbers are transitioning to support usernames -->
-    <string name="PnpSafetyNumberEducationDialog__body">Коды безопасности обновляются в течение переходного периода для включения новых функций конфиденциальности в Signal.\n\nЧтобы проверить код безопасности, сравните цветную карточку с устройством вашего собеседника. Если они не совпадают, свайпните и попробуйте другую пару кодов безопасности. Как минимум одна пара кодов должна совпадать.</string>
-    <!-- Button for more information about the safety number changes. Takes user to support article -->
-    <string name="PnpSafetyNumberEducationDialog__help">Нужна помощь?</string>
-    <!-- Confirmation button for educating users about new safety number changes -->
-    <string name="PnpSafetyNumberEducationDialog__confirm">Понятно</string>
 
     <!-- verity_scan_fragment -->
     <string name="verify_scan_fragment__scan_the_qr_code_on_your_contact">Просканируйте QR-код на устройстве собеседника.</string>
@@ -3199,6 +3306,7 @@
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Платежи</string>
     <string name="preferences_chats__chats">Чаты</string>
+    <string name="preferences_app_updates__title">Обновления приложения</string>
     <string name="preferences_data_and_storage__manage_storage">Управлять хранилищем</string>
     <string name="preferences_data_and_storage__use_less_data_for_calls">Экономить трафик для звонков</string>
     <string name="preferences_data_and_storage__never">Никогда</string>
@@ -4119,14 +4227,16 @@
     <string name="ReviewCardDialogFragment__failed_to_remove_group_member">Не удалось удалить участника группы.</string>
 
     <!-- ReviewCard -->
-    <string name="ReviewCard__member">Участник</string>
     <string name="ReviewCard__request">Запрос</string>
     <string name="ReviewCard__your_contact">Ваш контакт</string>
     <string name="ReviewCard__remove_from_group">Удалить из группы</string>
     <string name="ReviewCard__update_contact">Обновить контакт</string>
     <string name="ReviewCard__block">Заблокировать</string>
     <string name="ReviewCard__delete">Удалить</string>
-    <string name="ReviewCard__recently_changed">Недавно изменил(-а) своё имя профиля с %1$s на %2$s</string>
+    <!-- Displayed when a recent name change has occurred. First placeholder is new short name, second is previous name, third is new name. -->
+    <string name="ReviewCard__s_recently_changed">%1$s недавно изменил(-а) своё имя профиля с %2$s на %3$s</string>
+    <!-- Displayed when a review user is in your system contacts. Placeholder is short name. -->
+    <string name="ReviewCard__s_is_in_your_system_contacts">%1$s есть в ваших системных контактах</string>
 
     <!-- CallParticipantsListUpdatePopupWindow -->
     <string name="CallParticipantsListUpdatePopupWindow__s_joined">%1$s присоединился(-лась)</string>
@@ -4780,6 +4890,15 @@
     <string name="NewConversationActivity__view_contact">Посмотреть контакт</string>
     <!-- Error message shown when looking up a person by phone number and that phone number is not associated with a signal account -->
     <string name="NewConversationActivity__s_is_not_a_signal_user">%1$s не является пользователем Signal</string>
+    <!-- Error message shown when we could not get a user from the username link -->
+    <string name="NewConversationActivity__">%1$s не является пользователем Signal</string>
+    <!-- Error message shown in a dialog when trying to create a new group with non-signal users (e.g., unregistered or phone number only contacts) -->
+    <plurals name="CreateGroupActivity_not_signal_users">
+        <item quantity="one">%1$s не является пользователем Signal</item>
+        <item quantity="few">%1$s не являются пользователями Signal</item>
+        <item quantity="many">%1$s не являются пользователями Signal</item>
+        <item quantity="other">%1$s не являются пользователями Signal</item>
+    </plurals>
 
     <!-- ContactFilterView -->
     <string name="ContactFilterView__search_name_or_number">Поиск по имени или номеру</string>
@@ -4973,6 +5092,12 @@
     <string name="ManageDonationsFragment__other_ways_to_give">Другие способы пожертвовать</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Пожертвовать за друга</string>
+    <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">Не удалось подтвердить пожертвование</string>
+    <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed">Ваше пожертвование на %1$s/месяц не удалось подтвердить. Проверьте в своем банковском приложении подтверждение платежа через iDEAL.</string>
+    <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed">Ваше разовое пожертвование на %1$s не удалось подтвердить. Проверьте в своем банковском приложении подтверждение платежа через iDEAL.</string>
 
     <string name="Boost__enter_custom_amount">Ввести сумму</string>
     <!-- Error label when the amount is smaller than what we can accept -->
@@ -4985,9 +5110,9 @@
     <string name="MySupportPreference__couldnt_add_badge_s">Не удалось добавить значок. %1$s</string>
     <string name="MySupportPreference__please_contact_support">Пожалуйста, свяжитесь с поддержкой.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Payment pending</string>
+    <string name="MySupportPreference__payment_pending">Платёж на рассмотрении</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Your bank transfer of %1$s is pending. Bank transfers usually take 1 business day to complete.  </string>
+    <string name="MySupportPreference__your_bank_transfer_of_s">Ваш банковский перевод на сумму %1$s находится на рассмотрении. Обработка банковских переводов обычно занимает 1 рабочий день.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
     <string name="MySupportPreference__learn_more">Узнать больше</string>
 
@@ -5039,12 +5164,16 @@
     <string name="Subscription__contact_support">Связаться с поддержкой</string>
     <string name="Subscription__get_a_s_badge">Получите значок «%1$s»</string>
 
-    <string name="SubscribeFragment__processing_payment">Обрабатываем платёж…</string>
+    <string name="SubscribeFragment__processing_payment">Обработка пожертвования…</string>
     <!-- Displayed in notification when user payment fails to process on Stripe -->
-    <string name="DonationsErrors__error_processing_payment">Ошибка обработки платежа</string>
+    <string name="DonationsErrors__error_processing_payment">Ошибка обработки пожертвования</string>
+    <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">Попробуйте другой способ оплаты или свяжитесь со своим банком для получения дополнительной информации.</string>
+    <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">Узнать больше</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Ошибка обработки платежа. %1$s</string>
-    <string name="DonationsErrors__your_payment">Не удалось обработать ваш платёж, и с вас не была взята плата. Пожалуйста, попробуйте ещё раз.</string>
+    <string name="DonationsErrors__error_processing_payment_s">Ошибка обработки пожертвования. %1$s</string>
+    <string name="DonationsErrors__your_payment">Не удалось обработать ваше пожертвование, и средства не были списаны. Пожалуйста, попробуйте ещё раз.</string>
     <string name="DonationsErrors__still_processing">Продолжается обработка</string>
     <string name="DonationsErrors__couldnt_add_badge">Не удалось добавить значок</string>
     <!-- Displayed when badge credential couldn\'t be verified -->
@@ -5054,9 +5183,9 @@
     <!-- Displayed as title when some generic error happens during sending donation on behalf of another user -->
     <string name="DonationsErrors__donation_failed">Не удалось пожертвовать</string>
     <!-- Displayed as message when some generic error happens during sending donation on behalf of another user -->
-    <string name="DonationsErrors__your_payment_was_processed_but">Ваш платёж был обработан, но Signal не смог отправить сообщение о пожертвовании. Пожалуйста, свяжитесь с поддержкой.</string>
+    <string name="DonationsErrors__your_payment_was_processed_but">Ваше пожертвование было обработано, но Signal не смог отправить сообщение о пожертвовании. Пожалуйста, свяжитесь с поддержкой.</string>
     <string name="DonationsErrors__your_badge_could_not">Ваш значок не удалось добавить в вашу учётную запись, но, возможно, с вас была взята плата. Пожалуйста, свяжитесь с поддержкой.</string>
-    <string name="DonationsErrors__your_payment_is_still">Ваш платёж всё ещё обрабатывается. Это может занять несколько минут в зависимости от вашего соединения.</string>
+    <string name="DonationsErrors__your_payment_is_still">Ваше пожертвование всё ещё обрабатывается. Это может занять несколько минут в зависимости от вашего соединения.</string>
     <string name="DonationsErrors__failed_to_cancel_subscription">Не удалось отменить подписку</string>
     <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Для отмены подписки требуется соединение с интернетом.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support_google_pay_so_you_can_t_subscribe_to_earn_a_badge_you_can_still_support_signal_by_making_a_donation_on_our_website">Ваше устройство не поддерживает Google Pay, поэтому вы не можете подписаться, чтобы получить значок. Вы всё равно можете поддержать Signal, сделав пожертвование на нашем сайте.</string>
@@ -5068,6 +5197,8 @@
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Этот пользователь не сможет получать пожертвования, пока не обновит Signal.</string>
     <!-- Displayed as a dialog message when the user\'s profile could not be fetched, likely due to lack of internet -->
     <string name="DonationsErrors__your_donation_could_not_be_sent">Ваше пожертвование не удалось отправить из-за ошибки сети. Проверьте ваше подключение к интернету и попробуйте ещё раз.</string>
+    <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_couldnt_be_processed">Не удалось обработать ваше пожертвование через iDEAL. Попробуйте другой способ оплаты или свяжитесь со своим банком для получения дополнительной информации.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Пожертвование от имени %1$s</string>
@@ -5112,7 +5243,7 @@
     <!-- Stripe decline code incorrect expiration year -->
     <string name="DeclineCode__the_expiration_year">Год истечения срока действия вашего способа оплаты неверен. Обновите его в Google Pay и попробуйте ещё раз.</string>
     <!-- Stripe decline code issuer not available -->
-    <string name="DeclineCode__try_completing_the_payment_again">Попробуйте завершить платёж ещё раз или свяжитесь со своим банком для получения дополнительной информации.</string>
+    <string name="DeclineCode__try_completing_the_payment_again">Попробуйте завершить пожертвование ещё раз или свяжитесь со своим банком для получения дополнительной информации.</string>
     <!-- Stripe decline code processing error -->
     <string name="DeclineCode__try_again">Попробуйте ещё раз или свяжитесь со своим банком для получения дополнительной информации.</string>
 
@@ -5134,15 +5265,15 @@
 
     <!-- Stripe Failure Codes for failed bank transfers -->
     <!-- Failure code text for insufficient funds, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__the_bank_account_provided">The bank account provided has insufficient funds to complete this purchase, try again or contact your bank for more information.</string>
+    <string name="StripeFailureCode__the_bank_account_provided">На вашем счёте недостаточно средств, чтобы завершить эту покупку. Попробуйте ещё раз или свяжитесь со своим банком для получения дополнительной информации.</string>
     <!-- Failure code text for revoked authorization of payment, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__this_payment_was_revoked">This payment was revoked by the account holder and could not be processed. You haven\'t been charged.</string>
+    <string name="StripeFailureCode__this_payment_was_revoked">Данное пожертвование было отозвано владельцем счёта и не было обработано. Средства не были списаны.</string>
     <!-- Failure code text for a payment lacking an authorized mandate or incorrect mandate, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__an_error_occurred_while_processing_this_payment">An error occurred while processing this payment, please try again.</string>
+    <string name="StripeFailureCode__an_error_occurred_while_processing_this_payment">Произошла ошибка при обработке пожертвования. Пожалуйста, попробуйте ещё раз.</string>
     <!-- Failure code text for a closed account, deceased recipient, or one with blocked direct debits, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__the_bank_details_provided_could_not_be_processed">The bank details provided could not be processed, contact your bank for more information.</string>
+    <string name="StripeFailureCode__the_bank_details_provided_could_not_be_processed">Указанные банковские реквизиты не могут быть обработаны. Обратитесь в свой банк для получения дополнительной информации.</string>
     <!-- Failure code text for a non-existent bank branch, invalid account holder, invalid iban, generic failure, or unknown bank failure, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__verify_your_bank_details_are_correct">Verify your bank details are correct and try again. If the problem continues, contact your bank.</string>
+    <string name="StripeFailureCode__verify_your_bank_details_are_correct">Проверьте правильность ваших банковских реквизитов и попробуйте ещё раз. Если проблема не решается, свяжитесь со своим банком.</string>
 
     <!-- Title of create notification profile screen -->
     <string name="EditNotificationProfileFragment__name_your_profile">Назовите свой профиль</string>
@@ -5179,6 +5310,12 @@
     <string name="AddAllowedMembers__add_people_and_groups_you_want_notifications_and_calls_from_when_this_profile_is_on">Добавьте людей и групп, от которых вы хотите получать уведомления и звонки, когда включён этот профиль</string>
     <!-- Button text that launches the contact picker to select from -->
     <string name="AddAllowedMembers__add_people_or_groups">Добавить людей или групп</string>
+    <!-- Title for exceptions section of add people to notification profile screen in create flow -->
+    <string name="AddAllowedMembers__exceptions">Исключения</string>
+    <!-- List preference to toggle that allows calls through the notification profile during create flow -->
+    <string name="AddAllowedMembers__allow_all_calls">Разрешить все звонки</string>
+    <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
+    <string name="AddAllowedMembers__notify_for_all_mentions">Уведомлять обо всех упоминаниях</string>
 
     <!-- Call to action button on contact picker for adding to profile -->
     <string name="SelectRecipientsFragment__add">Добавить</string>
@@ -5300,10 +5437,10 @@
     <string name="DonationReceiptListFragment__recurring">Повторяющиеся</string>
     <!-- Donation receipts one-time tab label -->
     <string name="DonationReceiptListFragment__one_time">Одноразовые</string>
+    <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">За друга</string>
     <!-- Donation receipts gift tab label -->
     <string name="DonationReceiptListFragment__donation_for_a_friend">Пожертвование за друга</string>
-    <!-- Donation receipts boost row label -->
-    <!-- Donation receipts details title -->
     <!-- Donation receipts donation type heading -->
     <string name="DonationReceiptDetailsFragment__donation_type">Тип пожертвования</string>
     <!-- Donation receipts date paid heading -->
@@ -5826,7 +5963,12 @@
     <!-- Message of safety number changes bottom sheet when not showing individual records and user has seen review screen -->
     <string name="SafetyNumberBottomSheetFragment__all_connections_have_been_reviewed">Все контакты были проверены, нажмите «отправить», чтобы продолжить.</string>
     <!-- Message of safety number changes bottom sheet when not showing individual records -->
-    <string name="SafetyNumberBottomSheetFragment__you_have_d_connections">У вас есть контакты (%1$d), которые, возможно, переустановили Signal или сменили устройства. Прежде чем поделиться с ними своей историей, просмотрите их коды безопасности или подумайте о том, чтобы удалить их из своей истории.</string>
+    <plurals name="SafetyNumberBottomSheetFragment__you_have_d_connections_plural">
+        <item quantity="one">%1$d connection may have reinstalled Signal or changed devices. You may review their safety number or continue with the send.</item>
+        <item quantity="few">%1$d connections may have reinstalled Signal or changed devices. You may review their safety numbers or continue with the send.</item>
+        <item quantity="many">%1$d connections may have reinstalled Signal or changed devices. You may review their safety numbers or continue with the send.</item>
+        <item quantity="other">%1$d connections may have reinstalled Signal or changed devices. You may review their safety numbers or continue with the send.</item>
+    </plurals>
     <!-- Menu action to launch safety number verification screen -->
     <string name="SafetyNumberBottomSheetFragment__verify_safety_number">Подтвердить код безопасности</string>
     <!-- Menu action to remove user from story -->
@@ -6075,6 +6217,23 @@
     <string name="DonateToSignalFragment__continue">Продолжить</string>
     <!-- Description below title -->
     <string name="DonateToSignalFragment__private_messaging">Безопасный мессенджер, существующий благодаря вашей поддержке. Без рекламы, без трекеров, без компромиссов. Пожертвуйте сейчас, чтобы поддержать Signal.</string>
+    <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">Ваше пожертвование на рассмотрении</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Обработка банковских переводов обычно занимает 1 рабочий день. Пожалуйста, дождитесь завершения обработки платежа, прежде чем обновлять подписку.</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Обработка банковских переводов обычно занимает 1 рабочий день. Пожалуйста, дождитесь завершения обработки платежа, прежде чем обновлять подписку.</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Ваше пожертвование всё ещё обрабатывается. Это может занять несколько минут в зависимости от вашего соединения. Пожалуйста, дождитесь завершения обработки платежа, прежде чем обновлять подписку.</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Ваше пожертвование всё ещё обрабатывается. Это может занять несколько минут в зависимости от вашего соединения. Пожалуйста, дождитесь завершения обработки платежа, прежде чем обновлять подписку.</string>
+    <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_payment_is_still_processing">Ваше пожертвование через iDEAL всё ещё обрабатывается. Проверьте в своем банковском приложении подтверждение платежа, прежде чем сделать очередное пожертвование.</string>
+    <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">Сумма пожертвования слишком велика</string>
+    <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Вы можете отправить банковским переводом до %1$s. Попробуйте другую сумму или другой способ оплаты.</string>
+
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Ежемесячно</string>
     <!-- Donation pill toggle one-time text -->
@@ -6103,6 +6262,10 @@
     <!-- Button label for paying with iDEAL -->
     <string name="GatewaySelectorBottomSheet__ideal">iDEAL</string>
 
+    <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Покинуть Signal для подтверждения пожертвования?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">После подтверждения вернитесь в Signal для завершения обработки вашего пожертвования.</string>
+
     <!-- IdealBank -->
     <!-- iDEAL bank name -->
     <string name="IdealBank__abn_amro">ABN AMRO</string>
@@ -6127,7 +6290,7 @@
     <!-- iDEAL bank name -->
     <string name="IdealBank__triodos_bank">Triodos Bank</string>
     <!-- iDEAL bank name -->
-    <string name="IdealBank__van_lanchot">Van Lanchot Kempen</string>
+    <string name="IdealBank__van_lanschot">Van Lanschot Kempen</string>
     <!-- iDEAL bank name -->
     <string name="IdealBank__yoursafe">Yoursafe</string>
 
@@ -6139,11 +6302,15 @@
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
     <string name="BankTransferMandateFragment__learn_more">Узнать больше</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__continue">Продолжить</string>
+    <string name="BankTransferMandateFragment__agree">Соглашаюсь</string>
+    <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">Читать далее</string>
+    <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">Не удалось загрузить мандат</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Введите свои банковские реквизиты и адрес электронной почты. Stripe использует ваш e-mail для отправки обновлений о вашем пожертвовании. %1$s</string>
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">Введите свои банковские реквизиты и адрес электронной почты. Stripe использует этот адрес электронной почты для отправки обновлений о вашем пожертвовании. %1$s</string>
     <!-- Subtext learn more link text -->
     <string name="BankTransferDetailsFragment__learn_more">Узнать больше</string>
     <!-- Text field label for name on bank account -->
@@ -6152,26 +6319,32 @@
     <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
     <string name="BankTransferDetailsFragment__email">Email</string>
-    <!-- Text label for button to show user how to find their IBAN number -->
-    <string name="BankTransferDetailsFragment__find_account_info">Find account info</string>
+    <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">Найти информацию о счёте</string>
     <!-- Donate button label for monthly subscription -->
     <string name="BankTransferDetailsFragment__donate_s_month">Жертвовать %1$s/месяц</string>
     <!-- Donate button label for one-time -->
     <string name="BankTransferDetailsFragment__donate_s">Пожертвовать %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_nubmer_is_too_short">Слишком короткий номер IBAN</string>
+    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN слишком короткий</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_nubmer_is_too_long">Слишком длинный номер IBAN</string>
+    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN слишком длинный</string>
     <!-- Error label for IBAN field when country is not supported -->
     <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Код страны IBAN не поддерживается</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban_nubmer">Неверный номер IBAN</string>
+    <string name="BankTransferDetailsFragment__invalid_iban">Неверный IBAN</string>
+    <!-- Error label for name field when name is not at least two characters long -->
+    <string name="BankTransferDetailsFragment__minimum_2_characters">Минимум два символа</string>
+    <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">Недействительный адрес электронной почты</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Title of the screen, displayed in the toolbar -->
     <string name="IdealTransferDetailsFragment__ideal">iDEAL</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Enter your bank, name and email. Stripe uses this email to send you updates about your donation. %1$s</string>
+    <string name="IdealTransferDetailsFragment__enter_your_bank">Введите свой банк, имя и адрес электронной почты. Stripe использует этот адрес электронной почты для отправки обновлений о вашем пожертвовании. %1$s</string>
+    <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Введите ваши банковские реквизиты. Signal не собирает и не хранит вашу личную информацию. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
     <string name="IdealTransferDetailsFragment__learn_more">Узнать больше</string>
     <!-- Hint label for text entry box for name on bank account -->
@@ -6179,34 +6352,43 @@
     <!-- Hint label for text entry box for email -->
     <string name="IdealTransferDetailsFragment__email">Email</string>
     <!-- Default label for bank selection -->
-    <string name="IdealTransferDetailsFragment__choose_your_bank">Choose your bank</string>
+    <string name="IdealTransferDetailsFragment__choose_your_bank">Выберите свой банк</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
     <!-- Title of the screen, displayed in the toolbar -->
-    <string name="IdealTransferDetailsBankSelectionDialogFragment__choose_your_bank">Choose your bank</string>
+    <string name="IdealTransferDetailsBankSelectionDialogFragment__choose_your_bank">Выберите свой банк</string>
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Find your account information</string>
+    <string name="FindAccountInfoSheet__find_your_account_information">Найти информацию о вашем счёте</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban">Look for your IBAN number at the top of your bank statement. IBAN numbers contain up to 34 characters. The name you enter should match your full name on your bank account. Contact your bank for more information.</string>
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">Найдите номер IBAN в верхней части банковской выписки. Номера IBAN содержат до 34 символов. Введённое вами имя должно совпадать с полным именем, указанным в вашем банковском счёте. Свяжитесь со своим банком для получения дополнительной информации.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Donation pending</string>
+    <string name="DonationPendingBottomSheet__donation_pending">Пожертвование на рассмотрении</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Your monthly donation is pending. You’ll be able to display the %1$s badge on your profile when your donation is received.</string>
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Ваше ежемесячное пожертвование на рассмотрении. После получения пожертвования вы сможете показать в своем профиле значок %1$s.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Your one-time donation is pending. You’ll be able to display the %1$s badge on your profile when your donation is received.</string>
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Ваше разовое пожертвование на рассмотрении. После получения пожертвования вы сможете показать в своем профиле значок %1$s.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Bank transfers usually take 1 business day to process. %1$s</string>
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Обработка банковских переводов обычно занимает 1 рабочий день. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
     <string name="DonationPendingBottomSheet__learn_more">Узнать больше</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
     <string name="DonationPendingBottomSheet__done">Готово</string>
 
+    <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Не удалось обработать пожертвование</string>
+    <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">У нас возникли проблемы с обработкой вашего банковского перевода. Средства не были списаны. Попробуйте другой способ оплаты или свяжитесь со своим банком для получения дополнительной информации.</string>
+    <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">Попробовать ещё раз</string>
+    <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">Не сейчас</string>
+
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Donation Complete</string>
+    <string name="DonationCompletedBottomSheet__donation_complete">Пожертвование получено</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Your bank transfer was received. You can choose to display this badge on your profile to show off your support.</string>
+    <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Ваш банковский перевод получен. Вы можете показать этот значок в профиле и продемонстрировать свою поддержку.</string>
     <!-- Button text of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed to dismiss sheet -->
     <string name="DonationCompleteBottomSheet__done">Готово</string>
 
@@ -6350,6 +6532,8 @@
     <string name="CallLogAdapter__outgoing">Исходящие</string>
     <!-- Displayed for missed calls -->
     <string name="CallLogAdapter__missed">Пропущенные</string>
+    <!-- Displayed for missed calls declined by notification profile -->
+    <string name="CallLogAdapter__missed_notification_profile">Missed while notification profile on</string>
     <!-- Displayed on Group Call button if user is not in the call -->
     <string name="CallLogAdapter__join">Войти</string>
     <!-- Displayed on Group Call button if user is in the call -->
@@ -6463,6 +6647,8 @@
     <string name="CallPreference__group_call">Групповой звонок</string>
     <!-- Missed group call in call info -->
     <string name="CallPreference__missed_group_call">Пропущенный групповой звонок</string>
+    <!-- Missed group call while notification profile on in call info -->
+    <string name="CallPreference__missed_group_call_notification_profile">Missed group call while notification profile on</string>
     <!-- Incoming group call in call info -->
     <string name="CallPreference__incoming_group_call">Входящий групповой звонок</string>
     <!-- Outgoing group call in call info -->
@@ -6609,6 +6795,13 @@
     <!-- Body of a dialog that is displayed when we failed to reset your username link because of a transient network issue. -->
     <string name="UsernameLinkSettings_reset_link_result_network_error">Произошла ошибка сети при попытке сбросить ссылку. Попробуйте ещё раз позже.</string>
 
+    <!-- Explanatory text at the top of a bottom sheet describing how username links work -->
+    <string name="UsernameLinkShareBottomSheet_title">Любой, у кого есть эта ссылка, может видеть ваше имя пользователя и начать чат с вами. Делитесь информацией только с теми, кому доверяете.</string>
+    <!-- A button label for a button that, when pressed, will copy your username link to the clipboard -->
+    <string name="UsernameLinkShareBottomSheet_copy_link">Копировать ссылку</string>
+    <!-- A button label for a button that, when pressed, will open a share sheet for sharing your username link -->
+    <string name="UsernameLinkShareBottomSheet_share">Поделиться</string>
+
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->
     <string name="PendingParticipantsView__would_like_to_join">Хотел(-а) бы присоединиться…</string>
@@ -6636,17 +6829,28 @@
     <string name="PendingParticipantsBottomSheet__approve">Принять</string>
 
     <!-- Title of a megaphone shown at the bottom of the chat list when a user has disable the system setting for showing full screen notifications used showing incoming calls -->
-    <string name="GrantFullScreenIntentPermission_megaphone_title">Turn on full screen notifications?</string>
+    <string name="GrantFullScreenIntentPermission_megaphone_title">Включить уведомления во весь экран?</string>
     <!-- Body of a megaphone shown at the bottom of the chat list when a user has disable the system setting for showing full screen notifications used showing incoming calls -->
-    <string name="GrantFullScreenIntentPermission_megaphone_body">Never miss a call from your contacts and groups.</string>
+    <string name="GrantFullScreenIntentPermission_megaphone_body">Чтобы не пропускать звонки от ваших контактов и групп.</string>
     <!-- Button on the megaphone megaphone shown at the bottom of the chat list when a user has disable the system setting for showing full screen notifications used showing incoming calls that starts the fix process -->
-    <string name="GrantFullScreenIntentPermission_megaphone_turn_on">Turn on</string>
+    <string name="GrantFullScreenIntentPermission_megaphone_turn_on">Включить</string>
     <!-- Title of bottom sheet shown after tapping "Turn on" from the megaphone to re-enable full screen notifications for incoming call notifications -->
-    <string name="GrantFullScreenIntentPermission_bottomsheet_title">Turn on full screen notifications</string>
+    <string name="GrantFullScreenIntentPermission_bottomsheet_title">Включите уведомления во весь экран</string>
     <!-- Subtitle of bottom sheet shown after tapping "Turn on" from the megaphone to re-enable full screen notifications for incoming call notifications -->
-    <string name="GrantFullScreenIntentPermission_bottomsheet_subtitle">To receive call notifications from your contacts and groups:</string>
+    <string name="GrantFullScreenIntentPermission_bottomsheet_subtitle">Для получения уведомлений о звонках от ваших контактов и групп:</string>
     <!-- Step 2 of bottom sheet shown after tapping "Turn on" from the megaphone to re-enable full screen notifications for incoming call notifications, it indicates the name of the setting that needs to be re-enabled -->
-    <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Allow full screen notifications</string>
+    <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Включите уведомления во весь экран</string>
+
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">Ежемесячное пожертвование отменено</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">Ваше пожертвование, повторяющееся ежемесячно, было отменено. %1$s\n\nВаш значок больше не будет виден в вашем профиле. %2$s</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">Узнать больше</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">Продлить подписку</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">Не сейчас</string>
 
     <!-- EOF -->
 </resources>

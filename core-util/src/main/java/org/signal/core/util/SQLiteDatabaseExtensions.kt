@@ -51,6 +51,12 @@ fun SupportSQLiteDatabase.getForeignKeys(): List<ForeignKeyConstraint> {
     .flatten()
 }
 
+fun SupportSQLiteDatabase.areForeignKeyConstraintsEnabled(): Boolean {
+  return this.query("PRAGMA foreign_keys", null).use { cursor ->
+    cursor.moveToFirst() && cursor.getInt(0) != 0
+  }
+}
+
 fun SupportSQLiteDatabase.getIndexes(): List<Index> {
   return this.query("SELECT name, tbl_name FROM sqlite_master WHERE type='index' ORDER BY name ASC").readToList { cursor ->
     val indexName = cursor.requireNonNullString("name")
@@ -303,7 +309,7 @@ class DeleteBuilderPart1(
   }
 
   fun run(): Int {
-    return db.delete(tableName, null, null)
+    return db.delete(tableName, null, emptyArray<String>())
   }
 }
 

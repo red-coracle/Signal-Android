@@ -13,13 +13,16 @@ import org.signal.core.util.StringUtil
 import org.signal.core.util.logging.Log
 import org.signal.core.util.money.FiatMoney
 import org.signal.core.util.money.PlatformCurrencyUtil
+import org.signal.core.util.orNull
 import org.thoughtcrime.securesms.components.settings.app.subscription.MonthlyDonationRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.OneTimeDonationRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.boost.Boost
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.gateway.GatewayRequest
+import org.thoughtcrime.securesms.components.settings.app.subscription.manage.DonationRedemptionJobStatus
 import org.thoughtcrime.securesms.components.settings.app.subscription.manage.DonationRedemptionJobWatcher
+import org.thoughtcrime.securesms.database.model.databaseprotos.PendingOneTimeDonation
+import org.thoughtcrime.securesms.database.model.isExpired
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
-import org.thoughtcrime.securesms.jobmanager.JobTracker
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.subscription.LevelUpdate
@@ -33,6 +36,7 @@ import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Currency
+import java.util.Optional
 
 /**
  * Contains the logic to manage the UI of the unified donations screen.
@@ -207,11 +211,31 @@ class DonateToSignalViewModel(
   }
 
   private fun initializeOneTimeDonationState(oneTimeDonationRepository: OneTimeDonationRepository) {
-    oneTimeDonationDisposables += SignalStore.donationsValues().observablePendingOneTimeDonation
-      .map { it.isPresent }
+    val oneTimeDonationFromJob: Observable<Optional<PendingOneTimeDonation>> = DonationRedemptionJobWatcher.watchOneTimeRedemption().map {
+      when (it) {
+        is DonationRedemptionJobStatus.PendingExternalVerification -> Optional.ofNullable(it.pendingOneTimeDonation)
+
+        DonationRedemptionJobStatus.PendingReceiptRedemption,
+        DonationRedemptionJobStatus.PendingReceiptRequest,
+        DonationRedemptionJobStatus.FailedSubscription,
+        DonationRedemptionJobStatus.None -> Optional.empty()
+      }
+    }.distinctUntilChanged()
+
+    val oneTimeDonationFromStore: Observable<Optional<PendingOneTimeDonation>> = SignalStore.donationsValues().observablePendingOneTimeDonation
+      .map { pending -> pending.filter { !it.isExpired } }
       .distinctUntilChanged()
-      .subscribe { hasPendingOneTimeDonation ->
-        store.update { it.copy(oneTimeDonationState = it.oneTimeDonationState.copy(isOneTimeDonationPending = hasPendingOneTimeDonation)) }
+
+    oneTimeDonationDisposables += Observable
+      .combineLatest(oneTimeDonationFromJob, oneTimeDonationFromStore) { job, store ->
+        if (store.isPresent) {
+          store
+        } else {
+          job
+        }
+      }
+      .subscribe { pendingOneTimeDonation: Optional<PendingOneTimeDonation> ->
+        store.update { it.copy(oneTimeDonationState = it.oneTimeDonationState.copy(pendingOneTimeDonation = pendingOneTimeDonation.orNull())) }
       }
 
     oneTimeDonationDisposables += oneTimeDonationRepository.getBoostBadge().subscribeBy(
@@ -281,23 +305,16 @@ class DonateToSignalViewModel(
   }
 
   private fun monitorLevelUpdateProcessing() {
-    val isTransactionJobInProgress: Observable<Boolean> = DonationRedemptionJobWatcher.watchSubscriptionRedemption().map {
-      it.map { jobState ->
-        when (jobState) {
-          JobTracker.JobState.PENDING -> true
-          JobTracker.JobState.RUNNING -> true
-          else -> false
-        }
-      }.orElse(false)
-    }
+    val redemptionJobStatus: Observable<DonationRedemptionJobStatus> = DonationRedemptionJobWatcher.watchSubscriptionRedemption()
 
     monthlyDonationDisposables += Observable
-      .combineLatest(isTransactionJobInProgress, LevelUpdate.isProcessing, DonateToSignalState::TransactionState)
-      .subscribeBy { transactionState ->
+      .combineLatest(redemptionJobStatus, LevelUpdate.isProcessing, ::Pair)
+      .subscribeBy { (jobStatus, levelUpdateProcessing) ->
         store.update { state ->
           state.copy(
             monthlyDonationState = state.monthlyDonationState.copy(
-              transactionState = transactionState
+              nonVerifiedMonthlyDonation = if (jobStatus is DonationRedemptionJobStatus.PendingExternalVerification) jobStatus.nonVerifiedMonthlyDonation else null,
+              transactionState = DonateToSignalState.TransactionState(jobStatus.isInProgress(), levelUpdateProcessing)
             )
           )
         }

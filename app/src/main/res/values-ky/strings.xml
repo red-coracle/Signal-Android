@@ -16,6 +16,7 @@
   <!-- Removed by excludeNonTranslatables <string name="username_support_url" translatable="false">https://support.signal.org/hc/articles/5389476324250</string> -->
   <!-- Removed by excludeNonTranslatables <string name="export_account_data_url" translatable="false">https://support.signal.org/hc/articles/5538911756954</string> -->
   <!-- Removed by excludeNonTranslatables <string name="pending_transfer_url" translatable="false">https://support.signal.org/hc/articles/360031949872#pending</string> -->
+  <!-- Removed by excludeNonTranslatables <string name="donate_faq_url" translatable="false">https://support.signal.org/hc/articles/360031949872#donate</string> -->
 
     <string name="yes">Жөнөтүү</string>
     <string name="no">Жок</string>
@@ -153,11 +154,11 @@
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">One time %1$s</string>
+    <string name="OneTimeDonationPreference__one_time_s">Бир жолу %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Donation pending</string>
+    <string name="OneTimeDonationPreference__donation_pending">Салымыңыз күтүлүүдө</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Donation processing</string>
+    <string name="OneTimeDonationPreference__donation_processing">Салымыңыз иштелүүдө</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Бөгөттөп туруп, %1$s чыгып кетесизби?</string>
@@ -321,8 +322,12 @@
     <string name="ConversationItem_cant_download_image_you_will_need_to_send_it_again">Сүрөт жүктөлүп алынган жок. {0} кайра жөнөтүшү керек.</string>
     <!-- Dialog error message shown when user can\'t download a their own video message via a linked device due to a permanent failure (e.g., unable to decrypt) -->
     <string name="ConversationItem_cant_download_video_you_will_need_to_send_it_again">Видео жүктөлүп алынган жок. {0} кайра жөнөтүшү керек.</string>
-    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. The timestamp will go from \'11m\' to \'edited 11m\' -->
-    <string name="ConversationItem_edited_timestamp_footer">Качан оңдолду: %1$s</string>
+    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. The timestamp represents a message that has been edited within the last minute. -->
+    <string name="ConversationItem_edited_now_timestamp_footer">Азыр Оңдолду</string>
+    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. This is displayed when the edit has occurred between 1-59 minutes ago. -->
+    <string name="ConversationItem_edited_relative_timestamp_footer">Качан оңдолду: %1$s</string>
+    <!-- Display as the timestamp footer in a message bubble in a conversation when a message has been edited. This is displayed when the edit occurred at least 1 hour ago. -->
+    <string name="ConversationItem_edited_absolute_timestamp_footer">Качан оңдолду: %1$s</string>
     <!-- Displayed if the link preview in the conversation item is for a call link call -->
     <string name="ConversationItem__join_call">Чалууга кошулуу</string>
 
@@ -354,6 +359,8 @@
     <string name="ConversationActivity_transport_insecure_mms">Корголбогон MMS</string>
     <!-- A title for the option to send an SMS with a placeholder to put the name of their SIM card -->
     <string name="ConversationActivity_transport_signal">Signal билдирүүсү</string>
+    <!-- The content description for button to send a message in a conversation -->
+    <string name="ConversationActivity_send_message_content_description">Билдирүү жөнөтүү</string>
     <string name="ConversationActivity_lets_switch_to_signal">Signal\'га өтүп алыңыз: %1$s</string>
     <string name="ConversationActivity_specify_recipient">Байланыш тандаңыз</string>
     <string name="ConversationActivity_attachment_exceeds_size_limits">Тиркеменин көлөмү жөнөтүлүп жаткан билдирүү үчүн белгиленген чектен ашып кетти.</string>
@@ -401,6 +408,8 @@
 
     <string name="ConversationActivity_error_sending_media">Медиафайлды жөнөтүүдө ката кетти</string>
 
+    <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Signal кызматында мындан ары SMS менен жазыша албайсыз.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal кызматында мындан ары SMS менен жазыша албайсыз. %1$s менен бул жерден сүйлөшө берүү үчүн аны Signal\'га чакырыңыз.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
@@ -626,6 +635,8 @@
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">%1$s%% болуп калды…</string>
     <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Signal колдонмосуна камдык көчүрмөлөрдү түзүү үчүн сактагычты колдонууга уруксат беришиңиз керек, бирок сиз андан баш тарткансыз. Колдонмонун параметрлерине кирүү үчүн \"Улантуу\" дегенди басып, \"Уруксаттар\" дегенди тандап, \"Сактагыч\" дегенди иштетиңиз.</string>
+    <!-- Title of dialog shown when picking the time to perform a chat backup -->
+    <string name="BackupsPreferenceFragment__set_backup_time">Камдык көчүрмөнүн убакытын коюңуз</string>
 
 
     <!-- CustomDefaultPreference -->
@@ -954,12 +965,15 @@
     <string name="ManageProfileFragment_profile_name">Профилдин аталышы</string>
     <string name="ManageProfileFragment_username">Колдонуучунун аты</string>
     <string name="ManageProfileFragment_about">Учкай маалымат</string>
-    <string name="ManageProfileFragment_write_a_few_words_about_yourself">Өзүңүз тууралуу бир эки ооз сөз</string>
-    <string name="ManageProfileFragment_your_name">Атыңыз</string>
-    <string name="ManageProfileFragment_your_username">Колдонуучу атыңыз</string>
     <string name="ManageProfileFragment_failed_to_set_avatar">Аватар коюлбай калды</string>
     <string name="ManageProfileFragment_badges">Төшбелгилер</string>
+    <!-- Text for a button that will take the user to the screen to manage their username link and QR code -->
+    <string name="ManageProfileFragment_link_setting_text">QR код же шилтеме</string>
     <string name="ManageProfileFragment__edit_photo">Сүрөттү өзгөртүү</string>
+    <!-- Title of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_title">Колдонуучу атыңызды бөлүшүңүз</string>
+    <!-- Body of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_body">Башкаларга сиз менен маектешкенге мүмкүнчүлүк берүү үчүн QR кодуңузду же шилтемеңизди бөлүшүңүз.</string>
     <!-- Snackbar message after creating username -->
     <string name="ManageProfileFragment__username_created">Колдонуучу аты түзүлдү</string>
     <!-- Snackbar message after copying username -->
@@ -968,10 +982,16 @@
     <string name="ManageProfileFragment__couldnt_delete_username">Колдонуучу аты өчкөн жок. Бир аздан соң кайталаңыз.</string>
     <!-- Snackbar message after successful deletion of username -->
     <string name="ManageProfileFragment__username_deleted">Колдонуучу аты өчтү</string>
+    <!-- The title of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_title">Колдонуучунун атын өчүрөсүзбү?</string>
+    <!-- The body of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_body">"Колдонуучу атыңыз, ошондой эле QR кодуңуз менен шилтемеңиз өчүп калат. Башкалар “%1$s” колдонуучу атын талап кыла алышат. Чын элеби?"</string>
 
     <!-- UsernameOutOfSyncReminder -->
     <!-- Displayed above the conversation list when a user needs to address an issue with their username -->
-    <string name="UsernameOutOfSyncReminder__something_went_wrong">Колдонуучу атыңызда маселе жаралып, аккаунтуңузга байланбай калды. Дагы бир жолу кайталап көрүңүз же жаңысын түзүңүз.</string>
+    <string name="UsernameOutOfSyncReminder__username_and_link_corrupt">Колдонуучу атыңызда маселе жаралып, аккаунтуңузга байланбай калды. Дагы бир жолу кайталап көрүңүз же жаңысын түзүңүз.</string>
+    <!-- Displayed above the conversation list when a user needs to address an issue with their username link -->
+    <string name="UsernameOutOfSyncReminder__link_corrupt">QR код менен колдонуучунун шилтемесинде ката кеткендиктен, алар жарабай калды. Башкалар менен бөлүшө турган жаңы шилтеме түзүңүз.</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">Оңдоо</string>
 
@@ -1219,6 +1239,10 @@
     <string name="MessageRecord_missed_voice_call">Кабыл алынбаган аудио чалуу</string>
     <!-- Update message shown when receiving an incoming 1:1 video call and not answered -->
     <string name="MessageRecord_missed_video_call">Кабыл алынбаган аудио чалуу</string>
+    <!-- Update message shown when receiving an incoming voice call and declined due to notification profile -->
+    <string name="MessageRecord_missed_voice_call_notification_profile">Missed voice call while notification profile on</string>
+    <!-- Update message shown when receiving an incoming video call and declined due to notification profile -->
+    <string name="MessageRecord_missed_video_call_notification_profile">Missed video call while notification profile on</string>
     <!-- Update message shown when receiving an incoming 1:1 voice/audio call and explicitly declined -->
     <string name="MessageRecord_you_declined_a_voice_call">Аудио чалуудан баш тарттыңыз</string>
     <!-- Update message shown when receiving an incoming 1:1 video call and explicitly declined -->
@@ -1467,7 +1491,7 @@
     <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_wont_receive_any_messages_until_you_unblock_them_SMS">%1$s сиз менен жазыша берсинби? Аны бөгөттөн чыгармайынча, билдирүүлөрдү албайсыз.</string>
     <string name="MessageRequestBottomView_get_updates_and_news_from_s_you_wont_receive_any_updates_until_you_unblock_them">%1$s жаңыртууларын жана жаңылыктарын аласызбы? Аны бөгөттөн чыгармайынча, билдирүүлөрдү албайсыз.</string>
     <string name="MessageRequestBottomView_continue_your_conversation_with_this_group_and_share_your_name_and_photo">Бул топ менен маектешүүнү улантып, атыңыз менен сүрөтүңүз топтогуларга көрүнө берсинби?</string>
-    <string name="MessageRequestBottomView_upgrade_this_group_to_activate_new_features">\@айтыпөтүүлөр жана топтордун администраторлору сыяктуу жаңы функцияларды иштетүү үчүн бул топту жаңыртыңыз. Атын же сүрөтүн ушул топтогуларга ачыктай элек мүчөлөр топко кошулуу чакыруусун алышат.</string>
+    <string name="MessageRequestBottomView_upgrade_this_group_to_activate_new_features">Бул эски топ мындан ары колдонулбайт. @айтыпөтүүлөр жана администраторлор сыяктуу жаңы функцияларды иштетүү үчүн жаңы топ түзүңүз.</string>
     <string name="MessageRequestBottomView_this_legacy_group_can_no_longer_be_used">Бул эски топ өтө чоң болгондуктан, аны колдоно албайсыз. Топтун көлөмү %1$d ашпаш керек.</string>
     <string name="MessageRequestBottomView_continue_your_conversation_with_s_and_share_your_name_and_photo">Бул маекти %1$s менен улантып, атыңыз менен сүрөтүңүздү аларга көрсөтө бересизби?</string>
     <string name="MessageRequestBottomView_do_you_want_to_join_this_group_they_wont_know_youve_seen_their_messages_until_you_accept">Бул топко кошулуп, атыңыз менен сүрөтүңүз анын мүчөлөрүнө көрүнө берсинби? Топко кошулмайынча, алардын билдирүүлөрүн көрүп, көрбөгөнүңүздү билишпейт.</string>
@@ -1743,6 +1767,8 @@
     <string name="WebRtcCallView__toggle_camera">Камераны өзгөртүү</string>
     <!-- Toggle content description for toggling mute state  -->
     <string name="WebRtcCallView__toggle_mute">Үнсүз абалды өзгөртүү</string>
+    <!-- Content description for additional actions menu button -->
+    <string name="WebRtcCallView__additional_actions">Кошумча аракеттер</string>
     <!-- Content description for end-call button -->
     <string name="WebRtcCallView__end_call">Чалууну бүтүрүү</string>
 
@@ -1759,9 +1785,62 @@
     <!-- A text description of the earpiece icon, used for accessibility. -->
     <string name="WebRtcAudioOutputBottomSheet__earpiece_icon_content_description">Түзмөктүн кулакчынынын сүрөтчөсү.</string>
 
+    <!-- A clickable button to "raise your hand" in a group call to signify you have something to say -->
+    <string name="CallOverflowPopupWindow__raise_hand">Колду көтөрүү</string>
+    <!-- A description of a clickable image representing a raised hand -->
+    <string name="CallOverflowPopupWindow__raise_hand_illustration_content_description">Колду көтөрүү</string>
+    <!-- A dialog prompt to confirm you want to lower your hand -->
+    <string name="CallOverflowPopupWindow__lower_your_hand">Колуңузду түшүрөсүзбү?</string>
+    <!-- A dialog button to confirm you would like to lower your hand -->
+    <string name="CallOverflowPopupWindow__lower_hand">Колду түшүрүү</string>
+    <!-- A negative button for a dialog confirming the user wants to lower their hand (withdraw a raised hand) -->
+    <string name="CallOverflowPopupWindow__cancel">Жок</string>
+    <!-- A notification to the user that they successfully raised their hand -->
+    <string name="CallOverflowPopupWindow__you_raised_your_hand">Колуңузду көтөрдүңүз</string>
+    <!-- A button to take you to a list of participants with raised hands -->
+    <string name="CallOverflowPopupWindow__view">Карап көрүү</string>
+
+    <!-- A notification to the user that one or more participants in the call successfully raised their hand. In the singular case, it is a name. In the plural case, it is a name or "You" -->
+    <plurals name="CallOverflowPopupWindow__raised_a_hand">
+        <item quantity="other">%1$s жана дагы %2$d колдорун көтөрүштү</item>
+    </plurals>
+
+    <!-- A badge to show how many hands are raised. The first string may be a name or "You" -->
+    <plurals name="CallRaiseHandSnackbar_raised_hands">
+        <item quantity="other">%1$s жана дагы %2$d</item>
+    </plurals>
+
+    <!-- An accessibility label for screen readers on a view that can be expanded -->
+    <string name="CallOverflowPopupWindow__expand_snackbar_accessibility_label">Көтөрүлгөн колдун көрүнүшүн чоңойтуу</string>
+
+    <!-- AboutSheet -->
+    <!-- Displayed in a sheet row and allows user to open signal connection explanation on tap -->
+    <string name="AboutSheet__signal_connection">Signal байланышы</string>
+    <!-- Explains that the given user (placeholder is short name) is in the users system contact -->
+    <string name="AboutSheet__s_is_in_your_system_contacts">%1$s системаңыздагы байланыштардын бири</string>
+    <!-- Notice in a row when user has no groups in common -->
+    <string name="AboutSheet__you_have_no_groups_in_common">Жалпы топторуңуз жок</string>
+    <!-- Notice when a user is not a connection to review requests carefully -->
+    <string name="AboutSheet__review_requests_carefully">Сурамдарды этияттап караңыз</string>
+    <!-- Text used when user has groups in common. Placeholder is the count -->
+    <string name="AboutSheet__d_groups_in_common">%1$d жалпы топ</string>
+    <!-- Text displayed in title for external recipients -->
+    <string name="AboutSheet__about">Учкай маалымат</string>
+    <!-- Text displayed in title for you -->
+    <string name="AboutSheet__you">Сиз</string>
+
     <!-- CallParticipantsListDialog -->
-    <plurals name="CallParticipantsListDialog_in_this_call_d_people">
-        <item quantity="other">Бул чалууда · %1$d адам</item>
+    <plurals name="CallParticipantsListDialog_in_this_call">
+        <item quantity="other">Бул чалууда (%1$d)</item>
+    </plurals>
+    <plurals name="CallParticipantsListDialog__signal_will_ring">
+        <item quantity="other">Signal шыңгырайт (%1$d)</item>
+    </plurals>
+    <plurals name="CallParticipantsListDialog__signal_will_notify">
+        <item quantity="other">Signal кабарлайт (%1$d)</item>
+    </plurals>
+    <plurals name="CallParticipantsListDialog__raised_hands">
+        <item quantity="other">Канча адам кол көтөрдү (%1$d)</item>
     </plurals>
 
     <!-- CallParticipantView -->
@@ -1873,6 +1952,12 @@
     <string name="RevealableMessageView_view_video">Видеону көрүү</string>
     <string name="RevealableMessageView_viewed">Көрүлдү</string>
     <string name="RevealableMessageView_media">Медиа</string>
+
+    <!-- ReviewBannerView -->
+    <!-- ReviewBannerView text when a name conflict has been found -->
+    <string name="ReviewBannerView__name_conflict_found">Мындай ысым бар</string>
+    <!-- Button label to view name conflicts -->
+    <string name="ReviewBannerView__view">Карап көрүү</string>
 
     <!-- Search -->
     <string name="SearchFragment_no_results">\'%1$s\' боюнча эч нерсе табылган жок</string>
@@ -2023,9 +2108,13 @@
     <!--  Displayed in the conversation list when identities have been merged. The first placeholder is a phone number, and the second is a person\'s name -->
     <string name="ThreadRecord_s_belongs_to_s">%1$s номери %2$s деген кишиге таандык</string>
 
-    <!-- UpdateApkReadyListener -->
-    <string name="UpdateApkReadyListener_Signal_update">Signal\'ды жаңыртуу</string>
-    <string name="UpdateApkReadyListener_a_new_version_of_signal_is_available_tap_to_update">Signal\'дын жаңы версиясы чыкты, жаңыртуу үчүн басып коюңуз</string>
+    <!-- ApkUpdateNotifications -->
+    <string name="ApkUpdateNotifications_prompt_install_title">Signal\'ды жаңыртуу</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">Signal\'дын жаңы версиясы чыкты. Жаңыртуу үчүн басыңыз.</string>
+    <string name="ApkUpdateNotifications_failed_general_title">Signal жаңырбай калды</string>
+    <string name="ApkUpdateNotifications_failed_general_body">Бир аздан соң аракет кылып көрөбүз.</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Signal ийгиликтүү жаңырды</string>
+    <string name="ApkUpdateNotifications_auto_update_success_body">Автоматтык түрдө %1$s версиясына жаңырды.</string>
 
     <!-- UntrustedSendDialog -->
     <string name="UntrustedSendDialog_send_message">Билдирүү жөнөтөсүзбү?</string>
@@ -2036,6 +2125,8 @@
     <string name="UnverifiedSendDialog_send">Жөнөтүү</string>
 
     <!-- UsernameEditFragment -->
+    <!-- Placeholder text for custom discriminator -->
+    <string name="UsernameEditFragment__00">00</string>
     <!-- Toolbar title when entering from registration -->
     <string name="UsernameEditFragment__add_a_username">Колдонуучу аты атын кошуу</string>
     <!-- Instructional text at the top of the username edit screen -->
@@ -2058,6 +2149,12 @@
     <string name="UsernameEditFragment__skip">Өткөрүп жиберүү</string>
     <!-- Content description for done button -->
     <string name="UsernameEditFragment__done">Бүттү</string>
+    <!-- Displayed when the chosen discriminator is not available for the given nickname -->
+    <string name="UsernameEditFragment__this_username_is_not_available_try_another_number">This username is not available, try another number.</string>
+    <!-- Displayed when the chosen discriminator is too short -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_minimum_of_d_digits">Invalid username, enter a minimum of %1$d digits.</string>
+    <!-- Displayed when the chosen discriminator is too long -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_maximum_of_d_digits">Invalid username, enter a maximum of %1$d digits.</string>
 
     <plurals name="UserNotificationMigrationJob_d_contacts_are_on_signal">
         <item quantity="other">Signal\'да %1$dбайланышыңыз бар!</item>
@@ -2251,6 +2348,10 @@
     </plurals>
     <!-- Status update label used while the device is transcoding video as a prerequisite to uploading -->
     <string name="TransferControlView__processing">Аткарылууда…</string>
+    <!-- Status update label used while the device is transmitting data over the network. Will take the form of "1.0 MB/2.0 MB" -->
+    <string name="TransferControlView__download_progress">%1$1.1f MB/%2$2.1f MB</string>
+    <!-- Attachment file size label for not-yet-downloaded images and video. Will take the form of "1.0 MB" -->
+    <string name="TransferControlView__filesize">%1$1.1f MB</string>
 
 
     <!-- UnauthorizedReminder -->
@@ -2275,6 +2376,8 @@
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Байланышкан түзмөктө жооп берилди.</string>
     <string name="WebRtcCallActivity__declined_on_a_linked_device">Байланышкан түзмөктө четке кагылды.</string>
     <string name="WebRtcCallActivity__busy_on_a_linked_device">Байланышкан түзмөктө бош эмес.</string>
+    <!-- Tooltip message shown first time user is in a video call after switch camera button moved -->
+    <string name="WebRtcCallActivity__flip_camera_tooltip">Flip Camera бул жерге жылдырылды, аны байкап көрүү үчүн видеоңузду басыныз</string>
 
     <string name="GroupCallSafetyNumberChangeNotification__someone_has_joined_this_call_with_a_safety_number_that_has_changed">Коопсуздук коду өзгөргөн кимдир бирөө чалууга кошулду.</string>
 
@@ -2619,24 +2722,13 @@
 
     <!-- verify_display_fragment -->
     <!-- Explanation of how to verify the safety numbers. %s is replaced with the name of the other recipient -->
-    <string name="verify_display_fragment__pnp_verify_safety_numbers_explanation_with_s">%1$s аркылуу баштан аяк шифрлөөнү ырастоо үчүн жогорудагы түс картасын түзмөгүнө дал келтирип, коддорду салыштырыңыз. Эгер алар дал келбесе, экранды сүрүп, коопсуздук коддорунун башка жубун байкап көрүңүз. Бир гана жупту дал келтирүү керек.</string>
+    <string name="verify_display_fragment__pnp_verify_safety_numbers_explanation_with_s">%1$s менен баштан аяк шифрлөөнү ырастоо үчүн жогорудагы коддорду анын түзмөгүнө дал келтириңиз. Кааласаңыз, түзмөгүндөгү кодду скандасаңыз болот.</string>
     <string name="verify_display_fragment__tap_to_scan">Скандоо үчүн басыңыз</string>
     <string name="verify_display_fragment__successful_match">Дал келди</string>
     <string name="verify_display_fragment__failed_to_verify_safety_number">Коопсуздук коду ырасталбай калды</string>
     <string name="verify_display_fragment__loading">Жүктөлүүдө…</string>
     <string name="verify_display_fragment__mark_as_verified">Ырасталды деп белгилөө</string>
     <string name="verify_display_fragment__clear_verification">Ырастоону өчүрүү</string>
-    <!-- Banner at top of safety numbers screen explaining that we\'re updating how safety numbers work. -->
-    <string name="verify_display_fragment__safety_numbers_are_updating_banner_no_learn_more">Коопсуздук коддору жаңырууда.</string>
-
-    <!-- Title for dialog explaining for how safety numbers are transitioning to support usernames -->
-    <string name="PnpSafetyNumberEducationDialog__title">Коопсуздук коддорунун өзгөрүшү</string>
-    <!-- Message for dialog explaining for how safety numbers are transitioning to support usernames -->
-    <string name="PnpSafetyNumberEducationDialog__body">Signal\'да болочок купуялык функцияларын иштетүү үчүн коопсуздук коддору өткөөл мезгилде жаңырат.\n\nКоопсуздук коддорун ырастоо үчүн түс картасын байланыштын түзмөгүнө дал келтириңиз. Эгер алар дал келбесе, экранды сүрүп, коопсуздук коддорунун башка жубун байкап көрүңүз. Бир гана жупту дал келтирүү керек.</string>
-    <!-- Button for more information about the safety number changes. Takes user to support article -->
-    <string name="PnpSafetyNumberEducationDialog__help">Жардам керекпи?</string>
-    <!-- Confirmation button for educating users about new safety number changes -->
-    <string name="PnpSafetyNumberEducationDialog__confirm">Түшүндүм</string>
 
     <!-- verity_scan_fragment -->
     <string name="verify_scan_fragment__scan_the_qr_code_on_your_contact">Байланышыңыздын түзмөгүндөгү QR кодду скандаңыз.</string>
@@ -2929,6 +3021,7 @@
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Төлөмдөр</string>
     <string name="preferences_chats__chats">Маектер</string>
+    <string name="preferences_app_updates__title">Колдонмонун жаңыртуулары</string>
     <string name="preferences_data_and_storage__manage_storage">Сактагычты башкаруу</string>
     <string name="preferences_data_and_storage__use_less_data_for_calls">Чалууларга азыраак трафик колдонуу</string>
     <string name="preferences_data_and_storage__never">Эч качан</string>
@@ -3816,14 +3909,16 @@
     <string name="ReviewCardDialogFragment__failed_to_remove_group_member">Топтун мүчөсүн чыгаруу ишке ашкан жок.</string>
 
     <!-- ReviewCard -->
-    <string name="ReviewCard__member">Мүчө</string>
     <string name="ReviewCard__request">Өтүнүч</string>
     <string name="ReviewCard__your_contact">Сиздин байланышыңыз</string>
     <string name="ReviewCard__remove_from_group">Топтон алып салуу</string>
     <string name="ReviewCard__update_contact">Байланышты жаңыртуу</string>
     <string name="ReviewCard__block">Бөгөттөө</string>
     <string name="ReviewCard__delete">Өчүрүү</string>
-    <string name="ReviewCard__recently_changed">Жакында өзүнүн профиль атын %1$s ордуна %2$s деп өзгөрттү</string>
+    <!-- Displayed when a recent name change has occurred. First placeholder is new short name, second is previous name, third is new name. -->
+    <string name="ReviewCard__s_recently_changed">%1$s жакында профилинин аталышын өзгөрттү. Мурун %2$s болсо, эми %3$s болуп калды</string>
+    <!-- Displayed when a review user is in your system contacts. Placeholder is short name. -->
+    <string name="ReviewCard__s_is_in_your_system_contacts">%1$s системаңыздагы байланыштардын бири</string>
 
     <!-- CallParticipantsListUpdatePopupWindow -->
     <string name="CallParticipantsListUpdatePopupWindow__s_joined">%1$s кошулду</string>
@@ -4465,6 +4560,12 @@
     <string name="NewConversationActivity__view_contact">Байланышты карап көрүү</string>
     <!-- Error message shown when looking up a person by phone number and that phone number is not associated with a signal account -->
     <string name="NewConversationActivity__s_is_not_a_signal_user">%1$s Signal колдонуучусу эмес</string>
+    <!-- Error message shown when we could not get a user from the username link -->
+    <string name="NewConversationActivity__">%1$s Signal колдонуучусу эмес</string>
+    <!-- Error message shown in a dialog when trying to create a new group with non-signal users (e.g., unregistered or phone number only contacts) -->
+    <plurals name="CreateGroupActivity_not_signal_users">
+        <item quantity="other">%1$s Signal колдонуучулары эмес</item>
+    </plurals>
 
     <!-- ContactFilterView -->
     <string name="ContactFilterView__search_name_or_number">Атын же номерин издөө</string>
@@ -4646,6 +4747,12 @@
     <string name="ManageDonationsFragment__other_ways_to_give">Берүүнүн башка жолдору</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Дос үчүн колдоо көрсөтүңүз</string>
+    <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">Салым ырасталган жок</string>
+    <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed">Айына %1$s түзгөн салымыңыз ырасталган жок. iDEAL төлөмүңүздү ырастоо үчүн банкыңыздын колдонмосун текшериңиз.</string>
+    <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed">Бир жолку %1$s салымыңыз ырасталган жок. iDEAL төлөмүңүздү ырастоо үчүн банкыңыздын колдонмосун текшериңиз.</string>
 
     <string name="Boost__enter_custom_amount">Өзүңүздүн суммаңызды киргизиңиз</string>
     <!-- Error label when the amount is smaller than what we can accept -->
@@ -4658,9 +4765,9 @@
     <string name="MySupportPreference__couldnt_add_badge_s">Төшбелги кошулган жок. %1$s</string>
     <string name="MySupportPreference__please_contact_support">Кардарларды колдоо кызматына кайрылыңыз.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Payment pending</string>
+    <string name="MySupportPreference__payment_pending">Төлөм күтүлүүдө</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Your bank transfer of %1$s is pending. Bank transfers usually take 1 business day to complete.  </string>
+    <string name="MySupportPreference__your_bank_transfer_of_s">Банк эсебиңизге төлөгөн %1$s күтүлүүдө. Банк эсебиңизге каражаттар 1 иш күнүндө түшөт.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
     <string name="MySupportPreference__learn_more">Кененирээк маалымат</string>
 
@@ -4712,12 +4819,16 @@
     <string name="Subscription__contact_support">Кардарларды колдоо кызматына кайрылуу</string>
     <string name="Subscription__get_a_s_badge">%1$s төшбелгисин алуу</string>
 
-    <string name="SubscribeFragment__processing_payment">Төлөм иштетилүүдө…</string>
+    <string name="SubscribeFragment__processing_payment">Салым иштелүүдө…</string>
     <!-- Displayed in notification when user payment fails to process on Stripe -->
-    <string name="DonationsErrors__error_processing_payment">Төлөмдү иштетүүдө ката кетти</string>
+    <string name="DonationsErrors__error_processing_payment">Салымды иштетүүдө ката кетти</string>
+    <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">Башка төлөм ыкмасын колдонуп көрүңүз же көбүрөөк маалымат алуу үчүн банкыңызга кайрылыңыз.</string>
+    <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">Кененирээк маалымат</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Төлөмдү иштетүүдө ката кетти. %1$s</string>
-    <string name="DonationsErrors__your_payment">Төлөмүңүз иштелбегендиктен, сизден акы алынган жок. Кайталап көрүңүз.</string>
+    <string name="DonationsErrors__error_processing_payment_s">Салымды иштетүүдө ката кетти. %1$s</string>
+    <string name="DonationsErrors__your_payment">Салымыңыз иштелбегендиктен, сизден акы алынган жок. Кайталап көрүңүз.</string>
     <string name="DonationsErrors__still_processing">Дагы эле иштетилүүдө</string>
     <string name="DonationsErrors__couldnt_add_badge">Төшбелги кошулган жок.</string>
     <!-- Displayed when badge credential couldn\'t be verified -->
@@ -4727,9 +4838,9 @@
     <!-- Displayed as title when some generic error happens during sending donation on behalf of another user -->
     <string name="DonationsErrors__donation_failed">Болбой калды</string>
     <!-- Displayed as message when some generic error happens during sending donation on behalf of another user -->
-    <string name="DonationsErrors__your_payment_was_processed_but">Төлөмүңүз алынды, бирок Signal колдоо көрсөткөнүңүз тууралуу билдирүү жөнөтө алган жок. Кардарларды колдоо кызматына кайрылыңыз.</string>
+    <string name="DonationsErrors__your_payment_was_processed_but">Салымыңыз алынды, бирок Signal колдоо көрсөткөнүңүз тууралуу билдирүү жөнөтө алган жок. Кардарларды колдоо кызматына кайрылыңыз.</string>
     <string name="DonationsErrors__your_badge_could_not">Сизден төлөм алынганы менен, төшбелгиңиз аккаунтуңузга кошулбай калды окшойт. Кардарларды тейлеген кызматка кайрылыңыз.</string>
-    <string name="DonationsErrors__your_payment_is_still">Төлөмүңүз дагы эле иштетилүүдө. Бул сиздин туташууңузга жараша бир нече мүнөткө созулушу мүмкүн.</string>
+    <string name="DonationsErrors__your_payment_is_still">Салымыңыз дагы деле иштелүүдө. Байланышыңыздын сапатына жараша бир нече мүнөткө созулушу мүмкүн.</string>
     <string name="DonationsErrors__failed_to_cancel_subscription">Жазылуу токтотулган жок</string>
     <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Жазылууну токтотуу үчүн Интернет байланышы керек.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support_google_pay_so_you_can_t_subscribe_to_earn_a_badge_you_can_still_support_signal_by_making_a_donation_on_our_website">Google Pay түзмөгүңүздө иштебегендиктен, катталып, төшбелги ала албайсыз. Бирок Signal\'дын вебсайтынан салым кошсоңуз болот.</string>
@@ -4741,6 +4852,8 @@
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Signal\'дын версиясын жаңыртмайынча, бул колдонуучу колдоону ала албайт</string>
     <!-- Displayed as a dialog message when the user\'s profile could not be fetched, likely due to lack of internet -->
     <string name="DonationsErrors__your_donation_could_not_be_sent">Интернет жок болгондуктан, колдооңуз жөнөтүлгөн жок. Байланышыңызды текшерип, кайталап көрүңүз.</string>
+    <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_couldnt_be_processed">iDEAL салымыңыз иштелген жок. Башка төлөм ыкмасын колдонуп көрүңүз же көбүрөөк маалымат алуу үчүн банкыңызга кайрылыңыз.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">%1$s атынан колдоо көрсөттү</string>
@@ -4807,15 +4920,15 @@
 
     <!-- Stripe Failure Codes for failed bank transfers -->
     <!-- Failure code text for insufficient funds, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__the_bank_account_provided">The bank account provided has insufficient funds to complete this purchase, try again or contact your bank for more information.</string>
+    <string name="StripeFailureCode__the_bank_account_provided">Көрсөтүлгөн банк эсебинде бул нерсени сатып алууга каражат жетишпейт, дагы бир жолу банкыңызга чалып көрүңүз.</string>
     <!-- Failure code text for revoked authorization of payment, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__this_payment_was_revoked">This payment was revoked by the account holder and could not be processed. You haven\'t been charged.</string>
+    <string name="StripeFailureCode__this_payment_was_revoked">Бул төлөмдү эсептин ээси токтотуп койгондуктан, андан ары иштелбейт. Сизден каражат алынган жок.</string>
     <!-- Failure code text for a payment lacking an authorized mandate or incorrect mandate, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__an_error_occurred_while_processing_this_payment">An error occurred while processing this payment, please try again.</string>
+    <string name="StripeFailureCode__an_error_occurred_while_processing_this_payment">Бул салым иштелип жатканда ката кетти, кайталаңыз.</string>
     <!-- Failure code text for a closed account, deceased recipient, or one with blocked direct debits, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__the_bank_details_provided_could_not_be_processed">The bank details provided could not be processed, contact your bank for more information.</string>
+    <string name="StripeFailureCode__the_bank_details_provided_could_not_be_processed">Банкыңыздын чоо-жайын иштетүү мүмкүн болгон жок, банкыңызга чалып, тактап көрүңүз.</string>
     <!-- Failure code text for a non-existent bank branch, invalid account holder, invalid iban, generic failure, or unknown bank failure, displayed in a dialog or notification -->
-    <string name="StripeFailureCode__verify_your_bank_details_are_correct">Verify your bank details are correct and try again. If the problem continues, contact your bank.</string>
+    <string name="StripeFailureCode__verify_your_bank_details_are_correct">Картаңыздын чоо-жайын текшерип, кайталап көрүңүз. Эгер көйгөй кайталана берсе, банкыңызга чалыңыз.</string>
 
     <!-- Title of create notification profile screen -->
     <string name="EditNotificationProfileFragment__name_your_profile">Профилиңизге ат коюңуз</string>
@@ -4852,6 +4965,12 @@
     <string name="AddAllowedMembers__add_people_and_groups_you_want_notifications_and_calls_from_when_this_profile_is_on">Бул профиль иштетилгенде билдирмелерди жана чалууларды алууну каалаган адамдарды жана топторду кошуңуз</string>
     <!-- Button text that launches the contact picker to select from -->
     <string name="AddAllowedMembers__add_people_or_groups">Адамдарды же топторду кошуу</string>
+    <!-- Title for exceptions section of add people to notification profile screen in create flow -->
+    <string name="AddAllowedMembers__exceptions">Өзгөчө учурлар</string>
+    <!-- List preference to toggle that allows calls through the notification profile during create flow -->
+    <string name="AddAllowedMembers__allow_all_calls">Бардык чалууларга уруксат берүү</string>
+    <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
+    <string name="AddAllowedMembers__notify_for_all_mentions">Бардык эскертмелер жөнүндө кабарлоо</string>
 
     <!-- Call to action button on contact picker for adding to profile -->
     <string name="SelectRecipientsFragment__add">Кошуу</string>
@@ -4973,10 +5092,10 @@
     <string name="DonationReceiptListFragment__recurring">Кайталануучу</string>
     <!-- Donation receipts one-time tab label -->
     <string name="DonationReceiptListFragment__one_time">Бир жолку</string>
+    <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">Дос үчүн</string>
     <!-- Donation receipts gift tab label -->
     <string name="DonationReceiptListFragment__donation_for_a_friend">Дос үчүн колдоо көрсөтүү</string>
-    <!-- Donation receipts boost row label -->
-    <!-- Donation receipts details title -->
     <!-- Donation receipts donation type heading -->
     <string name="DonationReceiptDetailsFragment__donation_type">Колдоо түрү</string>
     <!-- Donation receipts date paid heading -->
@@ -5448,7 +5567,9 @@
     <!-- Message of safety number changes bottom sheet when not showing individual records and user has seen review screen -->
     <string name="SafetyNumberBottomSheetFragment__all_connections_have_been_reviewed">Бардык байланыштар текшерилди, улантуу үчүн жөнөтүү дегенди басыңыз.</string>
     <!-- Message of safety number changes bottom sheet when not showing individual records -->
-    <string name="SafetyNumberBottomSheetFragment__you_have_d_connections">%1$d байланышыңыз Signal колдонмосун кайра орнотуп же түзмөктөрүн алмаштырышты окшойт. Окуяңызды алар менен бөлүшүүдөн мурун, алар менен болгон коопсуздук коддоруңузду текшериңиз же аларды окуяңыздан чыгарып салыңыз.</string>
+    <plurals name="SafetyNumberBottomSheetFragment__you_have_d_connections_plural">
+        <item quantity="other">%1$d connections may have reinstalled Signal or changed devices. You may review their safety numbers or continue with the send.</item>
+    </plurals>
     <!-- Menu action to launch safety number verification screen -->
     <string name="SafetyNumberBottomSheetFragment__verify_safety_number">Коопсуздук кодун ырастоо</string>
     <!-- Menu action to remove user from story -->
@@ -5688,6 +5809,23 @@
     <string name="DonateToSignalFragment__continue">Улантуу</string>
     <!-- Description below title -->
     <string name="DonateToSignalFragment__private_messaging">Өзүңүз каржылаган купуя жазышуу мүмкүнчүлүгү. Жарнамалар жок, эч ким көз салбайт, эч ким ачыктабайт. Signal\'ды колдоо үчүн азыр салым кошуңуз.</string>
+    <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">Салымыңыз күтүлүүдө</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Банк аркылуу төлөнгөн транзакцияларга 1 күн кетет. Жазылууну жаңыртуудан мурун акы толук алынып бүткүчө күтө туруңуз.</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Банк аркылуу төлөнгөн транзакцияларга 1 күн кетет. Дагы бир салым кошуудан мурун, акы толук алынып бүткүчө күтө туруңуз.</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Салымыңыз дагы деле иштелүүдө. Байланышыңыздын сапатына жараша бир нече мүнөткө созулушу мүмкүн. Жазылууну жаңыртуудан мурун акы толук алынып бүткүчө күтө туруңуз.</string>
+    <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Салымыңыз дагы деле иштелүүдө. Байланышыңыздын сапатына жараша бир нече мүнөткө созулушу мүмкүн. Дагы бир салым кошуудан мурун, акы толук алынып бүткүчө күтө туруңуз.</string>
+    <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_payment_is_still_processing">iDEAL салымыңыз иштелүүдө. Дагы башка салым кошуудан мурун, төлөмүңүздү ырастоо үчүн банкыңыздын колдонмосун текшериңиз.</string>
+    <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">Салымдын суммасы өтө чоң</string>
+    <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">%1$s чейин банк эсебине которо аласыз. Башка сумманы же башка төлөм ыкмасын колдонуп көрүңүз.</string>
+
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Ай сайын</string>
     <!-- Donation pill toggle one-time text -->
@@ -5713,6 +5851,10 @@
     <!-- Button label for paying with iDEAL -->
     <string name="GatewaySelectorBottomSheet__ideal">iDEAL</string>
 
+    <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Салымды ырастоо үчүн Signal\'дан чыгасызбы?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Ырастагандан кийин, салымыңыз аягына чейин иштелип бүтүшү үчүн Signal\'га кайтыңыз.</string>
+
     <!-- IdealBank -->
     <!-- iDEAL bank name -->
     <string name="IdealBank__abn_amro">ABN AMRO</string>
@@ -5737,7 +5879,7 @@
     <!-- iDEAL bank name -->
     <string name="IdealBank__triodos_bank">Triodos Bank</string>
     <!-- iDEAL bank name -->
-    <string name="IdealBank__van_lanchot">Van Lanchot Kempen</string>
+    <string name="IdealBank__van_lanschot">Van Lanschot Kempen</string>
     <!-- iDEAL bank name -->
     <string name="IdealBank__yoursafe">Yoursafe</string>
 
@@ -5749,11 +5891,15 @@
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
     <string name="BankTransferMandateFragment__learn_more">Кененирээк маалымат</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__continue">Улантуу</string>
+    <string name="BankTransferMandateFragment__agree">Макул</string>
+    <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">Дагы</string>
+    <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">Сурам жүктөлбөй калды</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Банкыңыздын чоо-жайын жана электрондук почта дарегиңизди көрсөтүңүз. Stripe кызматы электрондук почтаңыз аркылуу кайрымдуулук кылганыңыз тууралуу жаңылыктарды жөнөтүп турат. %1$s</string>
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">Банк эсебиңиздин чоо-жайын жана электрондук почта дарегиңизди киргизиңиз. Stripe кызматы ушул электрондук почта дареги аркылуу салымыңызга байланыштуу жаңылыктарды кабарлап турат. %1$s</string>
     <!-- Subtext learn more link text -->
     <string name="BankTransferDetailsFragment__learn_more">Кененирээк маалымат</string>
     <!-- Text field label for name on bank account -->
@@ -5762,26 +5908,32 @@
     <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
     <string name="BankTransferDetailsFragment__email">электрондук почта</string>
-    <!-- Text label for button to show user how to find their IBAN number -->
-    <string name="BankTransferDetailsFragment__find_account_info">Find account info</string>
+    <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">Банк эсебинин маалыматын табуу</string>
     <!-- Donate button label for monthly subscription -->
     <string name="BankTransferDetailsFragment__donate_s_month">Айына %1$s суммасында колдоо көрсөтүү</string>
     <!-- Donate button label for one-time -->
     <string name="BankTransferDetailsFragment__donate_s">Колдоо көрсөтүү: %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_nubmer_is_too_short">IBAN номери өтө кыска</string>
+    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN өтө кыска</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_nubmer_is_too_long">IBAN номери өтө узун</string>
+    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN өтө узун</string>
     <!-- Error label for IBAN field when country is not supported -->
     <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Өлкөнүн IBAN коду колдоого алынбайт</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban_nubmer">IBAN номери туура эмес</string>
+    <string name="BankTransferDetailsFragment__invalid_iban">IBAN туура эмес</string>
+    <!-- Error label for name field when name is not at least two characters long -->
+    <string name="BankTransferDetailsFragment__minimum_2_characters">Кеминде 2 символ</string>
+    <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">Электрондук почта дареги жараксыз</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Title of the screen, displayed in the toolbar -->
     <string name="IdealTransferDetailsFragment__ideal">iDEAL</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Enter your bank, name and email. Stripe uses this email to send you updates about your donation. %1$s</string>
+    <string name="IdealTransferDetailsFragment__enter_your_bank">Банкыңызды, атыңызды жана электрондук почта дарегиңизди көрсөтүңүз. Stripe кызматы ушул электрондук почта дареги аркылуу салымыңызга байланыштуу жаңылыктарды кабарлап турат. %1$s</string>
+    <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Банк эсебиңиздин чоо-жайын киргизиңиз. Signal жеке маалыматыңызды чогултпайт же сактабайт. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
     <string name="IdealTransferDetailsFragment__learn_more">Кененирээк маалымат</string>
     <!-- Hint label for text entry box for name on bank account -->
@@ -5789,34 +5941,43 @@
     <!-- Hint label for text entry box for email -->
     <string name="IdealTransferDetailsFragment__email">электрондук почта</string>
     <!-- Default label for bank selection -->
-    <string name="IdealTransferDetailsFragment__choose_your_bank">Choose your bank</string>
+    <string name="IdealTransferDetailsFragment__choose_your_bank">Банкыңызды тандаңыз</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
     <!-- Title of the screen, displayed in the toolbar -->
-    <string name="IdealTransferDetailsBankSelectionDialogFragment__choose_your_bank">Choose your bank</string>
+    <string name="IdealTransferDetailsBankSelectionDialogFragment__choose_your_bank">Банкыңызды тандаңыз</string>
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Find your account information</string>
+    <string name="FindAccountInfoSheet__find_your_account_information">Эсебиңиздин маалыматын табасыз</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban">Look for your IBAN number at the top of your bank statement. IBAN numbers contain up to 34 characters. The name you enter should match your full name on your bank account. Contact your bank for more information.</string>
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">Банкыңыздын көчүрмөсүнүн өйдө жагынан IBAN кодун караңыз. IBAN 34 символдон турган код. Киргизип жаткан атыңыз банк эсебиңизде көрсөтүлгөн толук аты-жөнүңүзгө дал келиши керек. Кененирээк маалымат алгыңыз келсе, банкыңызга чалыңыз.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Donation pending</string>
+    <string name="DonationPendingBottomSheet__donation_pending">Салымыңыз күтүлүүдө</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Your monthly donation is pending. You’ll be able to display the %1$s badge on your profile when your donation is received.</string>
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Ай сайын төлөнүүчү салымыңыз күтүлүүдө. Салымыңыз алынганда, профилиңизде %1$s төшбелгиси көрүнүп калат.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Your one-time donation is pending. You’ll be able to display the %1$s badge on your profile when your donation is received.</string>
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Бир жолку салымыңыз күтүлүүдө. Салымыңыз алынганда, профилиңизде %1$s төшбелгиси көрүнүп калат.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Bank transfers usually take 1 business day to process. %1$s</string>
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Банк аркылуу төлөнгөн транзакцияларга 1 күн кетет. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
     <string name="DonationPendingBottomSheet__learn_more">Кененирээк маалымат</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
     <string name="DonationPendingBottomSheet__done">Бүттү</string>
 
+    <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Салым иштелген жок</string>
+    <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">Банкыңызга которуу мүмкүн болбой жатат. Сизден акы алынган жок. Башка төлөм ыкмасын колдонуп көрүңүз же көбүрөөк маалымат алуу үчүн банкыңызга кайрылыңыз.</string>
+    <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">Кайталап көрүңүз</string>
+    <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">Азыр эмес</string>
+
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Donation Complete</string>
+    <string name="DonationCompletedBottomSheet__donation_complete">Салым коштуңуз</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Your bank transfer was received. You can choose to display this badge on your profile to show off your support.</string>
+    <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Банк аркылуу төлөгөн салымыңыз алынды. Кошкон салымыңызды башкаларга көрсөтүү үчүн ушул төшбелгини профилиңизге тагып койсоңуз болот.</string>
     <!-- Button text of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed to dismiss sheet -->
     <string name="DonationCompleteBottomSheet__done">Бүттү</string>
 
@@ -5957,6 +6118,8 @@
     <string name="CallLogAdapter__outgoing">Чыккан чалуулар</string>
     <!-- Displayed for missed calls -->
     <string name="CallLogAdapter__missed">Жооп берилбеген</string>
+    <!-- Displayed for missed calls declined by notification profile -->
+    <string name="CallLogAdapter__missed_notification_profile">Missed while notification profile on</string>
     <!-- Displayed on Group Call button if user is not in the call -->
     <string name="CallLogAdapter__join">Кошулуу</string>
     <!-- Displayed on Group Call button if user is in the call -->
@@ -6061,6 +6224,8 @@
     <string name="CallPreference__group_call">Топтук чалуу</string>
     <!-- Missed group call in call info -->
     <string name="CallPreference__missed_group_call">Жооп берилбеген топтук чалуу</string>
+    <!-- Missed group call while notification profile on in call info -->
+    <string name="CallPreference__missed_group_call_notification_profile">Missed group call while notification profile on</string>
     <!-- Incoming group call in call info -->
     <string name="CallPreference__incoming_group_call">Келүүчү топтук чалуу</string>
     <!-- Outgoing group call in call info -->
@@ -6207,6 +6372,13 @@
     <!-- Body of a dialog that is displayed when we failed to reset your username link because of a transient network issue. -->
     <string name="UsernameLinkSettings_reset_link_result_network_error">Шилтемеңизди кайра коюп жатканда тармакта ката кетти. Бир аздан соң кайталаңыз.</string>
 
+    <!-- Explanatory text at the top of a bottom sheet describing how username links work -->
+    <string name="UsernameLinkShareBottomSheet_title">Ушул шилтеме аркылуу колдонуучу атыңыз көрүнүп, сиз менен маектеше алышат. Ишенген адамдарыңыз менен гана бөлүшүңүз.</string>
+    <!-- A button label for a button that, when pressed, will copy your username link to the clipboard -->
+    <string name="UsernameLinkShareBottomSheet_copy_link">Шилтемени көчүрүү</string>
+    <!-- A button label for a button that, when pressed, will open a share sheet for sharing your username link -->
+    <string name="UsernameLinkShareBottomSheet_share">Бөлүшүү</string>
+
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->
     <string name="PendingParticipantsView__would_like_to_join">Кошулгусу келип жатат…</string>
@@ -6228,17 +6400,28 @@
     <string name="PendingParticipantsBottomSheet__approve">Ырастоо</string>
 
     <!-- Title of a megaphone shown at the bottom of the chat list when a user has disable the system setting for showing full screen notifications used showing incoming calls -->
-    <string name="GrantFullScreenIntentPermission_megaphone_title">Turn on full screen notifications?</string>
+    <string name="GrantFullScreenIntentPermission_megaphone_title">Толук экран билдирмелерин күйгүзөсүзбү?</string>
     <!-- Body of a megaphone shown at the bottom of the chat list when a user has disable the system setting for showing full screen notifications used showing incoming calls -->
-    <string name="GrantFullScreenIntentPermission_megaphone_body">Never miss a call from your contacts and groups.</string>
+    <string name="GrantFullScreenIntentPermission_megaphone_body">Байланыштарыңыздын жана топторуңуздун бир дагы чалуусун өткөрүп жибербейсиз.</string>
     <!-- Button on the megaphone megaphone shown at the bottom of the chat list when a user has disable the system setting for showing full screen notifications used showing incoming calls that starts the fix process -->
-    <string name="GrantFullScreenIntentPermission_megaphone_turn_on">Turn on</string>
+    <string name="GrantFullScreenIntentPermission_megaphone_turn_on">Күйгүзүү</string>
     <!-- Title of bottom sheet shown after tapping "Turn on" from the megaphone to re-enable full screen notifications for incoming call notifications -->
-    <string name="GrantFullScreenIntentPermission_bottomsheet_title">Turn on full screen notifications</string>
+    <string name="GrantFullScreenIntentPermission_bottomsheet_title">Толук экран билдирмелерин күйгүзүү</string>
     <!-- Subtitle of bottom sheet shown after tapping "Turn on" from the megaphone to re-enable full screen notifications for incoming call notifications -->
-    <string name="GrantFullScreenIntentPermission_bottomsheet_subtitle">To receive call notifications from your contacts and groups:</string>
+    <string name="GrantFullScreenIntentPermission_bottomsheet_subtitle">Байланыштарыңыздан жана топторуңуздан чалуу билдирмелерин алуу үчүн:</string>
     <!-- Step 2 of bottom sheet shown after tapping "Turn on" from the megaphone to re-enable full screen notifications for incoming call notifications, it indicates the name of the setting that needs to be re-enabled -->
-    <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Allow full screen notifications</string>
+    <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Толук экран билдирмелерине уруксат бериңиз</string>
+
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">Ай сайын берилүүчү салым токтотулду</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">Ай сайын кошуп турган салымыңыз токтотулду. %1$s\n\nТөшбелгиңиз профилиңизде мындан ары көрүнбөйт. %2$s</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">Кененирээк маалымат</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">Жазылууну жаңыртуу</string>
+    <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">Азыр эмес</string>
 
     <!-- EOF -->
 </resources>

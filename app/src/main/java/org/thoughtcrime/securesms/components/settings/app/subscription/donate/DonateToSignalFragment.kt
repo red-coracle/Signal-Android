@@ -41,6 +41,7 @@ import org.thoughtcrime.securesms.util.Projection
 import org.thoughtcrime.securesms.util.SpanUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
+import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
 import java.util.Currency
 
 /**
@@ -142,12 +143,14 @@ class DonateToSignalFragment :
 
           findNavController().safeNavigate(navAction)
         }
+
         is DonateToSignalAction.DisplayGatewaySelectorDialog -> {
           Log.d(TAG, "Presenting gateway selector for ${action.gatewayRequest}")
           val navAction = DonateToSignalFragmentDirections.actionDonateToSignalFragmentToGatewaySelectorBottomSheetDialog(action.gatewayRequest)
 
           findNavController().safeNavigate(navAction)
         }
+
         is DonateToSignalAction.CancelSubscription -> {
           findNavController().safeNavigate(
             DonateToSignalFragmentDirections.actionDonateToSignalFragmentToStripePaymentInProgressFragment(
@@ -156,6 +159,7 @@ class DonateToSignalFragment :
             )
           )
         }
+
         is DonateToSignalAction.UpdateSubscription -> {
           findNavController().safeNavigate(
             DonateToSignalFragmentDirections.actionDonateToSignalFragmentToStripePaymentInProgressFragment(
@@ -230,7 +234,6 @@ class DonateToSignalFragment :
 
       customPref(
         DonationPillToggle.Model(
-          isEnabled = state.areFieldsEnabled,
           selected = state.donateToSignalType,
           onClick = {
             viewModel.toggleDonationType()
@@ -253,23 +256,27 @@ class DonateToSignalFragment :
           text = DSLSettingsText.from(R.string.SubscribeFragment__update_subscription),
           isEnabled = state.canUpdate,
           onClick = {
-            MaterialAlertDialogBuilder(requireContext())
-              .setTitle(R.string.SubscribeFragment__update_subscription_question)
-              .setMessage(
-                getString(
-                  R.string.SubscribeFragment__you_will_be_charged_the_full_amount_s_of,
-                  FiatMoneyUtil.format(
-                    requireContext().resources,
-                    viewModel.getSelectedSubscriptionCost(),
-                    FiatMoneyUtil.formatOptions().trimZerosAfterDecimal()
+            if (state.monthlyDonationState.transactionState.isTransactionJobPending) {
+              showDonationPendingDialog(state)
+            } else {
+              MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.SubscribeFragment__update_subscription_question)
+                .setMessage(
+                  getString(
+                    R.string.SubscribeFragment__you_will_be_charged_the_full_amount_s_of,
+                    FiatMoneyUtil.format(
+                      requireContext().resources,
+                      viewModel.getSelectedSubscriptionCost(),
+                      FiatMoneyUtil.formatOptions().trimZerosAfterDecimal()
+                    )
                   )
                 )
-              )
-              .setPositiveButton(R.string.SubscribeFragment__update) { _, _ ->
-                viewModel.updateSubscription()
-              }
-              .setNegativeButton(android.R.string.cancel) { _, _ -> }
-              .show()
+                .setPositiveButton(R.string.SubscribeFragment__update) { _, _ ->
+                  viewModel.updateSubscription()
+                }
+                .setNegativeButton(android.R.string.cancel) { _, _ -> }
+                .show()
+            }
           }
         )
 
@@ -279,26 +286,60 @@ class DonateToSignalFragment :
           text = DSLSettingsText.from(R.string.SubscribeFragment__cancel_subscription),
           isEnabled = state.areFieldsEnabled,
           onClick = {
-            MaterialAlertDialogBuilder(requireContext())
-              .setTitle(R.string.SubscribeFragment__confirm_cancellation)
-              .setMessage(R.string.SubscribeFragment__you_wont_be_charged_again)
-              .setPositiveButton(R.string.SubscribeFragment__confirm) { _, _ ->
-                viewModel.cancelSubscription()
-              }
-              .setNegativeButton(R.string.SubscribeFragment__not_now) { _, _ -> }
-              .show()
+            if (state.monthlyDonationState.transactionState.isTransactionJobPending) {
+              showDonationPendingDialog(state)
+            } else {
+              MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.SubscribeFragment__confirm_cancellation)
+                .setMessage(R.string.SubscribeFragment__you_wont_be_charged_again)
+                .setPositiveButton(R.string.SubscribeFragment__confirm) { _, _ ->
+                  viewModel.cancelSubscription()
+                }
+                .setNegativeButton(R.string.SubscribeFragment__not_now) { _, _ -> }
+                .show()
+            }
           }
         )
       } else {
         primaryButton(
           text = DSLSettingsText.from(R.string.DonateToSignalFragment__continue),
-          isEnabled = state.canContinue,
+          isEnabled = state.continueEnabled,
           onClick = {
-            viewModel.requestSelectGateway()
+            if (state.canContinue) {
+              viewModel.requestSelectGateway()
+            } else {
+              showDonationPendingDialog(state)
+            }
           }
         )
       }
     }
+  }
+
+  private fun showDonationPendingDialog(state: DonateToSignalState) {
+    val message = if (state.donateToSignalType == DonateToSignalType.ONE_TIME) {
+      if (state.oneTimeDonationState.isOneTimeDonationLongRunning) {
+        R.string.DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime
+      } else if (state.oneTimeDonationState.isNonVerifiedIdeal) {
+        R.string.DonateToSignalFragment__your_ideal_payment_is_still_processing
+      } else {
+        R.string.DonateToSignalFragment__your_payment_is_still_being_processed_onetime
+      }
+    } else {
+      if (state.monthlyDonationState.activeSubscription?.paymentMethod == ActiveSubscription.PAYMENT_METHOD_SEPA_DEBIT) {
+        R.string.DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly
+      } else if (state.monthlyDonationState.nonVerifiedMonthlyDonation != null) {
+        R.string.DonateToSignalFragment__your_ideal_payment_is_still_processing
+      } else {
+        R.string.DonateToSignalFragment__your_payment_is_still_being_processed_monthly
+      }
+    }
+
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.DonateToSignalFragment__you_have_a_donation_pending)
+      .setMessage(message)
+      .setPositiveButton(android.R.string.ok, null)
+      .show()
   }
 
   private fun DSLConfiguration.displayOneTimeSelection(areFieldsEnabled: Boolean, state: DonateToSignalState.OneTimeDonationState) {
@@ -334,11 +375,6 @@ class DonateToSignalFragment :
   }
 
   private fun DSLConfiguration.displayMonthlySelection(areFieldsEnabled: Boolean, state: DonateToSignalState.MonthlyDonationState) {
-    if (state.transactionState.isTransactionJobPending) {
-      customPref(Subscription.LoaderModel())
-      return
-    }
-
     when (state.donationStage) {
       DonateToSignalState.DonationStage.INIT -> customPref(Subscription.LoaderModel())
       DonateToSignalState.DonationStage.FAILURE -> customPref(NetworkFailure.Model { viewModel.retryMonthlyDonationState() })
@@ -418,6 +454,10 @@ class DonateToSignalFragment :
     findNavController().safeNavigate(DonateToSignalFragmentDirections.actionDonateToSignalFragmentToCreditCardFragment(gatewayRequest))
   }
 
+  override fun navigateToIdealDetailsFragment(gatewayRequest: GatewayRequest) {
+    findNavController().safeNavigate(DonateToSignalFragmentDirections.actionDonateToSignalFragmentToIdealTransferDetailsFragment(gatewayRequest))
+  }
+
   override fun navigateToBankTransferMandate(gatewayResponse: GatewayResponse) {
     findNavController().safeNavigate(DonateToSignalFragmentDirections.actionDonateToSignalFragmentToBankTransferMandateFragment(gatewayResponse))
   }
@@ -430,9 +470,16 @@ class DonateToSignalFragment :
     viewModel.refreshActiveSubscription()
   }
 
-  override fun onUserCancelledPaymentFlow() {
-    findNavController().popBackStack(R.id.donateToSignalFragment, false)
+  override fun showSepaEuroMaximumDialog(sepaEuroMaximum: FiatMoney) {
+    val max = FiatMoneyUtil.format(resources, sepaEuroMaximum, FiatMoneyUtil.formatOptions().trimZerosAfterDecimal())
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.DonateToSignal__donation_amount_too_high)
+      .setMessage(getString(R.string.DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer, max))
+      .setPositiveButton(android.R.string.ok, null)
+      .show()
   }
+
+  override fun onUserLaunchedAnExternalApplication() = Unit
 
   override fun navigateToDonationPending(gatewayRequest: GatewayRequest) {
     findNavController().safeNavigate(DonateToSignalFragmentDirections.actionDonateToSignalFragmentToDonationPendingBottomSheet(gatewayRequest))

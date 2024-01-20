@@ -35,7 +35,10 @@ import org.thoughtcrime.securesms.components.settings.app.subscription.errors.Do
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationErrorDialogs
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationErrorParams
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationErrorSource
+import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.payments.currency.CurrencyUtil
 import org.thoughtcrime.securesms.util.fragments.requireListener
+import java.math.BigDecimal
 import java.util.Currency
 
 /**
@@ -76,8 +79,12 @@ class DonationCheckoutDelegate(
     registerGooglePayCallback()
 
     fragment.setFragmentResultListener(GatewaySelectorBottomSheet.REQUEST_KEY) { _, bundle ->
-      val response: GatewayResponse = bundle.getParcelableCompat(GatewaySelectorBottomSheet.REQUEST_KEY, GatewayResponse::class.java)!!
-      handleGatewaySelectionResponse(response)
+      if (bundle.containsKey(GatewaySelectorBottomSheet.FAILURE_KEY)) {
+        callback.showSepaEuroMaximumDialog(FiatMoney(bundle.getSerializable(GatewaySelectorBottomSheet.SEPA_EURO_MAX) as BigDecimal, CurrencyUtil.EURO))
+      } else {
+        val response: GatewayResponse = bundle.getParcelableCompat(GatewaySelectorBottomSheet.REQUEST_KEY, GatewayResponse::class.java)!!
+        handleGatewaySelectionResponse(response)
+      }
     }
 
     fragment.setFragmentResultListener(StripePaymentInProgressFragment.REQUEST_KEY) { _, bundle ->
@@ -133,6 +140,7 @@ class DonationCheckoutDelegate(
     if (result.action == DonationProcessorAction.CANCEL_SUBSCRIPTION) {
       Snackbar.make(fragment.requireView(), R.string.SubscribeFragment__your_subscription_has_been_cancelled, Snackbar.LENGTH_LONG).show()
     } else {
+      SignalStore.donationsValues().removeTerminalDonation(result.request.level)
       callback.onPaymentComplete(result.request)
     }
   }
@@ -169,7 +177,11 @@ class DonationCheckoutDelegate(
   }
 
   private fun launchBankTransfer(gatewayResponse: GatewayResponse) {
-    callback.navigateToBankTransferMandate(gatewayResponse)
+    if (gatewayResponse.request.donateToSignalType != DonateToSignalType.MONTHLY && gatewayResponse.gateway == GatewayResponse.Gateway.IDEAL) {
+      callback.navigateToIdealDetailsFragment(gatewayResponse.request)
+    } else {
+      callback.navigateToBankTransferMandate(gatewayResponse)
+    }
   }
 
   private fun registerGooglePayCallback() {
@@ -274,6 +286,12 @@ class DonationCheckoutDelegate(
         return
       }
 
+      if (throwable is DonationError.UserLaunchedExternalApplication) {
+        Log.d(TAG, "User launched an external application.", true)
+        errorHandlerCallback?.onUserLaunchedAnExternalApplication()
+        return
+      }
+
       if (throwable is DonationError.BadgeRedemptionError.DonationPending) {
         Log.d(TAG, "Long-running donation is still pending.", true)
         errorHandlerCallback?.navigateToDonationPending(throwable.gatewayRequest)
@@ -309,7 +327,7 @@ class DonationCheckoutDelegate(
             errorDialog = null
             if (!tryAgain) {
               tryAgain = false
-              fragment!!.findNavController().popBackStack()
+              fragment?.findNavController()?.popBackStack()
             }
           }
         }
@@ -318,7 +336,7 @@ class DonationCheckoutDelegate(
   }
 
   interface ErrorHandlerCallback {
-    fun onUserCancelledPaymentFlow()
+    fun onUserLaunchedAnExternalApplication()
     fun navigateToDonationPending(gatewayRequest: GatewayRequest)
   }
 
@@ -326,8 +344,10 @@ class DonationCheckoutDelegate(
     fun navigateToStripePaymentInProgress(gatewayRequest: GatewayRequest)
     fun navigateToPayPalPaymentInProgress(gatewayRequest: GatewayRequest)
     fun navigateToCreditCardForm(gatewayRequest: GatewayRequest)
+    fun navigateToIdealDetailsFragment(gatewayRequest: GatewayRequest)
     fun navigateToBankTransferMandate(gatewayResponse: GatewayResponse)
     fun onPaymentComplete(gatewayRequest: GatewayRequest)
     fun onProcessorActionProcessed()
+    fun showSepaEuroMaximumDialog(sepaEuroMaximum: FiatMoney)
   }
 }

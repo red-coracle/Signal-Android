@@ -4,6 +4,10 @@ import org.signal.core.util.money.FiatMoney
 import org.thoughtcrime.securesms.badges.models.Badge
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppDonations
 import org.thoughtcrime.securesms.components.settings.app.subscription.boost.Boost
+import org.thoughtcrime.securesms.components.settings.app.subscription.manage.NonVerifiedMonthlyDonation
+import org.thoughtcrime.securesms.database.model.databaseprotos.PendingOneTimeDonation
+import org.thoughtcrime.securesms.database.model.isLongRunning
+import org.thoughtcrime.securesms.database.model.isPending
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.subscription.Subscription
 import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
@@ -19,8 +23,8 @@ data class DonateToSignalState(
 
   val areFieldsEnabled: Boolean
     get() = when (donateToSignalType) {
-      DonateToSignalType.ONE_TIME -> oneTimeDonationState.donationStage == DonationStage.READY && !oneTimeDonationState.isOneTimeDonationPending
-      DonateToSignalType.MONTHLY -> monthlyDonationState.donationStage == DonationStage.READY && !monthlyDonationState.transactionState.isInProgress
+      DonateToSignalType.ONE_TIME -> oneTimeDonationState.donationStage == DonationStage.READY
+      DonateToSignalType.MONTHLY -> monthlyDonationState.donationStage == DonationStage.READY
       DonateToSignalType.GIFT -> error("This flow does not support gifts")
     }
 
@@ -59,10 +63,17 @@ data class DonateToSignalState(
       DonateToSignalType.GIFT -> error("This flow does not support gifts")
     }
 
-  val canContinue: Boolean
+  val continueEnabled: Boolean
     get() = when (donateToSignalType) {
       DonateToSignalType.ONE_TIME -> areFieldsEnabled && oneTimeDonationState.isSelectionValid && InAppDonations.hasAtLeastOnePaymentMethodAvailable()
       DonateToSignalType.MONTHLY -> areFieldsEnabled && monthlyDonationState.isSelectionValid && InAppDonations.hasAtLeastOnePaymentMethodAvailable()
+      DonateToSignalType.GIFT -> error("This flow does not support gifts")
+    }
+
+  val canContinue: Boolean
+    get() = when (donateToSignalType) {
+      DonateToSignalType.ONE_TIME -> continueEnabled && !oneTimeDonationState.isOneTimeDonationPending
+      DonateToSignalType.MONTHLY -> continueEnabled && !monthlyDonationState.isSubscriptionActive && !monthlyDonationState.transactionState.isInProgress
       DonateToSignalType.GIFT -> error("This flow does not support gifts")
     }
 
@@ -85,9 +96,13 @@ data class DonateToSignalState(
     val isCustomAmountFocused: Boolean = false,
     val donationStage: DonationStage = DonationStage.INIT,
     val selectableCurrencyCodes: List<String> = emptyList(),
-    val isOneTimeDonationPending: Boolean = SignalStore.donationsValues().getPendingOneTimeDonation() != null,
+    private val pendingOneTimeDonation: PendingOneTimeDonation? = null,
     private val minimumDonationAmounts: Map<Currency, FiatMoney> = emptyMap()
   ) {
+    val isOneTimeDonationPending: Boolean = pendingOneTimeDonation.isPending()
+    val isOneTimeDonationLongRunning: Boolean = pendingOneTimeDonation.isLongRunning()
+    val isNonVerifiedIdeal = pendingOneTimeDonation?.pendingVerification == true
+
     val minimumDonationAmountOfSelectedCurrency: FiatMoney = minimumDonationAmounts[selectedCurrency] ?: FiatMoney(BigDecimal.ZERO, selectedCurrency)
     private val isCustomAmountTooSmall: Boolean = if (isCustomAmountFocused) customAmount.amount < minimumDonationAmountOfSelectedCurrency.amount else false
     private val isCustomAmountZero: Boolean = customAmount.amount == BigDecimal.ZERO
@@ -103,6 +118,7 @@ data class DonateToSignalState(
     val selectedSubscription: Subscription? = null,
     val donationStage: DonationStage = DonationStage.INIT,
     val selectableCurrencyCodes: List<String> = emptyList(),
+    val nonVerifiedMonthlyDonation: NonVerifiedMonthlyDonation? = null,
     val transactionState: TransactionState = TransactionState()
   ) {
     val isSubscriptionActive: Boolean = _activeSubscription?.isActive == true

@@ -120,11 +120,11 @@ public class DonationsService {
     );
   }
 
-  public ServiceResponse<BankMandate> getBankMandate(Locale locale) {
+  public ServiceResponse<BankMandate> getBankMandate(Locale locale, String bankTransferType) {
     return getCachedValue(
         locale,
         sepaBankMandateCache,
-        l -> pushServiceSocket.getBankMandate(l, "SEPA_DEBIT"),
+        l -> pushServiceSocket.getBankMandate(l, bankTransferType),
         SEPA_DEBIT_MANDATE_TTL
     );
   }
@@ -224,6 +224,13 @@ public class DonationsService {
   public ServiceResponse<EmptyResponse> setDefaultStripePaymentMethod(SubscriberId subscriberId, String paymentMethodId) {
     return wrapInServiceResponse(() -> {
       pushServiceSocket.setDefaultStripeSubscriptionPaymentMethod(subscriberId.serialize(), paymentMethodId);
+      return new Pair<>(EmptyResponse.INSTANCE, 200);
+    });
+  }
+
+  public ServiceResponse<EmptyResponse> setDefaultIdealPaymentMethod(SubscriberId subscriberId, String setupIntentId) {
+    return wrapInServiceResponse(() -> {
+      pushServiceSocket.setDefaultIdealSubscriptionPaymentMethod(subscriberId.serialize(), setupIntentId);
       return new Pair<>(EmptyResponse.INSTANCE, 200);
     });
   }

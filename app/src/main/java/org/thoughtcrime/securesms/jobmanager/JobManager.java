@@ -43,7 +43,7 @@ public class JobManager implements ConstraintObserver.Notifier {
 
   private static final String TAG = Log.tag(JobManager.class);
 
-  public static final int CURRENT_VERSION = 10;
+  public static final int CURRENT_VERSION = 11;
 
   private final Application   application;
   private final Configuration configuration;
@@ -496,6 +496,18 @@ public class JobManager implements ConstraintObserver.Notifier {
       if (!jobs.isEmpty()) {
         this.jobs.add(new ArrayList<>(jobs));
       }
+      return this;
+    }
+
+    public Chain after(@NonNull Job job) {
+      return after(Collections.singletonList(job));
+    }
+
+    public Chain after(@NonNull List<? extends Job> jobs) {
+      if (!jobs.isEmpty()) {
+        this.jobs.add(0, new ArrayList<>(jobs));
+      }
+
       return this;
     }
 

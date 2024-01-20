@@ -9,6 +9,7 @@ import org.thoughtcrime.securesms.components.settings.app.subscription.donate.ga
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationError
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationErrorSource
 import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.database.model.databaseprotos.TerminalDonationQueue
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.jobmanager.JobTracker
 import org.thoughtcrime.securesms.jobs.MultiDeviceSubscriptionSyncRequestJob
@@ -190,7 +191,12 @@ class MonthlyDonationRepository(private val donationsService: DonationsService) 
             val countDownLatch = CountDownLatch(1)
             var finalJobState: JobTracker.JobState? = null
 
-            SubscriptionReceiptRequestResponseJob.createSubscriptionContinuationJobChain(uiSessionKey, isLongRunning).enqueue { _, jobState ->
+            val terminalDonation = TerminalDonationQueue.TerminalDonation(
+              level = gatewayRequest.level,
+              isLongRunningPaymentMethod = isLongRunning
+            )
+
+            SubscriptionReceiptRequestResponseJob.createSubscriptionContinuationJobChain(uiSessionKey, terminalDonation).enqueue { _, jobState ->
               if (jobState.isComplete) {
                 finalJobState = jobState
                 countDownLatch.countDown()
@@ -234,22 +240,28 @@ class MonthlyDonationRepository(private val donationsService: DonationsService) 
   }
 
   private fun getOrCreateLevelUpdateOperation(subscriptionLevel: String): Single<LevelUpdateOperation> = Single.fromCallable {
-    Log.d(TAG, "Retrieving level update operation for $subscriptionLevel")
-    val levelUpdateOperation = SignalStore.donationsValues().getLevelOperation(subscriptionLevel)
-    if (levelUpdateOperation == null) {
-      val newOperation = LevelUpdateOperation(
-        idempotencyKey = IdempotencyKey.generate(),
-        level = subscriptionLevel
-      )
+    getOrCreateLevelUpdateOperation(TAG, subscriptionLevel)
+  }
 
-      SignalStore.donationsValues().setLevelOperation(newOperation)
-      LevelUpdate.updateProcessingState(true)
-      Log.d(TAG, "Created a new operation for $subscriptionLevel")
-      newOperation
-    } else {
-      LevelUpdate.updateProcessingState(true)
-      Log.d(TAG, "Reusing operation for $subscriptionLevel")
-      levelUpdateOperation
+  companion object {
+    fun getOrCreateLevelUpdateOperation(tag: String, subscriptionLevel: String): LevelUpdateOperation {
+      Log.d(tag, "Retrieving level update operation for $subscriptionLevel")
+      val levelUpdateOperation = SignalStore.donationsValues().getLevelOperation(subscriptionLevel)
+      return if (levelUpdateOperation == null) {
+        val newOperation = LevelUpdateOperation(
+          idempotencyKey = IdempotencyKey.generate(),
+          level = subscriptionLevel
+        )
+
+        SignalStore.donationsValues().setLevelOperation(newOperation)
+        LevelUpdate.updateProcessingState(true)
+        Log.d(tag, "Created a new operation for $subscriptionLevel")
+        newOperation
+      } else {
+        LevelUpdate.updateProcessingState(true)
+        Log.d(tag, "Reusing operation for $subscriptionLevel")
+        levelUpdateOperation
+      }
     }
   }
 

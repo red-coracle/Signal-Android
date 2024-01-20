@@ -17,6 +17,7 @@ import org.thoughtcrime.securesms.database.model.RecipientRecord;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.jobs.RetrieveProfileAvatarJob;
 import org.thoughtcrime.securesms.jobs.StorageSyncJob;
+import org.thoughtcrime.securesms.keyvalue.AccountValues;
 import org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.payments.Entropy;
@@ -36,6 +37,7 @@ import org.whispersystems.signalservice.api.util.UuidUtil;
 import org.whispersystems.signalservice.internal.storage.protos.AccountRecord;
 import org.whispersystems.signalservice.internal.storage.protos.OptionalBool;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -119,16 +121,22 @@ public final class StorageSyncHelper {
     final OptionalBool storyViewReceiptsState = SignalStore.storyValues().getViewedReceiptsEnabled() ? OptionalBool.ENABLED
                                                                                                      : OptionalBool.DISABLED;
 
-    if (self.getStorageServiceId() == null) {
-      Log.w(TAG, "[buildAccountRecord] No storageId for self! Generating. (Record had ID: " + (record != null && record.getStorageId() != null) + ")");
+    if (self.getStorageServiceId() == null || (record != null && record.getStorageId() == null)) {
+      Log.w(TAG, "[buildAccountRecord] No storageId for self or record! Generating. (Self: " + (self.getStorageServiceId() != null) + ", Record: " + (record != null && record.getStorageId() != null) + ")");
       SignalDatabase.recipients().updateStorageId(self.getId(), generateKey());
       self = Recipient.self().fresh();
       record = recipientTable.getRecordForSync(self.getId());
     }
 
-    final boolean hasReadOnboardingStory = SignalStore.storyValues().getUserHasViewedOnboardingStory() || SignalStore.storyValues().getUserHasReadOnboardingStory();
+    if (record == null) {
+      Log.w(TAG, "[buildAccountRecord] Could not find a RecipientRecord for ourselves! ID: " + self.getId());
+    } else if (!Arrays.equals(record.getStorageId(), self.getStorageServiceId())) {
+      Log.w(TAG, "[buildAccountRecord] StorageId on RecipientRecord did not match self! ID: " + self.getId());
+    }
 
-    SignalAccountRecord.Builder account = new SignalAccountRecord.Builder(self.getStorageServiceId(), record != null ? record.getSyncExtras().getStorageProto() : null)
+    byte[] storageId = record != null && record.getStorageId() != null ? record.getStorageId() : self.getStorageServiceId();
+
+    SignalAccountRecord.Builder account = new SignalAccountRecord.Builder(storageId, record != null ? record.getSyncExtras().getStorageProto() : null)
                                                                  .setProfileKey(self.getProfileKey())
                                                                  .setGivenName(self.getProfileName().getGivenName())
                                                                  .setFamilyName(self.getProfileName().getFamilyName())
@@ -155,9 +163,8 @@ public final class StorageSyncHelper {
                                                                  .setHasViewedOnboardingStory(SignalStore.storyValues().getUserHasViewedOnboardingStory())
                                                                  .setStoriesDisabled(SignalStore.storyValues().isFeatureDisabled())
                                                                  .setStoryViewReceiptsState(storyViewReceiptsState)
-                                                                 .setHasReadOnboardingStory(hasReadOnboardingStory)
                                                                  .setHasSeenGroupStoryEducationSheet(SignalStore.storyValues().getUserHasSeenGroupStoryEducationSheet())
-                                                                 .setUsername(self.getUsername().orElse(null));
+                                                                 .setUsername(SignalStore.account().getUsername());
 
     if (!self.getPnpCapability().isSupported()) {
       account.setE164(self.requireE164());
@@ -200,7 +207,6 @@ public final class StorageSyncHelper {
     SignalStore.storyValues().setUserHasBeenNotifiedAboutStories(update.getNew().hasSetMyStoriesPrivacy());
     SignalStore.storyValues().setUserHasViewedOnboardingStory(update.getNew().hasViewedOnboardingStory());
     SignalStore.storyValues().setFeatureDisabled(update.getNew().isStoriesDisabled());
-    SignalStore.storyValues().setUserHasReadOnboardingStory(update.getNew().hasReadOnboardingStory());
     SignalStore.storyValues().setUserHasSeenGroupStoryEducationSheet(update.getNew().hasSeenGroupStoryEducationSheet());
 
     if (update.getNew().getStoryViewReceiptsState() == OptionalBool.UNSET) {
@@ -228,6 +234,12 @@ public final class StorageSyncHelper {
 
     if (fetchProfile && update.getNew().getAvatarUrlPath().isPresent()) {
       ApplicationDependencies.getJobManager().add(new RetrieveProfileAvatarJob(self, update.getNew().getAvatarUrlPath().get()));
+    }
+
+    if (!update.getNew().getUsername().equals(update.getOld().getUsername())) {
+      SignalStore.account().setUsername(update.getNew().getUsername());
+      SignalStore.account().setUsernameSyncState(AccountValues.UsernameSyncState.IN_SYNC);
+      SignalStore.account().setUsernameSyncErrorCount(0);
     }
 
     if (update.getNew().getUsernameLink() != null) {

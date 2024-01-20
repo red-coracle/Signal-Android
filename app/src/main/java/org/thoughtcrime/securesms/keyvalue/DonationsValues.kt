@@ -14,10 +14,12 @@ import org.signal.libsignal.zkgroup.receipts.ReceiptCredentialRequestContext
 import org.signal.libsignal.zkgroup.receipts.ReceiptSerial
 import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.badges.models.Badge
-import org.thoughtcrime.securesms.components.settings.app.subscription.PendingOneTimeDonationSerializer.isExpired
+import org.thoughtcrime.securesms.components.settings.app.subscription.donate.stripe.Stripe3DSData
 import org.thoughtcrime.securesms.database.model.databaseprotos.BadgeList
-import org.thoughtcrime.securesms.database.model.databaseprotos.DonationCompletedQueue
+import org.thoughtcrime.securesms.database.model.databaseprotos.DonationErrorValue
 import org.thoughtcrime.securesms.database.model.databaseprotos.PendingOneTimeDonation
+import org.thoughtcrime.securesms.database.model.databaseprotos.TerminalDonationQueue
+import org.thoughtcrime.securesms.database.model.isExpired
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
 import org.thoughtcrime.securesms.jobs.SubscriptionReceiptRequestResponseJob
 import org.thoughtcrime.securesms.payments.currency.CurrencyUtil
@@ -124,6 +126,18 @@ internal class DonationsValues internal constructor(store: KeyValueStore) : Sign
      * the donation processing / donation pending state in the ManageDonationsFragment.
      */
     private const val PENDING_ONE_TIME_DONATION = "pending.one.time.donation"
+
+    /**
+     * Current pending 3DS data, set when the user launches an intent to an external source for
+     * completing a 3DS prompt or iDEAL prompt.
+     */
+    private const val PENDING_3DS_DATA = "pending.3ds.data"
+
+    /**
+     * Data about a monthly donation that required external verification and said verification was successful.
+     * Needed to show donation pending sheet after returning to Signal.
+     */
+    private const val VERIFIED_IDEAL_SUBSCRIPTION_3DS_DATA = "donation.verified_ideal_subscription_3ds_data"
   }
 
   override fun onFirstEverAppLaunch() = Unit
@@ -153,9 +167,13 @@ internal class DonationsValues internal constructor(store: KeyValueStore) : Sign
 
   private var _pendingOneTimeDonation: PendingOneTimeDonation? by protoValue(PENDING_ONE_TIME_DONATION, PendingOneTimeDonation.ADAPTER)
   private val pendingOneTimeDonationPublisher: Subject<Optional<PendingOneTimeDonation>> by lazy { BehaviorSubject.createDefault(Optional.ofNullable(_pendingOneTimeDonation)) }
+
+  /**
+   * Returns a stream of PendingOneTimeDonation, filtering out expired donations that do not have an error attached to them.
+   */
   val observablePendingOneTimeDonation: Observable<Optional<PendingOneTimeDonation>> by lazy {
     pendingOneTimeDonationPublisher.map { optionalPendingOneTimeDonation ->
-      optionalPendingOneTimeDonation.filter { !it.isExpired }
+      optionalPendingOneTimeDonation.filter { (it.error != null) || !it.isExpired }
     }
   }
 
@@ -369,7 +387,7 @@ internal class DonationsValues internal constructor(store: KeyValueStore) : Sign
   var unexpectedSubscriptionCancelationWatermark: Long by longValue(SUBSCRIPTION_CANCELATION_WATERMARK, 0L)
 
   @get:JvmName("showCantProcessDialog")
-  var showCantProcessDialog: Boolean by booleanValue(SHOW_CANT_PROCESS_DIALOG, true)
+  var showMonthlyDonationCanceledDialog: Boolean by booleanValue(SHOW_CANT_PROCESS_DIALOG, true)
 
   /**
    * Denotes that the previous attempt to subscribe failed in some way. Either an
@@ -494,35 +512,103 @@ internal class DonationsValues internal constructor(store: KeyValueStore) : Sign
   var subscriptionEndOfPeriodRedemptionStarted by longValue(SUBSCRIPTION_EOP_STARTED_TO_REDEEM, 0L)
   var subscriptionEndOfPeriodRedeemed by longValue(SUBSCRIPTION_EOP_REDEEMED, 0L)
 
-  fun appendToDonationCompletionList(donationCompleted: DonationCompletedQueue.DonationCompleted) {
+  fun appendToTerminalDonationQueue(terminalDonation: TerminalDonationQueue.TerminalDonation) {
     synchronized(this) {
       val pendingBytes = getBlob(DONATION_COMPLETE_QUEUE, null)
-      val queue: DonationCompletedQueue = pendingBytes?.let { DonationCompletedQueue.ADAPTER.decode(pendingBytes) } ?: DonationCompletedQueue()
-      val newQueue: DonationCompletedQueue = queue.copy(donationsCompleted = queue.donationsCompleted + donationCompleted)
+      val queue: TerminalDonationQueue = pendingBytes?.let { TerminalDonationQueue.ADAPTER.decode(pendingBytes) } ?: TerminalDonationQueue()
+      val newQueue: TerminalDonationQueue = queue.copy(terminalDonations = queue.terminalDonations + terminalDonation)
 
       putBlob(DONATION_COMPLETE_QUEUE, newQueue.encode())
     }
   }
 
-  fun consumeDonationCompletionList(): List<DonationCompletedQueue.DonationCompleted> {
+  fun consumeTerminalDonations(): List<TerminalDonationQueue.TerminalDonation> {
     synchronized(this) {
       val pendingBytes = getBlob(DONATION_COMPLETE_QUEUE, null)
       if (pendingBytes == null) {
         return emptyList()
       } else {
-        val queue: DonationCompletedQueue = DonationCompletedQueue.ADAPTER.decode(pendingBytes)
+        val queue: TerminalDonationQueue = TerminalDonationQueue.ADAPTER.decode(pendingBytes)
         remove(DONATION_COMPLETE_QUEUE)
 
-        return queue.donationsCompleted
+        return queue.terminalDonations
       }
     }
   }
 
-  fun getPendingOneTimeDonation(): PendingOneTimeDonation? = _pendingOneTimeDonation.takeUnless { it?.isExpired == true }
+  fun removeTerminalDonation(level: Long) {
+    synchronized(this) {
+      val donationCompletionList = consumeTerminalDonations()
+      donationCompletionList.filterNot { it.level == level }.forEach {
+        appendToTerminalDonationQueue(it)
+      }
+    }
+  }
+
+  fun getPendingOneTimeDonation(): PendingOneTimeDonation? {
+    return synchronized(this) {
+      _pendingOneTimeDonation.takeUnless { it?.isExpired == true }
+    }
+  }
 
   fun setPendingOneTimeDonation(pendingOneTimeDonation: PendingOneTimeDonation?) {
-    this._pendingOneTimeDonation = pendingOneTimeDonation
-    pendingOneTimeDonationPublisher.onNext(Optional.ofNullable(pendingOneTimeDonation))
+    synchronized(this) {
+      this._pendingOneTimeDonation = pendingOneTimeDonation
+      pendingOneTimeDonationPublisher.onNext(Optional.ofNullable(pendingOneTimeDonation))
+    }
+  }
+
+  fun setPendingOneTimeDonationError(error: DonationErrorValue) {
+    synchronized(this) {
+      val pendingOneTimeDonation = getPendingOneTimeDonation()
+      if (pendingOneTimeDonation != null) {
+        setPendingOneTimeDonation(pendingOneTimeDonation.newBuilder().error(error).build())
+      } else {
+        Log.w(TAG, "PendingOneTimeDonation was null, ignoring error.")
+      }
+    }
+  }
+
+  fun consumePending3DSData(uiSessionKey: Long): Stripe3DSData? {
+    synchronized(this) {
+      val data = getBlob(PENDING_3DS_DATA, null)?.let {
+        Stripe3DSData.fromProtoBytes(it, uiSessionKey)
+      }
+
+      setPending3DSData(null)
+      return data
+    }
+  }
+
+  fun setPending3DSData(stripe3DSData: Stripe3DSData?) {
+    synchronized(this) {
+      if (stripe3DSData != null) {
+        putBlob(PENDING_3DS_DATA, stripe3DSData.toProtoBytes())
+      } else {
+        remove(PENDING_3DS_DATA)
+      }
+    }
+  }
+
+  fun consumeVerifiedSubscription3DSData(): Stripe3DSData? {
+    synchronized(this) {
+      val data = getBlob(VERIFIED_IDEAL_SUBSCRIPTION_3DS_DATA, null)?.let {
+        Stripe3DSData.fromProtoBytes(it, -1)
+      }
+
+      setVerifiedSubscription3DSData(null)
+      return data
+    }
+  }
+
+  fun setVerifiedSubscription3DSData(stripe3DSData: Stripe3DSData?) {
+    synchronized(this) {
+      if (stripe3DSData != null) {
+        putBlob(VERIFIED_IDEAL_SUBSCRIPTION_3DS_DATA, stripe3DSData.toProtoBytes())
+      } else {
+        remove(VERIFIED_IDEAL_SUBSCRIPTION_3DS_DATA)
+      }
+    }
   }
 
   private fun generateRequestCredential(): ReceiptCredentialRequestContext {

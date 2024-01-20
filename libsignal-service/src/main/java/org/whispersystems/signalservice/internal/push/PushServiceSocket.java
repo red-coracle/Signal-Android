@@ -20,6 +20,7 @@ import org.signal.libsignal.protocol.util.Pair;
 import org.signal.libsignal.usernames.BaseUsernameException;
 import org.signal.libsignal.usernames.Username;
 import org.signal.libsignal.zkgroup.VerificationFailedException;
+import org.signal.libsignal.zkgroup.backups.BackupAuthCredentialRequest;
 import org.signal.libsignal.zkgroup.calllinks.CreateCallLinkCredentialRequest;
 import org.signal.libsignal.zkgroup.calllinks.CreateCallLinkCredentialResponse;
 import org.signal.libsignal.zkgroup.profiles.ClientZkProfileOperations;
@@ -42,6 +43,12 @@ import org.whispersystems.signalservice.api.account.ChangePhoneNumberRequest;
 import org.whispersystems.signalservice.api.account.PniKeyDistributionRequest;
 import org.whispersystems.signalservice.api.account.PreKeyCollection;
 import org.whispersystems.signalservice.api.account.PreKeyUpload;
+import org.whispersystems.signalservice.api.archive.ArchiveCredentialPresentation;
+import org.whispersystems.signalservice.api.archive.ArchiveServiceCredentialsResponse;
+import org.whispersystems.signalservice.api.archive.ArchiveGetBackupInfoResponse;
+import org.whispersystems.signalservice.api.archive.ArchiveMessageBackupUploadFormResponse;
+import org.whispersystems.signalservice.api.archive.ArchiveSetBackupIdRequest;
+import org.whispersystems.signalservice.api.archive.ArchiveSetPublicKeyRequest;
 import org.whispersystems.signalservice.api.crypto.UnidentifiedAccess;
 import org.whispersystems.signalservice.api.groupsv2.CredentialResponse;
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2AuthorizationString;
@@ -85,7 +92,6 @@ import org.whispersystems.signalservice.api.push.exceptions.PushNetworkException
 import org.whispersystems.signalservice.api.push.exceptions.RangeException;
 import org.whispersystems.signalservice.api.push.exceptions.RateLimitException;
 import org.whispersystems.signalservice.api.push.exceptions.RegistrationRetryException;
-import org.whispersystems.signalservice.api.push.exceptions.RemoteAttestationResponseExpiredException;
 import org.whispersystems.signalservice.api.push.exceptions.ResumeLocationInvalidException;
 import org.whispersystems.signalservice.api.push.exceptions.ServerRejectedException;
 import org.whispersystems.signalservice.api.push.exceptions.TokenNotAcceptedException;
@@ -108,11 +114,9 @@ import org.whispersystems.signalservice.internal.configuration.SignalCdnUrl;
 import org.whispersystems.signalservice.internal.configuration.SignalProxy;
 import org.whispersystems.signalservice.internal.configuration.SignalServiceConfiguration;
 import org.whispersystems.signalservice.internal.configuration.SignalUrl;
-import org.whispersystems.signalservice.internal.contacts.entities.KeyBackupRequest;
-import org.whispersystems.signalservice.internal.contacts.entities.KeyBackupResponse;
-import org.whispersystems.signalservice.internal.contacts.entities.TokenResponse;
 import org.whispersystems.signalservice.internal.crypto.AttachmentDigest;
 import org.whispersystems.signalservice.internal.push.exceptions.DonationProcessorError;
+import org.whispersystems.signalservice.internal.push.exceptions.DonationReceiptCredentialError;
 import org.whispersystems.signalservice.internal.push.exceptions.ForbiddenException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupExistsException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupMismatchedDevicesException;
@@ -280,6 +284,7 @@ public class PushServiceSocket {
   private static final String CREATE_STRIPE_SUBSCRIPTION_PAYMENT_METHOD  = "/v1/subscription/%s/create_payment_method?type=%s";
   private static final String CREATE_PAYPAL_SUBSCRIPTION_PAYMENT_METHOD  = "/v1/subscription/%s/create_payment_method/paypal";
   private static final String DEFAULT_STRIPE_SUBSCRIPTION_PAYMENT_METHOD = "/v1/subscription/%s/default_payment_method/stripe/%s";
+  private static final String DEFAULT_IDEAL_SUBSCRIPTION_PAYMENT_METHOD  = "/v1/subscription/%s/default_payment_method_for_ideal/%s";
   private static final String DEFAULT_PAYPAL_SUBSCRIPTION_PAYMENT_METHOD = "/v1/subscription/%s/default_payment_method/braintree/%s";
   private static final String SUBSCRIPTION_RECEIPT_CREDENTIALS           = "/v1/subscription/%s/receipt_credentials";
   private static final String CREATE_STRIPE_ONE_TIME_PAYMENT_INTENT      = "/v1/subscription/boost/create";
@@ -300,6 +305,12 @@ public class PushServiceSocket {
   private static final String REPORT_SPAM = "/v1/messages/report/%s/%s";
 
   private static final String BACKUP_AUTH_CHECK = "/v2/backup/auth/check";
+
+  private static final String ARCHIVE_CREDENTIALS         = "/v1/archives/auth?redemptionStartSeconds=%d&redemptionEndSeconds=%d";
+  private static final String ARCHIVE_BACKUP_ID           = "/v1/archives/backupid";
+  private static final String ARCHIVE_PUBLIC_KEY          = "/v1/archives/keys";
+  private static final String ARCHIVE_INFO                = "/v1/archives";
+  private static final String ARCHIVE_MESSAGE_UPLOAD_FORM = "/v1/archives/upload/form";
 
   private static final String CALL_LINK_CREATION_AUTH = "/v1/call-link/create-auth";
   private static final String SERVER_DELIVERED_TIMESTAMP_HEADER = "X-Signal-Timestamp";
@@ -468,6 +479,48 @@ public class PushServiceSocket {
 
     return credentials;
   }
+
+  public ArchiveServiceCredentialsResponse getArchiveCredentials(long currentTime) throws IOException {
+    long secondsRoundedToNearestDay = TimeUnit.DAYS.toSeconds(TimeUnit.MILLISECONDS.toDays(currentTime));
+    long endTimeInSeconds           = secondsRoundedToNearestDay + TimeUnit.DAYS.toSeconds(7);
+
+    String response = makeServiceRequest(String.format(Locale.US, ARCHIVE_CREDENTIALS, secondsRoundedToNearestDay, endTimeInSeconds), "GET", null);
+
+    return JsonUtil.fromJson(response, ArchiveServiceCredentialsResponse.class);
+  }
+
+  public void setArchiveBackupId(BackupAuthCredentialRequest request) throws IOException {
+    String body = JsonUtil.toJson(new ArchiveSetBackupIdRequest(request));
+    makeServiceRequest(ARCHIVE_BACKUP_ID, "PUT", body);
+  }
+
+  public void setArchivePublicKey(ECPublicKey publicKey, ArchiveCredentialPresentation credentialPresentation) throws IOException {
+    Map<String, String> headers = new HashMap<>();
+    headers.put("X-Signal-ZK-Auth", Base64.encodeWithPadding(credentialPresentation.getPresentation()));
+    headers.put("X-Signal-ZK-Auth-Signature", Base64.encodeWithPadding(credentialPresentation.getSignedPresentation()));
+
+    String body = JsonUtil.toJson(new ArchiveSetPublicKeyRequest(publicKey));
+    makeServiceRequestWithoutAuthentication(ARCHIVE_PUBLIC_KEY, "PUT", body, headers, NO_HANDLER);
+  }
+
+  public ArchiveGetBackupInfoResponse getArchiveBackupInfo(ArchiveCredentialPresentation credentialPresentation) throws IOException {
+    Map<String, String> headers = new HashMap<>();
+    headers.put("X-Signal-ZK-Auth", Base64.encodeWithPadding(credentialPresentation.getPresentation()));
+    headers.put("X-Signal-ZK-Auth-Signature", Base64.encodeWithPadding(credentialPresentation.getSignedPresentation()));
+
+    String response = makeServiceRequestWithoutAuthentication(ARCHIVE_INFO, "GET", null, headers, NO_HANDLER);
+    return JsonUtil.fromJson(response, ArchiveGetBackupInfoResponse.class);
+  }
+
+  public ArchiveMessageBackupUploadFormResponse getArchiveMessageBackupUploadForm(ArchiveCredentialPresentation credentialPresentation) throws IOException {
+    Map<String, String> headers = new HashMap<>();
+    headers.put("X-Signal-ZK-Auth", Base64.encodeWithPadding(credentialPresentation.getPresentation()));
+    headers.put("X-Signal-ZK-Auth-Signature", Base64.encodeWithPadding(credentialPresentation.getSignedPresentation()));
+
+    String response = makeServiceRequestWithoutAuthentication(ARCHIVE_MESSAGE_UPLOAD_FORM, "GET", null, headers, NO_HANDLER);
+    return JsonUtil.fromJson(response, ArchiveMessageBackupUploadFormResponse.class);
+  }
+
 
   public VerifyAccountResponse changeNumber(@Nonnull ChangePhoneNumberRequest changePhoneNumberRequest)
       throws IOException
@@ -692,8 +745,7 @@ public class PushServiceSocket {
 
     makeServiceRequest(String.format(Locale.US, PREKEY_PATH, preKeyUpload.getServiceIdType().queryParam()),
                        "PUT",
-                       JsonUtil.toJson(new PreKeyState(preKeyUpload.getIdentityKey(),
-                                                       signedPreKey,
+                       JsonUtil.toJson(new PreKeyState(signedPreKey,
                                                        oneTimeEcPreKeys,
                                                        lastResortKyberPreKey,
                                                        oneTimeKyberPreKeys)));
@@ -944,7 +996,7 @@ public class PushServiceSocket {
                   formAttributes.getPolicy(), formAttributes.getAlgorithm(),
                   formAttributes.getCredential(), formAttributes.getDate(),
                   formAttributes.getSignature(), profileAvatar.getData(),
-                  profileAvatar.getContentType(), profileAvatar.getDataLength(),
+                  profileAvatar.getContentType(), profileAvatar.getDataLength(), false,
                   profileAvatar.getOutputStreamFactory(), null, null);
 
        return Optional.of(formAttributes.getKey());
@@ -1057,20 +1109,22 @@ public class PushServiceSocket {
    * PUT /v1/accounts/username_hash/confirm
    * Set a previously reserved username for the account.
    *
-   * @param username                The username the user wishes to confirm. For example, myusername.27
-   * @param reserveUsernameResponse The response object from the reservation
-   * @throws IOException            Thrown when the username is invalid or taken, or when another network error occurs.
+   * @param username     The username the user wishes to confirm.
+   * @throws IOException Thrown when the username is invalid or taken, or when another network error occurs.
    */
-  public void confirmUsername(String username, ReserveUsernameResponse reserveUsernameResponse) throws IOException {
+  public UUID confirmUsernameAndCreateNewLink(Username username, Username.UsernameLink link) throws IOException {
     try {
       byte[] randomness = new byte[32];
       random.nextBytes(randomness);
 
-      byte[]                 proof                  = Username.generateProof(username, randomness);
-      ConfirmUsernameRequest confirmUsernameRequest = new ConfirmUsernameRequest(reserveUsernameResponse.getUsernameHash(),
-                                                                                 Base64.encodeUrlSafeWithoutPadding(proof));
+      byte[]                 proof                  = username.generateProofWithRandomness(randomness);
+      ConfirmUsernameRequest confirmUsernameRequest = new ConfirmUsernameRequest(
+                                                        Base64.encodeUrlSafeWithoutPadding(username.getHash()),
+                                                        Base64.encodeUrlSafeWithoutPadding(proof),
+                                                        Base64.encodeUrlSafeWithoutPadding(link.getEncryptedUsername())
+                                                      );
 
-      makeServiceRequest(CONFIRM_USERNAME_PATH, "PUT", JsonUtil.toJson(confirmUsernameRequest), NO_HEADERS, (responseCode, body) -> {
+      String response = makeServiceRequest(CONFIRM_USERNAME_PATH, "PUT", JsonUtil.toJson(confirmUsernameRequest), NO_HEADERS, (responseCode, body) -> {
         switch (responseCode) {
           case 409:
             throw new UsernameIsNotReservedException();
@@ -1078,6 +1132,8 @@ public class PushServiceSocket {
             throw new UsernameTakenException();
         }
       }, Optional.empty());
+
+      return JsonUtil.fromJson(response, ConfirmUsernameResponse.class).getUsernameLinkHandle();
     } catch (BaseUsernameException e) {
       throw new IOException(e);
     }
@@ -1095,8 +1151,8 @@ public class PushServiceSocket {
    * @param encryptedUsername URL-safe base64-encoded encrypted username
    * @return The serverId for the generated link.
    */
-  public UUID createUsernameLink(String encryptedUsername) throws IOException {
-    String                      response = makeServiceRequest(USERNAME_LINK_PATH, "PUT", JsonUtil.toJson(new SetUsernameLinkRequestBody(encryptedUsername)));
+  public UUID createUsernameLink(String encryptedUsername, boolean keepLinkHandle) throws IOException {
+    String                      response = makeServiceRequest(USERNAME_LINK_PATH, "PUT", JsonUtil.toJson(new SetUsernameLinkRequestBody(encryptedUsername, keepLinkHandle)));
     SetUsernameLinkResponseBody parsed   = JsonUtil.fromJson(response, SetUsernameLinkResponseBody.class);
 
     return parsed.getUsernameLinkHandle();
@@ -1107,7 +1163,7 @@ public class PushServiceSocket {
     makeServiceRequest(USERNAME_LINK_PATH, "DELETE", null);
   }
 
-  /** Given a link serverId (see {@link #createUsernameLink(String)}), this will return the encrypted username associate with the link. */
+  /** Given a link serverId (see {@link #createUsernameLink(String, boolean)}}), this will return the encrypted username associate with the link. */
   public byte[] getEncryptedUsernameFromLinkServerId(UUID serverId) throws IOException {
     String                          response = makeServiceRequestWithoutAuthentication(String.format(USERNAME_FROM_LINK_PATH, serverId.toString()), "GET", null);
     GetUsernameFromLinkResponseBody parsed   = JsonUtil.fromJson(response, GetUsernameFromLinkResponseBody.class);
@@ -1174,6 +1230,16 @@ public class PushServiceSocket {
         NO_HEADERS,
         (code, body) -> {
           if (code == 204) throw new NonSuccessfulResponseCodeException(204);
+          if (code == 402) {
+            DonationReceiptCredentialError donationReceiptCredentialError;
+            try {
+              donationReceiptCredentialError = JsonUtil.fromJson(body.string(), DonationReceiptCredentialError.class);
+            } catch (IOException e) {
+              throw new NonSuccessfulResponseCodeException(402);
+            }
+
+            throw donationReceiptCredentialError;
+          }
         });
 
     ReceiptCredentialResponseJson responseJson = JsonUtil.fromJson(response, ReceiptCredentialResponseJson.class);
@@ -1232,6 +1298,10 @@ public class PushServiceSocket {
 
   public void setDefaultStripeSubscriptionPaymentMethod(String subscriberId, String paymentMethodId) throws IOException {
     makeServiceRequestWithoutAuthentication(String.format(DEFAULT_STRIPE_SUBSCRIPTION_PAYMENT_METHOD, subscriberId, paymentMethodId), "POST", "");
+  }
+
+  public void setDefaultIdealSubscriptionPaymentMethod(String subscriberId, String setupIntentId) throws IOException {
+    makeServiceRequestWithoutAuthentication(String.format(DEFAULT_IDEAL_SUBSCRIPTION_PAYMENT_METHOD, subscriberId, setupIntentId), "POST", "");
   }
 
   public void setDefaultPaypalSubscriptionPaymentMethod(String subscriberId, String paymentMethodId) throws IOException {
@@ -1377,7 +1447,7 @@ public class PushServiceSocket {
                        uploadAttributes.credential, uploadAttributes.date,
                        uploadAttributes.signature,
                        new ByteArrayInputStream(avatarCipherText),
-                       "application/octet-stream", avatarCipherText.length,
+                       "application/octet-stream", avatarCipherText.length, false,
                        new NoCipherOutputStreamFactory(),
                        null, null);
   }
@@ -1391,8 +1461,8 @@ public class PushServiceSocket {
                                            uploadAttributes.getCredential(), uploadAttributes.getDate(),
                                            uploadAttributes.getSignature(), attachment.getData(),
                                            "application/octet-stream", attachment.getDataSize(),
-                                           attachment.getOutputStreamFactory(), attachment.getListener(),
-                                           attachment.getCancelationSignal());
+                                           attachment.getIncremental(), attachment.getOutputStreamFactory(),
+                                           attachment.getListener(), attachment.getCancelationSignal());
 
     return new Pair<>(id, digest);
   }
@@ -1418,6 +1488,7 @@ public class PushServiceSocket {
                           attachment.getData(),
                           "application/octet-stream",
                           attachment.getDataSize(),
+                          attachment.getIncremental(),
                           attachment.getOutputStreamFactory(),
                           attachment.getListener(),
                           attachment.getCancelationSignal());
@@ -1426,6 +1497,7 @@ public class PushServiceSocket {
                           attachment.getData(),
                           "application/offset+octet-stream",
                           attachment.getDataSize(),
+                          attachment.getIncremental(),
                           attachment.getOutputStreamFactory(),
                           attachment.getListener(),
                           attachment.getCancelationSignal(),
@@ -1492,6 +1564,7 @@ public class PushServiceSocket {
             listener.onAttachmentProgress(body.contentLength() + offset, totalRead);
             if (listener.shouldCancel()) {
               call.cancel();
+              throw new PushNetworkException("Canceled by listener check.");
             }
           }
         }
@@ -1513,7 +1586,7 @@ public class PushServiceSocket {
 
   private AttachmentDigest uploadToCdn0(String path, String acl, String key, String policy, String algorithm,
                                         String credential, String date, String signature,
-                                        InputStream data, String contentType, long length,
+                                        InputStream data, String contentType, long length, boolean incremental,
                                         OutputStreamFactory outputStreamFactory, ProgressListener progressListener,
                                         CancelationSignal cancelationSignal)
       throws PushNetworkException, NonSuccessfulResponseCodeException
@@ -1525,7 +1598,7 @@ public class PushServiceSocket {
                                                         .readTimeout(soTimeoutMillis, TimeUnit.MILLISECONDS)
                                                         .build();
 
-    DigestingRequestBody file = new DigestingRequestBody(data, outputStreamFactory, contentType, length, progressListener, cancelationSignal, 0);
+    DigestingRequestBody file = new DigestingRequestBody(data, outputStreamFactory, contentType, length, incremental, progressListener, cancelationSignal, 0);
 
     RequestBody requestBody = new MultipartBody.Builder()
                                                .setType(MultipartBody.FORM)
@@ -1566,6 +1639,10 @@ public class PushServiceSocket {
         connections.remove(call);
       }
     }
+  }
+
+  public String getResumableUploadUrl(ArchiveMessageBackupUploadFormResponse uploadFormResponse) throws IOException {
+    return getResumableUploadUrl(uploadFormResponse.getCdn(), uploadFormResponse.getSignedUploadLocation(), uploadFormResponse.getHeaders());
   }
 
   private String getResumableUploadUrl(int cdn, String signedUrl, Map<String, String> headers) throws IOException {
@@ -1623,7 +1700,7 @@ public class PushServiceSocket {
     }
   }
 
-  private AttachmentDigest uploadToCdn2(String resumableUrl, InputStream data, String contentType, long length, OutputStreamFactory outputStreamFactory, ProgressListener progressListener, CancelationSignal cancelationSignal) throws IOException {
+  private AttachmentDigest uploadToCdn2(String resumableUrl, InputStream data, String contentType, long length, boolean incremental, OutputStreamFactory outputStreamFactory, ProgressListener progressListener, CancelationSignal cancelationSignal) throws IOException {
     ConnectionHolder connectionHolder = getRandom(cdnClientsMap.get(2), random);
     OkHttpClient     okHttpClient     = connectionHolder.getClient()
                                                         .newBuilder()
@@ -1632,7 +1709,7 @@ public class PushServiceSocket {
                                                         .build();
 
     ResumeInfo           resumeInfo = getResumeInfoCdn2(resumableUrl, length);
-    DigestingRequestBody file       = new DigestingRequestBody(data, outputStreamFactory, contentType, length, progressListener, cancelationSignal, resumeInfo.contentStart);
+    DigestingRequestBody file       = new DigestingRequestBody(data, outputStreamFactory, contentType, length, incremental, progressListener, cancelationSignal, resumeInfo.contentStart);
 
     if (resumeInfo.contentStart == length) {
       Log.w(TAG, "Resume start point == content length");
@@ -1670,10 +1747,15 @@ public class PushServiceSocket {
     }
   }
 
+  public void uploadBackupFile(ArchiveMessageBackupUploadFormResponse uploadFormResponse, String resumableUploadUrl, InputStream data, long dataLength) throws IOException {
+    uploadToCdn3(resumableUploadUrl, data, "application/octet-stream", dataLength, false, new NoCipherOutputStreamFactory(), null, null, uploadFormResponse.getHeaders());
+  }
+
   private AttachmentDigest uploadToCdn3(String resumableUrl,
                                         InputStream data,
                                         String contentType,
                                         long length,
+                                        boolean incremental,
                                         OutputStreamFactory outputStreamFactory,
                                         ProgressListener progressListener,
                                         CancelationSignal cancelationSignal,
@@ -1688,7 +1770,7 @@ public class PushServiceSocket {
                                                         .build();
 
     ResumeInfo           resumeInfo = getResumeInfoCdn3(resumableUrl, headers);
-    DigestingRequestBody file       = new DigestingRequestBody(data, outputStreamFactory, contentType, length, progressListener, cancelationSignal, resumeInfo.contentStart);
+    DigestingRequestBody file       = new DigestingRequestBody(data, outputStreamFactory, contentType, length, incremental, progressListener, cancelationSignal, resumeInfo.contentStart);
 
     if (resumeInfo.contentStart == length) {
       Log.w(TAG, "Resume start point == content length");
@@ -1944,9 +2026,17 @@ public class PushServiceSocket {
                                       boolean doNotAddAuthenticationOrUnidentifiedAccessKey)
       throws NonSuccessfulResponseCodeException, PushNetworkException, MalformedResponseException
   {
-    Response response = getServiceConnection(urlFragment, method, body, headers, unidentifiedAccessKey, doNotAddAuthenticationOrUnidentifiedAccessKey);
-    responseCodeHandler.handle(response.code(), response.body());
-    return validateServiceResponse(response);
+    Response response = null;
+    try {
+      response = getServiceConnection(urlFragment, method, body, headers, unidentifiedAccessKey, doNotAddAuthenticationOrUnidentifiedAccessKey);
+      responseCodeHandler.handle(response.code(), response.body());
+      return validateServiceResponse(response);
+    } catch (Exception e) {
+      if (response != null && response.body() != null) {
+        response.body().close();
+      }
+      throw e;
+    }
   }
 
   private Response validateServiceResponse(Response response)
@@ -2668,11 +2758,14 @@ public class PushServiceSocket {
       }
 
       if (responseCode == 440) {
+        DonationProcessorError exception;
         try {
-          throw JsonUtil.fromJson(body.string(), DonationProcessorError.class);
+          exception = JsonUtil.fromJson(body.string(), DonationProcessorError.class);
         } catch (IOException e) {
           throw new NonSuccessfulResponseCodeException(440);
         }
+
+        throw exception;
       } else {
         throw new NonSuccessfulResponseCodeException(responseCode);
       }

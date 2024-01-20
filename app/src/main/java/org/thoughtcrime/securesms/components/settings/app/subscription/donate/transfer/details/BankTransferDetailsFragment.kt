@@ -43,6 +43,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -62,6 +64,7 @@ import org.thoughtcrime.securesms.components.settings.app.subscription.donate.ga
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.stripe.StripePaymentInProgressFragment
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.stripe.StripePaymentInProgressViewModel
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.transfer.BankTransferRequestKeys
+import org.thoughtcrime.securesms.components.settings.app.subscription.donate.transfer.details.BankTransferDetailsViewModel.Field
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationErrorSource
 import org.thoughtcrime.securesms.compose.ComposeFragment
 import org.thoughtcrime.securesms.payments.FiatMoneyUtil
@@ -131,7 +134,7 @@ class BankTransferDetailsFragment : ComposeFragment(), DonationCheckoutDelegate.
       setDisplayFindAccountInfoSheet = viewModel::setDisplayFindAccountInfoSheet,
       onLearnMoreClick = this::onLearnMoreClick,
       onDonateClick = this::onDonateClick,
-      onIBANFocusChanged = viewModel::onIBANFocusChanged,
+      onFocusChanged = viewModel::onFocusChanged,
       donateLabel = donateLabel
     )
   }
@@ -156,13 +159,15 @@ class BankTransferDetailsFragment : ComposeFragment(), DonationCheckoutDelegate.
     )
   }
 
-  override fun onUserCancelledPaymentFlow() = Unit
+  override fun onUserLaunchedAnExternalApplication() = Unit
 
   override fun navigateToDonationPending(gatewayRequest: GatewayRequest) {
-    findNavController().popBackStack()
-    findNavController().popBackStack()
-
     setFragmentResult(BankTransferRequestKeys.PENDING_KEY, bundleOf(BankTransferRequestKeys.PENDING_KEY to gatewayRequest))
+    viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+      override fun onResume(owner: LifecycleOwner) {
+        findNavController().popBackStack(R.id.donateToSignalFragment, false)
+      }
+    })
   }
 }
 
@@ -182,7 +187,7 @@ private fun BankTransferDetailsContentPreview() {
       setDisplayFindAccountInfoSheet = {},
       onLearnMoreClick = {},
       onDonateClick = {},
-      onIBANFocusChanged = {},
+      onFocusChanged = { _, _ -> },
       donateLabel = "Donate $5/month"
     )
   }
@@ -198,7 +203,7 @@ private fun BankTransferDetailsContent(
   setDisplayFindAccountInfoSheet: (Boolean) -> Unit,
   onLearnMoreClick: () -> Unit,
   onDonateClick: () -> Unit,
-  onIBANFocusChanged: (Boolean) -> Unit,
+  onFocusChanged: (Field, Boolean) -> Unit,
   donateLabel: String
 ) {
   Scaffolds.Settings(
@@ -226,7 +231,7 @@ private fun BankTransferDetailsContent(
           val fullString = stringResource(id = R.string.BankTransferDetailsFragment__enter_your_bank_details, learnMore)
 
           Texts.LinkifiedText(
-            textWithUrlSpans = SpanUtil.urlSubsequence(fullString, learnMore, stringResource(id = R.string.donate_url)), // TODO [sepa] -- final URL
+            textWithUrlSpans = SpanUtil.urlSubsequence(fullString, learnMore, stringResource(id = R.string.donate_faq_url)),
             onUrlClick = {
               onLearnMoreClick()
             },
@@ -256,11 +261,11 @@ private fun BankTransferDetailsContent(
               if (state.ibanValidity.isError) {
                 Text(
                   text = when (state.ibanValidity) {
-                    IBANValidator.Validity.TOO_SHORT -> stringResource(id = R.string.BankTransferDetailsFragment__iban_nubmer_is_too_short)
-                    IBANValidator.Validity.TOO_LONG -> stringResource(id = R.string.BankTransferDetailsFragment__iban_nubmer_is_too_long)
+                    IBANValidator.Validity.TOO_SHORT -> stringResource(id = R.string.BankTransferDetailsFragment__iban_is_too_short)
+                    IBANValidator.Validity.TOO_LONG -> stringResource(id = R.string.BankTransferDetailsFragment__iban_is_too_long)
                     IBANValidator.Validity.INVALID_COUNTRY -> stringResource(id = R.string.BankTransferDetailsFragment__iban_country_code_is_not_supported)
-                    IBANValidator.Validity.INVALID_CHARACTERS -> stringResource(id = R.string.BankTransferDetailsFragment__invalid_iban_nubmer)
-                    IBANValidator.Validity.INVALID_MOD_97 -> stringResource(id = R.string.BankTransferDetailsFragment__invalid_iban_nubmer)
+                    IBANValidator.Validity.INVALID_CHARACTERS -> stringResource(id = R.string.BankTransferDetailsFragment__invalid_iban)
+                    IBANValidator.Validity.INVALID_MOD_97 -> stringResource(id = R.string.BankTransferDetailsFragment__invalid_iban)
                     else -> error("Unexpected error.")
                   }
                 )
@@ -270,7 +275,8 @@ private fun BankTransferDetailsContent(
             modifier = Modifier
               .fillMaxWidth()
               .padding(top = 12.dp)
-              .onFocusChanged { onIBANFocusChanged(it.hasFocus) }
+              .defaultMinSize(minHeight = 78.dp)
+              .onFocusChanged { onFocusChanged(Field.IBAN, it.hasFocus) }
               .focusRequester(focusRequester)
           )
         }
@@ -289,9 +295,17 @@ private fun BankTransferDetailsContent(
             keyboardActions = KeyboardActions(
               onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
+            isError = state.showNameError(),
+            supportingText = {
+              if (state.showNameError()) {
+                Text(text = stringResource(id = R.string.BankTransferDetailsFragment__minimum_2_characters))
+              }
+            },
             modifier = Modifier
               .fillMaxWidth()
-              .padding(bottom = 16.dp)
+              .padding(top = 16.dp)
+              .defaultMinSize(minHeight = 78.dp)
+              .onFocusChanged { onFocusChanged(Field.NAME, it.hasFocus) }
           )
         }
 
@@ -309,16 +323,26 @@ private fun BankTransferDetailsContent(
             keyboardActions = KeyboardActions(
               onDone = { onDonateClick() }
             ),
+            isError = state.showEmailError(),
+            supportingText = {
+              if (state.showEmailError()) {
+                Text(text = stringResource(id = R.string.BankTransferDetailsFragment__invalid_email_address))
+              }
+            },
             modifier = Modifier
               .fillMaxWidth()
-              .padding(bottom = 16.dp)
+              .padding(top = 16.dp)
+              .defaultMinSize(minHeight = 78.dp)
+              .onFocusChanged { onFocusChanged(Field.EMAIL, it.hasFocus) }
           )
         }
 
         item {
           Box(
             contentAlignment = Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(top = 8.dp)
           ) {
             TextButton(
               onClick = { setDisplayFindAccountInfoSheet(true) }
@@ -334,7 +358,7 @@ private fun BankTransferDetailsContent(
         onClick = onDonateClick,
         modifier = Modifier
           .defaultMinSize(minWidth = 220.dp)
-          .padding(bottom = 16.dp)
+          .padding(vertical = 16.dp)
       ) {
         Text(text = donateLabel)
       }
