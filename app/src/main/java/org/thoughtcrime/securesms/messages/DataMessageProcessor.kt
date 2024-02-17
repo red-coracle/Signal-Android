@@ -131,7 +131,18 @@ object DataMessageProcessor {
 
     var groupProcessResult: MessageContentProcessor.Gv2PreProcessResult? = null
     if (groupId != null) {
-      groupProcessResult = MessageContentProcessor.handleGv2PreProcessing(context, envelope.timestamp!!, content, metadata, groupId, message.groupV2!!, senderRecipient, groupSecretParams)
+      groupProcessResult = MessageContentProcessor.handleGv2PreProcessing(
+        context = context,
+        timestamp = envelope.timestamp!!,
+        content = content,
+        metadata = metadata,
+        groupId = groupId,
+        groupV2 = message.groupV2!!,
+        senderRecipient = senderRecipient,
+        groupSecretParams = groupSecretParams,
+        serverGuid = envelope.serverGuid
+      )
+
       if (groupProcessResult == MessageContentProcessor.Gv2PreProcessResult.IGNORE) {
         return
       }
@@ -411,7 +422,7 @@ object DataMessageProcessor {
       }
 
       val mediaMessage = IncomingMessage(
-        type = MessageType.NORMAL,
+        type = MessageType.STORY_REACTION,
         from = senderRecipientId,
         sentTimeMillis = envelope.timestamp!!,
         serverTimeMillis = envelope.serverTimestamp!!,

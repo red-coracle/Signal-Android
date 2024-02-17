@@ -1607,6 +1607,12 @@ public class SignalServiceMessageSender {
       case BLOCK_AND_DELETE:
         responseMessage.type(SyncMessage.MessageRequestResponse.Type.BLOCK_AND_DELETE);
         break;
+      case SPAM:
+        responseMessage.type(SyncMessage.MessageRequestResponse.Type.SPAM);
+        break;
+      case BLOCK_AND_SPAM:
+        responseMessage.type(SyncMessage.MessageRequestResponse.Type.BLOCK_AND_SPAM);
+        break;
       default:
         Log.w(TAG, "Unknown type!");
         responseMessage.type(SyncMessage.MessageRequestResponse.Type.UNKNOWN);
@@ -2114,10 +2120,12 @@ public class SignalServiceMessageSender {
     }
 
     for (int i = 0; i < RETRY_COUNT; i++) {
-      GroupTargetInfo            targetInfo     = buildGroupTargetInfo(recipients);
+            GroupTargetInfo targetInfo         = buildGroupTargetInfo(recipients);
+      final GroupTargetInfo targetInfoSnapshot = targetInfo;
+
       Set<SignalProtocolAddress> sharedWith     = aciStore.getSenderKeySharedWith(distributionId);
       List<SignalServiceAddress> needsSenderKey = targetInfo.destinations.stream()
-                                                                         .filter(a -> !sharedWith.contains(a))
+                                                                         .filter(a -> !sharedWith.contains(a) || targetInfoSnapshot.sessions.get(a) == null)
                                                                          .map(a -> ServiceId.parseOrThrow(a.getName()))
                                                                          .distinct()
                                                                          .map(SignalServiceAddress::new)

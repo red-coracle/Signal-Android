@@ -9,7 +9,7 @@ object UsernameUtil {
   const val MIN_NICKNAME_LENGTH = 3
   const val MAX_NICKNAME_LENGTH = 32
   const val MIN_DISCRIMINATOR_LENGTH = 2
-  const val MAX_DISCRIMINATOR_LENGTH = 10
+  const val MAX_DISCRIMINATOR_LENGTH = 9
   private val FULL_PATTERN = Pattern.compile(String.format(Locale.US, "^[a-zA-Z_][a-zA-Z0-9_]{%d,%d}$", MIN_NICKNAME_LENGTH - 1, MAX_NICKNAME_LENGTH - 1), Pattern.CASE_INSENSITIVE)
   private val DIGIT_START_PATTERN = Pattern.compile("^[0-9].*$")
   private const val BASE_URL_SCHEMELESS = "signal.me/#eu/"
@@ -64,6 +64,12 @@ object UsernameUtil {
       value == null -> {
         null
       }
+      value == "00" -> {
+        InvalidReason.INVALID_NUMBER
+      }
+      value.startsWith("00") -> {
+        InvalidReason.INVALID_NUMBER_PREFIX
+      }
       value.length < MIN_DISCRIMINATOR_LENGTH -> {
         InvalidReason.TOO_SHORT
       }
@@ -83,6 +89,8 @@ object UsernameUtil {
     TOO_SHORT,
     TOO_LONG,
     INVALID_CHARACTERS,
-    STARTS_WITH_NUMBER
+    STARTS_WITH_NUMBER,
+    INVALID_NUMBER,
+    INVALID_NUMBER_PREFIX
   }
 }
