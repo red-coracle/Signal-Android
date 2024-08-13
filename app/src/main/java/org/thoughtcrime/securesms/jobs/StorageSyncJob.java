@@ -17,7 +17,7 @@ import org.thoughtcrime.securesms.database.RecipientTable;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.UnknownStorageIdTable;
 import org.thoughtcrime.securesms.database.model.RecipientRecord;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
@@ -180,12 +180,12 @@ public class StorageSyncJob extends BaseJob {
       return;
     }
 
-    if (!Recipient.self().hasE164() || !Recipient.self().hasServiceId()) {
+    if (!Recipient.self().getHasE164() || !Recipient.self().getHasServiceId()) {
       Log.w(TAG, "Missing E164 or ACI!");
       return;
     }
 
-    if (SignalStore.internalValues().storageServiceDisabled()) {
+    if (SignalStore.internal().storageServiceDisabled()) {
       Log.w(TAG, "Storage service has been manually disabled. Skipping.");
       return;
     }
@@ -194,7 +194,7 @@ public class StorageSyncJob extends BaseJob {
       boolean needsMultiDeviceSync = performSync();
 
       if (TextSecurePreferences.isMultiDevice(context) && needsMultiDeviceSync) {
-        ApplicationDependencies.getJobManager().add(new MultiDeviceStorageSyncRequestJob());
+        AppDependencies.getJobManager().add(new MultiDeviceStorageSyncRequestJob());
       }
 
       SignalStore.storageService().onSyncCompleted();
@@ -202,14 +202,14 @@ public class StorageSyncJob extends BaseJob {
       if (SignalStore.account().isPrimaryDevice()) {
         Log.w(TAG, "Failed to decrypt remote storage! Force-pushing and syncing the storage key to linked devices.", e);
 
-        ApplicationDependencies.getJobManager().startChain(new MultiDeviceKeysUpdateJob())
-                               .then(new StorageForcePushJob())
-                               .then(new MultiDeviceStorageSyncRequestJob())
-                               .enqueue();
+        AppDependencies.getJobManager().startChain(new MultiDeviceKeysUpdateJob())
+                       .then(new StorageForcePushJob())
+                       .then(new MultiDeviceStorageSyncRequestJob())
+                       .enqueue();
       } else {
         Log.w(TAG, "Failed to decrypt remote storage! Requesting new keys from primary.", e);
         SignalStore.storageService().clearStorageKeyFromPrimary();
-        ApplicationDependencies.getSignalServiceMessageSender().sendSyncMessage(SignalServiceSyncMessage.forRequest(RequestMessage.forType(SyncMessage.Request.Type.KEYS)), UnidentifiedAccessUtil.getAccessForSync(context));
+        AppDependencies.getSignalServiceMessageSender().sendSyncMessage(SignalServiceSyncMessage.forRequest(RequestMessage.forType(SyncMessage.Request.Type.KEYS)), UnidentifiedAccessUtil.getAccessForSync(context));
       }
     }
   }
@@ -226,7 +226,7 @@ public class StorageSyncJob extends BaseJob {
   private boolean performSync() throws IOException, RetryLaterException, InvalidKeyException {
     final Stopwatch                   stopwatch         = new Stopwatch("StorageSync");
     final SQLiteDatabase              db                = SignalDatabase.getRawDatabase();
-    final SignalServiceAccountManager accountManager    = ApplicationDependencies.getSignalServiceAccountManager();
+    final SignalServiceAccountManager accountManager    = AppDependencies.getSignalServiceAccountManager();
     final UnknownStorageIdTable       storageIdDatabase = SignalDatabase.unknownStorageIds();
     final StorageKey                  storageServiceKey = SignalStore.storageService().getOrCreateStorageKey();
 
@@ -239,7 +239,7 @@ public class StorageSyncJob extends BaseJob {
     boolean   needsMultiDeviceSync = false;
     boolean   needsForcePush       = false;
 
-    if (self.getStorageServiceId() == null) {
+    if (self.getStorageId() == null) {
       Log.w(TAG, "No storageId for self. Generating.");
       SignalDatabase.recipients().updateStorageId(self.getId(), StorageSyncHelper.generateKey());
       self = freshSelf();
@@ -303,7 +303,7 @@ public class StorageSyncJob extends BaseJob {
           db.setTransactionSuccessful();
         } finally {
           db.endTransaction();
-          ApplicationDependencies.getDatabaseObserver().notifyConversationListListeners();
+          AppDependencies.getDatabaseObserver().notifyConversationListListeners();
           stopwatch.split("remote-merge-transaction");
         }
       } else {
@@ -392,14 +392,14 @@ public class StorageSyncJob extends BaseJob {
       }
 
       Log.i(TAG, "Enqueueing a storage sync job to handle any possible merges after applying unknown records.");
-      ApplicationDependencies.getJobManager().add(new StorageSyncJob());
+      AppDependencies.getJobManager().add(new StorageSyncJob());
     }
 
     stopwatch.split("known-unknowns");
 
     if (needsForcePush && SignalStore.account().isPrimaryDevice()) {
       Log.w(TAG, "Scheduling a force push.");
-      ApplicationDependencies.getJobManager().add(new StorageForcePushJob());
+      AppDependencies.getJobManager().add(new StorageForcePushJob());
     }
 
     stopwatch.stop(TAG);
@@ -411,15 +411,12 @@ public class StorageSyncJob extends BaseJob {
     new GroupV1RecordProcessor(context).process(records.gv1, StorageSyncHelper.KEY_GENERATOR);
     new GroupV2RecordProcessor(context).process(records.gv2, StorageSyncHelper.KEY_GENERATOR);
     new AccountRecordProcessor(context, freshSelf()).process(records.account, StorageSyncHelper.KEY_GENERATOR);
-
-    if (getKnownTypes().contains(ManifestRecord.Identifier.Type.STORY_DISTRIBUTION_LIST.getValue())) {
-      new StoryDistributionListRecordProcessor().process(records.storyDistributionLists, StorageSyncHelper.KEY_GENERATOR);
-    }
+    new StoryDistributionListRecordProcessor().process(records.storyDistributionLists, StorageSyncHelper.KEY_GENERATOR);
   }
 
   private static @NonNull List<StorageId> getAllLocalStorageIds(@NonNull Recipient self) {
     return Util.concatenatedList(SignalDatabase.recipients().getContactStorageSyncIds(),
-                                 Collections.singletonList(StorageId.forAccount(self.getStorageServiceId())),
+                                 Collections.singletonList(StorageId.forAccount(self.getStorageId())),
                                  SignalDatabase.unknownStorageIds().getAllUnknownIds());
   }
 
@@ -455,7 +452,7 @@ public class StorageSyncJob extends BaseJob {
           }
           break;
         case ACCOUNT:
-          if (!Arrays.equals(self.getStorageServiceId(), id.getRaw())) {
+          if (!Arrays.equals(self.getStorageId(), id.getRaw())) {
             throw new AssertionError("Local storage ID doesn't match self!");
           }
           records.add(StorageSyncHelper.buildAccountRecord(context, self));

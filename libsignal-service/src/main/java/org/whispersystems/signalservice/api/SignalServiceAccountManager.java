@@ -8,11 +8,11 @@ package org.whispersystems.signalservice.api;
 
 import com.squareup.wire.FieldEncoding;
 
+import org.signal.libsignal.net.Network;
 import org.signal.libsignal.protocol.IdentityKeyPair;
 import org.signal.libsignal.protocol.InvalidKeyException;
 import org.signal.libsignal.protocol.ecc.ECPublicKey;
 import org.signal.libsignal.protocol.logging.Log;
-import org.signal.libsignal.protocol.state.SignedPreKeyRecord;
 import org.signal.libsignal.usernames.BaseUsernameException;
 import org.signal.libsignal.usernames.Username;
 import org.signal.libsignal.usernames.Username.UsernameLink;
@@ -30,6 +30,7 @@ import org.whispersystems.signalservice.api.groupsv2.ClientZkOperations;
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2Api;
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2Operations;
 import org.whispersystems.signalservice.api.kbs.MasterKey;
+import org.whispersystems.signalservice.api.keys.KeysApi;
 import org.whispersystems.signalservice.api.messages.calls.TurnServerInfo;
 import org.whispersystems.signalservice.api.messages.multidevice.DeviceInfo;
 import org.whispersystems.signalservice.api.payments.CurrencyConversions;
@@ -45,6 +46,7 @@ import org.whispersystems.signalservice.api.push.exceptions.NoContentException;
 import org.whispersystems.signalservice.api.push.exceptions.NonSuccessfulResponseCodeException;
 import org.whispersystems.signalservice.api.push.exceptions.NotFoundException;
 import org.whispersystems.signalservice.api.push.exceptions.PushNetworkException;
+import org.whispersystems.signalservice.api.registration.RegistrationApi;
 import org.whispersystems.signalservice.api.services.CdsiV2Service;
 import org.whispersystems.signalservice.api.storage.SignalStorageCipher;
 import org.whispersystems.signalservice.api.storage.SignalStorageManifest;
@@ -54,6 +56,8 @@ import org.whispersystems.signalservice.api.storage.StorageId;
 import org.whispersystems.signalservice.api.storage.StorageKey;
 import org.whispersystems.signalservice.api.storage.StorageManifestKey;
 import org.whispersystems.signalservice.api.svr.SecureValueRecoveryV2;
+import org.whispersystems.signalservice.api.svr.SecureValueRecoveryV3;
+import org.whispersystems.signalservice.api.svr.SvrApi;
 import org.whispersystems.signalservice.api.util.CredentialsProvider;
 import org.whispersystems.signalservice.api.util.Preconditions;
 import org.whispersystems.signalservice.internal.ServiceResponse;
@@ -61,7 +65,7 @@ import org.whispersystems.signalservice.internal.configuration.SignalServiceConf
 import org.whispersystems.signalservice.internal.crypto.PrimaryProvisioningCipher;
 import org.whispersystems.signalservice.internal.push.AuthCredentials;
 import org.whispersystems.signalservice.internal.push.BackupAuthCheckRequest;
-import org.whispersystems.signalservice.internal.push.BackupAuthCheckResponse;
+import org.whispersystems.signalservice.internal.push.BackupV2AuthCheckResponse;
 import org.whispersystems.signalservice.internal.push.CdsiAuthResponse;
 import org.whispersystems.signalservice.internal.push.OneTimePreKeyCounts;
 import org.whispersystems.signalservice.internal.push.PaymentAddress;
@@ -129,7 +133,6 @@ public class SignalServiceAccountManager {
   private final GroupsV2Operations         groupsV2Operations;
   private final SignalServiceConfiguration configuration;
 
-
   /**
    * Construct a SignalServiceAccountManager.
    * @param configuration The URL for the Signal Service.
@@ -181,6 +184,10 @@ public class SignalServiceAccountManager {
     return new SecureValueRecoveryV2(configuration, mrEnclave, pushServiceSocket);
   }
 
+  public SecureValueRecoveryV3 getSecureValueRecoveryV3(Network network) {
+    return new SecureValueRecoveryV3(network, pushServiceSocket);
+  }
+
   public WhoAmIResponse getWhoAmI() throws IOException {
     return this.pushServiceSocket.getWhoAmI();
   }
@@ -199,9 +206,9 @@ public class SignalServiceAccountManager {
     }
   }
 
-  public Single<ServiceResponse<BackupAuthCheckResponse>> checkBackupAuthCredentials(@Nonnull String e164, @Nonnull List<String> usernamePasswords) {
+  public Single<ServiceResponse<BackupV2AuthCheckResponse>> checkBackupAuthCredentials(@Nonnull String e164, @Nonnull List<String> usernamePasswords) {
 
-    return pushServiceSocket.checkBackupAuthCredentials(new BackupAuthCheckRequest(e164, usernamePasswords), DefaultResponseMapper.getDefault(BackupAuthCheckResponse.class));
+    return pushServiceSocket.checkSvr2AuthCredentials(new BackupAuthCheckRequest(e164, usernamePasswords), DefaultResponseMapper.getDefault(BackupV2AuthCheckResponse.class));
   }
 
   /**
@@ -218,7 +225,7 @@ public class SignalServiceAccountManager {
 
   public ServiceResponse<RegistrationSessionMetadataResponse> createRegistrationSession(@Nullable String fcmToken, @Nullable String mcc, @Nullable String mnc) {
     try {
-      final RegistrationSessionMetadataResponse response =  pushServiceSocket.createVerificationSession(fcmToken, mcc, mnc);
+      final RegistrationSessionMetadataResponse response = pushServiceSocket.createVerificationSession(fcmToken, mcc, mnc);
       return ServiceResponse.forResult(response, 200, null);
     } catch (IOException e) {
       return ServiceResponse.forUnknownError(e);
@@ -351,16 +358,6 @@ public class SignalServiceAccountManager {
   }
 
   /**
-   * Set the client's signed prekey.
-   *
-   * @param signedPreKey The client's new signed prekey.
-   * @throws IOException
-   */
-  public void setSignedPreKey(ServiceIdType serviceIdType, SignedPreKeyRecord signedPreKey) throws IOException {
-    this.pushServiceSocket.setCurrentSignedPreKey(serviceIdType, signedPreKey);
-  }
-
-  /**
    * @return True if the identifier corresponds to a registered user, otherwise false.
    */
   public boolean isIdentifierRegistered(ServiceId identifier) throws IOException {
@@ -374,11 +371,12 @@ public class SignalServiceAccountManager {
                                                            Optional<byte[]> token,
                                                            String mrEnclave,
                                                            Long timeoutMs,
+                                                           @Nullable Network libsignalNetwork,
                                                            Consumer<byte[]> tokenSaver)
       throws IOException
   {
     CdsiAuthResponse                                auth    = pushServiceSocket.getCdsiAuth();
-    CdsiV2Service                                   service = new CdsiV2Service(configuration, mrEnclave);
+    CdsiV2Service                                   service = new CdsiV2Service(configuration, mrEnclave, libsignalNetwork);
     CdsiV2Service.Request                           request = new CdsiV2Service.Request(previousE164s, newE164s, serviceIds, token);
     Single<ServiceResponse<CdsiV2Service.Response>> single  = service.getRegisteredUsers(auth.getUsername(), auth.getPassword(), request, tokenSaver);
 
@@ -873,6 +871,18 @@ public class SignalServiceAccountManager {
 
   public ArchiveApi getArchiveApi() {
     return ArchiveApi.create(pushServiceSocket, configuration.getBackupServerPublicParams(), credentials.getAci());
+  }
+
+  public KeysApi getKeysApi() {
+    return KeysApi.create(pushServiceSocket);
+  }
+
+  public RegistrationApi getRegistrationApi() {
+    return new RegistrationApi(pushServiceSocket);
+  }
+
+  public SvrApi getSvrApi() {
+    return new SvrApi(pushServiceSocket);
   }
 
   public AuthCredentials getPaymentsAuthorization() throws IOException {

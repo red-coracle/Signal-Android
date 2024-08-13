@@ -13,7 +13,7 @@ import org.thoughtcrime.securesms.database.MessageTable.MarkedMessageInfo;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.database.model.StoryType;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
@@ -100,7 +100,7 @@ public class SendViewedReceiptJob extends BaseJob {
    * maximum size.
    */
   public static void enqueue(long threadId, @NonNull RecipientId recipientId, List<MarkedMessageInfo> markedMessageInfos) {
-    JobManager                    jobManager      = ApplicationDependencies.getJobManager();
+    JobManager                    jobManager      = AppDependencies.getJobManager();
     List<List<MarkedMessageInfo>> messageIdChunks = ListUtil.chunk(markedMessageInfos, MAX_TIMESTAMPS);
 
     if (messageIdChunks.size() > 1) {
@@ -136,7 +136,7 @@ public class SendViewedReceiptJob extends BaseJob {
   public void onRun() throws IOException, UntrustedIdentityException {
 
     boolean canSendNonStoryReceipts = TextSecurePreferences.isReadReceiptsEnabled(context);
-    boolean canSendStoryReceipts    = SignalStore.storyValues().getViewedReceiptsEnabled();
+    boolean canSendStoryReceipts    = SignalStore.story().getViewedReceiptsEnabled();
 
     List<MessageId> foundMessageIds       = new LinkedList<>();
     List<Long>      messageSentTimestamps = new LinkedList<>();
@@ -196,7 +196,12 @@ public class SendViewedReceiptJob extends BaseJob {
       return;
     }
 
-    SignalServiceMessageSender  messageSender  = ApplicationDependencies.getSignalServiceMessageSender();
+    if (recipient.isReleaseNotes()) {
+      Log.w(TAG, "Refusing to send receipts to release channel");
+      return;
+    }
+
+    SignalServiceMessageSender  messageSender  = AppDependencies.getSignalServiceMessageSender();
     SignalServiceAddress        remoteAddress  = RecipientUtil.toSignalServiceAddress(context, recipient);
     SignalServiceReceiptMessage receiptMessage = new SignalServiceReceiptMessage(SignalServiceReceiptMessage.Type.VIEWED,
                                                                                  messageSentTimestamps,
@@ -205,7 +210,7 @@ public class SendViewedReceiptJob extends BaseJob {
     SendMessageResult result = messageSender.sendReceipt(remoteAddress,
                                                          UnidentifiedAccessUtil.getAccessFor(context, Recipient.resolved(recipientId)),
                                                          receiptMessage,
-                                                         recipient.needsPniSignature());
+                                                         recipient.getNeedsPniSignature());
 
     if (Util.hasItems(foundMessageIds)) {
       SignalDatabase.messageLog().insertIfPossible(recipientId, timestamp, result, ContentHint.IMPLICIT, foundMessageIds, false);

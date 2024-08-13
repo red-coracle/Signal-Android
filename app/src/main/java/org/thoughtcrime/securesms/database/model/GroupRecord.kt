@@ -155,7 +155,7 @@ class GroupRecord(
     return if (isV2Group) {
       val memberLevel = requireV2GroupProperties().memberLevel(recipient.serviceId)
       if (recipient.isSelf && memberLevel == GroupTable.MemberLevel.NOT_A_MEMBER) {
-        requireV2GroupProperties().memberLevel(Optional.ofNullable(SignalStore.account().pni))
+        requireV2GroupProperties().memberLevel(Optional.ofNullable(SignalStore.account.pni))
       } else {
         memberLevel
       }
@@ -187,7 +187,7 @@ class GroupRecord(
      * True if the user meets all the requirements to be auto-migrated, otherwise false.
      */
     private fun Recipient.isAutoMigratable(): Boolean {
-      return hasServiceId() && registered === RecipientTable.RegisteredState.REGISTERED && profileKey != null
+      return hasServiceId && registered === RecipientTable.RegisteredState.REGISTERED && profileKey != null
     }
   }
 }

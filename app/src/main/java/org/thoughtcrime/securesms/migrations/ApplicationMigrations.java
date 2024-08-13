@@ -144,11 +144,15 @@ public class ApplicationMigrations {
     static final int SVR2_ENCLAVE_UPDATE           = 100;
     static final int STORAGE_LOCAL_UNKNOWNS_FIX    = 101;
     static final int PNP_LAUNCH                    = 102;
+    static final int EMOJI_VERSION_10              = 103;
+    static final int ATTACHMENT_HASH_BACKFILL      = 104;
+    static final int SUBSCRIBER_ID                 = 105;
+    static final int CONTACT_LINK_REBUILD          = 106;
   }
 
-  public static final int CURRENT_VERSION = 102;
+  public static final int CURRENT_VERSION = 106;
 
-  /**
+ /**
    * This *must* be called after the {@link JobManager} has been instantiated, but *before* the call
    * to {@link JobManager#beginJobLoop()}. Otherwise, other non-migration jobs may have started
    * executing before we add the migration jobs.
@@ -162,11 +166,14 @@ public class ApplicationMigrations {
     if (!isUpdate(context)) {
       Log.d(TAG, "Not an update. Skipping.");
       VersionTracker.updateLastSeenVersion(context);
+      SignalStore.misc().setClientDeprecated(false);
       return;
     } else {
-      Log.d(TAG, "About to update. Clearing deprecation flag.");
-      SignalStore.misc().clearClientDeprecated();
+      Log.d(TAG, "About to update. Clearing deprecation flag.", true);
+      SignalStore.misc().setClientDeprecated(false);
     }
+
+    SignalStore.misc().setClientDeprecated(false);
 
     final int lastSeenVersion = TextSecurePreferences.getAppMigrationVersion(context);
     Log.d(TAG, "currentVersion: " + CURRENT_VERSION + ",  lastSeenVersion: " + lastSeenVersion);
@@ -655,6 +662,22 @@ public class ApplicationMigrations {
 
     if (lastSeenVersion < Version.PNP_LAUNCH) {
       jobs.put(Version.PNP_LAUNCH, new PnpLaunchMigrationJob());
+    }
+
+    if (lastSeenVersion < Version.EMOJI_VERSION_10) {
+      jobs.put(Version.EMOJI_VERSION_10, new EmojiDownloadMigrationJob());
+    }
+
+    if (lastSeenVersion < Version.ATTACHMENT_HASH_BACKFILL) {
+      jobs.put(Version.ATTACHMENT_HASH_BACKFILL, new AttachmentHashBackfillMigrationJob());
+    }
+
+    if (lastSeenVersion < Version.SUBSCRIBER_ID) {
+      jobs.put(Version.SUBSCRIBER_ID, new SubscriberIdMigrationJob());
+    }
+
+    if (lastSeenVersion < Version.CONTACT_LINK_REBUILD) {
+      jobs.put(Version.CONTACT_LINK_REBUILD, new ContactLinkRebuildMigrationJob());
     }
 
     return jobs;

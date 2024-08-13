@@ -27,7 +27,7 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.Mention;
 import org.thoughtcrime.securesms.database.model.StoryType;
 import org.thoughtcrime.securesms.database.model.databaseprotos.StoryTextPost;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.keyvalue.StorySend;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
@@ -84,15 +84,14 @@ public final class MultiShareSender {
   @WorkerThread
   public static MultiShareSendResultCollection sendSync(@NonNull MultiShareArgs multiShareArgs) {
     List<MultiShareSendResult> results                           = new ArrayList<>(multiShareArgs.getContactSearchKeys().size());
-    Context                    context                           = ApplicationDependencies.getApplication();
-    boolean                    isMmsEnabled                      = Util.isMmsCapable(context);
+    Context                    context                           = AppDependencies.getApplication();
     String                     message                           = multiShareArgs.getDraftText();
-    SlideDeck                  slideDeck;
+    SlideDeck                  primarySlideDeck;
     List<OutgoingMessage>      storiesBatch                      = new LinkedList<>();
     ChatColors                 generatedTextStoryBackgroundColor = TextStoryBackgroundColors.getRandomBackgroundColor();
 
     try {
-      slideDeck = buildSlideDeck(context, multiShareArgs);
+      primarySlideDeck = buildSlideDeck(context, multiShareArgs);
     } catch (SlideNotFoundException e) {
       Log.w(TAG, "Could not create slide for media message");
       for (ContactSearchKey.RecipientSearchKey recipientSearchKey : multiShareArgs.getRecipientSearchKeys()) {
@@ -106,13 +105,14 @@ public final class MultiShareSender {
     for (ContactSearchKey.RecipientSearchKey recipientSearchKey : multiShareArgs.getRecipientSearchKeys()) {
       Recipient recipient = Recipient.resolved(recipientSearchKey.getRecipientId());
 
-      long            threadId       = SignalDatabase.threads().getOrCreateThreadIdFor(recipient);
-      List<Mention>   mentions       = getValidMentionsForRecipient(recipient, multiShareArgs.getMentions());
-      MessageSendType sendType       = MessageSendType.SignalMessageSendType.INSTANCE;
-      long            expiresIn      = TimeUnit.SECONDS.toMillis(recipient.getExpiresInSeconds());
-      List<Contact>   contacts       = multiShareArgs.getSharedContacts();
-      boolean needsSplit = !sendType.usesSmsTransport() &&
-                           message != null &&
+      long            threadId  = SignalDatabase.threads().getOrCreateThreadIdFor(recipient);
+      List<Mention>   mentions  = getValidMentionsForRecipient(recipient, multiShareArgs.getMentions());
+      MessageSendType sendType  = MessageSendType.SignalMessageSendType.INSTANCE;
+      long            expiresIn = TimeUnit.SECONDS.toMillis(recipient.getExpiresInSeconds());
+      List<Contact>   contacts  = multiShareArgs.getSharedContacts();
+      SlideDeck       slideDeck = new SlideDeck(primarySlideDeck);
+
+      boolean needsSplit = message != null &&
                            message.length() > sendType.calculateCharacters(message).maxPrimaryMessageSize;
       boolean hasMmsMedia = !multiShareArgs.getMedia().isEmpty() ||
                             (multiShareArgs.getDataUri() != null && multiShareArgs.getDataUri() != Uri.EMPTY) ||
@@ -128,9 +128,9 @@ public final class MultiShareSender {
       MultiShareTimestampProvider sentTimestamp      = recipient.isDistributionList() ? distributionListSentTimestamps : MultiShareTimestampProvider.create();
       boolean                     canSendAsTextStory = recipientSearchKey.isStory() && multiShareArgs.isValidForTextStoryGeneration();
 
-      if ((recipient.isMmsGroup() || recipient.getEmail().isPresent()) && !isMmsEnabled) {
+      if ((recipient.isMmsGroup() || recipient.getEmail().isPresent())) {
         results.add(new MultiShareSendResult(recipientSearchKey, MultiShareSendResult.Type.MMS_NOT_ENABLED));
-      } else if (hasMmsMedia && sendType.usesSmsTransport() || hasPushMedia && !sendType.usesSmsTransport() || canSendAsTextStory) {
+      } else if (hasPushMedia || canSendAsTextStory) {
         sendMediaMessageOrCollectStoryToBatch(context,
                                               multiShareArgs,
                                               recipient,
@@ -212,7 +212,7 @@ public final class MultiShareSender {
       }
 
       if (!recipient.isMyStory()) {
-        SignalStore.storyValues().setLatestStorySend(StorySend.newSend(recipient));
+        SignalStore.story().setLatestStorySend(StorySend.newSend(recipient));
       }
 
       if (multiShareArgs.isTextStory()) {

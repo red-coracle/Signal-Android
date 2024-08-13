@@ -8,7 +8,7 @@ import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.crypto.UnidentifiedAccessUtil;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.MessageId;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
@@ -99,7 +99,7 @@ public class SendDeliveryReceiptJob extends BaseJob {
       throw new NotPushRegisteredException();
     }
 
-    SignalServiceMessageSender  messageSender  = ApplicationDependencies.getSignalServiceMessageSender();
+    SignalServiceMessageSender  messageSender  = AppDependencies.getSignalServiceMessageSender();
     Recipient                   recipient      = Recipient.resolved(recipientId);
 
     if (recipient.isSelf()) {
@@ -112,7 +112,7 @@ public class SendDeliveryReceiptJob extends BaseJob {
       return;
     }
 
-    if (!recipient.hasServiceId() && !recipient.hasE164()) {
+    if (!recipient.getHasServiceId() && !recipient.getHasE164()) {
       Log.w(TAG, "No serviceId or e164!");
       return;
     }
@@ -125,7 +125,7 @@ public class SendDeliveryReceiptJob extends BaseJob {
     SendMessageResult result = messageSender.sendReceipt(remoteAddress,
                                                          UnidentifiedAccessUtil.getAccessFor(context, recipient),
                                                          receiptMessage,
-                                                         recipient.needsPniSignature());
+                                                         recipient.getNeedsPniSignature());
 
     if (messageId != null) {
       SignalDatabase.messageLog().insertIfPossible(recipientId, timestamp, result, ContentHint.IMPLICIT, messageId, false);

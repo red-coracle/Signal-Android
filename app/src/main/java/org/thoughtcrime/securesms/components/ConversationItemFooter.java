@@ -33,7 +33,7 @@ import org.thoughtcrime.securesms.conversation.v2.computed.FormattedDate;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.util.DateUtils;
@@ -315,8 +315,6 @@ public class ConversationItemFooter extends ConstraintLayout {
       }
 
       dateView.setText(errorMsg);
-    } else if (messageRecord.isPendingInsecureSmsFallback()) {
-      dateView.setText(R.string.ConversationItem_click_to_approve_unencrypted);
     } else if (messageRecord.isRateLimited()) {
       dateView.setText(R.string.ConversationItem_send_paused);
     } else if (MessageRecordUtil.isScheduled(messageRecord)) {
@@ -375,7 +373,7 @@ public class ConversationItemFooter extends ConstraintLayout {
         this.timerView.startAnimation();
 
         if (messageRecord.getExpireStarted() + messageRecord.getExpiresIn() <= System.currentTimeMillis()) {
-          ApplicationDependencies.getExpiringMessageManager().checkSchedule();
+          AppDependencies.getExpiringMessageManager().checkSchedule();
         }
       } else if (!messageRecord.isOutgoing() && !messageRecord.isMediaPending()) {
         SignalExecutors.BOUNDED.execute(() -> {
@@ -384,7 +382,7 @@ public class ConversationItemFooter extends ConstraintLayout {
           long    now = System.currentTimeMillis();
 
           SignalDatabase.messages().markExpireStarted(id, now);
-          ApplicationDependencies.getExpiringMessageManager().scheduleDeletion(id, mms, now, messageRecord.getExpiresIn());
+          AppDependencies.getExpiringMessageManager().scheduleDeletion(id, mms, now, messageRecord.getExpiresIn());
         });
       }
     } else {
@@ -410,7 +408,7 @@ public class ConversationItemFooter extends ConstraintLayout {
     previousMessageId = newMessageId;
 
 
-    if (messageRecord.isFailed() || messageRecord.isPendingInsecureSmsFallback() || MessageRecordUtil.isScheduled(messageRecord)) {
+    if (messageRecord.isFailed() || MessageRecordUtil.isScheduled(messageRecord)) {
       deliveryStatusView.setNone();
       return;
     }

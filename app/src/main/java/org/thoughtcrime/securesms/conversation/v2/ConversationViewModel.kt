@@ -52,7 +52,7 @@ import org.thoughtcrime.securesms.database.model.ReactionRecord
 import org.thoughtcrime.securesms.database.model.StickerRecord
 import org.thoughtcrime.securesms.database.model.StoryViewState
 import org.thoughtcrime.securesms.database.model.databaseprotos.BodyRangeList
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
+import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob
 import org.thoughtcrime.securesms.keyboard.KeyboardUtil
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -64,7 +64,6 @@ import org.thoughtcrime.securesms.mms.Slide
 import org.thoughtcrime.securesms.mms.SlideDeck
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
-import org.thoughtcrime.securesms.search.MessageResult
 import org.thoughtcrime.securesms.sms.MessageSender
 import org.thoughtcrime.securesms.util.BubbleUtil
 import org.thoughtcrime.securesms.util.ConversationUtil
@@ -158,6 +157,10 @@ class ConversationViewModel(
 
   private val startExpiration = BehaviorSubject.create<MessageTable.ExpirationInfo>()
 
+  private val _jumpToDateValidator: JumpToDateValidator by lazy { JumpToDateValidator(threadId) }
+  val jumpToDateValidator: JumpToDateValidator
+    get() = _jumpToDateValidator
+
   init {
     disposables += recipient
       .subscribeBy {
@@ -196,14 +199,14 @@ class ConversationViewModel(
           controller.onDataInvalidated()
         }
 
-        ApplicationDependencies.getDatabaseObserver().registerMessageUpdateObserver(messageUpdateObserver)
-        ApplicationDependencies.getDatabaseObserver().registerMessageInsertObserver(threadId, messageInsertObserver)
-        ApplicationDependencies.getDatabaseObserver().registerConversationObserver(threadId, conversationObserver)
+        AppDependencies.databaseObserver.registerMessageUpdateObserver(messageUpdateObserver)
+        AppDependencies.databaseObserver.registerMessageInsertObserver(threadId, messageInsertObserver)
+        AppDependencies.databaseObserver.registerConversationObserver(threadId, conversationObserver)
 
         emitter.setCancellable {
-          ApplicationDependencies.getDatabaseObserver().unregisterObserver(messageUpdateObserver)
-          ApplicationDependencies.getDatabaseObserver().unregisterObserver(messageInsertObserver)
-          ApplicationDependencies.getDatabaseObserver().unregisterObserver(conversationObserver)
+          AppDependencies.databaseObserver.unregisterObserver(messageUpdateObserver)
+          AppDependencies.databaseObserver.unregisterObserver(messageInsertObserver)
+          AppDependencies.databaseObserver.unregisterObserver(conversationObserver)
         }
       }
     }.subscribeOn(Schedulers.io()).subscribe()
@@ -237,8 +240,9 @@ class ConversationViewModel(
         conversationRecipient = recipient,
         messageRequestState = messageRequestRepository.getMessageRequestState(recipient, threadId),
         groupRecord = groupRecord.orNull(),
-        isClientExpired = SignalStore.misc().isClientDeprecated,
-        isUnauthorized = TextSecurePreferences.isUnauthorizedReceived(ApplicationDependencies.getApplication())
+        isClientExpired = false,
+        isUnauthorized = TextSecurePreferences.isUnauthorizedReceived(AppDependencies.application),
+        threadContainsSms = !recipient.isRegistered && !recipient.isPushGroup && !recipient.isSelf && messageRequestRepository.threadContainsSms(threadId)
       )
     }.doOnNext {
       hasMessageRequestStateSubject.onNext(it.messageRequestState)
@@ -287,6 +291,11 @@ class ConversationViewModel(
     refreshReminder.onNext(Unit)
   }
 
+  fun onDismissReview() {
+    val recipientId = recipientSnapshot?.id ?: return
+    repository.dismissRequestReviewState(recipientId)
+  }
+
   override fun onCleared() {
     disposables.clear()
     startExpiration.onComplete()
@@ -311,8 +320,8 @@ class ConversationViewModel(
     return repository.getQuotedMessagePosition(threadId, quote)
   }
 
-  fun moveToSearchResult(messageResult: MessageResult): Single<Int> {
-    return repository.getMessageResultPosition(threadId, messageResult)
+  fun moveToDate(receivedTimestamp: Long): Single<Int> {
+    return repository.getMessageResultPosition(threadId, receivedTimestamp)
   }
 
   fun getNextMentionPosition(): Single<Int> {
@@ -505,5 +514,16 @@ class ConversationViewModel(
 
   fun markLastSeen() {
     repository.markLastSeen(threadId)
+  }
+
+  fun onChatSearchOpened() {
+    // Trigger the lazy load, so we can race initialization of the validator
+    _jumpToDateValidator
+  }
+
+  fun getEarliestMessageSentDate(): Single<Long> {
+    return repository
+      .getEarliestMessageSentDate(threadId)
+      .observeOn(AndroidSchedulers.mainThread())
   }
 }

@@ -7,13 +7,13 @@ import androidx.navigation.NavDirections
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.subjects.PublishSubject
 import io.reactivex.rxjava3.subjects.Subject
+import org.signal.donations.InAppPaymentType
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.DSLSettingsActivity
 import org.thoughtcrime.securesms.components.settings.app.notifications.profiles.EditNotificationProfileScheduleFragmentArgs
-import org.thoughtcrime.securesms.components.settings.app.subscription.DonationPaymentComponent
+import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentComponent
 import org.thoughtcrime.securesms.components.settings.app.subscription.StripeRepository
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.DonateToSignalType
 import org.thoughtcrime.securesms.help.HelpFragment
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -30,16 +30,16 @@ private const val NOTIFICATION_CATEGORY = "android.intent.category.NOTIFICATION_
 private const val STATE_WAS_CONFIGURATION_UPDATED = "app.settings.state.configuration.updated"
 private const val EXTRA_PERFORM_ACTION_ON_CREATE = "extra_perform_action_on_create"
 
-class AppSettingsActivity : DSLSettingsActivity(), DonationPaymentComponent {
+class AppSettingsActivity : DSLSettingsActivity(), InAppPaymentComponent {
 
   private var wasConfigurationUpdated = false
 
   override val stripeRepository: StripeRepository by lazy { StripeRepository(this) }
-  override val googlePayResultPublisher: Subject<DonationPaymentComponent.GooglePayResult> = PublishSubject.create()
+  override val googlePayResultPublisher: Subject<InAppPaymentComponent.GooglePayResult> = PublishSubject.create()
 
   override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
     if (intent?.hasExtra(ARG_NAV_GRAPH) != true) {
-      intent?.putExtra(ARG_NAV_GRAPH, R.navigation.app_settings)
+      intent?.putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)
     }
 
     super.onCreate(savedInstanceState, ready)
@@ -55,8 +55,8 @@ class AppSettingsActivity : DSLSettingsActivity(), DonationPaymentComponent {
         StartLocation.PROXY -> AppSettingsFragmentDirections.actionDirectToEditProxyFragment()
         StartLocation.NOTIFICATIONS -> AppSettingsFragmentDirections.actionDirectToNotificationsSettingsFragment()
         StartLocation.CHANGE_NUMBER -> AppSettingsFragmentDirections.actionDirectToChangeNumberFragment()
-        StartLocation.SUBSCRIPTIONS -> AppSettingsFragmentDirections.actionDirectToDonateToSignal(DonateToSignalType.MONTHLY)
-        StartLocation.BOOST -> AppSettingsFragmentDirections.actionDirectToDonateToSignal(DonateToSignalType.ONE_TIME)
+        StartLocation.SUBSCRIPTIONS -> AppSettingsFragmentDirections.actionDirectToCheckout(InAppPaymentType.RECURRING_DONATION)
+        StartLocation.BOOST -> AppSettingsFragmentDirections.actionDirectToCheckout(InAppPaymentType.ONE_TIME_DONATION)
         StartLocation.MANAGE_SUBSCRIPTIONS -> AppSettingsFragmentDirections.actionDirectToManageDonations()
         StartLocation.NOTIFICATION_PROFILES -> AppSettingsFragmentDirections.actionDirectToNotificationProfiles()
         StartLocation.CREATE_NOTIFICATION_PROFILE -> AppSettingsFragmentDirections.actionDirectToCreateNotificationProfiles()
@@ -80,7 +80,7 @@ class AppSettingsActivity : DSLSettingsActivity(), DonationPaymentComponent {
       navController.safeNavigate(it)
     }
 
-    SignalStore.settings().onConfigurationSettingChanged.observe(this) { key ->
+    SignalStore.settings.onConfigurationSettingChanged.observe(this) { key ->
       if (key == SettingsValues.THEME) {
         DynamicTheme.setDefaultDayNightMode(this)
         recreate()
@@ -120,15 +120,13 @@ class AppSettingsActivity : DSLSettingsActivity(), DonationPaymentComponent {
   override fun onWillFinish() {
     if (wasConfigurationUpdated) {
       setResult(MainActivity.RESULT_CONFIG_CHANGED)
-    } else {
-      setResult(RESULT_OK)
     }
   }
 
   @Suppress("DEPRECATION")
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
-    googlePayResultPublisher.onNext(DonationPaymentComponent.GooglePayResult(requestCode, resultCode, data))
+    googlePayResultPublisher.onNext(InAppPaymentComponent.GooglePayResult(requestCode, resultCode, data))
   }
 
   companion object {
@@ -198,7 +196,7 @@ class AppSettingsActivity : DSLSettingsActivity(), DonationPaymentComponent {
 
     private fun getIntentForStartLocation(context: Context, startLocation: StartLocation): Intent {
       return Intent(context, AppSettingsActivity::class.java)
-        .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings)
+        .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)
         .putExtra(START_LOCATION, startLocation.code)
     }
   }

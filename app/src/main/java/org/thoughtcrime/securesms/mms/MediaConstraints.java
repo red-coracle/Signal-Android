@@ -14,9 +14,10 @@ import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.jobs.AttachmentUploadJob;
 import org.thoughtcrime.securesms.util.BitmapDecodingException;
 import org.thoughtcrime.securesms.util.BitmapUtil;
-import org.thoughtcrime.securesms.util.FeatureFlags;
+import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.thoughtcrime.securesms.util.MediaUtil;
 import org.thoughtcrime.securesms.util.MemoryFileDescriptor;
+import org.thoughtcrime.securesms.video.TranscodingPreset;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,13 +33,13 @@ public abstract class MediaConstraints {
     return new PushMediaConstraints(sentMediaQuality);
   }
 
-  public static MediaConstraints getMmsMediaConstraints(int subscriptionId) {
-    return new MmsMediaConstraints(subscriptionId);
-  }
-
   public abstract int getImageMaxWidth(Context context);
   public abstract int getImageMaxHeight(Context context);
   public abstract int getImageMaxSize(Context context);
+
+  public TranscodingPreset getVideoTranscodingSettings() {
+    return TranscodingPreset.LEVEL_1;
+  }
 
   public boolean isHighQuality() {
     return false;
@@ -128,6 +129,6 @@ public abstract class MediaConstraints {
   }
 
   public static boolean isVideoTranscodeAvailable() {
-    return Build.VERSION.SDK_INT >= 26 && (FeatureFlags.useStreamingVideoMuxer() || MemoryFileDescriptor.supported());
+    return Build.VERSION.SDK_INT >= 26 && (RemoteConfig.useStreamingVideoMuxer() || MemoryFileDescriptor.supported());
   }
 }

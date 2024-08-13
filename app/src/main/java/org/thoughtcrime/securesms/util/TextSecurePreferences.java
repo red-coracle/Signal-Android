@@ -23,7 +23,7 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.backup.proto.SharedPreference;
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil;
 import org.thoughtcrime.securesms.database.SignalDatabase;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.impl.SqlCipherMigrationConstraintObserver;
 import org.thoughtcrime.securesms.keyvalue.SettingsValues;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
@@ -32,7 +32,7 @@ import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.notifications.NotificationIds;
 import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference;
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.registration.RegistrationNavigationActivity;
+import org.thoughtcrime.securesms.registration.ui.RegistrationActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1131,7 +1131,7 @@ public class TextSecurePreferences {
     Recipient  self          = Recipient.self();
     SignalDatabase.recipients().setProfileKey(self.getId(), newProfileKey);
 
-    ApplicationDependencies.getGroupsV2Authorization().clear();
+    AppDependencies.getGroupsV2Authorization().clear();
   }
 
   private static SharedPreferences getSharedPreferences(Context context) {
@@ -1144,7 +1144,7 @@ public class TextSecurePreferences {
   private static void notifyUnregisteredReceived(Context context) {
     PendingIntent reRegistrationIntent = PendingIntent.getActivity(context,
                                                                    0,
-                                                                   RegistrationNavigationActivity.newIntentForReRegistration(context),
+                                                                   RegistrationActivity.newIntentForReRegistration(context),
                                                                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntentFlags.immutable());
     final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.getInstance().FAILURES)
         .setSmallIcon(R.drawable.ic_signal_logo_large)

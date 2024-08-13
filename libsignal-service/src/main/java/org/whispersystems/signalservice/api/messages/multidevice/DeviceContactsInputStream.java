@@ -12,6 +12,7 @@ import org.signal.libsignal.protocol.InvalidMessageException;
 import org.signal.libsignal.protocol.logging.Log;
 import org.signal.libsignal.zkgroup.InvalidInputException;
 import org.signal.libsignal.zkgroup.profiles.ProfileKey;
+import org.whispersystems.signalservice.api.messages.SignalServiceAttachment;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachmentStream;
 import org.whispersystems.signalservice.api.push.ServiceId;
 import org.whispersystems.signalservice.api.push.ServiceId.ACI;
@@ -53,7 +54,6 @@ public class DeviceContactsInputStream extends ChunkedInputStream {
     Optional<String>                        color         = details.color != null ? Optional.of(details.color) : Optional.empty();
     Optional<VerifiedMessage>               verified      = Optional.empty();
     Optional<ProfileKey>                    profileKey    = Optional.empty();
-    boolean                                 blocked       = false;
     Optional<Integer>                       expireTimer   = Optional.empty();
     Optional<Integer>                       inboxPosition = Optional.empty();
     boolean                                 archived      = false;
@@ -63,7 +63,7 @@ public class DeviceContactsInputStream extends ChunkedInputStream {
       InputStream avatarStream      = new LimitedInputStream(in, avatarLength);
       String      avatarContentType = details.avatar.contentType;
 
-      avatar = Optional.of(new SignalServiceAttachmentStream(avatarStream, avatarContentType, avatarLength, Optional.empty(), false, false, false, false, null, null));
+      avatar = Optional.of(SignalServiceAttachment.newStreamBuilder().withStream(avatarStream).withContentType(avatarContentType).withLength(avatarLength).build());
     }
 
     if (details.verified != null) {
@@ -107,10 +107,9 @@ public class DeviceContactsInputStream extends ChunkedInputStream {
       inboxPosition = Optional.of(details.inboxPosition);
     }
 
-    blocked  = details.blocked;
     archived = details.archived;
 
-    return new DeviceContact(aci, e164, name, avatar, color, verified, profileKey, blocked, expireTimer, inboxPosition, archived);
+    return new DeviceContact(aci, e164, name, avatar, color, verified, profileKey, expireTimer, inboxPosition, archived);
   }
 
 }

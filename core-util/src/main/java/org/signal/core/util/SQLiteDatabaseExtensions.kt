@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase
 import androidx.core.content.contentValuesOf
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
-import org.intellij.lang.annotations.Language
 
 /**
  * Begins a transaction on the `this` database, runs the provided [block] providing the `this` value as it's argument
@@ -35,6 +34,39 @@ fun SupportSQLiteDatabase.getTableRowCount(table: String): Int {
   }
 }
 
+fun SupportSQLiteDatabase.getAllTables(): List<String> {
+  return SqlUtil.getAllTables(this)
+}
+
+/**
+ * Returns a list of objects that represent the table definitions in the database. Basically the table name and then the SQL that was used to create it.
+ */
+fun SupportSQLiteDatabase.getAllTableDefinitions(): List<CreateStatement> {
+  return this.query("SELECT name, sql FROM sqlite_schema WHERE type = 'table' AND sql NOT NULL AND name != 'sqlite_sequence'")
+    .readToList { cursor ->
+      CreateStatement(
+        name = cursor.requireNonNullString("name"),
+        statement = cursor.requireNonNullString("sql").replace("      ", "")
+      )
+    }
+    .filterNot { it.name.startsWith("sqlite_stat") }
+    .sortedBy { it.name }
+}
+
+/**
+ * Returns a list of objects that represent the index definitions in the database. Basically the index name and then the SQL that was used to create it.
+ */
+fun SupportSQLiteDatabase.getAllIndexDefinitions(): List<CreateStatement> {
+  return this.query("SELECT name, sql FROM sqlite_schema WHERE type = 'index' AND sql NOT NULL")
+    .readToList { cursor ->
+      CreateStatement(
+        name = cursor.requireNonNullString("name"),
+        statement = cursor.requireNonNullString("sql")
+      )
+    }
+    .sortedBy { it.name }
+}
+
 fun SupportSQLiteDatabase.getForeignKeys(): List<ForeignKeyConstraint> {
   return SqlUtil.getAllTables(this)
     .map { table ->
@@ -54,6 +86,33 @@ fun SupportSQLiteDatabase.getForeignKeys(): List<ForeignKeyConstraint> {
 fun SupportSQLiteDatabase.areForeignKeyConstraintsEnabled(): Boolean {
   return this.query("PRAGMA foreign_keys", null).use { cursor ->
     cursor.moveToFirst() && cursor.getInt(0) != 0
+  }
+}
+
+/**
+ * Does a full WAL checkpoint (TRUNCATE mode, where the log is for sure flushed and the log is zero'd out).
+ * Will try up to [maxAttempts] times. Can technically fail if the database is too active and the checkpoint
+ * can't complete in a reasonable amount of time.
+ *
+ * See: https://www.sqlite.org/pragma.html#pragma_wal_checkpoint
+ */
+fun SupportSQLiteDatabase.fullWalCheckpoint(maxAttempts: Int = 3): Boolean {
+  var attempts = 0
+
+  while (attempts < maxAttempts) {
+    if (this.walCheckpoint()) {
+      return true
+    }
+
+    attempts++
+  }
+
+  return false
+}
+
+private fun SupportSQLiteDatabase.walCheckpoint(): Boolean {
+  return this.query("PRAGMA wal_checkpoint(TRUNCATE)").use { cursor ->
+    cursor.moveToFirst() && cursor.getInt(0) == 0
   }
 }
 
@@ -114,7 +173,7 @@ fun SupportSQLiteDatabase.delete(tableName: String): DeleteBuilderPart1 {
  * Deletes all data in the table.
  */
 fun SupportSQLiteDatabase.deleteAll(tableName: String): Int {
-  return this.delete(tableName, null, null)
+  return this.delete(tableName, null, arrayOfNulls<String>(0))
 }
 
 fun SupportSQLiteDatabase.insertInto(tableName: String): InsertBuilderPart1 {
@@ -135,7 +194,7 @@ class SelectBuilderPart2(
   private val columns: Array<String>,
   private val tableName: String
 ) {
-  fun where(@Language("sql") where: String, vararg whereArgs: Any): SelectBuilderPart3 {
+  fun where(where: String, vararg whereArgs: Any): SelectBuilderPart3 {
     return SelectBuilderPart3(db, columns, tableName, where, SqlUtil.buildArgs(*whereArgs))
   }
 
@@ -283,12 +342,12 @@ class UpdateBuilderPart2(
   private val tableName: String,
   private val values: ContentValues
 ) {
-  fun where(@Language("sql") where: String, vararg whereArgs: Any): UpdateBuilderPart3 {
+  fun where(where: String, vararg whereArgs: Any): UpdateBuilderPart3 {
     require(where.isNotBlank())
     return UpdateBuilderPart3(db, tableName, values, where, SqlUtil.buildArgs(*whereArgs))
   }
 
-  fun where(@Language("sql") where: String, whereArgs: Array<String>): UpdateBuilderPart3 {
+  fun where(where: String, whereArgs: Array<String>): UpdateBuilderPart3 {
     require(where.isNotBlank())
     return UpdateBuilderPart3(db, tableName, values, where, whereArgs)
   }
@@ -335,12 +394,12 @@ class DeleteBuilderPart1(
   private val db: SupportSQLiteDatabase,
   private val tableName: String
 ) {
-  fun where(@Language("sql") where: String, vararg whereArgs: Any): DeleteBuilderPart2 {
+  fun where(where: String, vararg whereArgs: Any): DeleteBuilderPart2 {
     require(where.isNotBlank())
     return DeleteBuilderPart2(db, tableName, where, SqlUtil.buildArgs(*whereArgs))
   }
 
-  fun where(@Language("sql") where: String, whereArgs: Array<String>): DeleteBuilderPart2 {
+  fun where(where: String, whereArgs: Array<String>): DeleteBuilderPart2 {
     require(where.isNotBlank())
     return DeleteBuilderPart2(db, tableName, where, whereArgs)
   }
@@ -362,11 +421,11 @@ class ExistsBuilderPart1(
   private val tableName: String
 ) {
 
-  fun where(@Language("sql") where: String, vararg whereArgs: Any): ExistsBuilderPart2 {
+  fun where(where: String, vararg whereArgs: Any): ExistsBuilderPart2 {
     return ExistsBuilderPart2(db, tableName, where, SqlUtil.buildArgs(*whereArgs))
   }
 
-  fun where(@Language("sql") where: String, whereArgs: Array<String>): ExistsBuilderPart2 {
+  fun where(where: String, whereArgs: Array<String>): ExistsBuilderPart2 {
     return ExistsBuilderPart2(db, tableName, where, whereArgs)
   }
 
@@ -425,4 +484,9 @@ data class Index(
   val name: String,
   val table: String,
   val columns: List<String>
+)
+
+data class CreateStatement(
+  val name: String,
+  val statement: String
 )

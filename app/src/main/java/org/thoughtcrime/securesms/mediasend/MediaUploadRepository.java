@@ -16,7 +16,7 @@ import org.thoughtcrime.securesms.attachments.AttachmentId;
 import org.thoughtcrime.securesms.database.AttachmentTable;
 import org.thoughtcrime.securesms.database.AttachmentTable.TransformProperties;
 import org.thoughtcrime.securesms.database.SignalDatabase;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.mms.GifSlide;
 import org.thoughtcrime.securesms.mms.ImageSlide;
@@ -108,6 +108,7 @@ public class MediaUploadRepository {
   }
 
   public void cancelUpload(@NonNull Collection<Media> mediaItems) {
+    Log.d(TAG, "Canceling uploads.");
     executor.execute(() -> {
       for (Media media : mediaItems) {
         cancelUploadInternal(media);
@@ -116,6 +117,7 @@ public class MediaUploadRepository {
   }
 
   public void cancelAllUploads() {
+    Log.d(TAG, "Canceling all uploads.");
     executor.execute(() -> {
       for (Media media : new HashSet<>(uploadResults.keySet())) {
         cancelUploadInternal(media);
@@ -155,10 +157,11 @@ public class MediaUploadRepository {
   }
 
   private void cancelUploadInternal(@NonNull Media media) {
-    JobManager      jobManager = ApplicationDependencies.getJobManager();
+    JobManager      jobManager = AppDependencies.getJobManager();
     PreUploadResult result     = uploadResults.get(media);
 
     if (result != null) {
+      Log.d(TAG, "Canceling upload jobs for " + result.getJobIds().size() + " media items.");
       Stream.of(result.getJobIds()).forEach(jobManager::cancel);
       uploadResults.remove(media);
       SignalDatabase.attachments().deleteAttachment(result.getAttachmentId());

@@ -13,11 +13,13 @@ import org.thoughtcrime.securesms.database.RecipientTable;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.DistributionListId;
 import org.thoughtcrime.securesms.database.model.DistributionListRecord;
+import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord;
 import org.thoughtcrime.securesms.database.model.RecipientRecord;
+import org.thoughtcrime.securesms.database.model.databaseprotos.InAppPaymentData;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues;
+import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.subscription.Subscriber;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 import org.whispersystems.signalservice.api.storage.SignalAccountRecord;
 import org.whispersystems.signalservice.api.storage.SignalContactRecord;
@@ -31,6 +33,7 @@ import org.whispersystems.signalservice.internal.storage.protos.AccountRecord;
 import org.whispersystems.signalservice.internal.storage.protos.ContactRecord.IdentityState;
 import org.whispersystems.signalservice.internal.storage.protos.GroupV2Record;
 
+import java.util.Currency;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,7 +95,7 @@ public final class StorageSyncModels {
 
   private static @NonNull SignalAccountRecord.PinnedConversation localToRemotePinnedConversation(@NonNull RecipientRecord settings) {
     switch (settings.getRecipientType()) {
-      case INDIVIDUAL: return SignalAccountRecord.PinnedConversation.forContact(new SignalServiceAddress(settings.getAci(), settings.getE164()));
+      case INDIVIDUAL: return SignalAccountRecord.PinnedConversation.forContact(new SignalServiceAddress(settings.getServiceId(), settings.getE164()));
       case GV1: return SignalAccountRecord.PinnedConversation.forGroupV1(settings.getGroupId().requireV1().getDecodedId());
       case GV2: return SignalAccountRecord.PinnedConversation.forGroupV2(settings.getSyncExtras().getGroupMasterKey().serialize());
       default       : throw new AssertionError("Unexpected group type!");
@@ -155,6 +158,9 @@ public final class StorageSyncModels {
                                   .setHidden(recipient.getHiddenState() != Recipient.HiddenState.NOT_HIDDEN)
                                   .setUsername(recipient.getUsername())
                                   .setPniSignatureVerified(recipient.getSyncExtras().getPniSignatureVerified())
+                                  .setNicknameGivenName(recipient.getNickname().getGivenName())
+                                  .setNicknameFamilyName(recipient.getNickname().getFamilyName())
+                                  .setNote(recipient.getNote())
                                   .build();
   }
 
@@ -245,7 +251,7 @@ public final class StorageSyncModels {
                                                 .setRecipients(record.getMembersToSync()
                                                                      .stream()
                                                                      .map(Recipient::resolved)
-                                                                     .filter(Recipient::hasServiceId)
+                                                                     .filter(Recipient::getHasServiceId)
                                                                      .map(Recipient::requireServiceId)
                                                                      .map(SignalServiceAddress::new)
                                                                      .collect(Collectors.toList()))
@@ -270,17 +276,39 @@ public final class StorageSyncModels {
     }
   }
 
-  public static @NonNull SignalAccountRecord.Subscriber localToRemoteSubscriber(@Nullable Subscriber subscriber) {
+  /**
+   * TODO - need to store the subscriber type
+   */
+  public static @NonNull SignalAccountRecord.Subscriber localToRemoteSubscriber(@Nullable InAppPaymentSubscriberRecord subscriber) {
     if (subscriber == null) {
       return new SignalAccountRecord.Subscriber(null, null);
     } else {
-      return new SignalAccountRecord.Subscriber(subscriber.getCurrencyCode(), subscriber.getSubscriberId().getBytes());
+      return new SignalAccountRecord.Subscriber(subscriber.getCurrency().getCurrencyCode(), subscriber.getSubscriberId().getBytes());
     }
   }
 
-  public static @Nullable Subscriber remoteToLocalSubscriber(@NonNull SignalAccountRecord.Subscriber subscriber) {
+  public static @Nullable InAppPaymentSubscriberRecord remoteToLocalSubscriber(
+      @NonNull SignalAccountRecord.Subscriber subscriber,
+      @NonNull InAppPaymentSubscriberRecord.Type type
+  ) {
     if (subscriber.getId().isPresent()) {
-      return new Subscriber(SubscriberId.fromBytes(subscriber.getId().get()), subscriber.getCurrencyCode().get());
+      SubscriberId                       subscriberId          = SubscriberId.fromBytes(subscriber.getId().get());
+      InAppPaymentSubscriberRecord       localSubscriberRecord = SignalDatabase.inAppPaymentSubscribers().getBySubscriberId(subscriberId);
+      boolean                            requiresCancel        = localSubscriberRecord != null && localSubscriberRecord.getRequiresCancel();
+      InAppPaymentData.PaymentMethodType paymentMethodType     = localSubscriberRecord != null ? localSubscriberRecord.getPaymentMethodType() : InAppPaymentData.PaymentMethodType.UNKNOWN;
+
+      Currency currency;
+      if (subscriber.getCurrencyCode().isEmpty()) {
+        return null;
+      } else {
+        try {
+          currency = Currency.getInstance(subscriber.getCurrencyCode().get());
+        } catch (IllegalArgumentException e) {
+          return null;
+        }
+      }
+
+      return new InAppPaymentSubscriberRecord(subscriberId, currency, type, requiresCancel, paymentMethodType);
     } else {
       return null;
     }

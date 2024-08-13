@@ -22,18 +22,6 @@ public final class DeprecatedClientPreventionInterceptor implements Interceptor 
 
   @Override
   public @NonNull Response intercept(@NonNull Chain chain) throws IOException {
-    if (SignalStore.misc().isClientDeprecated()) {
-      Log.w(TAG, "Preventing request because client is deprecated.");
-      return new Response.Builder()
-                         .request(chain.request())
-                         .protocol(Protocol.HTTP_1_1)
-                         .receivedResponseAtMillis(System.currentTimeMillis())
-                         .message("")
-                         .body(ResponseBody.create(null, ""))
-                         .code(499)
-                         .build();
-    } else {
-      return chain.proceed(chain.request());
-    }
+    return chain.proceed(chain.request());
   }
 }

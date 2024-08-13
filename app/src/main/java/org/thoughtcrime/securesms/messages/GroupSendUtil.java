@@ -17,13 +17,13 @@ import org.thoughtcrime.securesms.database.MessageSendLogTables;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.DistributionListId;
 import org.thoughtcrime.securesms.database.model.MessageId;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
-import org.thoughtcrime.securesms.util.FeatureFlags;
+import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.thoughtcrime.securesms.util.RecipientAccessList;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
@@ -212,7 +212,15 @@ public final class GroupSendUtil {
         allTargets,
         isRecipientUpdate,
         true,
-        new StorySendOperation(messageId, groupId, sentTimestamp, message, Collections.emptySet()),
+        new StorySendOperation(messageId,
+                               groupId,
+                               sentTimestamp,
+                               message,
+                               allTargets.stream()
+                                         .map(target -> new SignalServiceStoryMessageRecipient(new SignalServiceAddress(target.requireServiceId()),
+                                                                                               Collections.emptyList(),
+                                                                                               true))
+                                         .collect(Collectors.toSet())),
         null);
   }
 
@@ -235,7 +243,7 @@ public final class GroupSendUtil {
                                                      @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException
   {
-    Log.i(TAG, "Starting group send. GroupId: " + (groupId != null ? groupId.toString() : "none") + ", DistributionListId: " + (distributionId != null ? distributionId.toString() : "none") + " RelatedMessageId: " + (relatedMessageId != null ? relatedMessageId.toString() : "none") + ", Targets: " + allTargets.size() + ", RecipientUpdate: " + isRecipientUpdate + ", Operation: " + sendOperation.getClass().getSimpleName());
+    Log.i(TAG, "Starting group send. GroupId: " + (groupId != null ? groupId.toString() : "none") + ", DistributionId: " + (distributionId != null ? distributionId.toString() : "none") + " RelatedMessageId: " + (relatedMessageId != null ? relatedMessageId.toString() : "none") + ", Targets: " + allTargets.size() + ", RecipientUpdate: " + isRecipientUpdate + ", Operation: " + sendOperation.getClass().getSimpleName());
 
     Set<Recipient>  unregisteredTargets = allTargets.stream().filter(Recipient::isUnregistered).collect(Collectors.toSet());
     List<Recipient> registeredTargets   = allTargets.stream().filter(r -> !unregisteredTargets.contains(r)).collect(Collectors.toList());
@@ -254,7 +262,7 @@ public final class GroupSendUtil {
         validMembership = false;
       }
 
-      if (recipient.hasServiceId() &&
+      if (recipient.getHasServiceId() &&
           access.isPresent() &&
           access.get().getTargetUnidentifiedAccess().isPresent() &&
           validMembership)
@@ -274,7 +282,7 @@ public final class GroupSendUtil {
       senderKeyTargets.clear();
       senderKeyTargets.addAll(registeredTargets);
       legacyTargets.clear();
-    } else if (SignalStore.internalValues().removeSenderKeyMinimum()) {
+    } else if (SignalStore.internal().removeSenderKeyMinimum()) {
       Log.i(TAG, "Sender key minimum removed. Using for " + senderKeyTargets.size() + " recipients.");
     } else if (senderKeyTargets.size() < 2) {
       Log.i(TAG, "Too few sender-key-capable users (" + senderKeyTargets.size() + "). Doing all legacy sends.");
@@ -289,13 +297,13 @@ public final class GroupSendUtil {
     }
 
     List<SendMessageResult>    allResults    = new ArrayList<>(allTargets.size());
-    SignalServiceMessageSender messageSender = ApplicationDependencies.getSignalServiceMessageSender();
+    SignalServiceMessageSender messageSender = AppDependencies.getSignalServiceMessageSender();
 
     if (senderKeyTargets.size() > 0 && distributionId != null) {
       long           keyCreateTime  = SenderKeyUtil.getCreateTimeForOurKey(distributionId);
       long           keyAge         = System.currentTimeMillis() - keyCreateTime;
 
-      if (keyCreateTime != -1 && keyAge > FeatureFlags.senderKeyMaxAge()) {
+      if (keyCreateTime != -1 && keyAge > RemoteConfig.senderKeyMaxAge()) {
         Log.w(TAG, "DistributionId " + distributionId + " was created at " + keyCreateTime + " and is " + (keyAge) + " ms old (~" + TimeUnit.MILLISECONDS.toDays(keyAge) + " days). Rotating.");
         SenderKeyUtil.rotateOurKey(distributionId);
       }
@@ -404,7 +412,7 @@ public final class GroupSendUtil {
       Log.w(TAG, "There are " + unregisteredTargets.size() + " unregistered targets. Including failure results.");
 
       List<SendMessageResult> unregisteredResults = unregisteredTargets.stream()
-                                                                       .filter(Recipient::hasServiceId)
+                                                                       .filter(Recipient::getHasServiceId)
                                                                        .map(t -> SendMessageResult.unregisteredFailure(new SignalServiceAddress(t.requireServiceId(), t.getE164().orElse(null))))
                                                                        .collect(Collectors.toList());
 
@@ -522,10 +530,10 @@ public final class GroupSendUtil {
         if (editMessage != null) {
           result = messageSender.sendEditMessage(targets.get(0), access.get(0), contentHint, message, SignalServiceMessageSender.IndividualSendEvents.EMPTY, urgent, editMessage.getTargetSentTimestamp());
         } else {
-          result = messageSender.sendDataMessage(targets.get(0), access.get(0), contentHint, message, SignalServiceMessageSender.IndividualSendEvents.EMPTY, urgent, targetRecipient.needsPniSignature());
+          result = messageSender.sendDataMessage(targets.get(0), access.get(0), contentHint, message, SignalServiceMessageSender.IndividualSendEvents.EMPTY, urgent, targetRecipient.getNeedsPniSignature());
         }
 
-        if (targetRecipient.needsPniSignature()) {
+        if (targetRecipient.getNeedsPniSignature()) {
           SignalDatabase.pendingPniSignatureMessages().insertIfNecessary(targetRecipients.get(0).getId(), getSentTimestamp(), result);
         }
 
@@ -811,6 +819,9 @@ public final class GroupSendUtil {
     private LegacyMetricEventListener(long messageId) {
       this.messageId = messageId;
     }
+
+    @Override
+    public void onMessageEncrypted() {}
 
     @Override
     public void onMessageSent() {

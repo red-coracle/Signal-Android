@@ -6,22 +6,28 @@
 package org.thoughtcrime.securesms.backup.v2.database
 
 import android.database.Cursor
-import com.annimon.stream.Stream
 import okio.ByteString.Companion.toByteString
 import org.signal.core.util.Base64
-import org.signal.core.util.Base64.decodeOrThrow
+import org.signal.core.util.Hex
 import org.signal.core.util.logging.Log
 import org.signal.core.util.requireBlob
 import org.signal.core.util.requireBoolean
 import org.signal.core.util.requireInt
 import org.signal.core.util.requireLong
+import org.signal.core.util.requireLongOrNull
 import org.signal.core.util.requireString
-import org.thoughtcrime.securesms.backup.v2.proto.CallChatUpdate
+import org.thoughtcrime.securesms.attachments.Cdn
+import org.thoughtcrime.securesms.attachments.DatabaseAttachment
+import org.thoughtcrime.securesms.backup.v2.BackupRepository.getMediaName
 import org.thoughtcrime.securesms.backup.v2.proto.ChatItem
 import org.thoughtcrime.securesms.backup.v2.proto.ChatUpdateMessage
 import org.thoughtcrime.securesms.backup.v2.proto.ExpirationTimerChatUpdate
-import org.thoughtcrime.securesms.backup.v2.proto.GroupCallChatUpdate
-import org.thoughtcrime.securesms.backup.v2.proto.IndividualCallChatUpdate
+import org.thoughtcrime.securesms.backup.v2.proto.FilePointer
+import org.thoughtcrime.securesms.backup.v2.proto.GroupCall
+import org.thoughtcrime.securesms.backup.v2.proto.IndividualCall
+import org.thoughtcrime.securesms.backup.v2.proto.LearnedProfileChatUpdate
+import org.thoughtcrime.securesms.backup.v2.proto.MessageAttachment
+import org.thoughtcrime.securesms.backup.v2.proto.PaymentNotification
 import org.thoughtcrime.securesms.backup.v2.proto.ProfileChangeChatUpdate
 import org.thoughtcrime.securesms.backup.v2.proto.Quote
 import org.thoughtcrime.securesms.backup.v2.proto.Reaction
@@ -30,32 +36,49 @@ import org.thoughtcrime.securesms.backup.v2.proto.SendStatus
 import org.thoughtcrime.securesms.backup.v2.proto.SessionSwitchoverChatUpdate
 import org.thoughtcrime.securesms.backup.v2.proto.SimpleChatUpdate
 import org.thoughtcrime.securesms.backup.v2.proto.StandardMessage
+import org.thoughtcrime.securesms.backup.v2.proto.Sticker
+import org.thoughtcrime.securesms.backup.v2.proto.StickerMessage
 import org.thoughtcrime.securesms.backup.v2.proto.Text
 import org.thoughtcrime.securesms.backup.v2.proto.ThreadMergeChatUpdate
+import org.thoughtcrime.securesms.database.AttachmentTable
+import org.thoughtcrime.securesms.database.CallTable
 import org.thoughtcrime.securesms.database.GroupReceiptTable
 import org.thoughtcrime.securesms.database.MessageTable
 import org.thoughtcrime.securesms.database.MessageTypes
+import org.thoughtcrime.securesms.database.PaymentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.SignalDatabase.Companion.calls
+import org.thoughtcrime.securesms.database.SignalDatabase.Companion.recipients
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatchSet
 import org.thoughtcrime.securesms.database.documents.NetworkFailureSet
 import org.thoughtcrime.securesms.database.model.GroupCallUpdateDetailsUtil
+import org.thoughtcrime.securesms.database.model.GroupsV2UpdateMessageConverter
+import org.thoughtcrime.securesms.database.model.Mention
 import org.thoughtcrime.securesms.database.model.ReactionRecord
 import org.thoughtcrime.securesms.database.model.databaseprotos.BodyRangeList
+import org.thoughtcrime.securesms.database.model.databaseprotos.DecryptedGroupV2Context
+import org.thoughtcrime.securesms.database.model.databaseprotos.GiftBadge
+import org.thoughtcrime.securesms.database.model.databaseprotos.MessageExtras
 import org.thoughtcrime.securesms.database.model.databaseprotos.ProfileChangeDetails
 import org.thoughtcrime.securesms.database.model.databaseprotos.SessionSwitchoverEvent
 import org.thoughtcrime.securesms.database.model.databaseprotos.ThreadMergeEvent
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.mms.QuoteModel
+import org.thoughtcrime.securesms.payments.FailureReason
+import org.thoughtcrime.securesms.payments.State
+import org.thoughtcrime.securesms.payments.proto.PaymentMetaData
 import org.thoughtcrime.securesms.util.JsonUtils
 import org.whispersystems.signalservice.api.push.ServiceId.ACI
 import org.whispersystems.signalservice.api.util.UuidUtil
 import org.whispersystems.signalservice.api.util.toByteArray
 import java.io.Closeable
 import java.io.IOException
+import java.util.HashMap
 import java.util.LinkedList
 import java.util.Queue
-import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 import org.thoughtcrime.securesms.backup.v2.proto.BodyRange as BackupBodyRange
+import org.thoughtcrime.securesms.backup.v2.proto.GiftBadge as BackupGiftBadge
 
 /**
  * An iterator for chat items with a clever performance twist: rather than do the extra queries one at a time (for reactions,
@@ -64,7 +87,7 @@ import org.thoughtcrime.securesms.backup.v2.proto.BodyRange as BackupBodyRange
  *
  * All of this complexity is hidden from the user -- they just get a normal iterator interface.
  */
-class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: Int) : Iterator<ChatItem>, Closeable {
+class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: Int, private val archiveMedia: Boolean) : Iterator<ChatItem?>, Closeable {
 
   companion object {
     private val TAG = Log.tag(ChatItemExportIterator::class.java)
@@ -78,11 +101,13 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
    */
   private val buffer: Queue<ChatItem> = LinkedList()
 
+  private val revisionMap: HashMap<Long, ArrayList<ChatItem>> = HashMap()
+
   override fun hasNext(): Boolean {
     return buffer.isNotEmpty() || (cursor.count > 0 && !cursor.isLast && !cursor.isAfterLast)
   }
 
-  override fun next(): ChatItem {
+  override fun next(): ChatItem? {
     if (buffer.isNotEmpty()) {
       return buffer.remove()
     }
@@ -99,124 +124,114 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
     }
 
     val reactionsById: Map<Long, List<ReactionRecord>> = SignalDatabase.reactions.getReactionsForMessages(records.keys)
+    val mentionsById: Map<Long, List<Mention>> = SignalDatabase.mentions.getMentionsForMessages(records.keys)
+    val attachmentsById: Map<Long, List<DatabaseAttachment>> = SignalDatabase.attachments.getAttachmentsForMessages(records.keys)
     val groupReceiptsById: Map<Long, List<GroupReceiptTable.GroupReceiptInfo>> = SignalDatabase.groupReceipts.getGroupReceiptInfoForMessages(records.keys)
 
     for ((id, record) in records) {
       val builder = record.toBasicChatItemBuilder(groupReceiptsById[id])
 
       when {
-        record.remoteDeleted -> builder.remoteDeletedMessage = RemoteDeletedMessage()
-        MessageTypes.isJoinedType(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.JOINED_SIGNAL))
-        MessageTypes.isIdentityUpdate(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.IDENTITY_UPDATE))
-        MessageTypes.isIdentityVerified(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.IDENTITY_VERIFIED))
-        MessageTypes.isIdentityDefault(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.IDENTITY_DEFAULT))
-        MessageTypes.isChangeNumber(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.CHANGE_NUMBER))
-        MessageTypes.isBoostRequest(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.BOOST_REQUEST))
-        MessageTypes.isEndSessionType(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.END_SESSION))
-        MessageTypes.isChatSessionRefresh(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.CHAT_SESSION_REFRESH))
-        MessageTypes.isBadDecryptType(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.BAD_DECRYPT))
-        MessageTypes.isPaymentsActivated(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.PAYMENTS_ACTIVATED))
-        MessageTypes.isPaymentsRequestToActivate(record.type) -> builder.updateMessage = ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = SimpleChatUpdate.Type.PAYMENT_ACTIVATION_REQUEST))
-        MessageTypes.isExpirationTimerUpdate(record.type) -> builder.updateMessage = ChatUpdateMessage(expirationTimerChange = ExpirationTimerChatUpdate((record.expiresIn / 1000).toInt()))
+        record.remoteDeleted -> {
+          builder.remoteDeletedMessage = RemoteDeletedMessage()
+        }
+        MessageTypes.isJoinedType(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.JOINED_SIGNAL)
+        }
+        MessageTypes.isIdentityUpdate(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.IDENTITY_UPDATE)
+        }
+        MessageTypes.isIdentityVerified(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.IDENTITY_VERIFIED)
+        }
+        MessageTypes.isIdentityDefault(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.IDENTITY_DEFAULT)
+        }
+        MessageTypes.isChangeNumber(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.CHANGE_NUMBER)
+        }
+        MessageTypes.isBoostRequest(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.BOOST_REQUEST)
+        }
+        MessageTypes.isEndSessionType(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.END_SESSION)
+        }
+        MessageTypes.isChatSessionRefresh(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.CHAT_SESSION_REFRESH)
+        }
+        MessageTypes.isBadDecryptType(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.BAD_DECRYPT)
+        }
+        MessageTypes.isPaymentsActivated(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.PAYMENTS_ACTIVATED)
+        }
+        MessageTypes.isPaymentsRequestToActivate(record.type) -> {
+          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.PAYMENT_ACTIVATION_REQUEST)
+        }
+        MessageTypes.isExpirationTimerUpdate(record.type) -> {
+          builder.updateMessage = ChatUpdateMessage(expirationTimerChange = ExpirationTimerChatUpdate(record.expiresIn.toInt()))
+          builder.expiresInMs = 0
+        }
         MessageTypes.isProfileChange(record.type) -> {
-          builder.updateMessage = ChatUpdateMessage(
-            profileChange = try {
-              val decoded: ByteArray = Base64.decode(record.body!!)
-              val profileChangeDetails = ProfileChangeDetails.ADAPTER.decode(decoded)
-              if (profileChangeDetails.profileNameChange != null) {
-                ProfileChangeChatUpdate(previousName = profileChangeDetails.profileNameChange.previous, newName = profileChangeDetails.profileNameChange.newValue)
-              } else {
-                ProfileChangeChatUpdate()
-              }
-            } catch (e: IOException) {
-              Log.w(TAG, "Profile name change details could not be read", e)
-              ProfileChangeChatUpdate()
-            }
-          )
+          builder.updateMessage = record.toProfileChangeUpdate()
         }
         MessageTypes.isSessionSwitchoverType(record.type) -> {
-          builder.updateMessage = ChatUpdateMessage(
-            sessionSwitchover = try {
-              val event = SessionSwitchoverEvent.ADAPTER.decode(decodeOrThrow(record.body!!))
-              SessionSwitchoverChatUpdate(event.e164.e164ToLong()!!)
-            } catch (e: Exception) {
-              SessionSwitchoverChatUpdate()
-            }
-          )
+          builder.updateMessage = record.toSessionSwitchoverUpdate()
         }
         MessageTypes.isThreadMergeType(record.type) -> {
-          builder.updateMessage = ChatUpdateMessage(
-            threadMerge = try {
-              val event = ThreadMergeEvent.ADAPTER.decode(decodeOrThrow(record.body!!))
-              ThreadMergeChatUpdate(event.previousE164.e164ToLong()!!)
-            } catch (e: Exception) {
-              ThreadMergeChatUpdate()
-            }
-          )
+          builder.updateMessage = record.toThreadMergeUpdate()
+        }
+        MessageTypes.isGroupV2(record.type) && MessageTypes.isGroupUpdate(record.type) -> {
+          builder.updateMessage = record.toGroupUpdate()
         }
         MessageTypes.isCallLog(record.type) -> {
-          val call = calls.getCallByMessageId(record.id)
-          if (call != null) {
-            builder.updateMessage = ChatUpdateMessage(callingMessage = CallChatUpdate(callId = call.callId))
-          } else {
-            when {
-              MessageTypes.isMissedAudioCall(record.type) -> {
-                builder.updateMessage = ChatUpdateMessage(callingMessage = CallChatUpdate(callMessage = IndividualCallChatUpdate(type = IndividualCallChatUpdate.Type.MISSED_AUDIO_CALL)))
-              }
-              MessageTypes.isMissedVideoCall(record.type) -> {
-                builder.updateMessage = ChatUpdateMessage(callingMessage = CallChatUpdate(callMessage = IndividualCallChatUpdate(type = IndividualCallChatUpdate.Type.MISSED_VIDEO_CALL)))
-              }
-              MessageTypes.isIncomingAudioCall(record.type) -> {
-                builder.updateMessage = ChatUpdateMessage(callingMessage = CallChatUpdate(callMessage = IndividualCallChatUpdate(type = IndividualCallChatUpdate.Type.INCOMING_AUDIO_CALL)))
-              }
-              MessageTypes.isIncomingVideoCall(record.type) -> {
-                builder.updateMessage = ChatUpdateMessage(callingMessage = CallChatUpdate(callMessage = IndividualCallChatUpdate(type = IndividualCallChatUpdate.Type.INCOMING_VIDEO_CALL)))
-              }
-              MessageTypes.isOutgoingAudioCall(record.type) -> {
-                builder.updateMessage = ChatUpdateMessage(callingMessage = CallChatUpdate(callMessage = IndividualCallChatUpdate(type = IndividualCallChatUpdate.Type.OUTGOING_AUDIO_CALL)))
-              }
-              MessageTypes.isOutgoingVideoCall(record.type) -> {
-                builder.updateMessage = ChatUpdateMessage(callingMessage = CallChatUpdate(callMessage = IndividualCallChatUpdate(type = IndividualCallChatUpdate.Type.OUTGOING_VIDEO_CALL)))
-              }
-              MessageTypes.isGroupCall(record.type) -> {
-                try {
-                  val groupCallUpdateDetails = GroupCallUpdateDetailsUtil.parse(record.body)
+          builder.updateMessage = record.toCallUpdate()
+        }
+        MessageTypes.isPaymentsNotification(record.type) -> {
+          builder.paymentNotification = record.toPaymentNotificationUpdate()
+        }
+        MessageTypes.isGiftBadge(record.type) -> {
+          builder.giftBadge = record.toGiftBadgeUpdate()
+        }
+        else -> {
+          if (record.body == null && !attachmentsById.containsKey(record.id)) {
+            Log.w(TAG, "Record with ID ${record.id} missing a body and doesn't have attachments. Skipping.")
+            continue
+          }
 
-                  val joinedMembers = Stream.of(groupCallUpdateDetails.inCallUuids)
-                    .map { uuid: String? -> UuidUtil.parseOrNull(uuid) }
-                    .withoutNulls()
-                    .map { obj: UUID? -> ACI.from(obj!!).toByteString() }
-                    .toList()
-                  builder.updateMessage = ChatUpdateMessage(
-                    callingMessage = CallChatUpdate(
-                      groupCall = GroupCallChatUpdate(
-                        startedCallAci = ACI.from(UuidUtil.parseOrThrow(groupCallUpdateDetails.startedCallUuid)).toByteString(),
-                        startedCallTimestamp = groupCallUpdateDetails.startedCallTimestamp,
-                        inCallAcis = joinedMembers
-                      )
-                    )
-                  )
-                } catch (exception: java.lang.Exception) {
-                  continue
-                }
-              }
-            }
+          val attachments = attachmentsById[record.id]
+          val sticker = attachments?.firstOrNull { dbAttachment ->
+            dbAttachment.isSticker
+          }
+
+          if (sticker?.stickerLocator != null) {
+            builder.stickerMessage = sticker.toStickerMessage(reactionsById[id])
+          } else {
+            builder.standardMessage = record.toStandardMessage(reactionsById[id], mentions = mentionsById[id], attachments = attachmentsById[record.id])
           }
         }
-        record.body == null -> {
-          Log.w(TAG, "Record missing a body, skipping")
-          continue
-        }
-        else -> builder.standardMessage = record.toTextMessage(reactionsById[id])
       }
 
-      buffer += builder.build()
+      if (record.latestRevisionId == null) {
+        val previousEdits = revisionMap.remove(record.id)
+        if (previousEdits != null) {
+          builder.revisions = previousEdits
+        }
+        buffer += builder.build()
+      } else {
+        var previousEdits = revisionMap[record.latestRevisionId]
+        if (previousEdits == null) {
+          previousEdits = ArrayList()
+          revisionMap[record.latestRevisionId] = previousEdits
+        }
+        previousEdits += builder.build()
+      }
     }
 
     return if (buffer.isNotEmpty()) {
       buffer.remove()
     } else {
-      throw NoSuchElementException()
+      null
     }
   }
 
@@ -224,14 +239,8 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
     cursor.close()
   }
 
-  private fun String.e164ToLong(): Long? {
-    val fixed = if (this.startsWith("+")) {
-      this.substring(1)
-    } else {
-      this
-    }
-
-    return fixed.toLongOrNull()
+  private fun simpleUpdate(type: SimpleChatUpdate.Type): ChatUpdateMessage {
+    return ChatUpdateMessage(simpleUpdate = SimpleChatUpdate(type = type))
   }
 
   private fun BackupMessageRecord.toBasicChatItemBuilder(groupReceipts: List<GroupReceiptTable.GroupReceiptInfo>?): ChatItem.Builder {
@@ -241,13 +250,13 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
       chatId = record.threadId
       authorId = record.fromRecipientId
       dateSent = record.dateSent
-      sealedSender = record.sealedSender
-      expireStartDate = if (record.expireStarted > 0) record.expireStarted else null
-      expiresInMs = if (record.expiresIn > 0) record.expiresIn else null
+      expireStartDate = if (record.expireStarted > 0) record.expireStarted else 0
+      expiresInMs = if (record.expiresIn > 0) record.expiresIn else 0
       revisions = emptyList()
-      sms = !MessageTypes.isSecureType(record.type)
-
-      if (MessageTypes.isOutgoingMessageType(record.type)) {
+      sms = record.type.isSmsType()
+      if (MessageTypes.isCallLog(record.type)) {
+        directionless = ChatItem.DirectionlessMessageDetails()
+      } else if (MessageTypes.isOutgoingMessageType(record.type)) {
         outgoing = ChatItem.OutgoingMessageDetails(
           sendStatus = record.toBackupSendStatus(groupReceipts)
         )
@@ -255,34 +264,257 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
         incoming = ChatItem.IncomingMessageDetails(
           dateServerSent = record.dateServer,
           dateReceived = record.dateReceived,
-          read = record.read
+          read = record.read,
+          sealedSender = record.sealedSender
         )
       }
     }
   }
 
-  private fun BackupMessageRecord.toTextMessage(reactionRecords: List<ReactionRecord>?): StandardMessage {
+  private fun BackupMessageRecord.toProfileChangeUpdate(): ChatUpdateMessage? {
+    val profileChangeDetails = if (this.messageExtras != null) {
+      this.messageExtras.profileChangeDetails
+    } else {
+      Base64.decodeOrNull(this.body)?.let { ProfileChangeDetails.ADAPTER.decode(it) }
+    }
+
+    return if (profileChangeDetails?.profileNameChange != null) {
+      ChatUpdateMessage(profileChange = ProfileChangeChatUpdate(previousName = profileChangeDetails.profileNameChange.previous, newName = profileChangeDetails.profileNameChange.newValue))
+    } else if (profileChangeDetails?.learnedProfileName != null) {
+      ChatUpdateMessage(learnedProfileChange = LearnedProfileChatUpdate(e164 = profileChangeDetails.learnedProfileName.e164?.e164ToLong(), username = profileChangeDetails.learnedProfileName.username))
+    } else {
+      null
+    }
+  }
+
+  private fun BackupMessageRecord.toSessionSwitchoverUpdate(): ChatUpdateMessage {
+    if (this.body == null) {
+      return ChatUpdateMessage(sessionSwitchover = SessionSwitchoverChatUpdate())
+    }
+
+    return ChatUpdateMessage(
+      sessionSwitchover = try {
+        val event = SessionSwitchoverEvent.ADAPTER.decode(Base64.decodeOrThrow(this.body))
+        SessionSwitchoverChatUpdate(event.e164.e164ToLong()!!)
+      } catch (e: IOException) {
+        SessionSwitchoverChatUpdate()
+      }
+    )
+  }
+
+  private fun BackupMessageRecord.toThreadMergeUpdate(): ChatUpdateMessage {
+    if (this.body == null) {
+      return ChatUpdateMessage(threadMerge = ThreadMergeChatUpdate())
+    }
+
+    return ChatUpdateMessage(
+      threadMerge = try {
+        val event = ThreadMergeEvent.ADAPTER.decode(Base64.decodeOrThrow(this.body))
+        ThreadMergeChatUpdate(event.previousE164.e164ToLong()!!)
+      } catch (e: IOException) {
+        ThreadMergeChatUpdate()
+      }
+    )
+  }
+
+  private fun BackupMessageRecord.toGroupUpdate(): ChatUpdateMessage? {
+    val groupChange = this.messageExtras?.gv2UpdateDescription?.groupChangeUpdate
+    return if (groupChange != null) {
+      ChatUpdateMessage(
+        groupChange = groupChange
+      )
+    } else if (this.body != null) {
+      try {
+        val decoded: ByteArray = Base64.decode(this.body)
+        val context = DecryptedGroupV2Context.ADAPTER.decode(decoded)
+        ChatUpdateMessage(
+          groupChange = GroupsV2UpdateMessageConverter.translateDecryptedChange(selfIds = SignalStore.account.getServiceIds(), context)
+        )
+      } catch (e: IOException) {
+        null
+      }
+    } else {
+      null
+    }
+  }
+
+  private fun BackupMessageRecord.toCallUpdate(): ChatUpdateMessage? {
+    val call = calls.getCallByMessageId(this.id)
+
+    return if (call != null) {
+      call.toCallUpdate()
+    } else {
+      when {
+        MessageTypes.isMissedAudioCall(this.type) -> {
+          ChatUpdateMessage(
+            individualCall = IndividualCall(
+              type = IndividualCall.Type.AUDIO_CALL,
+              state = IndividualCall.State.MISSED,
+              direction = IndividualCall.Direction.INCOMING
+            )
+          )
+        }
+        MessageTypes.isMissedVideoCall(this.type) -> {
+          ChatUpdateMessage(
+            individualCall = IndividualCall(
+              type = IndividualCall.Type.VIDEO_CALL,
+              state = IndividualCall.State.MISSED,
+              direction = IndividualCall.Direction.INCOMING
+            )
+          )
+        }
+        MessageTypes.isIncomingAudioCall(this.type) -> {
+          ChatUpdateMessage(
+            individualCall = IndividualCall(
+              type = IndividualCall.Type.AUDIO_CALL,
+              state = IndividualCall.State.ACCEPTED,
+              direction = IndividualCall.Direction.INCOMING
+            )
+          )
+        }
+        MessageTypes.isIncomingVideoCall(this.type) -> {
+          ChatUpdateMessage(
+            individualCall = IndividualCall(
+              type = IndividualCall.Type.VIDEO_CALL,
+              state = IndividualCall.State.ACCEPTED,
+              direction = IndividualCall.Direction.INCOMING
+            )
+          )
+        }
+        MessageTypes.isOutgoingAudioCall(this.type) -> {
+          ChatUpdateMessage(
+            individualCall = IndividualCall(
+              type = IndividualCall.Type.AUDIO_CALL,
+              state = IndividualCall.State.ACCEPTED,
+              direction = IndividualCall.Direction.OUTGOING
+            )
+          )
+        }
+        MessageTypes.isOutgoingVideoCall(this.type) -> {
+          ChatUpdateMessage(
+            individualCall = IndividualCall(
+              type = IndividualCall.Type.VIDEO_CALL,
+              state = IndividualCall.State.ACCEPTED,
+              direction = IndividualCall.Direction.OUTGOING
+            )
+          )
+        }
+        MessageTypes.isGroupCall(this.type) -> {
+          try {
+            val groupCallUpdateDetails = GroupCallUpdateDetailsUtil.parse(this.body)
+            ChatUpdateMessage(
+              groupCall = GroupCall(
+                state = GroupCall.State.GENERIC,
+                startedCallRecipientId = recipients.getByAci(ACI.from(UuidUtil.parseOrThrow(groupCallUpdateDetails.startedCallUuid))).getOrNull()?.toLong(),
+                startedCallTimestamp = groupCallUpdateDetails.startedCallTimestamp,
+                endedCallTimestamp = groupCallUpdateDetails.endedCallTimestamp
+              )
+            )
+          } catch (exception: IOException) {
+            null
+          }
+        }
+        else -> {
+          null
+        }
+      }
+    }
+  }
+
+  private fun CallTable.Call.toCallUpdate(): ChatUpdateMessage? {
+    return if (this.type == CallTable.Type.GROUP_CALL) {
+      ChatUpdateMessage(
+        groupCall = GroupCall(
+          callId = this.messageId,
+          state = when (this.event) {
+            CallTable.Event.MISSED -> GroupCall.State.MISSED
+            CallTable.Event.ONGOING -> GroupCall.State.GENERIC
+            CallTable.Event.ACCEPTED -> GroupCall.State.ACCEPTED
+            CallTable.Event.NOT_ACCEPTED -> GroupCall.State.GENERIC
+            CallTable.Event.MISSED_NOTIFICATION_PROFILE -> GroupCall.State.MISSED_NOTIFICATION_PROFILE
+            CallTable.Event.GENERIC_GROUP_CALL -> GroupCall.State.GENERIC
+            CallTable.Event.JOINED -> GroupCall.State.JOINED
+            CallTable.Event.RINGING -> GroupCall.State.RINGING
+            CallTable.Event.DECLINED -> GroupCall.State.DECLINED
+            CallTable.Event.OUTGOING_RING -> GroupCall.State.OUTGOING_RING
+            CallTable.Event.DELETE -> return null
+          },
+          ringerRecipientId = this.ringerRecipient?.toLong(),
+          startedCallRecipientId = this.ringerRecipient?.toLong(),
+          startedCallTimestamp = this.timestamp
+        )
+      )
+    } else if (this.type != CallTable.Type.AD_HOC_CALL) {
+      ChatUpdateMessage(
+        individualCall = IndividualCall(
+          callId = this.callId,
+          type = if (this.type == CallTable.Type.VIDEO_CALL) IndividualCall.Type.VIDEO_CALL else IndividualCall.Type.AUDIO_CALL,
+          direction = if (this.direction == CallTable.Direction.INCOMING) IndividualCall.Direction.INCOMING else IndividualCall.Direction.OUTGOING,
+          state = when (this.event) {
+            CallTable.Event.MISSED -> IndividualCall.State.MISSED
+            CallTable.Event.MISSED_NOTIFICATION_PROFILE -> IndividualCall.State.MISSED_NOTIFICATION_PROFILE
+            CallTable.Event.ACCEPTED -> IndividualCall.State.ACCEPTED
+            CallTable.Event.NOT_ACCEPTED -> IndividualCall.State.NOT_ACCEPTED
+            else -> IndividualCall.State.UNKNOWN_STATE
+          },
+          startedCallTimestamp = this.timestamp
+        )
+      )
+    } else {
+      null
+    }
+  }
+
+  private fun BackupMessageRecord.toPaymentNotificationUpdate(): PaymentNotification {
+    val paymentUuid = UuidUtil.parseOrNull(this.body)
+    val payment = if (paymentUuid != null) {
+      SignalDatabase.payments.getPayment(paymentUuid)
+    } else {
+      null
+    }
+
+    return if (payment == null) {
+      PaymentNotification()
+    } else {
+      PaymentNotification(
+        amountMob = payment.amount.serializeAmountString(),
+        feeMob = payment.fee.serializeAmountString(),
+        note = payment.note,
+        transactionDetails = payment.getTransactionDetails()
+      )
+    }
+  }
+
+  private fun BackupMessageRecord.toStandardMessage(reactionRecords: List<ReactionRecord>?, mentions: List<Mention>?, attachments: List<DatabaseAttachment>?): StandardMessage {
+    val text = if (body == null) {
+      null
+    } else {
+      Text(
+        body = this.body,
+        bodyRanges = (this.bodyRanges?.toBackupBodyRanges() ?: emptyList()) + (mentions?.toBackupBodyRanges() ?: emptyList())
+      )
+    }
+    val quotedAttachments = attachments?.filter { it.quote } ?: emptyList()
+    val messageAttachments = attachments?.filter { !it.quote } ?: emptyList()
     return StandardMessage(
-      quote = this.toQuote(),
-      text = Text(
-        body = this.body!!,
-        bodyRanges = this.bodyRanges?.toBackupBodyRanges() ?: emptyList()
-      ),
-      // TODO Link previews!
+      quote = this.toQuote(quotedAttachments),
+      text = text,
+      attachments = messageAttachments.toBackupAttachments(),
+      // TODO [backup] Link previews!
       linkPreview = emptyList(),
       longText = null,
       reactions = reactionRecords.toBackupReactions()
     )
   }
 
-  private fun BackupMessageRecord.toQuote(): Quote? {
+  private fun BackupMessageRecord.toQuote(attachments: List<DatabaseAttachment>? = null): Quote? {
     return if (this.quoteTargetSentTimestamp != MessageTable.QUOTE_NOT_PRESENT_ID && this.quoteAuthor > 0) {
-      // TODO Attachments!
       val type = QuoteModel.Type.fromCode(this.quoteType)
       Quote(
         targetSentTimestamp = this.quoteTargetSentTimestamp.takeIf { !this.quoteMissing && it != MessageTable.QUOTE_TARGET_MISSING_ID },
         authorId = this.quoteAuthor,
         text = this.quoteBody,
+        attachments = attachments?.toBackupQuoteAttachments() ?: emptyList(),
         bodyRanges = this.quoteBodyRanges?.toBackupBodyRanges() ?: emptyList(),
         type = when (type) {
           QuoteModel.Type.NORMAL -> Quote.Type.NORMAL
@@ -291,6 +523,158 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
       )
     } else {
       null
+    }
+  }
+
+  private fun BackupMessageRecord.toGiftBadgeUpdate(): BackupGiftBadge {
+    val giftBadge = try {
+      GiftBadge.ADAPTER.decode(Base64.decode(this.body ?: ""))
+    } catch (e: IOException) {
+      Log.w(TAG, "Failed to decode GiftBadge!")
+      return BackupGiftBadge()
+    }
+
+    return BackupGiftBadge(
+      receiptCredentialPresentation = giftBadge.redemptionToken,
+      state = when (giftBadge.redemptionState) {
+        GiftBadge.RedemptionState.REDEEMED -> BackupGiftBadge.State.REDEEMED
+        GiftBadge.RedemptionState.FAILED -> BackupGiftBadge.State.FAILED
+        GiftBadge.RedemptionState.PENDING -> BackupGiftBadge.State.UNOPENED
+        GiftBadge.RedemptionState.STARTED -> BackupGiftBadge.State.OPENED
+      }
+    )
+  }
+
+  private fun DatabaseAttachment.toStickerMessage(reactions: List<ReactionRecord>?): StickerMessage {
+    val stickerLocator = this.stickerLocator!!
+    return StickerMessage(
+      sticker = Sticker(
+        packId = Hex.fromStringCondensed(stickerLocator.packId).toByteString(),
+        packKey = Hex.fromStringCondensed(stickerLocator.packKey).toByteString(),
+        stickerId = stickerLocator.stickerId,
+        emoji = stickerLocator.emoji,
+        data_ = this.toBackupAttachment().pointer
+      ),
+      reactions = reactions.toBackupReactions()
+    )
+  }
+
+  private fun List<DatabaseAttachment>.toBackupQuoteAttachments(): List<Quote.QuotedAttachment> {
+    return this.map { attachment ->
+      Quote.QuotedAttachment(
+        contentType = attachment.contentType,
+        fileName = attachment.fileName,
+        thumbnail = attachment.toBackupAttachment()
+      )
+    }
+  }
+
+  private fun DatabaseAttachment.toBackupAttachment(): MessageAttachment {
+    val builder = FilePointer.Builder()
+    builder.contentType = contentType
+    builder.incrementalMac = incrementalDigest?.toByteString()
+    builder.incrementalMacChunkSize = incrementalMacChunkSize
+    builder.fileName = fileName
+    builder.width = width
+    builder.height = height
+    builder.caption = caption
+    builder.blurHash = blurHash?.hash
+
+    if (remoteKey.isNullOrBlank() || remoteDigest == null || size == 0L) {
+      builder.invalidAttachmentLocator = FilePointer.InvalidAttachmentLocator()
+    } else {
+      if (archiveMedia) {
+        builder.backupLocator = FilePointer.BackupLocator(
+          mediaName = archiveMediaName ?: this.getMediaName().toString(),
+          cdnNumber = if (archiveMediaName != null) archiveCdn else Cdn.CDN_3.cdnNumber, // TODO (clark): Update when new proto with optional cdn is landed
+          key = Base64.decode(remoteKey).toByteString(),
+          size = this.size.toInt(),
+          digest = remoteDigest.toByteString()
+        )
+      } else {
+        if (remoteLocation.isNullOrBlank()) {
+          builder.invalidAttachmentLocator = FilePointer.InvalidAttachmentLocator()
+        } else {
+          builder.attachmentLocator = FilePointer.AttachmentLocator(
+            cdnKey = this.remoteLocation,
+            cdnNumber = this.cdn.cdnNumber,
+            uploadTimestamp = this.uploadTimestamp,
+            key = Base64.decode(remoteKey).toByteString(),
+            size = this.size.toInt(),
+            digest = remoteDigest.toByteString()
+          )
+        }
+      }
+    }
+    return MessageAttachment(
+      pointer = builder.build(),
+      wasDownloaded = this.transferState == AttachmentTable.TRANSFER_PROGRESS_DONE || this.transferState == AttachmentTable.TRANSFER_NEEDS_RESTORE,
+      flag = if (voiceNote) {
+        MessageAttachment.Flag.VOICE_MESSAGE
+      } else if (videoGif) {
+        MessageAttachment.Flag.GIF
+      } else if (borderless) {
+        MessageAttachment.Flag.BORDERLESS
+      } else {
+        MessageAttachment.Flag.NONE
+      },
+      clientUuid = uuid?.let { UuidUtil.toByteString(uuid) }
+    )
+  }
+
+  private fun List<DatabaseAttachment>.toBackupAttachments(): List<MessageAttachment> {
+    return this.map { attachment ->
+      attachment.toBackupAttachment()
+    }
+  }
+
+  private fun PaymentTable.PaymentTransaction.getTransactionDetails(): PaymentNotification.TransactionDetails? {
+    if (failureReason != null || state == State.FAILED) {
+      return PaymentNotification.TransactionDetails(failedTransaction = PaymentNotification.TransactionDetails.FailedTransaction(reason = failureReason.toBackupFailureReason()))
+    }
+    return PaymentNotification.TransactionDetails(
+      transaction = PaymentNotification.TransactionDetails.Transaction(
+        status = this.state.toBackupState(),
+        timestamp = timestamp,
+        blockIndex = blockIndex,
+        blockTimestamp = blockTimestamp,
+        mobileCoinIdentification = paymentMetaData.mobileCoinTxoIdentification?.toBackup()
+      )
+    )
+  }
+
+  private fun PaymentMetaData.MobileCoinTxoIdentification.toBackup(): PaymentNotification.TransactionDetails.MobileCoinTxoIdentification {
+    return PaymentNotification.TransactionDetails.MobileCoinTxoIdentification(
+      publicKey = this.publicKey,
+      keyImages = this.keyImages
+    )
+  }
+
+  private fun State.toBackupState(): PaymentNotification.TransactionDetails.Transaction.Status {
+    return when (this) {
+      State.INITIAL -> PaymentNotification.TransactionDetails.Transaction.Status.INITIAL
+      State.SUBMITTED -> PaymentNotification.TransactionDetails.Transaction.Status.SUBMITTED
+      State.SUCCESSFUL -> PaymentNotification.TransactionDetails.Transaction.Status.SUCCESSFUL
+      State.FAILED -> throw IllegalArgumentException("state cannot be failed")
+    }
+  }
+
+  private fun FailureReason?.toBackupFailureReason(): PaymentNotification.TransactionDetails.FailedTransaction.FailureReason {
+    return when (this) {
+      FailureReason.UNKNOWN -> PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.GENERIC
+      FailureReason.INSUFFICIENT_FUNDS -> PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.INSUFFICIENT_FUNDS
+      FailureReason.NETWORK -> PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.NETWORK
+      else -> PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.GENERIC
+    }
+  }
+
+  private fun List<Mention>.toBackupBodyRanges(): List<BackupBodyRange> {
+    return this.map {
+      BackupBodyRange(
+        start = it.start,
+        length = it.length,
+        mentionAci = SignalDatabase.recipients.getRecord(it.recipientId).aci?.toByteString()
+      )
     }
   }
 
@@ -306,7 +690,7 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
       BackupBodyRange(
         start = it.start,
         length = it.length,
-        mentionAci = it.mentionUuid?.let { UuidUtil.parseOrThrow(it) }?.toByteArray()?.toByteString(),
+        mentionAci = it.mentionUuid?.let { uuid -> UuidUtil.parseOrThrow(uuid) }?.toByteArray()?.toByteString(),
         style = it.style?.toBackupBodyRangeStyle()
       )
     }
@@ -412,6 +796,39 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
     }
   }
 
+  private fun ByteArray?.parseMessageExtras(): MessageExtras? {
+    if (this == null) {
+      return null
+    }
+    return try {
+      MessageExtras.ADAPTER.decode(this)
+    } catch (e: java.lang.Exception) {
+      null
+    }
+  }
+
+  private fun Long.isSmsType(): Boolean {
+    if (MessageTypes.isSecureType(this)) {
+      return false
+    }
+
+    if (MessageTypes.isCallLog(this)) {
+      return false
+    }
+
+    return MessageTypes.isOutgoingMessageType(this) || MessageTypes.isInboxType(this)
+  }
+
+  private fun String.e164ToLong(): Long? {
+    val fixed = if (this.startsWith("+")) {
+      this.substring(1)
+    } else {
+      this
+    }
+
+    return fixed.toLongOrNull()
+  }
+
   private fun Cursor.toBackupMessageRecord(): BackupMessageRecord {
     return BackupMessageRecord(
       id = this.requireLong(MessageTable.ID),
@@ -434,8 +851,8 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
       quoteMissing = this.requireBoolean(MessageTable.QUOTE_MISSING),
       quoteBodyRanges = this.requireBlob(MessageTable.QUOTE_BODY_RANGES),
       quoteType = this.requireInt(MessageTable.QUOTE_TYPE),
-      originalMessageId = this.requireLong(MessageTable.ORIGINAL_MESSAGE_ID),
-      latestRevisionId = this.requireLong(MessageTable.LATEST_REVISION_ID),
+      originalMessageId = this.requireLongOrNull(MessageTable.ORIGINAL_MESSAGE_ID),
+      latestRevisionId = this.requireLongOrNull(MessageTable.LATEST_REVISION_ID),
       hasDeliveryReceipt = this.requireBoolean(MessageTable.HAS_DELIVERY_RECEIPT),
       viewed = this.requireBoolean(MessageTable.VIEWED_COLUMN),
       hasReadReceipt = this.requireBoolean(MessageTable.HAS_READ_RECEIPT),
@@ -443,7 +860,8 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
       receiptTimestamp = this.requireLong(MessageTable.RECEIPT_TIMESTAMP),
       networkFailureRecipientIds = this.requireString(MessageTable.NETWORK_FAILURES).parseNetworkFailures(),
       identityMismatchRecipientIds = this.requireString(MessageTable.MISMATCHED_IDENTITIES).parseIdentityMismatches(),
-      baseType = this.requireLong(COLUMN_BASE_TYPE)
+      baseType = this.requireLong(COLUMN_BASE_TYPE),
+      messageExtras = this.requireBlob(MessageTable.MESSAGE_EXTRAS).parseMessageExtras()
     )
   }
 
@@ -468,8 +886,8 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
     val quoteMissing: Boolean,
     val quoteBodyRanges: ByteArray?,
     val quoteType: Int,
-    val originalMessageId: Long,
-    val latestRevisionId: Long,
+    val originalMessageId: Long?,
+    val latestRevisionId: Long?,
     val hasDeliveryReceipt: Boolean,
     val hasReadReceipt: Boolean,
     val viewed: Boolean,
@@ -477,6 +895,7 @@ class ChatItemExportIterator(private val cursor: Cursor, private val batchSize: 
     val read: Boolean,
     val networkFailureRecipientIds: Set<Long>,
     val identityMismatchRecipientIds: Set<Long>,
-    val baseType: Long
+    val baseType: Long,
+    val messageExtras: MessageExtras?
   )
 }

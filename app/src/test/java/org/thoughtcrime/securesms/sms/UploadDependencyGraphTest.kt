@@ -232,11 +232,12 @@ class UploadDependencyGraphTest {
       mmsId = AttachmentTable.PREUPLOAD_MESSAGE_ID,
       hasData = false,
       hasThumbnail = false,
+      hasArchiveThumbnail = false,
       contentType = attachment.contentType,
       transferProgress = AttachmentTable.TRANSFER_PROGRESS_PENDING,
       size = attachment.size,
       fileName = attachment.fileName,
-      cdnNumber = attachment.cdnNumber,
+      cdn = attachment.cdn,
       location = attachment.remoteLocation,
       key = attachment.remoteKey,
       digest = attachment.remoteDigest,
@@ -255,7 +256,14 @@ class UploadDependencyGraphTest {
       audioHash = attachment.audioHash,
       transformProperties = attachment.transformProperties,
       displayOrder = 0,
-      uploadTimestamp = attachment.uploadTimestamp
+      uploadTimestamp = attachment.uploadTimestamp,
+      dataHash = null,
+      archiveMediaId = null,
+      archiveMediaName = null,
+      archiveCdn = 0,
+      archiveThumbnailCdn = 0,
+      thumbnailRestoreState = AttachmentTable.ThumbnailRestoreState.NONE,
+      uuid = null
     )
   }
 

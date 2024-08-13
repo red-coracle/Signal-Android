@@ -15,7 +15,7 @@ import org.thoughtcrime.securesms.database.RecipientTable.RegisteredState;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.ThreadTable;
 import org.thoughtcrime.securesms.database.model.GroupRecord;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupChangeBusyException;
 import org.thoughtcrime.securesms.groups.GroupChangeException;
 import org.thoughtcrime.securesms.groups.GroupChangeFailedException;
@@ -73,7 +73,7 @@ public class RecipientUtil {
       Log.i(TAG, "Successfully performed a UUID fetch for " + recipient.getId() + ". Registered: " + state);
     }
 
-    if (recipient.hasServiceId()) {
+    if (recipient.getHasServiceId()) {
       return new SignalServiceAddress(recipient.requireServiceId(), Optional.ofNullable(recipient.resolve().getE164().orElse(null)));
     } else {
       throw new NotFoundException(recipient.getId() + " is not registered!");
@@ -105,7 +105,7 @@ public class RecipientUtil {
   {
     List<Recipient> recipientsWithoutUuids = Stream.of(recipients)
                                                    .map(Recipient::resolve)
-                                                   .filterNot(Recipient::hasServiceId)
+                                                   .filterNot(Recipient::getHasServiceId)
                                                    .toList();
 
     if (recipientsWithoutUuids.size() > 0) {
@@ -175,12 +175,12 @@ public class RecipientUtil {
     if (recipient.isSystemContact() || recipient.isProfileSharing() || isProfileSharedViaGroup(recipient)) {
       SignalDatabase.recipients().setProfileSharing(recipient.getId(), false);
 
-      ApplicationDependencies.getJobManager().startChain(new RefreshOwnProfileJob())
-                                             .then(new RotateProfileKeyJob())
-                                             .enqueue();
+      AppDependencies.getJobManager().startChain(new RefreshOwnProfileJob())
+                     .then(new RotateProfileKeyJob())
+                     .enqueue();
     }
 
-    ApplicationDependencies.getJobManager().add(new MultiDeviceBlockedUpdateJob());
+    AppDependencies.getJobManager().add(new MultiDeviceBlockedUpdateJob());
     StorageSyncHelper.scheduleSyncForDataChange();
   }
 
@@ -193,7 +193,7 @@ public class RecipientUtil {
 
     SignalDatabase.recipients().setBlocked(recipient.getId(), false);
     SignalDatabase.recipients().setProfileSharing(recipient.getId(), true);
-    ApplicationDependencies.getJobManager().add(new MultiDeviceBlockedUpdateJob());
+    AppDependencies.getJobManager().add(new MultiDeviceBlockedUpdateJob());
     StorageSyncHelper.scheduleSyncForDataChange();
   }
 

@@ -34,7 +34,7 @@ import org.thoughtcrime.securesms.database.model.MessageRecord
 import org.thoughtcrime.securesms.database.model.ReactionRecord
 import org.thoughtcrime.securesms.database.model.databaseprotos.SessionSwitchoverEvent
 import org.thoughtcrime.securesms.database.model.databaseprotos.ThreadMergeEvent
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
+import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.mms.IncomingMessage
@@ -53,9 +53,9 @@ class RecipientTableTest_getAndPossiblyMerge {
 
   @Before
   fun setup() {
-    SignalStore.account().setE164(E164_SELF)
-    SignalStore.account().setAci(ACI_SELF)
-    SignalStore.account().setPni(PNI_SELF)
+    SignalStore.account.setE164(E164_SELF)
+    SignalStore.account.setAci(ACI_SELF)
+    SignalStore.account.setPni(PNI_SELF)
   }
 
   @Test
@@ -776,6 +776,18 @@ class RecipientTableTest_getAndPossiblyMerge {
       expectThreadMergeEvent(E164_A)
     }
 
+    test("merge, e164+pni & e164+aci, pni+aci provided, change number") {
+      given(E164_A, PNI_A, null)
+      given(E164_B, null, ACI_A)
+
+      process(null, PNI_A, ACI_A)
+
+      expect(E164_A, PNI_A, ACI_A)
+
+      expectThreadMergeEvent(E164_A)
+      expectChangeNumberEvent()
+    }
+
     test("merge, e164 + pni reassigned, aci abandoned") {
       given(E164_A, PNI_A, ACI_A)
       given(E164_B, PNI_B, ACI_B)
@@ -786,6 +798,17 @@ class RecipientTableTest_getAndPossiblyMerge {
       expect(E164_A, PNI_A, ACI_B)
 
       expectChangeNumberEvent()
+    }
+
+    test("merge, e164 follows pni+aci") {
+      given(E164_A, PNI_A, null)
+      given(null, null, ACI_A)
+
+      process(null, PNI_A, ACI_A, pniVerified = true)
+
+      expect(E164_A, PNI_A, ACI_A)
+      expectThreadMergeEvent(E164_A)
+      expectPniVerified()
     }
 
     test("local user, local e164 and aci provided, changeSelf=false, leave e164 alone") {
@@ -1090,8 +1113,8 @@ class RecipientTableTest_getAndPossiblyMerge {
           SignalDatabase.rawDatabase.execSQL("DELETE FROM $table")
         }
 
-      ApplicationDependencies.getRecipientCache().clear()
-      ApplicationDependencies.getRecipientCache().clearSelf()
+      AppDependencies.recipientCache.clear()
+      AppDependencies.recipientCache.clearSelf()
       RecipientId.clearCache()
     }
 

@@ -8,7 +8,6 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.webrtc.audio.SignalAudioManager;
 
 import java.util.Set;
@@ -105,7 +104,7 @@ public final class WebRtcControls {
    * This is only true at the very start of a call and will then never be true again
    */
   public boolean hideControlsSheetInitially() {
-    return displayIncomingCallButtons() || callState == CallState.NONE;
+    return displayIncomingCallButtons() || callState == CallState.NONE || isHandledElsewhere();
   }
 
   public boolean displayErrorControls() {
@@ -159,7 +158,7 @@ public final class WebRtcControls {
   }
 
   public boolean displayOverflow() {
-    return (FeatureFlags.groupCallReactions() || FeatureFlags.groupCallRaiseHand()) && isAtLeastOutgoing() && hasAtLeastOneRemote && isGroupCall();
+    return isAtLeastOutgoing() && hasAtLeastOneRemote && isGroupCall();
   }
 
   public boolean displayMuteAudio() {
@@ -219,7 +218,7 @@ public final class WebRtcControls {
   }
 
   public boolean displayRaiseHand() {
-    return FeatureFlags.groupCallRaiseHand() && !isInPipMode;
+    return !isInPipMode;
   }
 
   public @NonNull WebRtcAudioOutput getAudioOutput() {
@@ -263,6 +262,10 @@ public final class WebRtcControls {
     return callState == CallState.INCOMING;
   }
 
+  private boolean isHandledElsewhere() {
+    return callState == CallState.HANDLED_ELSEWHERE;
+  }
+
   private boolean isAtLeastOutgoing() {
     return callState.isAtLeast(CallState.OUTGOING);
   }
@@ -284,6 +287,7 @@ public final class WebRtcControls {
   public enum CallState {
     NONE,
     ERROR,
+    HANDLED_ELSEWHERE,
     PRE_JOIN,
     RECONNECTING,
     INCOMING,

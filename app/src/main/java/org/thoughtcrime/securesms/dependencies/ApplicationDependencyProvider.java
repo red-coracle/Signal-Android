@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.signal.core.util.ThreadUtil;
 import org.signal.core.util.concurrent.DeadlockDetector;
 import org.signal.core.util.concurrent.SignalExecutors;
+import org.signal.libsignal.net.Network;
 import org.signal.libsignal.zkgroup.profiles.ClientZkProfileOperations;
 import org.signal.libsignal.zkgroup.receipts.ClientZkReceiptOperations;
 import org.thoughtcrime.securesms.BuildConfig;
@@ -44,7 +45,9 @@ import org.thoughtcrime.securesms.jobs.TypingSendJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.megaphone.MegaphoneRepository;
 import org.thoughtcrime.securesms.messages.IncomingMessageObserver;
+import org.thoughtcrime.securesms.net.DefaultWebSocketShadowingBridge;
 import org.thoughtcrime.securesms.net.SignalWebSocketHealthMonitor;
+import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.notifications.OptimizedMessageNotifier;
 import org.thoughtcrime.securesms.payments.MobileCoinConfig;
@@ -66,7 +69,7 @@ import org.thoughtcrime.securesms.util.AlarmSleepTimer;
 import org.thoughtcrime.securesms.util.AppForegroundObserver;
 import org.thoughtcrime.securesms.util.ByteUnit;
 import org.thoughtcrime.securesms.util.EarlyMessageCache;
-import org.thoughtcrime.securesms.util.FeatureFlags;
+import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.thoughtcrime.securesms.util.FrameRateTracker;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.video.exo.GiphyMp4Cache;
@@ -89,16 +92,21 @@ import org.whispersystems.signalservice.api.util.SleepTimer;
 import org.whispersystems.signalservice.api.util.UptimeSleepTimer;
 import org.whispersystems.signalservice.api.websocket.WebSocketFactory;
 import org.whispersystems.signalservice.internal.configuration.SignalServiceConfiguration;
+import org.whispersystems.signalservice.internal.websocket.LibSignalNetworkExtensions;
+import org.whispersystems.signalservice.internal.websocket.ShadowingWebSocketConnection;
 import org.whispersystems.signalservice.internal.websocket.WebSocketConnection;
+import org.whispersystems.signalservice.internal.websocket.LibSignalChatConnection;
+import org.whispersystems.signalservice.internal.websocket.OkHttpWebSocketConnection;
+import org.whispersystems.signalservice.internal.websocket.WebSocketShadowingBridge;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
- * Implementation of {@link ApplicationDependencies.Provider} that provides real app dependencies.
+ * Implementation of {@link AppDependencies.Provider} that provides real app dependencies.
  */
-public class ApplicationDependencyProvider implements ApplicationDependencies.Provider {
+public class ApplicationDependencyProvider implements AppDependencies.Provider {
 
   private final Application context;
 
@@ -112,7 +120,7 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
 
   @Override
   public @NonNull GroupsV2Operations provideGroupsV2Operations(@NonNull SignalServiceConfiguration signalServiceConfiguration) {
-    return new GroupsV2Operations(provideClientZkOperations(signalServiceConfiguration), FeatureFlags.groupLimits().getHardLimit());
+    return new GroupsV2Operations(provideClientZkOperations(signalServiceConfiguration), RemoteConfig.groupLimits().getHardLimit());
   }
 
   @Override
@@ -121,7 +129,7 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
                                            new DynamicCredentialsProvider(),
                                            BuildConfig.SIGNAL_AGENT,
                                            groupsV2Operations,
-                                           FeatureFlags.okHttpAutomaticRetry());
+                                           RemoteConfig.okHttpAutomaticRetry());
   }
 
   @Override
@@ -136,7 +144,7 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
                                             provideGroupsV2Operations(signalServiceConfiguration).getProfileOperations(),
                                             SignalExecutors.newCachedBoundedExecutor("signal-messages", ThreadUtil.PRIORITY_IMPORTANT_BACKGROUND_THREAD, 1, 16, 30),
                                             ByteUnit.KILOBYTES.toBytes(256),
-                                            FeatureFlags.okHttpAutomaticRetry());
+                                            RemoteConfig.okHttpAutomaticRetry());
   }
 
   @Override
@@ -145,7 +153,7 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
                                             new DynamicCredentialsProvider(),
                                             BuildConfig.SIGNAL_AGENT,
                                             provideGroupsV2Operations(signalServiceConfiguration).getProfileOperations(),
-                                            FeatureFlags.okHttpAutomaticRetry());
+                                            RemoteConfig.okHttpAutomaticRetry());
   }
 
   @Override
@@ -228,6 +236,13 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
   }
 
   @Override
+  public @NonNull Network provideLibsignalNetwork(@NonNull SignalServiceConfiguration config) {
+    Network network = new Network(BuildConfig.LIBSIGNAL_NET_ENV, StandardUserAgentInterceptor.USER_AGENT);
+    LibSignalNetworkExtensions.applyConfiguration(network, config);
+    return network;
+  }
+
+  @Override
   public @NonNull TypingStatusRepository provideTypingStatusRepository() {
     return new TypingStatusRepository();
   }
@@ -280,10 +295,11 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
   }
 
   @Override
-  public @NonNull SignalWebSocket provideSignalWebSocket(@NonNull Supplier<SignalServiceConfiguration> signalServiceConfigurationSupplier) {
-    SleepTimer                   sleepTimer      = !SignalStore.account().isFcmEnabled() || SignalStore.internalValues().isWebsocketModeForced() ? new AlarmSleepTimer(context) : new UptimeSleepTimer() ;
+  public @NonNull SignalWebSocket provideSignalWebSocket(@NonNull Supplier<SignalServiceConfiguration> signalServiceConfigurationSupplier, @NonNull Supplier<Network> libSignalNetworkSupplier) {
+    SleepTimer                   sleepTimer      = !SignalStore.account().isFcmEnabled() || SignalStore.internal().isWebsocketModeForced() ? new AlarmSleepTimer(context) : new UptimeSleepTimer() ;
     SignalWebSocketHealthMonitor healthMonitor   = new SignalWebSocketHealthMonitor(context, sleepTimer);
-    SignalWebSocket              signalWebSocket = new SignalWebSocket(provideWebSocketFactory(signalServiceConfigurationSupplier, healthMonitor));
+    WebSocketShadowingBridge     bridge          = new DefaultWebSocketShadowingBridge(context);
+    SignalWebSocket              signalWebSocket = new SignalWebSocket(provideWebSocketFactory(signalServiceConfigurationSupplier, healthMonitor, libSignalNetworkSupplier, bridge));
 
     healthMonitor.monitor(signalWebSocket);
 
@@ -358,7 +374,7 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
                                 new DynamicCredentialsProvider(),
                                 BuildConfig.SIGNAL_AGENT,
                                 groupsV2Operations,
-                                FeatureFlags.okHttpAutomaticRetry());
+                                RemoteConfig.okHttpAutomaticRetry());
   }
 
   @Override
@@ -367,7 +383,7 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
                                 new DynamicCredentialsProvider(),
                                 BuildConfig.SIGNAL_AGENT,
                                 groupsV2Operations,
-                                FeatureFlags.okHttpAutomaticRetry());
+                                RemoteConfig.okHttpAutomaticRetry());
   }
 
   @Override
@@ -390,26 +406,53 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
     return provideClientZkOperations(signalServiceConfiguration).getReceiptOperations();
   }
 
-  @NonNull WebSocketFactory provideWebSocketFactory(@NonNull Supplier<SignalServiceConfiguration> signalServiceConfigurationSupplier, @NonNull SignalWebSocketHealthMonitor healthMonitor) {
+  @NonNull WebSocketFactory provideWebSocketFactory(@NonNull Supplier<SignalServiceConfiguration> signalServiceConfigurationSupplier,
+                                                    @NonNull SignalWebSocketHealthMonitor healthMonitor,
+                                                    @NonNull Supplier<Network> libSignalNetworkSupplier,
+                                                    @NonNull WebSocketShadowingBridge bridge)
+  {
     return new WebSocketFactory() {
       @Override
       public WebSocketConnection createWebSocket() {
-        return new WebSocketConnection("normal",
-                                       signalServiceConfigurationSupplier.get(),
-                                       Optional.of(new DynamicCredentialsProvider()),
-                                       BuildConfig.SIGNAL_AGENT,
-                                       healthMonitor,
-                                       Stories.isFeatureEnabled());
+        return new OkHttpWebSocketConnection("normal",
+                                             signalServiceConfigurationSupplier.get(),
+                                             Optional.of(new DynamicCredentialsProvider()),
+                                             BuildConfig.SIGNAL_AGENT,
+                                             healthMonitor,
+                                             Stories.isFeatureEnabled());
       }
 
       @Override
       public WebSocketConnection createUnidentifiedWebSocket() {
-        return new WebSocketConnection("unidentified",
-                                       signalServiceConfigurationSupplier.get(),
-                                       Optional.empty(),
-                                       BuildConfig.SIGNAL_AGENT,
-                                       healthMonitor,
-                                       Stories.isFeatureEnabled());
+        int shadowPercentage = RemoteConfig.libSignalWebSocketShadowingPercentage();
+        if (shadowPercentage > 0) {
+          return new ShadowingWebSocketConnection(
+              "unauth-shadow",
+              signalServiceConfigurationSupplier.get(),
+              Optional.empty(),
+              BuildConfig.SIGNAL_AGENT,
+              healthMonitor,
+              Stories.isFeatureEnabled(),
+              LibSignalNetworkExtensions.createChatService(libSignalNetworkSupplier.get(), null),
+              shadowPercentage,
+              bridge
+          );
+        }
+        if (RemoteConfig.libSignalWebSocketEnabled()) {
+          Network network = libSignalNetworkSupplier.get();
+          return new LibSignalChatConnection(
+              "libsignal-unauth",
+              LibSignalNetworkExtensions.createChatService(network, null),
+              healthMonitor,
+              false);
+        } else {
+          return new OkHttpWebSocketConnection("unidentified",
+                                               signalServiceConfigurationSupplier.get(),
+                                               Optional.empty(),
+                                               BuildConfig.SIGNAL_AGENT,
+                                               healthMonitor,
+                                               Stories.isFeatureEnabled());
+        }
       }
     };
   }

@@ -14,7 +14,7 @@ import org.signal.core.util.StreamUtil;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.badges.models.Badge;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.mediasend.Media;
@@ -24,8 +24,8 @@ import org.thoughtcrime.securesms.providers.BlobProvider;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientForeverObserver;
 import org.thoughtcrime.securesms.util.DefaultValueLiveData;
-import org.thoughtcrime.securesms.util.FeatureFlags;
 import org.thoughtcrime.securesms.util.SingleLiveEvent;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.livedata.LiveDataUtil;
 import org.whispersystems.signalservice.api.util.StreamDetails;
 
@@ -107,6 +107,16 @@ class EditProfileViewModel extends ViewModel {
     return UsernameRepository.deleteUsernameAndLink().observeOn(AndroidSchedulers.mainThread());
   }
 
+  public boolean isRegisteredAndUpToDate() {
+    return !TextSecurePreferences.isUnauthorizedReceived(AppDependencies.getApplication()) && SignalStore.account().isRegistered();
+    //return !TextSecurePreferences.isUnauthorizedReceived(AppDependencies.getApplication()) && SignalStore.account().isRegistered() && !SignalStore.misc().isClientDeprecated();
+  }
+
+  public boolean isDeprecated() {
+    return false;
+    //return SignalStore.misc().isClientDeprecated();
+  }
+
   public void onAvatarSelected(@NonNull Context context, @Nullable Media media) {
     previousAvatar = internalAvatarState.getValue() != null ? internalAvatarState.getValue().getAvatar() : null;
 
@@ -162,7 +172,7 @@ class EditProfileViewModel extends ViewModel {
     about.postValue(recipient.getAbout());
     aboutEmoji.postValue(recipient.getAboutEmoji());
     badge.postValue(Optional.ofNullable(recipient.getFeaturedBadge()));
-    renderAvatar(AvatarHelper.getSelfProfileAvatarStream(ApplicationDependencies.getApplication()));
+    renderAvatar(AvatarHelper.getSelfProfileAvatarStream(AppDependencies.getApplication()));
   }
 
   private void renderAvatar(@Nullable StreamDetails details) {

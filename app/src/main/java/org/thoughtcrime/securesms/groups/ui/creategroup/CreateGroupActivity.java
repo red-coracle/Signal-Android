@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -24,12 +25,12 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.contacts.ContactSelectionDisplayMode;
 import org.thoughtcrime.securesms.contacts.sync.ContactDiscovery;
 import org.thoughtcrime.securesms.groups.ui.creategroup.details.AddGroupDetailsActivity;
-import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.thoughtcrime.securesms.recipients.RecipientRepository;
 import org.thoughtcrime.securesms.recipients.ui.findby.FindByActivity;
 import org.thoughtcrime.securesms.recipients.ui.findby.FindByMode;
-import org.thoughtcrime.securesms.util.FeatureFlags;
+import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
 
 import java.io.IOException;
@@ -57,12 +58,10 @@ public class CreateGroupActivity extends ContactSelectionActivity implements Con
     intent.putExtra(ContactSelectionListFragment.REFRESHABLE, false);
     intent.putExtra(ContactSelectionActivity.EXTRA_LAYOUT_RES_ID, R.layout.create_group_activity);
 
-    boolean smsEnabled = SignalStore.misc().getSmsExportPhase().allowSmsFeatures();
-    int displayMode = smsEnabled ? ContactSelectionDisplayMode.FLAG_SMS | ContactSelectionDisplayMode.FLAG_PUSH
-                                 : ContactSelectionDisplayMode.FLAG_PUSH;
+    int displayMode = ContactSelectionDisplayMode.FLAG_PUSH;
 
     intent.putExtra(ContactSelectionListFragment.DISPLAY_MODE, displayMode);
-    intent.putExtra(ContactSelectionListFragment.SELECTION_LIMITS, FeatureFlags.groupLimits().excludingSelf());
+    intent.putExtra(ContactSelectionListFragment.SELECTION_LIMITS, RemoteConfig.groupLimits().excludingSelf());
     intent.putExtra(ContactSelectionListFragment.RV_PADDING_BOTTOM, (int) DimensionUnit.DP.toPixels(64f));
     intent.putExtra(ContactSelectionListFragment.RV_CLIP, false);
 
@@ -117,7 +116,32 @@ public class CreateGroupActivity extends ContactSelectionActivity implements Con
 
     shrinkSkip();
 
-    callback.accept(true);
+    if (recipientId.isPresent()) {
+      callback.accept(true);
+      return;
+    }
+
+    AlertDialog progress = SimpleProgressDialog.show(this);
+
+    SimpleTask.run(getLifecycle(), () -> RecipientRepository.lookupNewE164(this, number), result -> {
+      progress.dismiss();
+
+      if (result instanceof RecipientRepository.LookupResult.Success) {
+        callback.accept(true);
+      } else if (result instanceof RecipientRepository.LookupResult.NotFound || result instanceof RecipientRepository.LookupResult.InvalidEntry) {
+        new MaterialAlertDialogBuilder(this)
+            .setMessage(getString(R.string.NewConversationActivity__s_is_not_a_signal_user, number))
+            .setPositiveButton(android.R.string.ok, null)
+            .show();
+        callback.accept(false);
+      } else {
+        new MaterialAlertDialogBuilder(this)
+            .setMessage(R.string.NetworkFailure__network_error_check_your_connection_and_try_again)
+            .setPositiveButton(android.R.string.ok, null)
+            .show();
+        callback.accept(false);
+      }
+    });
   }
 
   @Override
@@ -177,7 +201,7 @@ public class CreateGroupActivity extends ContactSelectionActivity implements Con
       stopwatch.split("resolve");
 
       Set<Recipient> registeredChecks = resolved.stream()
-                                                .filter(r -> !r.isRegistered() || !r.hasServiceId())
+                                                .filter(r -> !r.isRegistered() || !r.getHasServiceId())
                                                 .collect(Collectors.toSet());
 
       Log.i(TAG, "Need to do " + registeredChecks.size() + " registration checks.");
@@ -197,7 +221,7 @@ public class CreateGroupActivity extends ContactSelectionActivity implements Con
       dismissibleDialog.dismiss();
       stopwatch.stop(TAG);
 
-      List<Recipient> notRegistered = recipients.stream().filter(r -> !r.isRegistered() || !r.hasServiceId()).collect(Collectors.toList());
+      List<Recipient> notRegistered = recipients.stream().filter(r -> !r.isRegistered() || !r.getHasServiceId()).collect(Collectors.toList());
 
       if (notRegistered.isEmpty()) {
         startActivityForResult(AddGroupDetailsActivity.newIntent(this, recipients.stream().map(Recipient::getId).collect(Collectors.toList())), REQUEST_CODE_ADD_DETAILS);

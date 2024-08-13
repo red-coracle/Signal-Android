@@ -50,6 +50,7 @@ import org.thoughtcrime.securesms.groups.ui.creategroup.CreateGroupActivity;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.thoughtcrime.securesms.recipients.RecipientRepository;
 import org.thoughtcrime.securesms.recipients.ui.findby.FindByActivity;
 import org.thoughtcrime.securesms.recipients.ui.findby.FindByMode;
 import org.thoughtcrime.securesms.util.CommunicationActions;
@@ -120,8 +121,6 @@ public class NewConversationActivity extends ContactSelectionActivity
 
   @Override
   public void onBeforeContactSelected(boolean isFromUnknownSearchKey, @NonNull Optional<RecipientId> recipientId, String number, @NonNull Consumer<Boolean> callback) {
-    boolean smsSupported = SignalStore.misc().getSmsExportPhase().allowSmsFeatures();
-
     if (recipientId.isPresent()) {
       launch(Recipient.resolved(recipientId.get()));
     } else {
@@ -132,33 +131,19 @@ public class NewConversationActivity extends ContactSelectionActivity
 
         AlertDialog progress = SimpleProgressDialog.show(this);
 
-        SimpleTask.run(getLifecycle(), () -> {
-          Recipient resolved = Recipient.external(this, number);
-
-          if (!resolved.isRegistered() || !resolved.hasServiceId()) {
-            Log.i(TAG, "[onContactSelected] Not registered or no UUID. Doing a directory refresh.");
-            try {
-              ContactDiscovery.refresh(this, resolved, false, TimeUnit.SECONDS.toMillis(10));
-              resolved = Recipient.resolved(resolved.getId());
-            } catch (IOException e) {
-              Log.w(TAG, "[onContactSelected] Failed to refresh directory for new contact.");
-              return null;
-            }
-          }
-
-          return resolved;
-        }, resolved -> {
+        SimpleTask.run(getLifecycle(), () -> RecipientRepository.lookupNewE164(this, number), result -> {
           progress.dismiss();
 
-          if (resolved != null) {
-            if (smsSupported || resolved.isRegistered() && resolved.hasServiceId()) {
+          if (result instanceof RecipientRepository.LookupResult.Success) {
+            Recipient resolved = Recipient.resolved(((RecipientRepository.LookupResult.Success) result).getRecipientId());
+            if (resolved.isRegistered() && resolved.getHasServiceId()) {
               launch(resolved);
-            } else {
-              new MaterialAlertDialogBuilder(this)
-                  .setMessage(getString(R.string.NewConversationActivity__s_is_not_a_signal_user, resolved.getDisplayName(this)))
-                  .setPositiveButton(android.R.string.ok, null)
-                  .show();
             }
+          } else if (result instanceof RecipientRepository.LookupResult.NotFound || result instanceof RecipientRepository.LookupResult.InvalidEntry) {
+            new MaterialAlertDialogBuilder(this)
+                .setMessage(getString(R.string.NewConversationActivity__s_is_not_a_signal_user, number))
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
           } else {
             new MaterialAlertDialogBuilder(this)
                 .setMessage(R.string.NetworkFailure__network_error_check_your_connection_and_try_again)
@@ -166,8 +151,6 @@ public class NewConversationActivity extends ContactSelectionActivity
                 .show();
           }
         });
-      } else if (smsSupported) {
-        launch(Recipient.external(this, number));
       }
     }
 
@@ -317,7 +300,7 @@ public class NewConversationActivity extends ContactSelectionActivity
       return null;
     }
 
-    if (recipient.isRegistered() || (SignalStore.misc().getSmsExportPhase().allowSmsFeatures())) {
+    if (recipient.isRegistered()) {
       return new ActionItem(
           R.drawable.ic_phone_right_24,
           getString(R.string.NewConversationActivity__audio_call),
@@ -351,13 +334,7 @@ public class NewConversationActivity extends ContactSelectionActivity
         R.drawable.ic_minus_circle_20, // TODO [alex] -- correct asset
         getString(R.string.NewConversationActivity__remove),
         R.color.signal_colorOnSurface,
-        () -> {
-          if (recipient.isSystemContact()) {
-            displayIsInSystemContactsDialog(recipient);
-          } else {
-            displayRemovalDialog(recipient);
-          }
-        }
+        () -> displayRemovalDialog(recipient)
     );
   }
 

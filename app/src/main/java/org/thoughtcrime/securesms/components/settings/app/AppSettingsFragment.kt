@@ -25,16 +25,18 @@ import org.thoughtcrime.securesms.components.settings.DSLSettingsIcon
 import org.thoughtcrime.securesms.components.settings.DSLSettingsText
 import org.thoughtcrime.securesms.components.settings.PreferenceModel
 import org.thoughtcrime.securesms.components.settings.PreferenceViewHolder
+import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.completed.TerminalDonationDelegate
 import org.thoughtcrime.securesms.components.settings.configure
+import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.events.ReminderUpdateEvent
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.phonenumbers.PhoneNumberFormatter
 import org.thoughtcrime.securesms.recipients.Recipient
-import org.thoughtcrime.securesms.registration.RegistrationNavigationActivity
+import org.thoughtcrime.securesms.registration.ui.RegistrationActivity
 import org.thoughtcrime.securesms.util.Environment
-import org.thoughtcrime.securesms.util.FeatureFlags
 import org.thoughtcrime.securesms.util.PlayStoreUtil
+import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.Util
 import org.thoughtcrime.securesms.util.ViewUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.LayoutFactory
@@ -112,7 +114,7 @@ class AppSettingsFragment : DSLSettingsFragment(
         PlayStoreUtil.openPlayStoreOrOurApkDownloadPage(requireContext())
       }
       R.id.reminder_action_re_register -> {
-        startActivity(RegistrationNavigationActivity.newIntentForReRegistration(requireContext()))
+        startActivity(RegistrationActivity.newIntentForReRegistration(requireContext()))
       }
     }
   }
@@ -137,7 +139,7 @@ class AppSettingsFragment : DSLSettingsFragment(
             findNavController().safeNavigate(R.id.action_appSettingsFragment_to_manageProfileActivity)
           },
           onQrButtonClicked = {
-            if (SignalStore.account().username != null) {
+            if (SignalStore.account.username != null) {
               findNavController().safeNavigate(R.id.action_appSettingsFragment_to_usernameLinkSettingsFragment)
             } else {
               findNavController().safeNavigate(R.id.action_appSettingsFragment_to_usernameEducationFragment)
@@ -157,10 +159,8 @@ class AppSettingsFragment : DSLSettingsFragment(
       clickPref(
         title = DSLSettingsText.from(R.string.preferences__linked_devices),
         icon = DSLSettingsIcon.from(R.drawable.symbol_devices_24),
-        onClick = {
-          findNavController().safeNavigate(R.id.action_appSettingsFragment_to_deviceActivity)
-        },
-        isEnabled = state.isDeprecatedOrUnregistered()
+        onClick = { findNavController().safeNavigate(R.id.action_appSettingsFragment_to_linkDeviceFragment) },
+        isEnabled = state.isRegisteredAndUpToDate()
       )
 
       if (state.allowUserToGoToDonationManagementScreen) {
@@ -197,7 +197,7 @@ class AppSettingsFragment : DSLSettingsFragment(
         onClick = {
           findNavController().safeNavigate(R.id.action_appSettingsFragment_to_chatsSettingsFragment)
         },
-        isEnabled = state.isDeprecatedOrUnregistered()
+        isEnabled = state.isRegisteredAndUpToDate()
       )
 
       clickPref(
@@ -206,7 +206,7 @@ class AppSettingsFragment : DSLSettingsFragment(
         onClick = {
           findNavController().safeNavigate(AppSettingsFragmentDirections.actionAppSettingsFragmentToStoryPrivacySettings(R.string.preferences__stories))
         },
-        isEnabled = state.isDeprecatedOrUnregistered()
+        isEnabled = state.isRegisteredAndUpToDate()
       )
 
       clickPref(
@@ -215,7 +215,7 @@ class AppSettingsFragment : DSLSettingsFragment(
         onClick = {
           findNavController().safeNavigate(R.id.action_appSettingsFragment_to_notificationsSettingsFragment)
         },
-        isEnabled = state.isDeprecatedOrUnregistered()
+        isEnabled = state.isRegisteredAndUpToDate()
       )
 
       clickPref(
@@ -224,7 +224,7 @@ class AppSettingsFragment : DSLSettingsFragment(
         onClick = {
           findNavController().safeNavigate(R.id.action_appSettingsFragment_to_privacySettingsFragment)
         },
-        isEnabled = state.isDeprecatedOrUnregistered()
+        isEnabled = state.isRegisteredAndUpToDate()
       )
 
       clickPref(
@@ -247,7 +247,7 @@ class AppSettingsFragment : DSLSettingsFragment(
 
       dividerPref()
 
-      /*if (SignalStore.paymentsValues().paymentsAvailability.showPaymentsMenu()) {
+      /*if (SignalStore.payments.paymentsAvailability.showPaymentsMenu()) {
         customPref(
           PaymentsPreference(
             unreadCount = state.unreadPaymentsCount
@@ -275,7 +275,7 @@ class AppSettingsFragment : DSLSettingsFragment(
         }
       )
 
-      //if (FeatureFlags.internalUser()) {
+      //if (RemoteConfig.internalUser) {
         dividerPref()
 
         clickPref(
@@ -289,7 +289,8 @@ class AppSettingsFragment : DSLSettingsFragment(
   }
 
   private fun copySubscriberIdToClipboard(): Boolean {
-    val subscriber = SignalStore.donationsValues().getSubscriber()
+    // TODO [alex] -- db access on main thread!
+    val subscriber = InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.DONATION)
     return if (subscriber == null) {
       false
     } else {
@@ -363,7 +364,7 @@ class AppSettingsFragment : DSLSettingsFragment(
       summaryView.visibility = View.VISIBLE
       avatarView.visibility = View.VISIBLE
 
-      if (SignalStore.account().username.isNotNullOrBlank()) {
+      if (SignalStore.account.username.isNotNullOrBlank()) {
         qrButton.visibility = View.VISIBLE
         qrButton.isClickable = true
         qrButton.setOnClickListener { model.onQrButtonClicked() }

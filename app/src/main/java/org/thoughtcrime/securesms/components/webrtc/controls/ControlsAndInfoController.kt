@@ -52,7 +52,7 @@ import org.thoughtcrime.securesms.components.webrtc.CallOverflowPopupWindow
 import org.thoughtcrime.securesms.components.webrtc.WebRtcCallView
 import org.thoughtcrime.securesms.components.webrtc.WebRtcCallViewModel
 import org.thoughtcrime.securesms.components.webrtc.WebRtcControls
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies
+import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.CallParticipant
 import org.thoughtcrime.securesms.service.webrtc.links.UpdateCallLinkResult
 import org.thoughtcrime.securesms.util.padding
@@ -94,10 +94,12 @@ class ControlsAndInfoController(
   private val aboveControlsGuideline: Guideline
   private val bottomSheetVisibilityListeners = mutableSetOf<BottomSheetVisibilityListener>()
   private val scheduleHideControlsRunnable: Runnable = Runnable { onScheduledHide() }
+  private val toggleCameraDirectionView: View
+
   private val handler: Handler?
     get() = webRtcCallView.handler
 
-  private var previousCallControlHeight = 0
+  private var previousCallControlHeightData = HeightData()
   private var controlPeakHeight = 0
   private var controlState: WebRtcControls = WebRtcControls.NONE
 
@@ -110,6 +112,7 @@ class ControlsAndInfoController(
     callControls = webRtcCallView.findViewById(R.id.call_controls_constraint_layout)
     raiseHandComposeView = webRtcCallView.findViewById(R.id.call_screen_raise_hand_view)
     aboveControlsGuideline = webRtcCallView.findViewById(R.id.call_screen_above_controls_guideline)
+    toggleCameraDirectionView = webRtcCallView.findViewById(R.id.call_screen_camera_direction_toggle)
 
     callInfoComposeView.apply {
       setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -152,8 +155,9 @@ class ControlsAndInfoController(
     }
 
     callControls.viewTreeObserver.addOnGlobalLayoutListener {
-      if (callControls.height > 0 && callControls.height != previousCallControlHeight) {
-        previousCallControlHeight = callControls.height
+      if (callControls.height > 0 && previousCallControlHeightData.hasChanged(callControls.height, coordinator.height)) {
+        previousCallControlHeightData = HeightData(callControls.height, coordinator.height)
+
         controlPeakHeight = callControls.height + callControls.y.toInt()
         behavior.peekHeight = controlPeakHeight
         frame.minimumHeight = coordinator.height / 2
@@ -234,7 +238,7 @@ class ControlsAndInfoController(
 
   private fun hide(delay: Long = 0L) {
     if (delay == 0L) {
-      if (controlState.isFadeOutEnabled || controlState == WebRtcControls.PIP) {
+      if (controlState.isFadeOutEnabled || controlState == WebRtcControls.PIP || controlState.displayErrorControls()) {
         behavior.isHideable = true
         behavior.state = BottomSheetBehavior.STATE_HIDDEN
 
@@ -279,7 +283,7 @@ class ControlsAndInfoController(
   }
 
   private fun showOrHideControlsOnUpdate(previousState: WebRtcControls) {
-    if (controlState == WebRtcControls.PIP) {
+    if (controlState == WebRtcControls.PIP || controlState.displayErrorControls()) {
       hide()
       return
     }
@@ -320,7 +324,6 @@ class ControlsAndInfoController(
       val margin = if (controlState.displaySmallCallButtons()) 4.dp else 8.dp
 
       setControlConstraints(R.id.call_screen_speaker_toggle, controlState.displayAudioToggle(), margin)
-      setControlConstraints(R.id.call_screen_camera_direction_toggle, controlState.displayCameraToggle(), margin)
       setControlConstraints(R.id.call_screen_video_toggle, controlState.displayVideoToggle(), margin)
       setControlConstraints(R.id.call_screen_audio_mic_toggle, controlState.displayMuteAudio(), margin)
       setControlConstraints(R.id.call_screen_audio_ring_toggle, controlState.displayRingToggle(), margin)
@@ -329,6 +332,8 @@ class ControlsAndInfoController(
     }
 
     constraints.applyTo(callControls)
+
+    toggleCameraDirectionView.visible = controlState.displayCameraToggle()
   }
 
   private fun onScheduledHide() {
@@ -393,7 +398,7 @@ class ControlsAndInfoController(
     controlsAndInfoViewModel.setApproveAllMembers(checked)
       .observeOn(AndroidSchedulers.mainThread())
       .subscribeBy(onSuccess = {
-        if (it !is UpdateCallLinkResult.Success) {
+        if (it !is UpdateCallLinkResult.Update) {
           Log.w(TAG, "Failed to change restrictions. $it")
           toastFailure()
         }
@@ -406,10 +411,10 @@ class ControlsAndInfoController(
       .setNegativeButton(android.R.string.cancel, null)
       .setMessage(webRtcCallView.resources.getString(R.string.CallLinkInfoSheet__remove_s_from_the_call, callParticipant.recipient.getShortDisplayName(webRtcCallActivity)))
       .setPositiveButton(R.string.CallLinkInfoSheet__remove) { _, _ ->
-        ApplicationDependencies.getSignalCallManager().removeFromCallLink(callParticipant)
+        AppDependencies.signalCallManager.removeFromCallLink(callParticipant)
       }
       .setNeutralButton(R.string.CallLinkInfoSheet__block_from_call) { _, _ ->
-        ApplicationDependencies.getSignalCallManager().blockFromCallLink(callParticipant)
+        AppDependencies.signalCallManager.blockFromCallLink(callParticipant)
       }
       .show()
   }
@@ -419,7 +424,7 @@ class ControlsAndInfoController(
       .observeOn(AndroidSchedulers.mainThread())
       .subscribeBy(
         onSuccess = {
-          if (it !is UpdateCallLinkResult.Success) {
+          if (it !is UpdateCallLinkResult.Update) {
             Log.w(TAG, "Failed to set name. $it")
             toastFailure()
           }
@@ -454,6 +459,15 @@ class ControlsAndInfoController(
       displayRingToggle() != previousState.displayRingToggle() ||
       displayOverflow() != previousState.displayOverflow() ||
       displayEndCall() != previousState.displayEndCall()
+  }
+
+  private data class HeightData(
+    val controlHeight: Int = 0,
+    val coordinatorHeight: Int = 0
+  ) {
+    fun hasChanged(controlHeight: Int, coordinatorHeight: Int): Boolean {
+      return controlHeight != this.controlHeight || coordinatorHeight != this.coordinatorHeight
+    }
   }
 
   interface BottomSheetVisibilityListener {
