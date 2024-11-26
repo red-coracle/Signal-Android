@@ -21,8 +21,8 @@ plugins {
 
 apply(from = "static-ips.gradle.kts")
 
-val canonicalVersionCode = 1432
-val canonicalVersionName = "7.10.3"
+val canonicalVersionCode = 1445
+val canonicalVersionName = "7.14.1"
 val currentHotfixVersion = 0
 val maxHotfixVersions = 100
 
@@ -152,7 +152,7 @@ android {
 
   packagingOptions {
     resources {
-      excludes += setOf("LICENSE.txt", "LICENSE", "NOTICE", "asm-license.txt", "META-INF/LICENSE", "META-INF/LICENSE.md", "META-INF/NOTICE", "META-INF/LICENSE-notice.md", "META-INF/proguard/androidx-annotations.pro", "libsignal_jni.dylib", "signal_jni.dll")
+      excludes += setOf("LICENSE.txt", "LICENSE", "NOTICE", "asm-license.txt", "META-INF/LICENSE", "META-INF/LICENSE.md", "META-INF/NOTICE", "META-INF/LICENSE-notice.md", "META-INF/proguard/androidx-annotations.pro", "libsignal_jni.dylib", "signal_jni.dll", "libsignal_jni_testing.dylib", "signal_jni_testing.dll")
     }
   }
 
@@ -443,6 +443,12 @@ android {
     beforeVariants { variant ->
       variant.enable = variant.name in selectableVariants
     }
+    onVariants { variant ->
+      // Include the test-only library on debug builds.
+      if (variant.buildType != "instrumentation") {
+        variant.packaging.jniLibs.excludes.add("**/libsignal_jni_testing.so")
+      }
+    }
   }
 
   val releaseDir = "$projectDir/src/release/java"
@@ -504,6 +510,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
   implementation(libs.androidx.lifecycle.common.java8)
   implementation(libs.androidx.lifecycle.reactivestreams.ktx)
+  implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.camera.core)
   implementation(libs.androidx.camera.camera2)
@@ -609,6 +616,7 @@ dependencies {
   androidTestImplementation(testLibs.mockito.kotlin)
   androidTestImplementation(testLibs.mockk.android)
   androidTestImplementation(testLibs.square.okhttp.mockserver)
+  androidTestImplementation(testLibs.diff.utils)
 
   androidTestUtil(testLibs.androidx.test.orchestrator)
 }

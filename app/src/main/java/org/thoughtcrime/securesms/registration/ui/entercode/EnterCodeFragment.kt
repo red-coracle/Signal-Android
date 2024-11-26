@@ -11,16 +11,19 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.LoggingFragment
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.ViewBinderDelegate
+import org.thoughtcrime.securesms.conversation.v2.registerForLifecycle
 import org.thoughtcrime.securesms.databinding.FragmentRegistrationEnterCodeBinding
 import org.thoughtcrime.securesms.registration.ReceivedSmsEvent
 import org.thoughtcrime.securesms.registration.data.network.RegisterAccountResult
@@ -47,17 +50,16 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
   private val TAG = Log.tag(EnterCodeFragment::class.java)
 
   private val sharedViewModel by activityViewModels<RegistrationViewModel>()
+  private val fragmentViewModel by viewModels<EnterCodeViewModel>()
+  private val bottomSheet = ContactSupportBottomSheetFragment()
   private val binding: FragmentRegistrationEnterCodeBinding by ViewBinderDelegate(FragmentRegistrationEnterCodeBinding::bind)
 
   private lateinit var phoneStateListener: SignalStrengthPhoneStateListener
 
   private var autopilotCodeEntryActive = false
 
-  private val bottomSheet = ContactSupportBottomSheetFragment()
-
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-
     setDebugLogSubmitMultiTapView(binding.verifyHeader)
 
     phoneStateListener = SignalStrengthPhoneStateListener(this, PhoneStateCallback())
@@ -76,24 +78,24 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
     }
 
     binding.code.setOnCompleteListener {
-      sharedViewModel.verifyCodeWithoutRegistrationLock(requireContext(), it, ::handleSessionErrorResponse, ::handleRegistrationErrorResponse)
+      sharedViewModel.verifyCodeWithoutRegistrationLock(requireContext(), it)
     }
 
     binding.havingTroubleButton.setOnClickListener {
-      bottomSheet.show(childFragmentManager, BOTTOM_SHEET_TAG)
+      bottomSheet.showSafely(childFragmentManager, BOTTOM_SHEET_TAG)
     }
 
     binding.callMeCountDown.apply {
       setTextResources(R.string.RegistrationActivity_call, R.string.RegistrationActivity_call_me_instead_available_in)
       setOnClickListener {
-        sharedViewModel.requestVerificationCall(requireContext(), ::handleSessionErrorResponse)
+        sharedViewModel.requestVerificationCall(requireContext())
       }
     }
 
     binding.resendSmsCountDown.apply {
       setTextResources(R.string.RegistrationActivity_resend_code, R.string.RegistrationActivity_resend_sms_available_in)
       setOnClickListener {
-        sharedViewModel.requestSmsCode(requireContext(), ::handleSessionErrorResponse)
+        sharedViewModel.requestSmsCode(requireContext())
       }
     }
 
@@ -114,6 +116,16 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
     }
 
     sharedViewModel.uiState.observe(viewLifecycleOwner) {
+      it.sessionStateError?.let { error ->
+        handleSessionErrorResponse(error)
+        sharedViewModel.sessionStateErrorShown()
+      }
+
+      it.registerAccountError?.let { error ->
+        handleRegistrationErrorResponse(error)
+        sharedViewModel.registerAccountErrorShown()
+      }
+
       binding.resendSmsCountDown.startCountDownTo(it.nextSmsTimestamp)
       binding.callMeCountDown.startCountDownTo(it.nextCallTimestamp)
       if (it.inProgress) {
@@ -122,19 +134,35 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
         binding.keyboard.displayKeyboard()
       }
     }
+
+    fragmentViewModel.uiState.observe(viewLifecycleOwner) {
+      if (it.resetRequiredAfterFailure) {
+        binding.callMeCountDown.visibility = View.VISIBLE
+        binding.resendSmsCountDown.visibility = View.VISIBLE
+        binding.wrongNumber.visibility = View.VISIBLE
+        binding.code.clear()
+        binding.keyboard.displayKeyboard()
+        fragmentViewModel.allViewsResetCompleted()
+      } else if (it.showKeyboard) {
+        binding.keyboard.displayKeyboard()
+        fragmentViewModel.keyboardShown()
+      }
+    }
+
+    EventBus.getDefault().registerForLifecycle(subscriber = this, lifecycleOwner = viewLifecycleOwner)
   }
 
   override fun onResume() {
     super.onResume()
     sharedViewModel.phoneNumber?.let {
       val formatted = PhoneNumberUtil.getInstance().format(it, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
-      binding.verificationSubheader.setText(requireContext().getString(R.string.RegistrationActivity_enter_the_code_we_sent_to_s, formatted))
+      binding.verificationSubheader.text = requireContext().getString(R.string.RegistrationActivity_enter_the_code_we_sent_to_s, formatted)
     }
   }
 
-  private fun handleSessionErrorResponse(result: RegistrationResult) {
+  private fun handleSessionErrorResponse(result: VerificationCodeRequestResult) {
     when (result) {
-      is VerificationCodeRequestResult.Success -> binding.keyboard.displaySuccess()
+      is VerificationCodeRequestResult.Success -> throw IllegalStateException("Session error handler called on successful response!")
       is VerificationCodeRequestResult.RateLimited -> presentRateLimitedDialog()
       is VerificationCodeRequestResult.AttemptsExhausted -> presentAccountLocked()
       is VerificationCodeRequestResult.RegistrationLocked -> presentRegistrationLocked(result.timeRemaining)
@@ -144,7 +172,7 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
 
   private fun handleRegistrationErrorResponse(result: RegisterAccountResult) {
     when (result) {
-      is RegisterAccountResult.Success -> binding.keyboard.displaySuccess()
+      is RegisterAccountResult.Success -> throw IllegalStateException("Register account error handler called on successful response!")
       is RegisterAccountResult.RegistrationLocked -> presentRegistrationLocked(result.timeRemaining)
       is RegisterAccountResult.AuthorizationFailed -> presentIncorrectCodeDialog()
       is RegisterAccountResult.AttemptsExhausted -> presentAccountLocked()
@@ -182,11 +210,7 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
             setTitle(R.string.RegistrationActivity_too_many_attempts)
             setMessage(R.string.RegistrationActivity_you_have_made_too_many_attempts_please_try_again_later)
             setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-              binding.callMeCountDown.visibility = View.VISIBLE
-              binding.resendSmsCountDown.visibility = View.VISIBLE
-              binding.wrongNumber.visibility = View.VISIBLE
-              binding.code.clear()
-              binding.keyboard.displayKeyboard()
+              fragmentViewModel.resetAllViews()
             }
             show()
           }
@@ -199,13 +223,10 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
     sharedViewModel.incrementIncorrectCodeAttempts()
 
     Toast.makeText(requireContext(), R.string.RegistrationActivity_incorrect_code, Toast.LENGTH_LONG).show()
+
     binding.keyboard.displayFailure().addListener(object : AssertedSuccessListener<Boolean?>() {
       override fun onSuccess(result: Boolean?) {
-        binding.callMeCountDown.setVisibility(View.VISIBLE)
-        binding.resendSmsCountDown.setVisibility(View.VISIBLE)
-        binding.wrongNumber.setVisibility(View.VISIBLE)
-        binding.code.clear()
-        binding.keyboard.displayKeyboard()
+        fragmentViewModel.resetAllViews()
       }
     })
   }
@@ -220,7 +241,7 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
               setTitle(it)
             }
             setMessage(getString(R.string.RegistrationActivity_error_connecting_to_service))
-            setPositiveButton(android.R.string.ok) { _, _ -> binding.keyboard.displayKeyboard() }
+            setPositiveButton(android.R.string.ok) { _, _ -> fragmentViewModel.showKeyboard() }
             show()
           }
         }
@@ -235,6 +256,7 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   fun onVerificationCodeReceived(event: ReceivedSmsEvent) {
+    Log.i(TAG, "Received verification code via EventBus.")
     binding.code.clear()
 
     if (event.code.isBlank() || event.code.length != ReceivedSmsEvent.CODE_LENGTH) {
@@ -255,6 +277,7 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
             }
           }, i * 200L)
         }
+      Log.i(TAG, "Finished auto-filling code.")
     } catch (notADigit: IllegalArgumentException) {
       Log.w(TAG, "Failed to convert code into digits.", notADigit)
       autopilotCodeEntryActive = false
@@ -263,7 +286,7 @@ class EnterCodeFragment : LoggingFragment(R.layout.fragment_registration_enter_c
 
   private inner class PhoneStateCallback : SignalStrengthPhoneStateListener.Callback {
     override fun onNoCellSignalPresent() {
-      bottomSheet.show(childFragmentManager, BOTTOM_SHEET_TAG)
+      bottomSheet.showSafely(childFragmentManager, BOTTOM_SHEET_TAG)
     }
 
     override fun onCellSignalPresent() {

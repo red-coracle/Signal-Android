@@ -55,8 +55,8 @@ class AppSettingsActivity : DSLSettingsActivity(), InAppPaymentComponent {
         StartLocation.PROXY -> AppSettingsFragmentDirections.actionDirectToEditProxyFragment()
         StartLocation.NOTIFICATIONS -> AppSettingsFragmentDirections.actionDirectToNotificationsSettingsFragment()
         StartLocation.CHANGE_NUMBER -> AppSettingsFragmentDirections.actionDirectToChangeNumberFragment()
-        StartLocation.SUBSCRIPTIONS -> AppSettingsFragmentDirections.actionDirectToCheckout(InAppPaymentType.RECURRING_DONATION)
-        StartLocation.BOOST -> AppSettingsFragmentDirections.actionDirectToCheckout(InAppPaymentType.ONE_TIME_DONATION)
+        StartLocation.SUBSCRIPTIONS -> AppSettingsFragmentDirections.actionDirectToManageDonations().setDirectToCheckoutType(InAppPaymentType.RECURRING_DONATION)
+        StartLocation.BOOST -> AppSettingsFragmentDirections.actionDirectToManageDonations().setDirectToCheckoutType(InAppPaymentType.ONE_TIME_DONATION)
         StartLocation.MANAGE_SUBSCRIPTIONS -> AppSettingsFragmentDirections.actionDirectToManageDonations()
         StartLocation.NOTIFICATION_PROFILES -> AppSettingsFragmentDirections.actionDirectToNotificationProfiles()
         StartLocation.CREATE_NOTIFICATION_PROFILE -> AppSettingsFragmentDirections.actionDirectToCreateNotificationProfiles()
@@ -67,6 +67,7 @@ class AppSettingsActivity : DSLSettingsActivity(), InAppPaymentComponent {
         StartLocation.LINKED_DEVICES -> AppSettingsFragmentDirections.actionDirectToDevices()
         StartLocation.USERNAME_LINK -> AppSettingsFragmentDirections.actionDirectToUsernameLinkSettings()
         StartLocation.RECOVER_USERNAME -> AppSettingsFragmentDirections.actionDirectToUsernameRecovery()
+        StartLocation.REMOTE_BACKUPS -> AppSettingsFragmentDirections.actionDirectToRemoteBackupsSettingsFragment()
       }
     }
 
@@ -194,6 +195,9 @@ class AppSettingsActivity : DSLSettingsActivity(), InAppPaymentComponent {
     @JvmStatic
     fun usernameRecovery(context: Context): Intent = getIntentForStartLocation(context, StartLocation.RECOVER_USERNAME)
 
+    @JvmStatic
+    fun remoteBackups(context: Context): Intent = getIntentForStartLocation(context, StartLocation.REMOTE_BACKUPS)
+
     private fun getIntentForStartLocation(context: Context, startLocation: StartLocation): Intent {
       return Intent(context, AppSettingsActivity::class.java)
         .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)
@@ -217,7 +221,8 @@ class AppSettingsActivity : DSLSettingsActivity(), InAppPaymentComponent {
     PRIVACY(12),
     LINKED_DEVICES(13),
     USERNAME_LINK(14),
-    RECOVER_USERNAME(15);
+    RECOVER_USERNAME(15),
+    REMOTE_BACKUPS(16);
 
     companion object {
       fun fromCode(code: Int?): StartLocation {

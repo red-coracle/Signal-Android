@@ -59,6 +59,7 @@ import org.thoughtcrime.securesms.backup.v2.ui.subscription.RemoteRestoreViewMod
 import org.thoughtcrime.securesms.conversation.v2.registerForLifecycle
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ProfileUploadJob
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.profiles.AvatarHelper
 import org.thoughtcrime.securesms.profiles.edit.CreateProfileActivity
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -101,6 +102,7 @@ class RemoteRestoreActivity : BaseActivity() {
           )
           if (state.importState == RemoteRestoreViewModel.ImportState.RESTORED) {
             SideEffect {
+              SignalStore.registration.markRestoreCompleted()
               RegistrationUtil.maybeMarkRegistrationComplete()
               AppDependencies.jobManager.add(ProfileUploadJob())
               startActivity(MainActivity.clearTop(this))
@@ -119,6 +121,7 @@ class RemoteRestoreActivity : BaseActivity() {
     viewModel.updateRestoreProgress(restoreEvent)
   }
 
+  @Composable
   private fun getFeatureList(tier: MessageBackupTier?): ImmutableList<MessageBackupsTypeFeature> {
     return when (tier) {
       null -> persistentListOf()
@@ -126,11 +129,11 @@ class RemoteRestoreActivity : BaseActivity() {
         persistentListOf(
           MessageBackupsTypeFeature(
             iconResourceId = R.drawable.symbol_thread_compact_bold_16,
-            label = "All of your media"
+            label = stringResource(id = R.string.RemoteRestoreActivity__all_of_your_media)
           ),
           MessageBackupsTypeFeature(
             iconResourceId = R.drawable.symbol_recent_compact_bold_16,
-            label = "All of your text messages"
+            label = stringResource(id = R.string.RemoteRestoreActivity__all_of_your_messages)
           )
         )
       }
@@ -138,11 +141,11 @@ class RemoteRestoreActivity : BaseActivity() {
         persistentListOf(
           MessageBackupsTypeFeature(
             iconResourceId = R.drawable.symbol_thread_compact_bold_16,
-            label = "Your last 30 days of media"
+            label = stringResource(id = R.string.RemoteRestoreActivity__your_last_d_days_of_media, 30)
           ),
           MessageBackupsTypeFeature(
             iconResourceId = R.drawable.symbol_recent_compact_bold_16,
-            label = "All of your text messages"
+            label = stringResource(id = R.string.RemoteRestoreActivity__all_of_your_messages)
           )
         )
       }
@@ -186,11 +189,10 @@ class RemoteRestoreActivity : BaseActivity() {
               )
             }
 
-            // TODO [message-backups] Finalized copy.
             val progressText = when (restoreProgress?.type) {
-              RestoreV2Event.Type.PROGRESS_DOWNLOAD -> "Downloading backup..."
-              RestoreV2Event.Type.PROGRESS_RESTORE -> "Restoring messages..."
-              else -> "Restoring..."
+              RestoreV2Event.Type.PROGRESS_DOWNLOAD -> stringResource(id = R.string.RemoteRestoreActivity__downloading_backup)
+              RestoreV2Event.Type.PROGRESS_RESTORE -> stringResource(id = R.string.RemoteRestoreActivity__downloading_backup)
+              else -> stringResource(id = R.string.RemoteRestoreActivity__restoring)
             }
 
             Text(
@@ -203,7 +205,7 @@ class RemoteRestoreActivity : BaseActivity() {
               val progressBytes = Util.getPrettyFileSize(restoreProgress.count)
               val totalBytes = Util.getPrettyFileSize(restoreProgress.estimatedTotalCount)
               Text(
-                text = "$progressBytes of $totalBytes (%.2f%%)".format(restoreProgress.getProgress()),
+                text = stringResource(id = R.string.RemoteRestoreActivity__s_of_s_s, progressBytes, totalBytes, "%.2f%%".format(restoreProgress.getProgress())),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(bottom = 12.dp)
               )
@@ -264,7 +266,7 @@ class RemoteRestoreActivity : BaseActivity() {
         .padding(top = 40.dp, bottom = 24.dp)
     ) {
       Text(
-        text = "Restore from backup", // TODO [message-backups] Finalized copy.
+        text = stringResource(id = R.string.RemoteRestoreActivity__restore_from_backup),
         style = MaterialTheme.typography.headlineMedium,
         modifier = Modifier.padding(bottom = 12.dp)
       )
@@ -281,7 +283,7 @@ class RemoteRestoreActivity : BaseActivity() {
         append(" ")
         if (tier != MessageBackupTier.PAID) {
           withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-            append("Only media sent or received in the past 30 days is included.") // TODO [message-backups] Finalized copy.
+            append(stringResource(id = R.string.RemoteRestoreActivity__only_media_sent_or_received))
           }
         }
       }
@@ -301,7 +303,7 @@ class RemoteRestoreActivity : BaseActivity() {
           .padding(top = 20.dp, bottom = 18.dp)
       ) {
         Text(
-          text = "Your backup includes:", // TODO [message-backups] Finalized copy.
+          text = stringResource(id = R.string.RemoteRestoreActivity__your_backup_includes),
           style = MaterialTheme.typography.titleMedium,
           modifier = Modifier.padding(bottom = 6.dp)
         )
@@ -322,7 +324,7 @@ class RemoteRestoreActivity : BaseActivity() {
         modifier = Modifier.fillMaxWidth()
       ) {
         Text(
-          text = "Restore backup" // TODO [message-backups] Finalized copy.
+          text = stringResource(id = R.string.RemoteRestoreActivity__restore_backup)
         )
       }
 

@@ -44,8 +44,11 @@ import org.thoughtcrime.securesms.databinding.FragmentRegistrationEnterPhoneNumb
 import org.thoughtcrime.securesms.phonenumbers.PhoneNumberFormatter
 import org.thoughtcrime.securesms.registration.data.RegistrationRepository
 import org.thoughtcrime.securesms.registration.data.network.Challenge
+import org.thoughtcrime.securesms.registration.data.network.RegisterAccountResult
 import org.thoughtcrime.securesms.registration.data.network.RegistrationResult
+import org.thoughtcrime.securesms.registration.data.network.RegistrationSessionCheckResult
 import org.thoughtcrime.securesms.registration.data.network.RegistrationSessionCreationResult
+import org.thoughtcrime.securesms.registration.data.network.RegistrationSessionResult
 import org.thoughtcrime.securesms.registration.data.network.VerificationCodeRequestResult
 import org.thoughtcrime.securesms.registration.fragments.RegistrationViewDelegate.setDebugLogSubmitMultiTapView
 import org.thoughtcrime.securesms.registration.ui.RegistrationCheckpoint
@@ -114,10 +117,26 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
 
       sharedState.networkError?.let {
         presentNetworkError(it)
+        sharedViewModel.networkErrorShown()
+      }
+
+      sharedState.sessionCreationError?.let {
+        handleSessionCreationError(it)
+        sharedViewModel.sessionCreationErrorShown()
+      }
+
+      sharedState.sessionStateError?.let {
+        handleSessionStateError(it)
+        sharedViewModel.sessionStateErrorShown()
+      }
+
+      sharedState.registerAccountError?.let {
+        handleRegistrationErrorResponse(it)
+        sharedViewModel.registerAccountErrorShown()
       }
 
       if (sharedState.challengesRequested.contains(Challenge.CAPTCHA) && sharedState.captchaToken.isNotNullOrBlank()) {
-        sharedViewModel.submitCaptchaToken(requireContext(), ::handleErrorResponse)
+        sharedViewModel.submitCaptchaToken(requireContext())
       } else if (sharedState.challengesRemaining.isNotEmpty()) {
         handleChallenges(sharedState.challengesRemaining)
       } else if (sharedState.registrationCheckpoint >= RegistrationCheckpoint.PHONE_NUMBER_CONFIRMED && sharedState.canSkipSms) {
@@ -131,9 +150,10 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
 
       fragmentState.phoneNumberFormatter?.let {
         bindPhoneNumberFormatter(it)
+        phoneNumberInputLayout.requestFocus()
       }
 
-      if (fragmentViewModel.isEnteredNumberValid(fragmentState)) {
+      if (fragmentViewModel.isEnteredNumberPossible(fragmentState)) {
         sharedViewModel.setPhoneNumber(fragmentViewModel.parsePhoneNumber(fragmentState))
       } else {
         sharedViewModel.setPhoneNumber(null)
@@ -169,7 +189,7 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
       }
       phoneNumberInputLayout.addTextChangedListener(formatter)
       currentPhoneNumberFormatter = formatter
-      Log.d(TAG, "Updating phone number formatter in fragment")
+      Log.d(TAG, "Updated phone number formatter in fragment")
     }
   }
 
@@ -181,7 +201,7 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
   }
 
   private fun performPushChallenge() {
-    sharedViewModel.requestAndSubmitPushToken(requireContext(), ::handleErrorResponse)
+    sharedViewModel.requestAndSubmitPushToken(requireContext())
   }
 
   private fun initializeInputFields() {
@@ -238,7 +258,7 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
   }
 
   private fun presentRegisterButton(sharedState: RegistrationState) {
-    binding.registerButton.isEnabled = sharedState.phoneNumber != null && PhoneNumberUtil.getInstance().isValidNumber(sharedState.phoneNumber)
+    binding.registerButton.isEnabled = sharedState.phoneNumber != null && PhoneNumberUtil.getInstance().isPossibleNumber(sharedState.phoneNumber)
     if (sharedState.inProgress) {
       binding.registerButton.setSpinning()
     } else {
@@ -291,25 +311,41 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
     Log.i(TAG, "Unknown error during verification code request", networkError)
     MaterialAlertDialogBuilder(requireContext()).apply {
       setMessage(R.string.RegistrationActivity_unable_to_connect_to_service)
-      setPositiveButton(android.R.string.ok) { _, _ -> sharedViewModel.clearNetworkError() }
-      setOnCancelListener { sharedViewModel.clearNetworkError() }
-      setOnDismissListener { sharedViewModel.clearNetworkError() }
+      setPositiveButton(android.R.string.ok, null)
       show()
     }
   }
 
-  private fun handleErrorResponse(result: RegistrationResult) {
+  private fun handleSessionCreationError(result: RegistrationSessionResult) {
+    if (!result.isSuccess()) {
+      Log.i(TAG, "Handling error response of ${result.javaClass.name}", result.getCause())
+    }
+    when (result) {
+      is RegistrationSessionCheckResult.Success,
+      is RegistrationSessionCreationResult.Success -> throw IllegalStateException("Session error handler called on successful response!")
+      is RegistrationSessionCreationResult.AttemptsExhausted -> presentRemoteErrorDialog(getString(R.string.RegistrationActivity_rate_limited_to_service))
+      is RegistrationSessionCreationResult.MalformedRequest -> presentRemoteErrorDialog(getString(R.string.RegistrationActivity_unable_to_connect_to_service), skipToNextScreen)
+
+      is RegistrationSessionCreationResult.RateLimited -> {
+        Log.i(TAG, "Session creation rate limited! Next attempt: ${result.timeRemaining.milliseconds}")
+        presentRemoteErrorDialog(getString(R.string.RegistrationActivity_rate_limited_to_try_again, result.timeRemaining.milliseconds.toString()))
+      }
+
+      is RegistrationSessionCreationResult.ServerUnableToParse -> presentGenericError(result)
+      is RegistrationSessionCheckResult.SessionNotFound -> presentGenericError(result)
+      is RegistrationSessionCheckResult.UnknownError,
+      is RegistrationSessionCreationResult.UnknownError -> presentGenericError(result)
+    }
+  }
+
+  private fun handleSessionStateError(result: VerificationCodeRequestResult) {
     if (!result.isSuccess()) {
       Log.i(TAG, "Handling error response.", result.getCause())
     }
     when (result) {
-      is RegistrationSessionCreationResult.Success,
-      is VerificationCodeRequestResult.Success -> Unit
-      is RegistrationSessionCreationResult.AttemptsExhausted,
-      is VerificationCodeRequestResult.AttemptsExhausted -> presentRemoteErrorDialog(getString(R.string.RegistrationActivity_rate_limited_to_service))
-      is VerificationCodeRequestResult.ChallengeRequired -> {
-        handleChallenges(result.challenges)
-      }
+      is VerificationCodeRequestResult.Success -> throw IllegalStateException("Session error handler called on successful response!")
+      is VerificationCodeRequestResult.AttemptsExhausted -> presentRateLimitedDialog()
+      is VerificationCodeRequestResult.ChallengeRequired -> handleChallenges(result.challenges)
       is VerificationCodeRequestResult.ExternalServiceFailure -> presentRemoteErrorDialog(getString(R.string.RegistrationActivity_unable_to_connect_to_service), skipToNextScreen)
       is VerificationCodeRequestResult.ImpossibleNumber -> {
         MaterialAlertDialogBuilder(requireContext()).apply {
@@ -318,25 +354,59 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
           show()
         }
       }
+
       is VerificationCodeRequestResult.InvalidTransportModeFailure -> {
         MaterialAlertDialogBuilder(requireContext()).apply {
           setMessage(R.string.RegistrationActivity_we_couldnt_send_you_a_verification_code)
           setPositiveButton(R.string.RegistrationActivity_voice_call) { _, _ ->
-            sharedViewModel.requestVerificationCall(requireContext(), ::handleErrorResponse)
+            sharedViewModel.requestVerificationCall(requireContext())
           }
           setNegativeButton(R.string.RegistrationActivity_cancel, null)
           show()
         }
       }
-      is RegistrationSessionCreationResult.MalformedRequest,
+
       is VerificationCodeRequestResult.MalformedRequest -> presentRemoteErrorDialog(getString(R.string.RegistrationActivity_unable_to_connect_to_service), skipToNextScreen)
       is VerificationCodeRequestResult.MustRetry -> presentRemoteErrorDialog(getString(R.string.RegistrationActivity_unable_to_connect_to_service), skipToNextScreen)
       is VerificationCodeRequestResult.NonNormalizedNumber -> handleNonNormalizedNumberError(result.originalNumber, result.normalizedNumber, fragmentViewModel.mode)
-      is RegistrationSessionCreationResult.RateLimited -> presentRemoteErrorDialog(getString(R.string.RegistrationActivity_rate_limited_to_try_again, result.timeRemaining.milliseconds.toString()))
-      is VerificationCodeRequestResult.RateLimited -> presentRemoteErrorDialog(getString(R.string.RegistrationActivity_rate_limited_to_try_again, result.timeRemaining.milliseconds.toString()))
+      is VerificationCodeRequestResult.RateLimited -> {
+        Log.i(TAG, "Code request rate limited! Next attempt: ${result.timeRemaining.milliseconds}")
+        presentRemoteErrorDialog(getString(R.string.RegistrationActivity_rate_limited_to_try_again, result.timeRemaining.milliseconds.toString()))
+      }
       is VerificationCodeRequestResult.TokenNotAccepted -> presentRemoteErrorDialog(getString(R.string.RegistrationActivity_we_need_to_verify_that_youre_human)) { _, _ -> moveToCaptcha() }
-      else -> presentRemoteErrorDialog(getString(R.string.RegistrationActivity_unable_to_connect_to_service))
+      is VerificationCodeRequestResult.RegistrationLocked -> presentRegistrationLocked(result.timeRemaining)
+      is VerificationCodeRequestResult.AlreadyVerified -> presentGenericError(result)
+      is VerificationCodeRequestResult.NoSuchSession -> presentGenericError(result)
+      is VerificationCodeRequestResult.UnknownError -> presentGenericError(result)
     }
+  }
+
+  private fun presentGenericError(result: RegistrationResult) {
+    Log.i(TAG, "Received unhandled response: ${result.javaClass.name}", result.getCause())
+    presentRemoteErrorDialog(getString(R.string.RegistrationActivity_unable_to_connect_to_service))
+  }
+
+  private fun handleRegistrationErrorResponse(result: RegisterAccountResult) {
+    when (result) {
+      is RegisterAccountResult.Success -> throw IllegalStateException("Register account error handler called on successful response!")
+      is RegisterAccountResult.RegistrationLocked -> presentRegistrationLocked(result.timeRemaining)
+      is RegisterAccountResult.AttemptsExhausted -> presentAccountLocked()
+      is RegisterAccountResult.RateLimited -> presentRateLimitedDialog()
+      is RegisterAccountResult.SvrNoData -> presentAccountLocked()
+      else -> presentGenericError(result)
+    }
+  }
+
+  private fun presentRegistrationLocked(timeRemaining: Long) {
+    findNavController().safeNavigate(EnterPhoneNumberFragmentDirections.actionPhoneNumberRegistrationLock(timeRemaining))
+  }
+
+  private fun presentRateLimitedDialog() {
+    presentRemoteErrorDialog(getString(R.string.RegistrationActivity_rate_limited_to_service))
+  }
+
+  private fun presentAccountLocked() {
+    findNavController().safeNavigate(EnterPhoneNumberFragmentDirections.actionPhoneNumberAccountLocked())
   }
 
   private fun moveToCaptcha() {
@@ -371,8 +441,8 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
           phoneNumberInputLayout.setText(phoneNumber.nationalNumber.toString())
           when (mode) {
             RegistrationRepository.Mode.SMS_WITH_LISTENER,
-            RegistrationRepository.Mode.SMS_WITHOUT_LISTENER -> sharedViewModel.requestSmsCode(requireContext(), ::handleErrorResponse)
-            RegistrationRepository.Mode.PHONE_CALL -> sharedViewModel.requestVerificationCall(requireContext(), ::handleErrorResponse)
+            RegistrationRepository.Mode.SMS_WITHOUT_LISTENER -> sharedViewModel.requestSmsCode(requireContext())
+            RegistrationRepository.Mode.PHONE_CALL -> sharedViewModel.requestVerificationCall(requireContext())
           }
           dialogInterface.dismiss()
         }
@@ -491,7 +561,7 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
         if (missingFcmConsentRequired) {
           handlePromptForNoPlayServices()
         } else {
-          sharedViewModel.onUserConfirmedPhoneNumber(requireContext(), ::handleErrorResponse)
+          sharedViewModel.onUserConfirmedPhoneNumber(requireContext())
         }
       }
       setNegativeButton(R.string.RegistrationActivity_edit_number) { _, _ -> handleConfirmNumberDialogCanceled() }
@@ -506,7 +576,7 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
       setMessage(R.string.RegistrationActivity_this_device_is_missing_google_play_services)
       setPositiveButton(R.string.RegistrationActivity_i_understand) { _, _ ->
         Log.d(TAG, "User confirmed number.")
-        sharedViewModel.onUserConfirmedPhoneNumber(requireContext(), ::handleErrorResponse)
+        sharedViewModel.onUserConfirmedPhoneNumber(requireContext())
       }
       setNegativeButton(android.R.string.cancel, null)
       setOnCancelListener { fragmentViewModel.clearError() }
@@ -516,7 +586,7 @@ class EnterPhoneNumberFragment : LoggingFragment(R.layout.fragment_registration_
   }
 
   private fun moveToEnterPinScreen() {
-    findNavController().safeNavigate(EnterPhoneNumberFragmentDirections.actionReRegisterWithPinV2Fragment())
+    findNavController().safeNavigate(EnterPhoneNumberFragmentDirections.actionReRegisterWithPinFragment())
     sharedViewModel.setInProgress(false)
   }
 

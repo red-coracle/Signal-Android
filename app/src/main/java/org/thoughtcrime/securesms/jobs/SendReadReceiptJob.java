@@ -9,14 +9,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.signal.core.util.ListUtil;
 import org.signal.core.util.logging.Log;
-import org.thoughtcrime.securesms.crypto.UnidentifiedAccessUtil;
+import org.thoughtcrime.securesms.crypto.SealedSenderAccessUtil;
 import org.thoughtcrime.securesms.database.MessageTable.MarkedMessageInfo;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
-import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
+import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.net.NotPushRegisteredException;
 import org.thoughtcrime.securesms.recipients.Recipient;
@@ -100,7 +100,7 @@ public class SendReadReceiptJob extends BaseJob {
   public static void enqueue(long threadId, @NonNull RecipientId recipientId, List<MarkedMessageInfo> markedMessageInfos) {
     return;
 
-    if (recipientId.equals(Recipient.self().getId())) {
+    /*if (recipientId.equals(Recipient.self().getId())) {
       return;
     }
 
@@ -116,7 +116,7 @@ public class SendReadReceiptJob extends BaseJob {
       List<MessageId> messageIds     = chunk.stream().map(MarkedMessageInfo::getMessageId).collect(Collectors.toList());
 
       jobManager.add(new SendReadReceiptJob(threadId, recipientId, sentTimestamps, messageIds));
-    }
+    }*/
   }
 
   @Override
@@ -143,7 +143,6 @@ public class SendReadReceiptJob extends BaseJob {
 
   @Override
   public void onRun() throws IOException, UntrustedIdentityException, UndeliverableMessageException {
-    return;
 
     if (!Recipient.self().isRegistered()) {
       throw new NotPushRegisteredException();
@@ -190,9 +189,10 @@ public class SendReadReceiptJob extends BaseJob {
     SignalServiceMessageSender  messageSender  = AppDependencies.getSignalServiceMessageSender();
     SignalServiceAddress        remoteAddress  = RecipientUtil.toSignalServiceAddress(context, recipient);
     SignalServiceReceiptMessage receiptMessage = new SignalServiceReceiptMessage(SignalServiceReceiptMessage.Type.READ, messageSentTimestamps, timestamp);
-    return;
+
     /*SendMessageResult result = messageSender.sendReceipt(remoteAddress,
-                                                         UnidentifiedAccessUtil.getAccessFor(context, Recipient.resolved(recipientId)),
+                                                         SealedSenderAccessUtil.getSealedSenderAccessFor(recipient,
+                                                                                                         () -> SignalDatabase.groups().getGroupSendFullToken(threadId, recipientId)),
                                                          receiptMessage,
                                                          recipient.getNeedsPniSignature());
 
