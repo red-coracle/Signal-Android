@@ -7,12 +7,11 @@ import java.util.Date
 import java.util.Properties
 
 plugins {
-  id("com.android.application")
-  id("kotlin-android")
+  alias(libs.plugins.android.application)
+  alias(libs.plugins.jetbrains.kotlin.android)
+  alias(libs.plugins.ktlint)
+  alias(libs.plugins.compose.compiler)
   id("androidx.navigation.safeargs")
-  id("org.jlleitschuh.gradle.ktlint")
-  id("org.jetbrains.kotlin.android")
-  id("app.cash.exhaustive")
   id("kotlin-parcelize")
   id("com.squareup.wire")
   id("translations")
@@ -21,8 +20,8 @@ plugins {
 
 apply(from = "static-ips.gradle.kts")
 
-val canonicalVersionCode = 1489
-val canonicalVersionName = "7.26.1"
+val canonicalVersionCode = 1514
+val canonicalVersionName = "7.34.1"
 val currentHotfixVersion = 0
 val maxHotfixVersions = 100
 
@@ -244,6 +243,7 @@ android {
     buildConfigField("String", "BUILD_ENVIRONMENT_TYPE", "\"unset\"")
     buildConfigField("String", "BUILD_VARIANT_TYPE", "\"unset\"")
     buildConfigField("String", "BADGE_STATIC_ROOT", "\"https://updates2.signal.org/static/badges/\"")
+    buildConfigField("String", "STRIPE_BASE_URL", "\"https://api.stripe.com/v1\"")
     buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"pk_live_6cmGZopuTsV8novGgJJW9JpC00vLIgtQ1D\"")
     buildConfigField("boolean", "TRACING_ENABLED", "false")
     buildConfigField("boolean", "MESSAGE_BACKUP_RESTORE_ENABLED", "false")
@@ -318,6 +318,7 @@ android {
       applicationIdSuffix = ".instrumentation"
 
       buildConfigField("String", "BUILD_VARIANT_TYPE", "\"Instrumentation\"")
+      buildConfigField("String", "STRIPE_BASE_URL", "\"http://127.0.0.1:8080/stripe\"")
     }
 
     create("spinner") {
@@ -501,6 +502,7 @@ dependencies {
   implementation(project(":core-ui"))
 
   implementation(libs.androidx.fragment.ktx)
+  implementation(libs.androidx.fragment.compose)
   implementation(libs.androidx.appcompat) {
     version {
       strictly("1.6.1")
@@ -605,9 +607,7 @@ dependencies {
   }
 
   testImplementation(testLibs.junit.junit)
-  testImplementation(testLibs.assertj.core)
-  testImplementation(testLibs.mockito.core)
-  testImplementation(testLibs.mockito.kotlin)
+  testImplementation(testLibs.assertk)
   testImplementation(testLibs.androidx.test.core)
   testImplementation(testLibs.robolectric.robolectric) {
     exclude(group = "com.google.protobuf", module = "protobuf-java")
@@ -623,16 +623,18 @@ dependencies {
     }
   }
   testImplementation(testLibs.conscrypt.openjdk.uber)
-  testImplementation(testLibs.hamcrest.hamcrest)
   testImplementation(testLibs.mockk)
   testImplementation(testFixtures(project(":libsignal-service")))
   testImplementation(testLibs.espresso.core)
 
+  androidTestImplementation(platform(libs.androidx.compose.bom))
+  androidTestImplementation(libs.androidx.compose.ui.test.junit4)
   androidTestImplementation(testLibs.androidx.test.ext.junit)
   androidTestImplementation(testLibs.espresso.core)
   androidTestImplementation(testLibs.androidx.test.core)
   androidTestImplementation(testLibs.androidx.test.core.ktx)
   androidTestImplementation(testLibs.androidx.test.ext.junit.ktx)
+  androidTestImplementation(testLibs.assertk)
   androidTestImplementation(testLibs.mockk.android)
   androidTestImplementation(testLibs.square.okhttp.mockserver)
   androidTestImplementation(testLibs.diff.utils)

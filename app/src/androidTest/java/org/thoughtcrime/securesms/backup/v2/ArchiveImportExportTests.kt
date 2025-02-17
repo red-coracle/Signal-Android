@@ -24,7 +24,6 @@ import org.thoughtcrime.securesms.backup.v2.stream.PlainTextBackupReader
 import org.thoughtcrime.securesms.database.KeyValueDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
-import org.whispersystems.signalservice.api.kbs.MasterKey
 import org.whispersystems.signalservice.api.push.ServiceId
 import java.io.ByteArrayInputStream
 import java.util.UUID
@@ -40,7 +39,6 @@ class ArchiveImportExportTests {
     val SELF_PNI = ServiceId.PNI.from(UUID.fromString("00000000-0000-4000-8000-000000000002"))
     val SELF_E164 = "+10000000000"
     val SELF_PROFILE_KEY: ByteArray = Base64.decode("YQKRq+3DQklInaOaMcmlzZnN0m/1hzLiaONX7gB12dg=")
-    val MASTER_KEY = Base64.decode("sHuBMP4ToZk4tcNU+S8eBUeCt8Am5EZnvuqTBJIR4Do")
   }
 
   @Before
@@ -69,13 +67,28 @@ class ArchiveImportExportTests {
   }
 
 //  @Test
+  fun chatFolders() {
+    runTests { it.startsWith("chat_folder_") }
+  }
+
+//  @Test
   fun chatItemContactMessage() {
     runTests { it.startsWith("chat_item_contact_message_") }
   }
 
 //  @Test
+  fun chatItemDirectStoryReplyMessage() {
+    runTests { it.startsWith("chat_item_direct_story_reply_") }
+  }
+
+//  @Test
+  fun chatItemDirectStoryReplyMessageWithEdits() {
+    runTests { it.startsWith("chat_item_direct_story_reply_with_edits_") }
+  }
+
+//  @Test
   fun chatItemExpirationTimerUpdate() {
-    runTests { it.startsWith("chat_item_expiration_timer_") }
+    runTests { it.startsWith("chat_item_expiration_timer_update_") }
   }
 
 //  @Test
@@ -86,6 +99,16 @@ class ArchiveImportExportTests {
 //  @Test
   fun chatItemGroupCallUpdate() {
     runTests { it.startsWith("chat_item_group_call_update_") }
+  }
+
+//  @Test
+  fun chatItemGroupChangeChatMultipleUpdate() {
+    runTests { it.startsWith("chat_item_group_change_chat_multiple_update_") }
+  }
+
+//  @Test
+  fun chatItemGroupChangeChatUpdate() {
+    runTests { it.startsWith("chat_item_group_change_chat_") }
   }
 
 //  @Test
@@ -183,7 +206,12 @@ class ArchiveImportExportTests {
     runTests { it.startsWith("chat_item_view_once_") }
   }
 
-  //  @Test
+//  @Test
+  fun notificationProfiles() {
+    runTests { it.startsWith("notification_profile_") }
+  }
+
+//  @Test
   fun recipientCallLink() {
     runTests { it.startsWith("recipient_call_link_") }
   }
@@ -264,7 +292,7 @@ class ArchiveImportExportTests {
     KeyValueDatabase.getInstance(AppDependencies.application).clear()
     SignalStore.resetCache()
 
-    SignalStore.svr.setMasterKey(MasterKey(MASTER_KEY), "1234")
+    SignalStore.account.resetAccountEntropyPool()
     SignalStore.account.setE164(SELF_E164)
     SignalStore.account.setAci(SELF_ACI)
     SignalStore.account.setPni(SELF_PNI)
@@ -278,22 +306,8 @@ class ArchiveImportExportTests {
       length = importData.size.toLong(),
       inputStreamFactory = { ByteArrayInputStream(importData) },
       selfData = BackupRepository.SelfData(SELF_ACI, SELF_PNI, SELF_E164, ProfileKey(SELF_PROFILE_KEY)),
-      plaintext = true
+      backupKey = null
     )
-  }
-
-  private fun assertPassesValidator(testName: String, generatedBackupData: ByteArray): TestResult.Failure? {
-    try {
-      BackupRepository.validate(
-        length = generatedBackupData.size.toLong(),
-        inputStreamFactory = { ByteArrayInputStream(generatedBackupData) },
-        selfData = BackupRepository.SelfData(SELF_ACI, SELF_PNI, SELF_E164, ProfileKey(SELF_PROFILE_KEY))
-      )
-    } catch (e: Exception) {
-      return TestResult.Failure(testName, "Generated backup failed validation: ${e.message}")
-    }
-
-    return null
   }
 
   private fun checkEquivalent(testName: String, import: ByteArray, export: ByteArray): TestResult.Failure? {

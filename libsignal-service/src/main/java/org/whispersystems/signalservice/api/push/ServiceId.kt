@@ -1,12 +1,14 @@
 package org.whispersystems.signalservice.api.push
 
 import okio.ByteString
+import okio.ByteString.Companion.toByteString
 import org.signal.libsignal.protocol.ServiceId.InvalidServiceIdException
 import org.signal.libsignal.protocol.SignalProtocolAddress
 import org.signal.libsignal.protocol.logging.Log
 import org.whispersystems.signalservice.api.push.ServiceId.ACI
 import org.whispersystems.signalservice.api.push.ServiceId.PNI
 import org.whispersystems.signalservice.api.util.UuidUtil
+import org.whispersystems.signalservice.api.util.toByteArray
 import java.util.UUID
 import org.signal.libsignal.protocol.ServiceId as LibSignalServiceId
 import org.signal.libsignal.protocol.ServiceId.Aci as LibSignalAci
@@ -96,6 +98,13 @@ sealed class ServiceId(val libSignalServiceId: LibSignalServiceId) {
     @JvmStatic
     @Throws(IllegalArgumentException::class)
     fun parseOrThrow(bytes: ByteString): ServiceId = parseOrThrow(bytes.toByteArray())
+
+    /** Parses a ServiceId serialized as a ByteString. Returns [ACI.UNKNOWN] if not parseable. */
+    @JvmStatic
+    @Throws(IllegalArgumentException::class)
+    fun parseOrUnknown(bytes: ByteString): ServiceId {
+      return parseOrNull(bytes) ?: ACI.UNKNOWN
+    }
   }
 
   val rawUuid: UUID = libSignalServiceId.rawUUID
@@ -229,5 +238,8 @@ sealed class ServiceId(val libSignalServiceId: LibSignalServiceId) {
 
     /** String version without the PNI: prefix. This is only for specific proto fields. For application storage, prefer [toString]. */
     fun toStringWithoutPrefix(): String = rawUuid.toString()
+
+    /** [ByteString] version without the PNI byte prefix. */
+    fun toByteStringWithoutPrefix(): ByteString = rawUuid.toByteArray().toByteString()
   }
 }

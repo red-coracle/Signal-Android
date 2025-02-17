@@ -7,10 +7,13 @@ package org.thoughtcrime.securesms.backup.v2.importer
 
 import androidx.core.content.contentValuesOf
 import org.signal.core.util.Base64
+import org.signal.core.util.insertInto
 import org.signal.core.util.toInt
 import org.signal.core.util.update
 import org.thoughtcrime.securesms.backup.v2.proto.Contact
+import org.thoughtcrime.securesms.database.IdentityTable
 import org.thoughtcrime.securesms.database.RecipientTable
+import org.thoughtcrime.securesms.database.SQLiteDatabase
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.databaseprotos.RecipientExtras
 import org.thoughtcrime.securesms.dependencies.AppDependencies
@@ -26,9 +29,12 @@ import org.whispersystems.signalservice.api.push.ServiceId.PNI
  */
 object ContactArchiveImporter {
   fun import(contact: Contact): RecipientId {
+    val aci = ACI.parseOrNull(contact.aci?.toByteArray())
+    val pni = PNI.parseOrNull(contact.pni?.toByteArray())
+
     val id = SignalDatabase.recipients.getAndPossiblyMergePnpVerified(
-      aci = ACI.parseOrNull(contact.aci?.toByteArray()),
-      pni = PNI.parseOrNull(contact.pni?.toByteArray()),
+      aci = aci,
+      pni = pni,
       e164 = contact.formattedE164
     )
 
@@ -43,7 +49,10 @@ object ContactArchiveImporter {
       RecipientTable.PROFILE_KEY to if (profileKey == null) null else Base64.encodeWithPadding(profileKey),
       RecipientTable.PROFILE_SHARING to contact.profileSharing.toInt(),
       RecipientTable.USERNAME to contact.username,
-      RecipientTable.EXTRAS to contact.toLocalExtras().encode()
+      RecipientTable.EXTRAS to contact.toLocalExtras().encode(),
+      RecipientTable.NOTE to contact.note,
+      RecipientTable.NICKNAME_GIVEN_NAME to contact.nickname?.given,
+      RecipientTable.NICKNAME_FAMILY_NAME to contact.nickname?.family
     )
 
     if (contact.registered != null) {
@@ -60,6 +69,17 @@ object ContactArchiveImporter {
       .where("${RecipientTable.ID} = ?", id)
       .run()
 
+    if (contact.identityKey != null && (aci != null || pni != null)) {
+      SignalDatabase.writableDatabase
+        .insertInto(IdentityTable.TABLE_NAME)
+        .values(
+          IdentityTable.ADDRESS to (aci ?: pni).toString(),
+          IdentityTable.IDENTITY_KEY to Base64.encodeWithPadding(contact.identityKey.toByteArray()),
+          IdentityTable.VERIFIED to contact.identityState.toLocal().toInt()
+        )
+        .run(SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
     return id
   }
 }
@@ -69,6 +89,14 @@ private fun Contact.Visibility.toLocal(): Recipient.HiddenState {
     Contact.Visibility.VISIBLE -> Recipient.HiddenState.NOT_HIDDEN
     Contact.Visibility.HIDDEN -> Recipient.HiddenState.HIDDEN
     Contact.Visibility.HIDDEN_MESSAGE_REQUEST -> Recipient.HiddenState.HIDDEN_MESSAGE_REQUEST
+  }
+}
+
+private fun Contact.IdentityState.toLocal(): IdentityTable.VerifiedStatus {
+  return when (this) {
+    Contact.IdentityState.DEFAULT -> IdentityTable.VerifiedStatus.DEFAULT
+    Contact.IdentityState.VERIFIED -> IdentityTable.VerifiedStatus.VERIFIED
+    Contact.IdentityState.UNVERIFIED -> IdentityTable.VerifiedStatus.UNVERIFIED
   }
 }
 

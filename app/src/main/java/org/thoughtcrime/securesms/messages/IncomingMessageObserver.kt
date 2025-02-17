@@ -23,14 +23,17 @@ import org.thoughtcrime.securesms.jobs.PushProcessMessageErrorJob
 import org.thoughtcrime.securesms.jobs.PushProcessMessageJob
 import org.thoughtcrime.securesms.jobs.UnableToStartException
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.keyvalue.isDecisionPending
 import org.thoughtcrime.securesms.messages.MessageDecryptor.FollowUpOperation
 import org.thoughtcrime.securesms.messages.protocol.BufferedProtocolStore
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.util.AlarmSleepTimer
 import org.thoughtcrime.securesms.util.AppForegroundObserver
+import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.SignalLocalMetrics
 import org.thoughtcrime.securesms.util.asChain
+import org.whispersystems.signalservice.api.SignalWebSocket
 import org.whispersystems.signalservice.api.push.ServiceId
 import org.whispersystems.signalservice.api.util.SleepTimer
 import org.whispersystems.signalservice.api.util.UptimeSleepTimer
@@ -54,7 +57,7 @@ import kotlin.time.Duration.Companion.seconds
  *
  * This class is responsible for opening/closing the websocket based on the app's state and observing new inbound messages received on the websocket.
  */
-class IncomingMessageObserver(private val context: Application) {
+class IncomingMessageObserver(private val context: Application, private val signalWebSocket: SignalWebSocket) {
 
   companion object {
     private val TAG = Log.tag(IncomingMessageObserver::class.java)
@@ -87,6 +90,7 @@ class IncomingMessageObserver(private val context: Application) {
   private val connectionNecessarySemaphore = Semaphore(0)
   private val networkConnectionListener = NetworkConnectionListener(context) { isNetworkUnavailable ->
     lock.withLock {
+      AppDependencies.libsignalNetwork.onNetworkChange()
       if (isNetworkUnavailable()) {
         Log.w(TAG, "Lost network connection. Shutting down our websocket connections and resetting the drained state.")
         decryptionDrained = false
@@ -143,7 +147,7 @@ class IncomingMessageObserver(private val context: Application) {
     networkConnectionListener.register()
   }
 
-  fun notifyRegistrationChanged() {
+  fun notifyRegistrationStateChanged() {
     connectionNecessarySemaphore.release()
   }
 
@@ -200,15 +204,17 @@ class IncomingMessageObserver(private val context: Application) {
     val hasNetwork = NetworkConstraint.isMet(context)
     val hasProxy = SignalStore.proxy.isProxyEnabled
     val forceWebsocket = SignalStore.internal.isWebsocketModeForced
+    val isRestoreDecisionPending = RemoteConfig.restoreAfterRegistration && SignalStore.registration.restoreDecisionState.isDecisionPending
 
     val lastInteractionString = if (appVisibleSnapshot) "N/A" else timeIdle.toString() + " ms (" + (if (timeIdle < maxBackgroundTime) "within limit" else "over limit") + ")"
     val conclusion = registered &&
       (appVisibleSnapshot || timeIdle < maxBackgroundTime || !fcmEnabled || keepAliveEntries.isNotEmpty()) &&
-      hasNetwork
+      hasNetwork &&
+      !isRestoreDecisionPending
 
     val needsConnectionString = if (conclusion) "Needs Connection" else "Does Not Need Connection"
 
-    Log.d(TAG, "[$needsConnectionString] Network: $hasNetwork, Foreground: $appVisibleSnapshot, Time Since Last Interaction: $lastInteractionString, FCM: $fcmEnabled, Stay open requests: $keepAliveEntries, Registered: $registered, Proxy: $hasProxy, Force websocket: $forceWebsocket")
+    Log.d(TAG, "[$needsConnectionString] Network: $hasNetwork, Foreground: $appVisibleSnapshot, Time Since Last Interaction: $lastInteractionString, FCM: $fcmEnabled, Stay open requests: $keepAliveEntries, Registered: $registered, Proxy: $hasProxy, Force websocket: $forceWebsocket, Pending restore: $isRestoreDecisionPending")
     return conclusion
   }
 
@@ -238,7 +244,7 @@ class IncomingMessageObserver(private val context: Application) {
   }
 
   private fun disconnect() {
-    AppDependencies.signalWebSocket.disconnect()
+    signalWebSocket.disconnect()
   }
 
   @JvmOverloads
@@ -268,7 +274,7 @@ class IncomingMessageObserver(private val context: Application) {
   @VisibleForTesting
   fun processEnvelope(bufferedProtocolStore: BufferedProtocolStore, envelope: Envelope, serverDeliveredTimestamp: Long): List<FollowUpOperation>? {
     return when (envelope.type) {
-      Envelope.Type.RECEIPT -> {
+      Envelope.Type.SERVER_DELIVERY_RECEIPT -> {
         processReceipt(envelope)
         null
       }
@@ -378,8 +384,7 @@ class IncomingMessageObserver(private val context: Application) {
         waitForConnectionNecessary()
         Log.i(TAG, "Making websocket connection....")
 
-        val signalWebSocket = AppDependencies.signalWebSocket
-        val webSocketDisposable = AppDependencies.webSocketObserver.subscribe { state: WebSocketConnectionState ->
+        val webSocketDisposable = signalWebSocket.webSocketState.subscribe { state: WebSocketConnectionState ->
           Log.d(TAG, "WebSocket State: $state")
 
           // Any change to a non-connected state means that we are not drained
@@ -394,7 +399,7 @@ class IncomingMessageObserver(private val context: Application) {
 
         signalWebSocket.connect()
         try {
-          while (isConnectionNecessary()) {
+          while (!terminated && isConnectionNecessary()) {
             try {
               Log.d(TAG, "Reading message...")
 

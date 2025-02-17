@@ -240,7 +240,7 @@ class InternalConversationSettingsFragment : DSLSettingsFragment(
         // TODO [alex] - DB on main thread!
         val subscriber: InAppPaymentSubscriberRecord? = InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.DONATION)
         val summary = if (subscriber != null) {
-          """currency code: ${subscriber.currency.currencyCode}
+          """currency code: ${subscriber.currency!!.currencyCode}
             |subscriber id: ${subscriber.subscriberId.serialize()}
           """.trimMargin()
         } else {
@@ -341,9 +341,7 @@ class InternalConversationSettingsFragment : DSLSettingsFragment(
 
     return if (capabilities != null) {
       TextUtils.concat(
-        colorize("DeleteSync", capabilities.deleteSync),
-        ", ",
-        colorize("VersionedExpirationTimer", capabilities.versionedExpirationTimer)
+        colorize("SSREv2", capabilities.storageServiceEncryptionV2)
       )
     } else {
       "Recipient not found!"

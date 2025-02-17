@@ -31,7 +31,7 @@ public final class LogSectionCapabilities implements LogSection {
 
     Recipient self = Recipient.self();
 
-    AccountAttributes.Capabilities localCapabilities  = AppCapabilities.getCapabilities(false, RemoteConfig.getStorageServiceEncryptionV2());
+    AccountAttributes.Capabilities localCapabilities  = AppCapabilities.getCapabilities(false);
     RecipientRecord.Capabilities   globalCapabilities = SignalDatabase.recipients().getCapabilities(self.getId());
 
     StringBuilder builder = new StringBuilder().append("-- Local").append("\n")
@@ -42,8 +42,6 @@ public final class LogSectionCapabilities implements LogSection {
                                                .append("-- Global").append("\n");
 
     if (globalCapabilities != null) {
-      builder.append("DeleteSync: ").append(globalCapabilities.getDeleteSync()).append("\n");
-      builder.append("VersionedExpirationTimer: ").append(globalCapabilities.getVersionedExpirationTimer()).append("\n");
       builder.append("StorageServiceEncryptionV2: ").append(globalCapabilities.getStorageServiceEncryptionV2()).append("\n");
       builder.append("\n");
     } else {

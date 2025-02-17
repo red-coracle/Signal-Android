@@ -49,6 +49,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -59,12 +60,15 @@ import org.signal.core.ui.Previews
 import org.signal.core.ui.SignalPreview
 import org.signal.core.ui.horizontalGutters
 import org.signal.core.ui.theme.SignalTheme
+import org.signal.registration.proto.RegistrationProvisionMessage
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.usernamelinks.QrCode
 import org.thoughtcrime.securesms.components.settings.app.usernamelinks.QrCodeData
 import org.thoughtcrime.securesms.compose.ComposeFragment
+import org.thoughtcrime.securesms.registration.data.network.RegisterAccountResult
 import org.thoughtcrime.securesms.registrationv3.ui.RegistrationViewModel
 import org.thoughtcrime.securesms.registrationv3.ui.shared.RegistrationScreen
+import org.thoughtcrime.securesms.util.navigation.safeNavigate
 
 /**
  * Show QR code on new device to allow registration and restore via old device.
@@ -84,7 +88,29 @@ class RestoreViaQrFragment : ComposeFragment() {
           .mapNotNull { it.provisioningMessage }
           .distinctUntilChanged()
           .collect { message ->
-            sharedViewModel.registerWithBackupKey(requireContext(), message.accountEntropyPool, message.e164, message.pin)
+            if (message.platform == RegistrationProvisionMessage.Platform.ANDROID || message.tier != null) {
+              sharedViewModel.registerWithBackupKey(requireContext(), message.accountEntropyPool, message.e164, message.pin)
+            } else {
+              findNavController().safeNavigate(RestoreViaQrFragmentDirections.goToNoBackupToRestore())
+            }
+          }
+      }
+    }
+
+    viewLifecycleOwner.lifecycleScope.launch {
+      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+        viewModel
+          .state
+          .mapNotNull { it.registerAccountResult }
+          .filter { it !is RegisterAccountResult.Success }
+          .distinctUntilChanged()
+          .collect { result ->
+            when (result) {
+              is RegisterAccountResult.AttemptsExhausted -> {
+                findNavController().safeNavigate(RestoreViaQrFragmentDirections.goToAccountLocked())
+              }
+              else -> Unit
+            }
           }
       }
     }
@@ -97,7 +123,7 @@ class RestoreViaQrFragment : ComposeFragment() {
           .filterNotNull()
           .collect {
             sharedViewModel.registerAccountErrorShown()
-            viewModel.handleRegistrationFailure()
+            viewModel.handleRegistrationFailure(it)
           }
       }
     }
@@ -163,8 +189,12 @@ private fun RestoreViaQrScreen(
           ) {
             AnimatedContent(
               targetState = state.qrState,
+              contentKey = { it::class },
               contentAlignment = Alignment.Center,
-              label = "qr-code-progress"
+              label = "qr-code-progress",
+              modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
             ) { qrState ->
               when (qrState) {
                 is RestoreViaQrViewModel.QrState.Loaded -> {
@@ -178,7 +208,9 @@ private fun RestoreViaQrScreen(
                 }
 
                 RestoreViaQrViewModel.QrState.Loading -> {
-                  CircularProgressIndicator(modifier = Modifier.size(48.dp))
+                  Box(contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(modifier = Modifier.size(48.dp))
+                  }
                 }
 
                 is RestoreViaQrViewModel.QrState.Scanned,
@@ -240,8 +272,14 @@ private fun RestoreViaQrScreen(
     if (state.isRegistering) {
       Dialogs.IndeterminateProgressDialog()
     } else if (state.showRegistrationError) {
+      val message = when (state.registerAccountResult) {
+        is RegisterAccountResult.IncorrectRecoveryPassword -> stringResource(R.string.RestoreViaQr_registration_error)
+        is RegisterAccountResult.RateLimited -> stringResource(R.string.RegistrationActivity_you_have_made_too_many_attempts_please_try_again_later)
+        else -> stringResource(R.string.RegistrationActivity_error_connecting_to_service)
+      }
+
       Dialogs.SimpleMessageDialog(
-        message = stringResource(R.string.RegistrationActivity_error_connecting_to_service),
+        message = message,
         onDismiss = onRegistrationErrorDismiss,
         dismiss = stringResource(android.R.string.ok)
       )

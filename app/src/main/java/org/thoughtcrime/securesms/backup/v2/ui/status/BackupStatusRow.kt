@@ -20,17 +20,19 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.signal.core.ui.Previews
@@ -48,10 +50,13 @@ import org.signal.core.ui.R as CoreUiR
 fun BackupStatusRow(
   backupStatusData: BackupStatusData,
   onSkipClick: () -> Unit = {},
-  onCancelClick: () -> Unit = {}
+  onCancelClick: () -> Unit = {},
+  onLearnMoreClick: () -> Unit = {}
 ) {
   Column {
-    if (backupStatusData !is BackupStatusData.CouldNotCompleteBackup) {
+    if (backupStatusData !is BackupStatusData.CouldNotCompleteBackup &&
+      backupStatusData !is BackupStatusData.BackupFailed
+    ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(horizontal = dimensionResource(CoreUiR.dimen.gutter))
@@ -77,6 +82,7 @@ fun BackupStatusRow(
       is BackupStatusData.RestoringMedia -> {
         Text(
           text = getRestoringMediaString(backupStatusData),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier.padding(horizontal = dimensionResource(CoreUiR.dimen.gutter))
         )
       }
@@ -120,6 +126,40 @@ fun BackupStatusRow(
           modifier = Modifier.padding(horizontal = dimensionResource(CoreUiR.dimen.gutter))
         )
       }
+      BackupStatusData.BackupFailed -> {
+        val inlineContentMap = mapOf(
+          "yellow_bullet" to InlineTextContent(
+            Placeholder(12.sp, 12.sp, PlaceholderVerticalAlign.TextCenter)
+          ) {
+            Box(
+              modifier = Modifier
+                .size(12.dp)
+                .background(color = backupStatusData.iconColors.foreground, shape = CircleShape)
+            )
+          }
+        )
+
+        Text(
+          text = buildAnnotatedString {
+            appendInlineContent("yellow_bullet")
+            append(" ")
+            append(stringResource(R.string.BackupStatusRow__your_last_backup_latest_version))
+            append(" ")
+            withLink(
+              LinkAnnotation.Clickable(
+                stringResource(R.string.BackupStatusRow__learn_more),
+                styles = TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.primary))
+              ) {
+                onLearnMoreClick()
+              }
+            ) {
+              append(stringResource(R.string.BackupStatusRow__learn_more))
+            }
+          },
+          inlineContent = inlineContentMap,
+          modifier = Modifier.padding(horizontal = dimensionResource(CoreUiR.dimen.gutter))
+        )
+      }
     }
   }
 }
@@ -129,15 +169,15 @@ private fun getRestoringMediaString(backupStatusData: BackupStatusData.Restoring
   return when (backupStatusData.restoreStatus) {
     BackupStatusData.RestoreStatus.NORMAL -> {
       stringResource(
-        R.string.BackupStatusRow__downloading_s_of_s_s,
+        R.string.BackupStatusRow__restoring_s_of_s_s,
         backupStatusData.bytesDownloaded.toUnitString(2),
         backupStatusData.bytesTotal.toUnitString(2),
         "%d".format((backupStatusData.progress * 100).roundToInt())
       )
     }
-    BackupStatusData.RestoreStatus.LOW_BATTERY -> stringResource(R.string.BackupStatus__status_device_has_low_battery)
-    BackupStatusData.RestoreStatus.WAITING_FOR_INTERNET -> stringResource(R.string.BackupStatus__status_no_internet)
-    BackupStatusData.RestoreStatus.WAITING_FOR_WIFI -> stringResource(R.string.BackupStatus__status_waiting_for_wifi)
+    BackupStatusData.RestoreStatus.LOW_BATTERY -> stringResource(R.string.BackupStatusRow__restore_device_has_low_battery)
+    BackupStatusData.RestoreStatus.WAITING_FOR_INTERNET -> stringResource(R.string.BackupStatusRow__restore_no_internet)
+    BackupStatusData.RestoreStatus.WAITING_FOR_WIFI -> stringResource(R.string.BackupStatusRow__restore_waiting_for_wifi)
     BackupStatusData.RestoreStatus.FINISHED -> stringResource(R.string.BackupStatus__restore_complete)
   }
 }
@@ -238,6 +278,16 @@ fun BackupStatusRowCouldNotCompleteBackupPreview() {
   Previews.Preview {
     BackupStatusRow(
       backupStatusData = BackupStatusData.CouldNotCompleteBackup
+    )
+  }
+}
+
+@SignalPreview
+@Composable
+fun BackupStatusRowBackupFailedPreview() {
+  Previews.Preview {
+    BackupStatusRow(
+      backupStatusData = BackupStatusData.BackupFailed
     )
   }
 }

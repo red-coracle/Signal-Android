@@ -59,7 +59,6 @@ import java.util.concurrent.locks.Lock
 import kotlin.jvm.optionals.getOrNull
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -155,6 +154,7 @@ object InAppPaymentsRepository {
     return Completable.fromAction {
       val inAppPayment = SignalDatabase.inAppPayments.getById(inAppPaymentId)!!
       if (inAppPayment.data.error == null) {
+        Log.d(TAG, "Setting error on InAppPayment[$inAppPaymentId]")
         SignalDatabase.inAppPayments.update(
           inAppPayment.copy(
             notified = false,
@@ -390,32 +390,6 @@ object InAppPaymentsRepository {
     }
   }
 
-  /**
-   * Determines if we are in the timeout period to display the "your backup will be deleted today" message
-   */
-  @WorkerThread
-  fun getExpiredBackupDeletionState(): ExpiredBackupDeletionState {
-    val inAppPayment = SignalDatabase.inAppPayments.getByLatestEndOfPeriod(InAppPaymentType.RECURRING_BACKUP)
-    if (inAppPayment == null) {
-      Log.w(TAG, "InAppPayment for recurring backup not found for last day check. Clearing check.")
-      SignalStore.inAppPayments.showLastDayToDownloadMediaDialog = false
-      return ExpiredBackupDeletionState.NONE
-    }
-
-    val now = SignalStore.misc.estimatedServerTime.milliseconds
-    val lastEndOfPeriod = inAppPayment.endOfPeriod
-    val displayDialogStart = lastEndOfPeriod + backupExpirationTimeout
-    val displayDialogEnd = lastEndOfPeriod + backupExpirationDeletion
-
-    return if (now in displayDialogStart..displayDialogEnd) {
-      ExpiredBackupDeletionState.DELETE_TODAY
-    } else if (now > displayDialogEnd) {
-      ExpiredBackupDeletionState.EXPIRED
-    } else {
-      ExpiredBackupDeletionState.NONE
-    }
-  }
-
   @JvmStatic
   @WorkerThread
   fun setShouldCancelSubscriptionBeforeNextSubscribeAttempt(subscriber: InAppPaymentSubscriberRecord, shouldCancel: Boolean) {
@@ -476,14 +450,10 @@ object InAppPaymentsRepository {
   @Suppress("DEPRECATION")
   @SuppressLint("DiscouragedApi")
   @WorkerThread
-  fun getSubscriber(currency: Currency, type: InAppPaymentSubscriberRecord.Type): InAppPaymentSubscriberRecord? {
-    val subscriber = SignalDatabase.inAppPaymentSubscribers.getByCurrencyCode(currency.currencyCode, type)
+  fun getRecurringDonationSubscriber(currency: Currency): InAppPaymentSubscriberRecord? {
+    val subscriber = SignalDatabase.inAppPaymentSubscribers.getByCurrencyCode(currency.currencyCode)
 
-    return if (subscriber == null && type == InAppPaymentSubscriberRecord.Type.DONATION) {
-      SignalStore.inAppPayments.getSubscriber(currency)
-    } else {
-      subscriber
-    }
+    return subscriber ?: SignalStore.inAppPayments.getSubscriber(currency)
   }
 
   /**
@@ -492,10 +462,14 @@ object InAppPaymentsRepository {
   @JvmStatic
   @WorkerThread
   fun getSubscriber(type: InAppPaymentSubscriberRecord.Type): InAppPaymentSubscriberRecord? {
-    val currency = SignalStore.inAppPayments.getSubscriptionCurrency(type)
+    if (type == InAppPaymentSubscriberRecord.Type.BACKUP) {
+      return SignalDatabase.inAppPaymentSubscribers.getBackupsSubscriber()
+    }
+
+    val currency = SignalStore.inAppPayments.getRecurringDonationCurrency()
     Log.d(TAG, "Attempting to retrieve subscriber of type $type for ${currency.currencyCode}")
 
-    return getSubscriber(currency, type)
+    return getRecurringDonationSubscriber(currency)
   }
 
   /**
@@ -549,7 +523,9 @@ object InAppPaymentsRepository {
           )
         }
         InAppPaymentTable.State.PENDING -> {
-          if (inAppPayment.data.redemption?.stage == InAppPaymentData.RedemptionState.Stage.REDEMPTION_STARTED) {
+          if (inAppPayment.data.redemption?.keepAlive == true) {
+            DonationRedemptionJobStatus.PendingKeepAlive
+          } else if (inAppPayment.data.redemption?.stage == InAppPaymentData.RedemptionState.Stage.REDEMPTION_STARTED) {
             DonationRedemptionJobStatus.PendingReceiptRedemption
           } else {
             DonationRedemptionJobStatus.PendingReceiptRequest

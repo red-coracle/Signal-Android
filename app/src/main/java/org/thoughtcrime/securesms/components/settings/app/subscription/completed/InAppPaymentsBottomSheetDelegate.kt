@@ -19,23 +19,21 @@ import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.badges.self.expired.MonthlyDonationCanceledBottomSheetDialogFragment
 import org.thoughtcrime.securesms.components.settings.app.subscription.DonationPendingBottomSheet
 import org.thoughtcrime.securesms.components.settings.app.subscription.DonationPendingBottomSheetArgs
-import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.thanks.ThanksForYourSupportBottomSheetDialogFragment
 import org.thoughtcrime.securesms.components.settings.app.subscription.thanks.ThanksForYourSupportBottomSheetDialogFragmentArgs
 import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.database.model.databaseprotos.DonationErrorValue
 import org.thoughtcrime.securesms.database.model.databaseprotos.InAppPaymentData
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.util.RemoteConfig
 
 /**
  * Handles displaying bottom sheets for in-app payments. The current policy is to "fire and forget".
  */
 class InAppPaymentsBottomSheetDelegate(
   private val fragmentManager: FragmentManager,
-  private val lifecycleOwner: LifecycleOwner,
-  private vararg val supportedTypes: InAppPaymentSubscriberRecord.Type = arrayOf(InAppPaymentSubscriberRecord.Type.DONATION)
+  private val lifecycleOwner: LifecycleOwner
 ) : DefaultLifecycleObserver {
 
   companion object {
@@ -57,13 +55,11 @@ class InAppPaymentsBottomSheetDelegate(
   private val badgeRepository = TerminalDonationRepository()
 
   override fun onResume(owner: LifecycleOwner) {
-    if (InAppPaymentSubscriberRecord.Type.DONATION in supportedTypes) {
-      handleLegacyTerminalDonationSheets()
-      handleLegacyVerifiedMonthlyDonationSheets()
-      handleInAppPaymentDonationSheets()
-    }
+    handleLegacyTerminalDonationSheets()
+    handleLegacyVerifiedMonthlyDonationSheets()
+    handleInAppPaymentDonationSheets()
 
-    if (InAppPaymentSubscriberRecord.Type.BACKUP in supportedTypes) {
+    if (RemoteConfig.messageBackups) {
       handleInAppPaymentBackupsSheets()
     }
   }
@@ -79,11 +75,7 @@ class InAppPaymentsBottomSheetDelegate(
         TerminalDonationBottomSheet.show(fragmentManager, donation)
       } else if (donation.error != null) {
         lifecycleDisposable += badgeRepository.getBadge(donation).observeOn(AndroidSchedulers.mainThread()).subscribe { badge ->
-          val args = ThanksForYourSupportBottomSheetDialogFragmentArgs.Builder(badge).build().toBundle()
-          val sheet = ThanksForYourSupportBottomSheetDialogFragment()
-
-          sheet.arguments = args
-          sheet.show(fragmentManager, null)
+          ThanksForYourSupportBottomSheetDialogFragment.create(badge).show(fragmentManager, ThanksForYourSupportBottomSheetDialogFragment.SHEET_TAG)
         }
       }
     }
@@ -137,16 +129,6 @@ class InAppPaymentsBottomSheetDelegate(
           BackupAlertBottomSheet.create(BackupAlert.FailedToRenew).show(fragmentManager, null)
         } else if (isUnexpectedCancellation(payment.state, payment.data)) {
           BackupAlertBottomSheet.create(BackupAlert.MediaBackupsAreOff(payment.endOfPeriodSeconds)).show(fragmentManager, null)
-        }
-      }
-    }
-
-    if (SignalStore.inAppPayments.showLastDayToDownloadMediaDialog) {
-      lifecycleDisposable += Single.fromCallable {
-        InAppPaymentsRepository.getExpiredBackupDeletionState()
-      }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeBy {
-        if (it == InAppPaymentsRepository.ExpiredBackupDeletionState.DELETE_TODAY) {
-          BackupAlertBottomSheet.create(BackupAlert.MediaWillBeDeletedToday).show(fragmentManager, null)
         }
       }
     }

@@ -16,11 +16,13 @@ import org.thoughtcrime.securesms.backup.v2.exporters.ContactArchiveExporter
 import org.thoughtcrime.securesms.backup.v2.exporters.GroupArchiveExporter
 import org.thoughtcrime.securesms.backup.v2.proto.AccountData
 import org.thoughtcrime.securesms.database.GroupTable
+import org.thoughtcrime.securesms.database.IdentityTable
 import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.model.databaseprotos.RecipientExtras
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.recipients.RecipientId
+import org.whispersystems.signalservice.api.push.ServiceId
 
 /**
  * Fetches all individual contacts for backups and returns the result as an iterator.
@@ -30,32 +32,45 @@ import org.thoughtcrime.securesms.recipients.RecipientId
 fun RecipientTable.getContactsForBackup(selfId: Long): ContactArchiveExporter {
   val cursor = readableDatabase
     .select(
-      RecipientTable.ID,
-      RecipientTable.ACI_COLUMN,
-      RecipientTable.PNI_COLUMN,
-      RecipientTable.USERNAME,
-      RecipientTable.E164,
-      RecipientTable.BLOCKED,
-      RecipientTable.HIDDEN,
-      RecipientTable.REGISTERED,
-      RecipientTable.UNREGISTERED_TIMESTAMP,
-      RecipientTable.PROFILE_KEY,
-      RecipientTable.PROFILE_SHARING,
-      RecipientTable.PROFILE_GIVEN_NAME,
-      RecipientTable.PROFILE_FAMILY_NAME,
-      RecipientTable.PROFILE_JOINED_NAME,
-      RecipientTable.MUTE_UNTIL,
-      RecipientTable.CHAT_COLORS,
-      RecipientTable.CUSTOM_CHAT_COLORS_ID,
-      RecipientTable.EXTRAS
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.ID}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.ACI_COLUMN}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.PNI_COLUMN}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.USERNAME}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.E164}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.BLOCKED}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.HIDDEN}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.REGISTERED}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.UNREGISTERED_TIMESTAMP}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.PROFILE_KEY}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.PROFILE_SHARING}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.PROFILE_GIVEN_NAME}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.PROFILE_FAMILY_NAME}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.PROFILE_JOINED_NAME}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.NICKNAME_GIVEN_NAME}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.NICKNAME_FAMILY_NAME}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.NOTE}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.MUTE_UNTIL}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.CHAT_COLORS}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.CUSTOM_CHAT_COLORS_ID}",
+      "${RecipientTable.TABLE_NAME}.${RecipientTable.EXTRAS}",
+      "${IdentityTable.TABLE_NAME}.${IdentityTable.IDENTITY_KEY}",
+      "${IdentityTable.TABLE_NAME}.${IdentityTable.VERIFIED}"
     )
-    .from(RecipientTable.TABLE_NAME)
+    .from(
+      """
+      ${RecipientTable.TABLE_NAME} LEFT OUTER JOIN ${IdentityTable.TABLE_NAME} ON (
+        ${RecipientTable.TABLE_NAME}.${RecipientTable.ACI_COLUMN} = ${IdentityTable.TABLE_NAME}.${IdentityTable.ADDRESS} OR (
+          ${RecipientTable.TABLE_NAME}.${RecipientTable.ACI_COLUMN} IS NULL AND ${RecipientTable.TABLE_NAME}.${RecipientTable.PNI_COLUMN} = ${IdentityTable.TABLE_NAME}.${IdentityTable.ADDRESS}
+        ) 
+      )
+      """
+    )
     .where(
       """
       ${RecipientTable.TYPE} = ? AND (
         ${RecipientTable.ACI_COLUMN} NOT NULL OR
-        (${RecipientTable.PNI_COLUMN} NOT NULL AND ${RecipientTable.E164} NOT NULL) OR
-        ${RecipientTable.E164} NOT NULL
+        (${RecipientTable.PNI_COLUMN} NOT NULL AND ${RecipientTable.E164} NOT NULL AND ${RecipientTable.E164} != 0) OR
+        (${RecipientTable.E164} NOT NULL AND ${RecipientTable.E164} != 0)
       )
       """,
       RecipientTable.RecipientType.INDIVIDUAL.id
@@ -65,7 +80,7 @@ fun RecipientTable.getContactsForBackup(selfId: Long): ContactArchiveExporter {
   return ContactArchiveExporter(cursor, selfId)
 }
 
-fun RecipientTable.getGroupsForBackup(): GroupArchiveExporter {
+fun RecipientTable.getGroupsForBackup(selfAci: ServiceId.ACI): GroupArchiveExporter {
   val cursor = readableDatabase
     .select(
       "${RecipientTable.TABLE_NAME}.${RecipientTable.ID}",
@@ -76,6 +91,7 @@ fun RecipientTable.getGroupsForBackup(): GroupArchiveExporter {
       "${GroupTable.TABLE_NAME}.${GroupTable.V2_MASTER_KEY}",
       "${GroupTable.TABLE_NAME}.${GroupTable.SHOW_AS_STORY_STATE}",
       "${GroupTable.TABLE_NAME}.${GroupTable.TITLE}",
+      "${GroupTable.TABLE_NAME}.${GroupTable.ACTIVE}",
       "${GroupTable.TABLE_NAME}.${GroupTable.V2_DECRYPTED_GROUP}"
     )
     .from(
@@ -92,7 +108,7 @@ fun RecipientTable.getGroupsForBackup(): GroupArchiveExporter {
     )
     .run()
 
-  return GroupArchiveExporter(cursor)
+  return GroupArchiveExporter(selfAci, cursor)
 }
 
 /**

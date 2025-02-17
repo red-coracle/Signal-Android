@@ -144,6 +144,7 @@ public class OutgoingCallActionProcessor extends DeviceAwareActionProcessor {
       return currentState;
     }
 
+    boolean         hideIp          = !activePeer.getRecipient().isProfileSharing() || callSetupState.isAlwaysTurnServers();
     VideoState      videoState      = currentState.getVideoState();
     CallParticipant callParticipant = Objects.requireNonNull(currentState.getCallInfoState().getRemoteCallParticipant(activePeer.getRecipient()));
 
@@ -157,7 +158,7 @@ public class OutgoingCallActionProcessor extends DeviceAwareActionProcessor {
                                                 callParticipant.getVideoSink(),
                                                 videoState.requireCamera(),
                                                 callSetupState.getIceServers(),
-                                                callSetupState.isAlwaysTurnServers(),
+                                                hideIp,
                                                 NetworkUtil.getCallingDataMode(context),
                                                 AUDIO_LEVELS_INTERVAL,
                                                 currentState.getCallSetupState(activePeer).isEnableVideoOnCreate());
@@ -230,6 +231,11 @@ public class OutgoingCallActionProcessor extends DeviceAwareActionProcessor {
                        .changeLocalDeviceState()
                        .isMicrophoneEnabled(!muted)
                        .build();
+  }
+
+  @Override
+  protected @NonNull WebRtcServiceState handleRemoteAudioEnable(@NonNull WebRtcServiceState currentState, boolean enable) {
+    return activeCallDelegate.handleRemoteAudioEnable(currentState, enable);
   }
 
   @Override

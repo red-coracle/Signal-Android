@@ -16,7 +16,7 @@ RUN apt update
 RUN apt install -y git openjdk-17-jdk unzip wget git && git config --global --add safe.directory /project
 
 ENV ANDROID_COMMAND_LINE_TOOLS_FILENAME commandlinetools-linux-10406996_latest.zip
-ENV ANDROID_API_LEVELS                  android-34
+ENV ANDROID_API_LEVELS                  android-35
 ENV ANDROID_BUILD_TOOLS_VERSION         34.0.0
 
 ENV ANDROID_HOME /usr/local/android-sdk-linux

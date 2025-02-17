@@ -16,21 +16,28 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.signal.core.util.ByteSize
+import org.signal.core.util.bytes
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
 import org.thoughtcrime.securesms.backup.v2.RestoreV2Event
+import org.thoughtcrime.securesms.database.model.databaseprotos.RestoreDecisionState
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.JobTracker
 import org.thoughtcrime.securesms.jobs.BackupRestoreJob
 import org.thoughtcrime.securesms.jobs.BackupRestoreMediaJob
 import org.thoughtcrime.securesms.jobs.ProfileUploadJob
 import org.thoughtcrime.securesms.jobs.SyncArchivedMediaJob
+import org.thoughtcrime.securesms.keyvalue.Completed
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.keyvalue.Skipped
 import org.thoughtcrime.securesms.registration.util.RegistrationUtil
+import org.thoughtcrime.securesms.registrationv3.data.QuickRegistrationRepository
 import org.thoughtcrime.securesms.registrationv3.data.RegistrationRepository
+import org.whispersystems.signalservice.api.registration.RestoreMethod
 
-class RemoteRestoreViewModel : ViewModel() {
+class RemoteRestoreViewModel(isOnlyRestoreOption: Boolean) : ViewModel() {
 
   companion object {
     private val TAG = Log.tag(RemoteRestoreViewModel::class)
@@ -38,8 +45,10 @@ class RemoteRestoreViewModel : ViewModel() {
 
   private val store: MutableStateFlow<ScreenState> = MutableStateFlow(
     ScreenState(
+      isRemoteRestoreOnlyOption = isOnlyRestoreOption,
       backupTier = SignalStore.backup.backupTier,
-      backupTime = SignalStore.backup.lastBackupTime
+      backupTime = SignalStore.backup.lastBackupTime,
+      backupSize = SignalStore.backup.totalBackupSize.bytes
     )
   )
 
@@ -47,18 +56,23 @@ class RemoteRestoreViewModel : ViewModel() {
 
   init {
     viewModelScope.launch(Dispatchers.IO) {
-      val restored = BackupRepository.restoreBackupTier(SignalStore.account.requireAci()) != null
+      val tier: MessageBackupTier? = BackupRepository.restoreBackupTier(SignalStore.account.requireAci())
       store.update {
-        if (restored) {
+        if (tier != null) {
           it.copy(
             loadState = ScreenState.LoadState.LOADED,
             backupTier = SignalStore.backup.backupTier,
-            backupTime = SignalStore.backup.lastBackupTime
+            backupTime = SignalStore.backup.lastBackupTime,
+            backupSize = SignalStore.backup.totalBackupSize.bytes
           )
         } else {
-          it.copy(
-            loadState = ScreenState.LoadState.FAILURE
-          )
+          if (SignalStore.backup.isBackupTierRestored) {
+            it.copy(loadState = ScreenState.LoadState.NOT_FOUND)
+          } else if (it.loadState == ScreenState.LoadState.LOADING) {
+            it.copy(loadState = ScreenState.LoadState.FAILURE)
+          } else {
+            it
+          }
         }
       }
     }
@@ -69,6 +83,8 @@ class RemoteRestoreViewModel : ViewModel() {
       store.update { it.copy(importState = ImportState.InProgress) }
 
       withContext(Dispatchers.IO) {
+        QuickRegistrationRepository.setRestoreMethodForOldDevice(RestoreMethod.REMOTE_BACKUP)
+
         val jobStateFlow = callbackFlow {
           val listener = JobTracker.JobListener { _, jobState ->
             trySend(jobState)
@@ -90,7 +106,7 @@ class RemoteRestoreViewModel : ViewModel() {
           when (state) {
             JobTracker.JobState.SUCCESS -> {
               Log.i(TAG, "Restore successful")
-              SignalStore.registration.markRestoreCompleted()
+              SignalStore.registration.restoreDecisionState = RestoreDecisionState.Completed
 
               if (!RegistrationRepository.isMissingProfileData()) {
                 RegistrationUtil.maybeMarkRegistrationComplete()
@@ -122,16 +138,28 @@ class RemoteRestoreViewModel : ViewModel() {
   }
 
   fun cancel() {
-    SignalStore.registration.markSkippedTransferOrRestore()
+    SignalStore.registration.restoreDecisionState = RestoreDecisionState.Skipped
   }
 
   fun clearError() {
     store.update { it.copy(importState = ImportState.None, restoreProgress = null) }
   }
 
+  fun skipRestore() {
+    SignalStore.registration.restoreDecisionState = RestoreDecisionState.Skipped
+
+    viewModelScope.launch {
+      withContext(Dispatchers.IO) {
+        QuickRegistrationRepository.setRestoreMethodForOldDevice(RestoreMethod.DECLINE)
+      }
+    }
+  }
+
   data class ScreenState(
+    val isRemoteRestoreOnlyOption: Boolean = false,
     val backupTier: MessageBackupTier? = null,
     val backupTime: Long = -1,
+    val backupSize: ByteSize = 0.bytes,
     val importState: ImportState = ImportState.None,
     val restoreProgress: RestoreV2Event? = null,
     val loadState: LoadState = if (backupTier != null) LoadState.LOADED else LoadState.LOADING
@@ -141,12 +169,8 @@ class RemoteRestoreViewModel : ViewModel() {
       return loadState == LoadState.LOADED
     }
 
-    fun isLoading(): Boolean {
-      return loadState == LoadState.LOADING
-    }
-
     enum class LoadState {
-      LOADING, LOADED, FAILURE
+      LOADING, LOADED, NOT_FOUND, FAILURE
     }
   }
 

@@ -12,11 +12,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,11 +36,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -47,6 +53,7 @@ import org.signal.core.ui.BottomSheets
 import org.signal.core.ui.Buttons
 import org.signal.core.ui.Previews
 import org.signal.core.ui.SignalPreview
+import org.signal.core.ui.theme.SignalTheme
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsType
@@ -57,6 +64,8 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.BackupMessagesJob
 import org.thoughtcrime.securesms.jobs.BackupRestoreMediaJob
 import org.thoughtcrime.securesms.payments.FiatMoneyUtil
+import org.thoughtcrime.securesms.util.CommunicationActions
+import org.thoughtcrime.securesms.util.PlayStoreUtil
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
@@ -66,6 +75,8 @@ import org.signal.core.ui.R as CoreUiR
  * Notifies the user of an issue with their backup.
  */
 class BackupAlertBottomSheet : UpgradeToPaidTierBottomSheet() {
+
+  override val peekHeightPercentage: Float = 0.75f
 
   companion object {
     private const val ARG_ALERT = "alert"
@@ -121,11 +132,16 @@ class BackupAlertBottomSheet : UpgradeToPaidTierBottomSheet() {
       is BackupAlert.MediaBackupsAreOff -> {
         onSubscribeClick()
       }
+
       BackupAlert.MediaWillBeDeletedToday -> {
         performFullMediaDownload()
       }
 
       is BackupAlert.DiskFull -> Unit
+      is BackupAlert.BackupFailed ->
+        PlayStoreUtil.openPlayStoreOrOurApkDownloadPage(requireContext())
+
+      BackupAlert.CouldNotRedeemBackup -> Unit
     }
 
     dismissAllowingStateLoss()
@@ -144,6 +160,8 @@ class BackupAlertBottomSheet : UpgradeToPaidTierBottomSheet() {
       is BackupAlert.DiskFull -> {
         displaySkipRestoreDialog()
       }
+      BackupAlert.BackupFailed -> CommunicationActions.openBrowserLink(requireContext(), requireContext().getString(R.string.backup_failed_support_url))
+      BackupAlert.CouldNotRedeemBackup -> CommunicationActions.openBrowserLink(requireContext(), requireContext().getString(R.string.backup_support_url)) // TODO [backups] final url
     }
 
     dismissAllowingStateLoss()
@@ -153,7 +171,8 @@ class BackupAlertBottomSheet : UpgradeToPaidTierBottomSheet() {
     super.onDismiss(dialog)
 
     when (backupAlert) {
-      is BackupAlert.CouldNotCompleteBackup -> BackupRepository.markBackupFailedSheetDismissed()
+      is BackupAlert.CouldNotCompleteBackup, BackupAlert.BackupFailed -> BackupRepository.markBackupFailedSheetDismissed()
+      is BackupAlert.MediaWillBeDeletedToday -> BackupRepository.snoozeYourMediaWillBeDeletedTodaySheet()
       else -> Unit
     }
   }
@@ -215,14 +234,14 @@ private fun BackupAlertSheetContent(
       BackupAlert.FailedToRenew, is BackupAlert.MediaBackupsAreOff -> {
         Box {
           Image(
-            painter = painterResource(id = R.drawable.image_signal_backups),
+            imageVector = ImageVector.vectorResource(id = R.drawable.image_signal_backups),
             contentDescription = null,
             modifier = Modifier
               .size(80.dp)
               .padding(2.dp)
           )
           Icon(
-            painter = painterResource(R.drawable.symbol_error_circle_fill_24),
+            imageVector = ImageVector.vectorResource(R.drawable.symbol_error_circle_fill_24),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.align(Alignment.TopEnd)
@@ -233,7 +252,7 @@ private fun BackupAlertSheetContent(
       else -> {
         val iconColors = rememberBackupsIconColors(backupAlert = backupAlert)
         Icon(
-          painter = painterResource(id = R.drawable.symbol_backup_light),
+          imageVector = ImageVector.vectorResource(id = R.drawable.symbol_backup_light),
           contentDescription = null,
           tint = iconColors.foreground,
           modifier = Modifier
@@ -260,6 +279,8 @@ private fun BackupAlertSheetContent(
       is BackupAlert.MediaBackupsAreOff -> MediaBackupsAreOffBody(backupAlert.endOfPeriodSeconds, mediaTtl)
       BackupAlert.MediaWillBeDeletedToday -> MediaWillBeDeletedTodayBody()
       is BackupAlert.DiskFull -> DiskFullBody(requiredSpace = backupAlert.requiredSpace)
+      BackupAlert.BackupFailed -> BackupFailedBody()
+      BackupAlert.CouldNotRedeemBackup -> CouldNotRedeemBackup()
     }
 
     val secondaryActionResource = rememberSecondaryActionResource(backupAlert = backupAlert)
@@ -288,11 +309,62 @@ private fun BackupAlertSheetContent(
 }
 
 @Composable
+private fun CouldNotRedeemBackup() {
+  Text(
+    text = stringResource(R.string.BackupAlertBottomSheet__too_many_devices_have_tried),
+    textAlign = TextAlign.Center,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    modifier = Modifier.padding(bottom = 16.dp)
+  )
+
+  Row(
+    modifier = Modifier
+      .height(IntrinsicSize.Min)
+      .padding(horizontal = 35.dp)
+  ) {
+    Box(
+      modifier = Modifier
+        .width(4.dp)
+        .fillMaxHeight()
+        .padding(vertical = 2.dp)
+        .background(color = SignalTheme.colors.colorTransparentInverse2)
+    )
+
+    Text(
+      text = stringResource(R.string.BackupAlertBottomSheet__reregistered_your_signal_account),
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      modifier = Modifier.padding(start = 12.dp)
+    )
+  }
+
+  Row(
+    modifier = Modifier
+      .height(IntrinsicSize.Min)
+      .padding(horizontal = 35.dp)
+      .padding(top = 12.dp, bottom = 40.dp)
+  ) {
+    Box(
+      modifier = Modifier
+        .width(4.dp)
+        .fillMaxHeight()
+        .padding(vertical = 2.dp)
+        .background(color = SignalTheme.colors.colorTransparentInverse2)
+    )
+
+    Text(
+      text = stringResource(R.string.BackupAlertBottomSheet__have_too_many_devices_using_the_same_subscription),
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      modifier = Modifier.padding(start = 12.dp)
+    )
+  }
+}
+
+@Composable
 private fun CouldNotCompleteBackup(
   daysSinceLastBackup: Int
 ) {
   Text(
-    text = stringResource(id = R.string.BackupAlertBottomSheet__your_device_hasnt, daysSinceLastBackup),
+    text = pluralStringResource(id = R.plurals.BackupAlertBottomSheet__your_device_hasnt, daysSinceLastBackup, daysSinceLastBackup),
     textAlign = TextAlign.Center,
     color = MaterialTheme.colorScheme.onSurfaceVariant,
     modifier = Modifier.padding(bottom = 60.dp)
@@ -366,11 +438,21 @@ private fun DiskFullBody(requiredSpace: String) {
 }
 
 @Composable
+private fun BackupFailedBody() {
+  Text(
+    text = stringResource(id = R.string.BackupAlertBottomSheet__an_error_occurred),
+    textAlign = TextAlign.Center,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    modifier = Modifier.padding(bottom = 36.dp)
+  )
+}
+
+@Composable
 private fun rememberBackupsIconColors(backupAlert: BackupAlert): BackupsIconColors {
   return remember(backupAlert) {
     when (backupAlert) {
       BackupAlert.FailedToRenew, is BackupAlert.MediaBackupsAreOff -> error("Not icon-based options.")
-      is BackupAlert.CouldNotCompleteBackup, is BackupAlert.DiskFull -> BackupsIconColors.Warning
+      is BackupAlert.CouldNotCompleteBackup, BackupAlert.BackupFailed, is BackupAlert.DiskFull, BackupAlert.CouldNotRedeemBackup -> BackupsIconColors.Warning
       BackupAlert.MediaWillBeDeletedToday -> BackupsIconColors.Error
     }
   }
@@ -384,6 +466,8 @@ private fun titleString(backupAlert: BackupAlert): String {
     is BackupAlert.MediaBackupsAreOff -> stringResource(R.string.BackupAlertBottomSheet__your_backups_subscription_expired)
     BackupAlert.MediaWillBeDeletedToday -> stringResource(R.string.BackupAlertBottomSheet__your_media_will_be_deleted_today)
     is BackupAlert.DiskFull -> stringResource(R.string.BackupAlertBottomSheet__free_up_s_on_this_device, backupAlert.requiredSpace)
+    BackupAlert.BackupFailed -> stringResource(R.string.BackupAlertBottomSheet__backup_failed)
+    BackupAlert.CouldNotRedeemBackup -> stringResource(R.string.BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription)
   }
 }
 
@@ -398,6 +482,8 @@ private fun primaryActionString(
     is BackupAlert.MediaBackupsAreOff -> stringResource(R.string.BackupAlertBottomSheet__subscribe_for_s_month, pricePerMonth)
     BackupAlert.MediaWillBeDeletedToday -> stringResource(R.string.BackupAlertBottomSheet__download_media_now)
     is BackupAlert.DiskFull -> stringResource(R.string.BackupAlertBottomSheet__got_it)
+    is BackupAlert.BackupFailed -> stringResource(R.string.BackupAlertBottomSheet__check_for_update)
+    BackupAlert.CouldNotRedeemBackup -> stringResource(R.string.BackupAlertBottomSheet__got_it)
   }
 }
 
@@ -410,6 +496,8 @@ private fun rememberSecondaryActionResource(backupAlert: BackupAlert): Int {
       is BackupAlert.MediaBackupsAreOff -> R.string.BackupAlertBottomSheet__not_now
       BackupAlert.MediaWillBeDeletedToday -> R.string.BackupAlertBottomSheet__dont_download_media
       is BackupAlert.DiskFull -> R.string.BackupAlertBottomSheet__skip_restore
+      is BackupAlert.BackupFailed -> R.string.BackupAlertBottomSheet__learn_more
+      BackupAlert.CouldNotRedeemBackup -> R.string.BackupAlertBottomSheet__learn_more
     }
   }
 }
@@ -470,6 +558,28 @@ private fun BackupAlertSheetContentPreviewDiskFull() {
   }
 }
 
+@SignalPreview
+@Composable
+private fun BackupAlertSheetContentPreviewBackupFailed() {
+  Previews.BottomSheetPreview {
+    BackupAlertSheetContent(
+      backupAlert = BackupAlert.BackupFailed,
+      mediaTtl = 60.days
+    )
+  }
+}
+
+@SignalPreview
+@Composable
+private fun BackupAlertSheetContentPreviewCouldNotRedeemBackup() {
+  Previews.BottomSheetPreview {
+    BackupAlertSheetContent(
+      backupAlert = BackupAlert.CouldNotRedeemBackup,
+      mediaTtl = 60.days
+    )
+  }
+}
+
 /**
  * All necessary information to display the sheet should be handed in through the specific alert.
  */
@@ -483,6 +593,12 @@ sealed class BackupAlert : Parcelable {
   data class CouldNotCompleteBackup(
     val daysSinceLastBackup: Int
   ) : BackupAlert()
+
+  /**
+   * This value is driven by the same watermarking system for [CouldNotCompleteBackup] so that only one of these sheets is shown by the system
+   * This value is driven by failure to complete the initial backup.
+   */
+  data object BackupFailed : BackupAlert()
 
   /**
    * This value is driven by InAppPayment state, and will be automatically cleared when the sheet is displayed.
@@ -507,4 +623,9 @@ sealed class BackupAlert : Parcelable {
    *
    */
   data class DiskFull(val requiredSpace: String) : BackupAlert()
+
+  /**
+   * Too many attempts to redeem the backup subscription have occurred this month.
+   */
+  data object CouldNotRedeemBackup : BackupAlert()
 }

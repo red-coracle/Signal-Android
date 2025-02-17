@@ -315,12 +315,6 @@ class Recipient(
   /** The notification channel, if both set and supported by the system. Otherwise null. */
   val notificationChannel: String? = if (!NotificationChannels.supported()) null else notificationChannelValue
 
-  /** The user's capability to handle synchronizing deletes across linked devices. */
-  val deleteSyncCapability: Capability = capabilities.deleteSync
-
-  /** The user's capability to handle tracking an expire timer version. */
-  val versionedExpirationTimerCapability: Capability = capabilities.versionedExpirationTimer
-
   /** The user's capability to handle the new storage record encryption scheme. */
   val storageServiceEncryptionV2Capability: Capability
     get() = if (SignalStore.internal.forceSsre2Capability) Capability.SUPPORTED else capabilities.storageServiceEncryptionV2
@@ -503,6 +497,27 @@ class Recipient(
       nickname.toString().isNotNullOrBlank() ||
       systemContactName.isNotNullOrBlank() ||
       profileName.toString().isNotNullOrBlank()
+  }
+
+  fun isMatch(query: String): Boolean {
+    if (query.isEmpty()) {
+      return true
+    }
+
+    val lowercaseQuery = query.lowercase()
+    val sortName = listOf(
+      nickname.toString(),
+      nickname.givenName,
+      systemProfileName.toString(),
+      systemProfileName.givenName,
+      profileName.toString(),
+      profileName.givenName,
+      username.orElse("")
+    ).firstOrNull { it.isNotNullOrBlank() }?.lowercase()
+
+    return sortName?.contains(lowercaseQuery) == true ||
+      e164.map { it.contains(query) }.orElse(false) ||
+      email.map { it.contains(query) }.orElse(false)
   }
 
   /** A full-length display name to render for this recipient. */

@@ -7,6 +7,7 @@ import org.signal.libsignal.zkgroup.ServerPublicParams;
 import org.signal.libsignal.zkgroup.VerificationFailedException;
 import org.signal.libsignal.zkgroup.auth.ClientZkAuthOperations;
 import org.signal.libsignal.zkgroup.groups.ClientZkGroupCipher;
+import org.signal.libsignal.zkgroup.groups.GroupIdentifier;
 import org.signal.libsignal.zkgroup.groups.GroupSecretParams;
 import org.signal.libsignal.zkgroup.groups.ProfileKeyCiphertext;
 import org.signal.libsignal.zkgroup.groups.UuidCiphertext;
@@ -45,6 +46,7 @@ import org.whispersystems.signalservice.api.util.UuidUtil;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -486,14 +488,13 @@ public final class GroupsV2Operations {
     }
 
     /**
-     * @param verifySignature You might want to avoid verification if you already know it's correct, or you
-     *                        are not going to pass to other clients.
-     *                        <p>
-     *                        Also, if you know it's version 0, do not verify because changes for version 0
-     *                        are not signed, but should be empty.
+     * @param verification You might want to avoid verification if you already know it's correct, or you are not going to pass to other clients.
+     *                     <p>
+     *                     Also, if you know it's version 0, do not verify because changes for version 0 are not signed, but should be empty.
+     *
      * @return {@link Optional#empty()} if the epoch for the change is higher that this code can decrypt.
      */
-    public Optional<DecryptedGroupChange> decryptChange(GroupChange groupChange, boolean verifySignature)
+    public Optional<DecryptedGroupChange> decryptChange(GroupChange groupChange, @Nonnull DecryptChangeVerificationMode verification)
         throws IOException, VerificationFailedException, InvalidGroupStateException
     {
       if (groupChange.changeEpoch > HIGHEST_KNOWN_EPOCH) {
@@ -501,7 +502,14 @@ public final class GroupsV2Operations {
         return Optional.empty();
       }
 
-      GroupChange.Actions actions = verifySignature ? getVerifiedActions(groupChange) : getActions(groupChange);
+      GroupChange.Actions actions = verification.verify() ? getVerifiedActions(groupChange) : getActions(groupChange);
+
+      if (verification.verify()) {
+        GroupIdentifier groupId = verification.groupId();
+        if (groupId == null || !Arrays.equals(groupId.serialize(), actions.groupId.toByteArray())) {
+           throw new VerificationFailedException("Invalid group id");
+        }
+      }
 
       return Optional.of(decryptChange(actions));
     }
@@ -516,13 +524,15 @@ public final class GroupsV2Operations {
         throws VerificationFailedException, InvalidGroupStateException
     {
       DecryptedGroupChange.Builder builder = new DecryptedGroupChange.Builder();
+      ServiceId                    editorServiceId;
 
       // Field 1
       if (source != null) {
-        builder.editorServiceIdBytes(source.toByteString());
+        editorServiceId = source;
       } else {
-        builder.editorServiceIdBytes(decryptServiceIdToBinary(actions.sourceServiceId));
+        editorServiceId = decryptServiceId(actions.sourceServiceId);
       }
+      builder.editorServiceIdBytes(editorServiceId.toByteString());
 
       // Field 2
       builder.revision(actions.revision);
@@ -743,6 +753,24 @@ public final class GroupsV2Operations {
                                                            .build());
       }
       builder.promotePendingPniAciMembers(promotePendingPniAciMembers);
+
+      if (editorServiceId instanceof ServiceId.PNI) {
+        if (actions.addMembers.size() == 1 && builder.newMembers.size() == 1) {
+          GroupChange.Actions.AddMemberAction addMemberAction = actions.addMembers.get(0);
+          DecryptedMember                     decryptedMember = builder.newMembers.get(0);
+
+          if (addMemberAction.joinFromInviteLink) {
+            Log.d(TAG, "Replacing PNI editor with ACI for buggy join from invite link");
+            builder.editorServiceIdBytes(decryptedMember.aciBytes);
+          } else {
+            Log.w(TAG, "Unable to replace PNI editor with ACI for add member update");
+            builder.editorServiceIdBytes(ByteString.EMPTY);
+          }
+        } else if (actions.deletePendingMembers.isEmpty() && actions.promotePendingPniAciMembers.isEmpty()) {
+          Log.w(TAG, "Received group change with PNI editor for a non-PNI editor eligible update, clearing editor");
+          builder.editorServiceIdBytes(ByteString.EMPTY);
+        }
+      }
 
       return builder.build();
     }

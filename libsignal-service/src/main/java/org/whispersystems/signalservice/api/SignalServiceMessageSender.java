@@ -131,6 +131,7 @@ import org.whispersystems.signalservice.internal.util.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -155,6 +156,7 @@ import io.reactivex.rxjava3.exceptions.CompositeException;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import kotlin.Unit;
 import okio.ByteString;
+import okio.Utf8;
 
 /**
  * The main interface for sending Signal Service messages.
@@ -757,6 +759,8 @@ public class SignalServiceMessageSender {
       content = createCallLinkUpdateContent(message.getCallLinkUpdate().get());
     } else if (message.getCallLogEvent().isPresent()) {
       content = createCallLogEventContent(message.getCallLogEvent().get());
+    } else if (message.getDeviceNameChange().isPresent()) {
+      content = createDeviceNameChangeContent(message.getDeviceNameChange().get());
     } else {
       throw new IOException("Unsupported sync message!");
     }
@@ -1004,6 +1008,10 @@ public class SignalServiceMessageSender {
   private Content createMessageContent(SignalServiceDataMessage message) throws IOException {
     Content.Builder     container   = new Content.Builder();
     DataMessage.Builder dataMessage = createDataMessage(message);
+
+    if (dataMessage.body != null && Utf8.size(dataMessage.body) > 2048) {
+      throw new ContentTooLargeException(Utf8.size(dataMessage.body));
+    }
 
     return enforceMaxContentSize(container.dataMessage(dataMessage.build()).build());
   }
@@ -1383,7 +1391,7 @@ public class SignalServiceMessageSender {
         unidentifiedDeliveryStatuses.add(new SyncMessage.Sent.UnidentifiedDeliveryStatus.Builder()
                                                                                         .destinationServiceId(result.getAddress().getServiceId().toString())
                                                                                         .unidentified(false)
-                                                                                        .destinationIdentityKey(identity)
+                                                                                        .destinationPniIdentityKey(identity)
                                                                                         .build());
       }
     }
@@ -1657,10 +1665,6 @@ public class SignalServiceMessageSender {
     SyncMessage.Builder      syncMessage = createSyncMessageBuilder();
     SyncMessage.Keys.Builder builder     = new SyncMessage.Keys.Builder();
 
-    if (keysMessage.getStorageService() != null) {
-      builder.storageService(ByteString.of(keysMessage.getStorageService().serialize()));
-    }
-
     if (keysMessage.getMaster() != null) {
       builder.master(ByteString.of(keysMessage.getMaster().serialize()));
     }
@@ -1725,6 +1729,13 @@ public class SignalServiceMessageSender {
   private Content createCallLogEventContent(SyncMessage.CallLogEvent proto) {
     Content.Builder     container = new Content.Builder();
     SyncMessage.Builder builder   = createSyncMessageBuilder().callLogEvent(proto);
+
+    return container.syncMessage(builder.build()).build();
+  }
+
+  private Content createDeviceNameChangeContent(SyncMessage.DeviceNameChange proto) {
+    Content.Builder     container = new Content.Builder();
+    SyncMessage.Builder builder   = createSyncMessageBuilder().deviceNameChange(proto);
 
     return container.syncMessage(builder.build()).build();
   }

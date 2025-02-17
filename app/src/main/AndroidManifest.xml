@@ -19,7 +19,7 @@
     <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
 
-    <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
     <uses-permission android:name="org.thoughtcrime.securesms.ACCESS_SECRETS"/>
     <uses-permission android:name="android.permission.READ_PROFILE"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
@@ -78,7 +78,8 @@
 
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS"/>
 
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        tools:ignore="ProtectedPermissions" />
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
@@ -90,6 +91,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
     <!-- For vestigial telecom integration service -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
 
@@ -126,7 +128,7 @@
     <meta-data android:name="firebase_messaging_auto_init_enabled" android:value="false" />
     <meta-data android:name="android.webkit.WebView.MetricsOptOut" android:value="true" />
 
-    <activity android:name=".WebRtcCallActivity"
+    <activity android:name=".components.webrtc.v2.WebRtcCallActivity"
               android:theme="@style/TextSecure.DarkTheme.WebRTCCall"
               android:excludeFromRecents="true"
               android:supportsPictureInPicture="true"
@@ -136,18 +138,6 @@
               android:resizeableActivity="true"
               android:launchMode="singleTask"
               android:exported="false" />
-
-        <activity
-            android:name=".components.webrtc.v2.CallActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:resizeableActivity="true"
-            android:supportsPictureInPicture="true"
-            android:taskAffinity=".calling"
-            android:theme="@style/TextSecure.DarkTheme.WebRTCCall"
-            android:windowSoftInputMode="stateAlwaysHidden" />
 
         <activity android:name=".messagerequests.CalleeMustAcceptMessageRequestActivity"
               android:theme="@style/TextSecure.DarkNoActionBar"
@@ -218,7 +208,8 @@
 
       <meta-data
           android:name="android.service.chooser.chooser_target_service"
-                android:value="androidx.sharetarget.ChooserTargetServiceCompat" />
+          android:value="androidx.sharetarget.ChooserTargetServiceCompat"
+          tools:targetApi="23" />
 
     </activity>
 
@@ -573,7 +564,7 @@
               android:noHistory="true"
               android:theme="@style/Signal.Transparent">
 
-        <intent-filter android:autoVerify="true">
+        <intent-filter>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
@@ -594,7 +585,17 @@
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="https" android:host="signaldonations.org" android:pathPrefix="/stripe/return/ideal"/>
+            <data android:scheme="https"/>
+            <data android:host="signaldonations.org"/>
+            <data android:pathPrefix="/stripe/return/ideal"/>
+        </intent-filter>
+
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="sgnl"/>
+            <data android:host="ideal"/>
         </intent-filter>
 
         <intent-filter android:autoVerify="true">
@@ -860,7 +861,7 @@
     <activity android:name=".restore.RestoreActivity"
               android:launchMode="singleTask"
               android:theme="@style/Theme.Signal.DayNight.NoActionBar"
-              android:windowSoftInputMode="stateHidden"
+              android:windowSoftInputMode="stateHidden|adjustResize"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
               android:exported="false"/>
 
@@ -1135,12 +1136,6 @@
 
     <service
         android:enabled="true"
-        android:name=".service.webrtc.WebRtcCallService"
-        android:foregroundServiceType="dataSync"
-        android:exported="false"/>
-
-    <service
-        android:enabled="true"
         android:exported="false"
         android:name=".service.KeyCachingService"
         android:foregroundServiceType="remoteMessaging"/>
@@ -1160,7 +1155,8 @@
         android:name=".service.webrtc.AndroidCallConnectionService"
         android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
         android:foregroundServiceType="phoneCall"
-        android:exported="true">
+        android:exported="true"
+        tools:targetApi="28">
         <intent-filter>
             <action android:name="android.telecom.ConnectionService" />
         </intent-filter>
@@ -1406,7 +1402,7 @@
     <service
         android:name="org.thoughtcrime.securesms.service.webrtc.ActiveCallManager$ActiveCallForegroundService"
         android:exported="false"
-        android:foregroundServiceType="dataSync|microphone" />
+        android:foregroundServiceType="dataSync|microphone|camera" />
 
     <receiver android:name="org.thoughtcrime.securesms.service.webrtc.ActiveCallManager$ActiveCallServiceReceiver" android:exported="false">
         <intent-filter>

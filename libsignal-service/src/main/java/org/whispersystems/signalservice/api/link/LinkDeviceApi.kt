@@ -123,12 +123,51 @@ class LinkDeviceApi(private val pushServiceSocket: PushServiceSocket) {
         SetLinkedDeviceTransferArchiveRequest(
           destinationDeviceId = destinationDeviceId,
           destinationDeviceCreated = destinationDeviceCreated,
-          transferArchive = SetLinkedDeviceTransferArchiveRequest.CdnInfo(
+          transferArchive = SetLinkedDeviceTransferArchiveRequest.TransferArchive.CdnInfo(
             cdn = cdn,
             key = cdnKey
           )
         )
       )
+    }
+  }
+
+  /**
+   * If creating an archive has failed after linking a device, notify the linked
+   * device of the failure and if you are going to try relinking or skip syncing
+   *
+   * PUT /v1/devices/transfer_archive
+   *
+   * - 204: Success.
+   * - 422: Bad inputs.
+   * - 429: Rate-limited.
+   */
+  fun setTransferArchiveError(destinationDeviceId: Int, destinationDeviceCreated: Long, error: TransferArchiveError): NetworkResult<Unit> {
+    return NetworkResult.fromFetch {
+      pushServiceSocket.setLinkedDeviceTransferArchive(
+        SetLinkedDeviceTransferArchiveRequest(
+          destinationDeviceId = destinationDeviceId,
+          destinationDeviceCreated = destinationDeviceCreated,
+          transferArchive = SetLinkedDeviceTransferArchiveRequest.TransferArchive.Error(
+            error
+          )
+        )
+      )
+    }
+  }
+
+  /**
+   * Sets the name for a linked device
+   *
+   * PUT /v1/accounts/name
+   *
+   * - 204: Success.
+   * - 403: Not authorized to change the name of the device with the given ID
+   * - 404: No device found with the given ID
+   */
+  fun setDeviceName(encryptedDeviceName: String, deviceId: Int): NetworkResult<Unit> {
+    return NetworkResult.fromFetch {
+      pushServiceSocket.setDeviceName(deviceId, SetDeviceNameRequest(encryptedDeviceName))
     }
   }
 }

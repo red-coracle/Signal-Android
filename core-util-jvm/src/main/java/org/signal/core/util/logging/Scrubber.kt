@@ -22,8 +22,8 @@ object Scrubber {
    * Supposedly, the shortest international phone numbers in use contain seven digits.
    * Handles URL encoded +, %2B
    */
-  private val E164_PATTERN = Pattern.compile("(\\+|%2B)(\\d{7,15})")
-  private val E164_ZERO_PATTERN = Pattern.compile("\\b0(\\d{10})\\b")
+  private val E164_PATTERN = Pattern.compile("(KEEP_E164::)?(\\+|%2B)(\\d{7,15})")
+  private val E164_ZERO_PATTERN = Pattern.compile("\\b(KEEP_E164::)?0(\\d{10})\\b")
 
   /** The second group will be censored.*/
   private val CRUDE_EMAIL_PATTERN = Pattern.compile("\\b([^\\s/])([^\\s/]*@[^\\s]+)")
@@ -75,6 +75,8 @@ object Scrubber {
   private val CALL_LINK_PATTERN = Pattern.compile("([bBcCdDfFgGhHkKmMnNpPqQrRsStTxXzZ]{4})(-[bBcCdDfFgGhHkKmMnNpPqQrRsStTxXzZ]{4}){7}")
   private const val CALL_LINK_CENSOR_SUFFIX = "-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
 
+  private val CALL_LINK_ROOM_ID_PATTERN = Pattern.compile("[0-9a-f]{61}([0-9a-f]{3})")
+
   @JvmStatic
   @Volatile
   var identifierHmacKeyProvider: () -> ByteArray? = { null }
@@ -97,21 +99,34 @@ object Scrubber {
       .scrubIpv4()
       .scrubIpv6()
       .scrubCallLinkKeys()
+      .scrubCallLinkRoomIds()
   }
 
   private fun CharSequence.scrubE164(): CharSequence {
     return scrub(this, E164_PATTERN) { matcher, output ->
-      output
-        .append("E164:")
-        .append(hash(matcher.group(2)))
+      if (matcher.group(1) != null && matcher.group(1)!!.isNotEmpty()) {
+        output
+          .append("KEEP_E164::")
+          .append((matcher.group(2) + matcher.group(3)).censorMiddle(2, 2))
+      } else {
+        output
+          .append("E164:")
+          .append(hash(matcher.group(3)))
+      }
     }
   }
 
   private fun CharSequence.scrubE164Zero(): CharSequence {
     return scrub(this, E164_ZERO_PATTERN) { matcher, output ->
-      output
-        .append("E164:")
-        .append(hash(matcher.group(1)))
+      if (matcher.group(1) != null && matcher.group(1)!!.isNotEmpty()) {
+        output
+          .append("KEEP_E164::")
+          .append(("0" + matcher.group(2)).censorMiddle(2, 2))
+      } else {
+        output
+          .append("E164:")
+          .append(hash(matcher.group(2)))
+      }
     }
   }
 
@@ -190,6 +205,24 @@ object Scrubber {
         .append(match)
         .append(CALL_LINK_CENSOR_SUFFIX)
     }
+  }
+
+  private fun CharSequence.scrubCallLinkRoomIds(): CharSequence {
+    return scrub(this, CALL_LINK_ROOM_ID_PATTERN) { matcher, output ->
+      val match = matcher.group(1)
+      output
+        .append("[REDACTED]")
+        .append(match)
+    }
+  }
+
+  private fun String.censorMiddle(leading: Int, trailing: Int): String {
+    val totalKept = leading + trailing
+    if (this.length < totalKept) {
+      return "*".repeat(this.length)
+    }
+    val middle = "*".repeat(this.length - totalKept)
+    return this.take(leading) + middle + this.takeLast(trailing)
   }
 
   private fun scrub(input: CharSequence, pattern: Pattern, processMatch: MatchProcessor): CharSequence {

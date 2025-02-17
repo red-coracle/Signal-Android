@@ -18,8 +18,9 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.webrtc.v2.CallIntent;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.service.webrtc.WebRtcCallService;
+import org.thoughtcrime.securesms.service.webrtc.ActiveCallManager;
 import org.thoughtcrime.securesms.util.ConversationUtil;
+import org.thoughtcrime.securesms.util.DeviceProperties;
 
 /**
  * Manages the state of the WebRtc items in the Android notification bar.
@@ -113,7 +114,7 @@ public class CallNotificationBuilder {
       if (deviceVersionSupportsIncomingCallStyle()) {
         builder.setStyle(NotificationCompat.CallStyle.forIncomingCall(
             person,
-            WebRtcCallService.denyCallIntent(context),
+            ActiveCallManager.denyCallIntent(context),
             getActivityPendingIntent(context, isVideoCall ? LaunchCallScreenIntentState.VIDEO : LaunchCallScreenIntentState.AUDIO)
         ).setIsVideo(isVideoCall));
       }
@@ -121,7 +122,7 @@ public class CallNotificationBuilder {
       return builder.build();
     } else if (type == TYPE_OUTGOING_RINGING) {
       builder.setContentText(context.getString(R.string.NotificationBarManager__establishing_signal_call));
-      builder.addAction(getServiceNotificationAction(context, WebRtcCallService.hangupIntent(context), R.drawable.symbol_phone_down_fill_24, R.string.NotificationBarManager__cancel_call));
+      builder.addAction(getServiceNotificationAction(context, ActiveCallManager.hangupIntent(context), R.drawable.symbol_phone_down_fill_24, R.string.NotificationBarManager__cancel_call));
       return builder.build();
     } else {
       builder.setContentText(getOngoingCallContentText(context, recipient, isVideoCall));
@@ -137,7 +138,7 @@ public class CallNotificationBuilder {
       if (deviceVersionSupportsIncomingCallStyle()) {
         builder.setStyle(NotificationCompat.CallStyle.forOngoingCall(
             person,
-            WebRtcCallService.hangupIntent(context)
+            ActiveCallManager.hangupIntent(context)
         ).setIsVideo(isVideoCall));
       }
 
@@ -232,6 +233,6 @@ public class CallNotificationBuilder {
   }
 
   private static boolean deviceVersionSupportsIncomingCallStyle() {
-    return Build.VERSION.SDK_INT >= API_LEVEL_CALL_STYLE;
+    return Build.VERSION.SDK_INT >= API_LEVEL_CALL_STYLE && !DeviceProperties.isBackgroundRestricted();
   }
 }

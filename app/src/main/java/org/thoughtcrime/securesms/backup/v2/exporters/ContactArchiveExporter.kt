@@ -9,6 +9,7 @@ import android.database.Cursor
 import okio.ByteString.Companion.toByteString
 import org.signal.core.util.Base64
 import org.signal.core.util.logging.Log
+import org.signal.core.util.optionalInt
 import org.signal.core.util.requireBoolean
 import org.signal.core.util.requireInt
 import org.signal.core.util.requireLong
@@ -16,6 +17,8 @@ import org.signal.core.util.requireString
 import org.thoughtcrime.securesms.backup.v2.ArchiveRecipient
 import org.thoughtcrime.securesms.backup.v2.proto.Contact
 import org.thoughtcrime.securesms.backup.v2.proto.Self
+import org.thoughtcrime.securesms.backup.v2.util.clampToValidBackupRange
+import org.thoughtcrime.securesms.database.IdentityTable
 import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.RecipientTableCursorUtil
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -71,12 +74,16 @@ class ContactArchiveExporter(private val cursor: Cursor, private val selfId: Lon
       .profileGivenName(cursor.requireString(RecipientTable.PROFILE_GIVEN_NAME))
       .profileFamilyName(cursor.requireString(RecipientTable.PROFILE_FAMILY_NAME))
       .hideStory(RecipientTableCursorUtil.getExtras(cursor)?.hideStory() ?: false)
+      .identityKey(cursor.requireString(IdentityTable.IDENTITY_KEY)?.let { Base64.decode(it).toByteString() })
+      .identityState(cursor.optionalInt(IdentityTable.VERIFIED).map { IdentityTable.VerifiedStatus.forState(it) }.orElse(IdentityTable.VerifiedStatus.DEFAULT).toRemote())
+      .note(cursor.requireString(RecipientTable.NOTE) ?: "")
+      .nickname(cursor.readNickname())
 
     val registeredState = RecipientTable.RegisteredState.fromId(cursor.requireInt(RecipientTable.REGISTERED))
     if (registeredState == RecipientTable.RegisteredState.REGISTERED) {
       contactBuilder.registered = Contact.Registered()
     } else {
-      contactBuilder.notRegistered = Contact.NotRegistered(unregisteredTimestamp = cursor.requireLong(RecipientTable.UNREGISTERED_TIMESTAMP))
+      contactBuilder.notRegistered = Contact.NotRegistered(unregisteredTimestamp = cursor.requireLong(RecipientTable.UNREGISTERED_TIMESTAMP).clampToValidBackupRange())
     }
 
     return ArchiveRecipient(
@@ -90,11 +97,33 @@ class ContactArchiveExporter(private val cursor: Cursor, private val selfId: Lon
   }
 }
 
+private fun Cursor.readNickname(): Contact.Name? {
+  val given = this.requireString(RecipientTable.NICKNAME_GIVEN_NAME)
+  val family = this.requireString(RecipientTable.NICKNAME_FAMILY_NAME)
+
+  if (given.isNullOrEmpty()) {
+    return null
+  }
+
+  return Contact.Name(
+    given = given,
+    family = family ?: ""
+  )
+}
+
 private fun Recipient.HiddenState.toRemote(): Contact.Visibility {
   return when (this) {
     Recipient.HiddenState.NOT_HIDDEN -> return Contact.Visibility.VISIBLE
     Recipient.HiddenState.HIDDEN -> return Contact.Visibility.HIDDEN
     Recipient.HiddenState.HIDDEN_MESSAGE_REQUEST -> return Contact.Visibility.HIDDEN_MESSAGE_REQUEST
+  }
+}
+
+private fun IdentityTable.VerifiedStatus.toRemote(): Contact.IdentityState {
+  return when (this) {
+    IdentityTable.VerifiedStatus.DEFAULT -> Contact.IdentityState.DEFAULT
+    IdentityTable.VerifiedStatus.VERIFIED -> Contact.IdentityState.VERIFIED
+    IdentityTable.VerifiedStatus.UNVERIFIED -> Contact.IdentityState.UNVERIFIED
   }
 }
 
@@ -105,5 +134,5 @@ private fun String.e164ToLong(): Long? {
     this
   }
 
-  return fixed.toLongOrNull()
+  return fixed.toLongOrNull()?.takeUnless { it == 0L }
 }
