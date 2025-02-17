@@ -100,7 +100,11 @@ public class SendReadReceiptJob extends BaseJob {
   public static void enqueue(long threadId, @NonNull RecipientId recipientId, List<MarkedMessageInfo> markedMessageInfos) {
     return;
 
-    /*if (recipientId.equals(Recipient.self().getId())) {
+    /*if (!TextSecurePreferences.isReadReceiptsEnabled(AppDependencies.getApplication())) {
+      return;
+    }
+
+    if (recipientId.equals(Recipient.self().getId())) {
       return;
     }
 

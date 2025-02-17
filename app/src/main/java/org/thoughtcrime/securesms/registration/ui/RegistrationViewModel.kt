@@ -33,9 +33,9 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.permissions.Permissions
 import org.thoughtcrime.securesms.pin.SvrRepository
 import org.thoughtcrime.securesms.pin.SvrWrongPinException
-import org.thoughtcrime.securesms.registration.RegistrationData
-import org.thoughtcrime.securesms.registration.RegistrationUtil
+import org.thoughtcrime.securesms.registration.data.AccountRegistrationResult
 import org.thoughtcrime.securesms.registration.data.LocalRegistrationMetadataUtil
+import org.thoughtcrime.securesms.registration.data.RegistrationData
 import org.thoughtcrime.securesms.registration.data.RegistrationRepository
 import org.thoughtcrime.securesms.registration.data.network.BackupAuthCheckResult
 import org.thoughtcrime.securesms.registration.data.network.Challenge
@@ -59,12 +59,14 @@ import org.thoughtcrime.securesms.registration.data.network.VerificationCodeRequ
 import org.thoughtcrime.securesms.registration.data.network.VerificationCodeRequestResult.Success
 import org.thoughtcrime.securesms.registration.data.network.VerificationCodeRequestResult.TokenNotAccepted
 import org.thoughtcrime.securesms.registration.data.network.VerificationCodeRequestResult.UnknownError
+import org.thoughtcrime.securesms.registration.util.RegistrationUtil
 import org.thoughtcrime.securesms.registration.viewmodel.SvrAuthCredentialSet
 import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.Util
 import org.thoughtcrime.securesms.util.dualsim.MccMncProducer
 import org.whispersystems.signalservice.api.SvrNoDataException
 import org.whispersystems.signalservice.api.kbs.MasterKey
+import org.whispersystems.signalservice.internal.push.RegistrationSessionMetadataJson
 import org.whispersystems.signalservice.internal.push.RegistrationSessionMetadataResponse
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -321,7 +323,7 @@ class RegistrationViewModel : ViewModel() {
         sessionId = validSession.body.id,
         e164 = e164,
         password = password,
-        mode = RegistrationRepository.Mode.PHONE_CALL
+        mode = RegistrationRepository.E164VerificationMode.PHONE_CALL
       )
       Log.d(TAG, "Voice code request network call completed.")
 
@@ -348,7 +350,7 @@ class RegistrationViewModel : ViewModel() {
     }
 
     Log.d(TAG, "Requesting SMS code…")
-    val transportMode = if (smsListenerReady) RegistrationRepository.Mode.SMS_WITH_LISTENER else RegistrationRepository.Mode.SMS_WITHOUT_LISTENER
+    val transportMode = if (smsListenerReady) RegistrationRepository.E164VerificationMode.SMS_WITH_LISTENER else RegistrationRepository.E164VerificationMode.SMS_WITHOUT_LISTENER
     val codeRequestResponse = RegistrationRepository.requestSmsCode(
       context = context,
       sessionId = sessionId,
@@ -398,14 +400,17 @@ class RegistrationViewModel : ViewModel() {
             nextVerificationAttempt = RegistrationRepository.deriveTimestamp(networkResult.headers, networkResult.body.nextVerificationAttempt),
             allowedToRequestCode = networkResult.body.allowedToRequestCode,
             challengesRequested = Challenge.parse(networkResult.body.requestedInformation),
-            verified = networkResult.body.verified
+            verified = networkResult.body.verified,
+            inProgress = false
           )
         }
       },
       errorHandler = { error ->
+        Log.d(TAG, "Setting ${error::class.simpleName} as session creation error.")
         store.update {
           it.copy(
-            sessionCreationError = error
+            sessionCreationError = error,
+            inProgress = false
           )
         }
       }
@@ -615,7 +620,7 @@ class RegistrationViewModel : ViewModel() {
       if (RegistrationRepository.doesPinMatchLocalHash(pin)) {
         Log.d(TAG, "Found recovery password, attempting to re-register.")
         viewModelScope.launch(context = coroutineExceptionHandler) {
-          verifyReRegisterInternal(context, pin, SignalStore.svr.getOrCreateMasterKey())
+          verifyReRegisterInternal(context, pin, SignalStore.svr.masterKey)
           setInProgress(false)
         }
       } else {
@@ -676,10 +681,14 @@ class RegistrationViewModel : ViewModel() {
    */
   private suspend fun registerAccountInternal(context: Context, sessionId: String?, registrationData: RegistrationData, pin: String?, masterKey: MasterKey): Pair<RegisterAccountResult, Boolean> {
     Log.v(TAG, "registerAccountInternal()")
-    val registrationResult: RegisterAccountResult = RegistrationRepository.registerAccount(context = context, sessionId = sessionId, registrationData = registrationData, pin = pin) { masterKey }
+    var registrationResult: RegisterAccountResult = RegistrationRepository.registerAccount(context = context, sessionId = sessionId, registrationData = registrationData, pin = pin)
 
     // Check if reg lock is enabled
     if (registrationResult !is RegisterAccountResult.RegistrationLocked) {
+      if (registrationResult is RegisterAccountResult.Success) {
+        registrationResult = RegisterAccountResult.Success(registrationResult.accountRegistrationResult.copy(masterKey = masterKey))
+      }
+
       Log.i(TAG, "Received a non-registration lock response to registration. Assuming registration lock as DISABLED")
       return Pair(registrationResult, false)
     }
@@ -740,21 +749,26 @@ class RegistrationViewModel : ViewModel() {
 
     var reglock = registrationLocked
 
-    val sessionId = getOrCreateValidSession(context)?.body?.id ?: return
-    val registrationData = getRegistrationData()
+    val session: RegistrationSessionMetadataJson? = getOrCreateValidSession(context)?.body
+    val sessionId: String = session?.id ?: return
+    val registrationData: RegistrationData = getRegistrationData()
 
-    Log.d(TAG, "Submitting verification code…")
+    if (session.verified) {
+      Log.i(TAG, "Session is already verified, registering account.")
+    } else {
+      Log.d(TAG, "Submitting verification code…")
 
-    val verificationResponse = RegistrationRepository.submitVerificationCode(context, sessionId, registrationData)
+      val verificationResponse = RegistrationRepository.submitVerificationCode(context, sessionId, registrationData)
 
-    val submissionSuccessful = verificationResponse is Success
-    val alreadyVerified = verificationResponse is AlreadyVerified
+      val submissionSuccessful = verificationResponse is Success
+      val alreadyVerified = verificationResponse is AlreadyVerified
 
-    Log.d(TAG, "Verification code submission network call completed. Submission successful? $submissionSuccessful Account already verified? $alreadyVerified")
+      Log.d(TAG, "Verification code submission network call completed. Submission successful? $submissionSuccessful Account already verified? $alreadyVerified")
 
-    if (!submissionSuccessful && !alreadyVerified) {
-      handleSessionStateResult(context, verificationResponse)
-      return
+      if (!submissionSuccessful && !alreadyVerified) {
+        handleSessionStateResult(context, verificationResponse)
+        return
+      }
     }
 
     Log.d(TAG, "Submitting registration…")
@@ -776,7 +790,7 @@ class RegistrationViewModel : ViewModel() {
       reglock = true
       if (pin == null && SignalStore.svr.registrationLockToken != null) {
         Log.d(TAG, "Retrying registration with stored credentials.")
-        result = RegistrationRepository.registerAccount(context, sessionId, registrationData, SignalStore.svr.pin) { SignalStore.svr.getOrCreateMasterKey() }
+        result = RegistrationRepository.registerAccount(context, sessionId, registrationData, SignalStore.svr.pin) { SignalStore.svr.masterKey }
       } else if (result.svr2Credentials != null || result.svr3Credentials != null) {
         Log.d(TAG, "Retrying registration with received credentials (svr2: ${result.svr2Credentials != null}, svr3: ${result.svr3Credentials != null}).")
         val svr2Credentials = result.svr2Credentials
@@ -814,35 +828,29 @@ class RegistrationViewModel : ViewModel() {
     handleRegistrationResult(context, registrationData, registrationResponse, false)
   }
 
-  private suspend fun onSuccessfulRegistration(context: Context, registrationData: RegistrationData, remoteResult: RegistrationRepository.AccountRegistrationResult, reglockEnabled: Boolean) {
+  private suspend fun onSuccessfulRegistration(context: Context, registrationData: RegistrationData, remoteResult: AccountRegistrationResult, reglockEnabled: Boolean) {
     Log.v(TAG, "onSuccessfulRegistration()")
-    val metadata = LocalRegistrationMetadataUtil.createLocalRegistrationMetadata(registrationData, remoteResult, reglockEnabled)
-    if (RemoteConfig.restoreAfterRegistration) {
-      SignalStore.registration.localRegistrationMetadata = metadata
-    }
+    val metadata = LocalRegistrationMetadataUtil.createLocalRegistrationMetadata(SignalStore.account.aciIdentityKey, SignalStore.account.pniIdentityKey, registrationData, remoteResult, reglockEnabled)
     RegistrationRepository.registerAccountLocally(context, metadata)
 
     if (reglockEnabled) {
       SignalStore.onboarding.clearAll()
-      val stopwatch = Stopwatch("RegistrationLockRestore")
+
+      val stopwatch = Stopwatch("post-reg-storage-service")
 
       AppDependencies.jobManager.runSynchronously(StorageAccountRestoreJob(), StorageAccountRestoreJob.LIFESPAN)
-      stopwatch.split("AccountRestore")
+      stopwatch.split("account-restore")
 
       AppDependencies.jobManager
         .startChain(StorageSyncJob())
         .then(ReclaimUsernameAndLinkJob())
         .enqueueAndBlockUntilCompletion(TimeUnit.SECONDS.toMillis(10))
-      stopwatch.split("ContactRestore")
-
-      refreshRemoteConfig()
-
-      stopwatch.split("RemoteConfig")
+      stopwatch.split("storage-sync")
 
       stopwatch.stop(TAG)
-    } else {
-      refreshRemoteConfig()
     }
+
+    refreshRemoteConfig()
 
     store.update {
       it.copy(
@@ -887,7 +895,7 @@ class RegistrationViewModel : ViewModel() {
     val currentState = store.value
     val code = currentState.enteredCode
     val e164: String = currentState.phoneNumber?.toE164() ?: throw IllegalStateException("Can't construct registration data without E164!")
-    val recoveryPassword = if (currentState.sessionId == null) SignalStore.svr.getRecoveryPassword() else null
+    val recoveryPassword = if (currentState.sessionId == null) SignalStore.svr.recoveryPassword else null
     return RegistrationData(code, e164, password, RegistrationRepository.getRegistrationId(), RegistrationRepository.getProfileKey(e164), currentState.fcmToken, RegistrationRepository.getPniRegistrationId(), recoveryPassword)
   }
 
@@ -949,7 +957,10 @@ class RegistrationViewModel : ViewModel() {
           return metadata
         }
 
-        else -> errorHandler(sessionResult)
+        else -> {
+          Log.d(TAG, "Handling error during session creation.")
+          errorHandler(sessionResult)
+        }
       }
       return null
     }

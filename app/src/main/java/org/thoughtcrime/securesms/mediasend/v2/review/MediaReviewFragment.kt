@@ -114,8 +114,8 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
   private var disposables: LifecycleDisposable = LifecycleDisposable()
   private var sentMediaQuality: SentMediaQuality = SignalStore.settings.sentMediaQuality
   private var viewOnceToggleState: MediaSelectionState.ViewOnceToggleState = MediaSelectionState.ViewOnceToggleState.default
-
   private var scheduledSendTime: Long? = null
+  private var readyToSend = true
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     postponeEnterTransition()
@@ -191,6 +191,8 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
       if (keys.isNotEmpty()) {
         Log.d(TAG, "Performing send from multi-select activity result.")
         performSend(keys)
+      } else {
+        readyToSend = true
       }
     }
 
@@ -198,10 +200,20 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
       if (keys.isNotEmpty()) {
         Log.d(TAG, "Performing send from stories activity result.")
         performSend(keys)
+      } else {
+        readyToSend = true
       }
     }
 
     sendButton.setOnClickListener {
+      if (!readyToSend) {
+        Log.d(TAG, "Attachment send button not currently enabled. Ignoring click event.")
+        return@setOnClickListener
+      } else {
+        Log.d(TAG, "Attachment send button enabled. Processing click event.")
+        readyToSend = false
+      }
+
       val viewOnce: Boolean = sharedViewModel.state.value?.viewOnceToggleState == MediaSelectionState.ViewOnceToggleState.ONCE
 
       if (sharedViewModel.isContactSelectionRequired) {
@@ -216,7 +228,7 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
           val snapshot = sharedViewModel.state.value
 
           if (snapshot != null) {
-            sendButton.isEnabled = false
+            readyToSend = false
             SimpleTask.run(viewLifecycleOwner.lifecycle, {
               snapshot.selectedMedia.take(2).map { media ->
                 val editorData = snapshot.editorStateMap[media.uri]
@@ -232,7 +244,6 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
                 }
               }
             }, {
-              sendButton.isEnabled = true
               storiesLauncher.launch(StoriesMultiselectForwardActivity.Args(args, it))
             })
           } else {
@@ -249,7 +260,15 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
             Log.d(TAG, "Performing send add to group story dialog.")
             performSend()
           }
-          .setNegativeButton(android.R.string.cancel) { _, _ -> }
+          .setNegativeButton(android.R.string.cancel) { _, _ ->
+            readyToSend = true
+          }
+          .setOnCancelListener {
+            readyToSend = true
+          }
+          .setOnDismissListener {
+            readyToSend = true
+          }
           .show()
         scheduledSendTime = null
       } else {
@@ -325,7 +344,7 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
         state.selectedMedia.map { MediaReviewSelectedItem.Model(it, state.focusedMedia == it) } + MediaReviewAddItem.Model
       )
 
-      presentSendButton(state.sendType, state.recipient)
+      presentSendButton(readyToSend, state.sendType, state.recipient)
       presentPager(state)
       presentAddMessageEntry(state.viewOnceToggleState, state.message)
       presentImageQualityToggle(state)
@@ -449,6 +468,8 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
   }
 
   private fun performSend(selection: List<ContactSearchKey> = listOf()) {
+    Log.d(TAG, "Performing attachment send.")
+    readyToSend = false
     progressWrapper.visible = true
     progressWrapper.animate()
       .setStartDelay(300)
@@ -456,11 +477,20 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
       .alpha(1f)
 
     disposables += sharedViewModel
-      .send(selection.filterIsInstance(ContactSearchKey.RecipientSearchKey::class.java), scheduledSendTime)
+      .send(selection.filterIsInstance<ContactSearchKey.RecipientSearchKey>(), scheduledSendTime)
       .subscribe(
-        { result -> callback.onSentWithResult(result) },
-        { error -> callback.onSendError(error) },
-        { callback.onSentWithoutResult() }
+        { result ->
+          callback.onSentWithResult(result)
+          readyToSend = true
+        },
+        { error ->
+          callback.onSendError(error)
+          readyToSend = true
+        },
+        {
+          callback.onSentWithoutResult()
+          readyToSend = true
+        }
       )
   }
 
@@ -500,8 +530,9 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
     )
   }
 
-  private fun presentSendButton(sendType: MessageSendType, recipient: Recipient?) {
+  private fun presentSendButton(enabled: Boolean, sendType: MessageSendType, recipient: Recipient?) {
     val sendButtonBackgroundTint = when {
+      !enabled -> ContextCompat.getColor(requireContext(), R.color.core_grey_50)
       recipient != null -> recipient.chatColors.asSingleColor()
       sendType.usesSignalTransport -> ContextCompat.getColor(requireContext(), R.color.signal_colorOnSecondaryContainer)
       else -> ContextCompat.getColor(requireContext(), R.color.core_grey_50)
@@ -513,6 +544,7 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
     }
 
     val sendButtonForegroundTint = when {
+      !enabled -> ContextCompat.getColor(requireContext(), R.color.signal_colorSecondaryContainer)
       recipient != null -> ContextCompat.getColor(requireContext(), R.color.signal_colorOnCustom)
       else -> ContextCompat.getColor(requireContext(), R.color.signal_colorSecondaryContainer)
     }
@@ -549,7 +581,7 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
       videoTimeLine.unregisterDragListener()
     }
     val size: Long = tryGetUriSize(requireContext(), uri, Long.MAX_VALUE)
-    val maxSend = sharedViewModel.getMediaConstraints().getVideoMaxSize(requireContext())
+    val maxSend = sharedViewModel.getMediaConstraints().getVideoMaxSize()
     if (size > maxSend) {
       videoTimeLine.setTimeLimit(state.transcodingPreset.calculateMaxVideoUploadDurationInSeconds(maxSend), TimeUnit.SECONDS)
     }
@@ -791,6 +823,6 @@ class MediaReviewFragment : Fragment(R.layout.v2_media_review_fragment), Schedul
   }
 
   override fun onRangeDrag(minValue: Long, maxValue: Long, duration: Long, end: Boolean) {
-    sharedViewModel.onEditVideoDuration(context = requireContext(), totalDurationUs = duration, startTimeUs = minValue, endTimeUs = maxValue, touchEnabled = end)
+    sharedViewModel.onEditVideoDuration(totalDurationUs = duration, startTimeUs = minValue, endTimeUs = maxValue, touchEnabled = end)
   }
 }

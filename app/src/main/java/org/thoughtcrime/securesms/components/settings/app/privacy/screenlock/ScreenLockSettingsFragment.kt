@@ -26,7 +26,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +39,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import org.signal.core.ui.Previews
@@ -106,7 +106,7 @@ class ScreenLockSettingsFragment : ComposeFragment() {
 
   @Composable
   override fun FragmentContent() {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val navController: NavController by remember { mutableStateOf(findNavController()) }
 
     Scaffolds.Settings(
@@ -118,12 +118,12 @@ class ScreenLockSettingsFragment : ComposeFragment() {
       ScreenLockScreen(
         state = state,
         onChecked = { checked ->
-          if (biometricAuth.canAuthenticate() && !checked) {
+          if (biometricAuth.canAuthenticate(requireContext()) && !checked) {
             biometricAuth.updatePromptInfo(disableLockPromptInfo)
             biometricAuth.authenticate(requireContext(), true) {
               biometricDeviceLockLauncher.launch(getString(R.string.ScreenLockSettingsFragment__turn_off_signal_lock))
             }
-          } else if (biometricAuth.canAuthenticate() && checked) {
+          } else if (biometricAuth.canAuthenticate(requireContext()) && checked) {
             biometricAuth.updatePromptInfo(enableLockPromptInfo)
             biometricAuth.authenticate(requireContext(), true) {
               biometricDeviceLockLauncher.launch(getString(R.string.ScreenLockSettingsFragment__use_screen_lock))

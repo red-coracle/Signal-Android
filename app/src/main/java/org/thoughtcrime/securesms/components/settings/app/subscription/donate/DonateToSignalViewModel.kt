@@ -119,6 +119,8 @@ class DonateToSignalViewModel(
 
   fun updateSubscription() {
     val snapshot = store.state
+
+    check(snapshot.canUpdate)
     if (snapshot.areFieldsEnabled) {
       actionDisposable += createInAppPayment(snapshot).subscribeBy {
         _actions.onNext(DonateToSignalAction.UpdateSubscription(it, snapshot.isUpdateLongRunning))
@@ -204,7 +206,6 @@ class DonateToSignalViewModel(
         endOfPeriod = null,
         inAppPaymentData = InAppPaymentData(
           badge = snapshot.badge?.let { Badges.toDatabaseBadge(it) },
-          label = snapshot.badge?.description ?: "",
           amount = amount.toFiatValue(),
           level = snapshot.level.toLong(),
           recipientId = Recipient.self().id.serialize(),

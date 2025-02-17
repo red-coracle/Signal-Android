@@ -16,11 +16,16 @@ import org.whispersystems.signalservice.internal.configuration.SignalServiceConf
  * Helper method to create a ChatService with optional credentials.
  */
 fun Network.createChatService(
-  credentialsProvider: CredentialsProvider? = null
+  credentialsProvider: CredentialsProvider? = null,
+  receiveStories: Boolean
 ): ChatService {
   val username = credentialsProvider?.username ?: ""
   val password = credentialsProvider?.password ?: ""
-  return this.createChatService(username, password)
+  return if (username.isEmpty() && password.isEmpty()) {
+    this.createUnauthChatService(null)
+  } else {
+    this.createAuthChatService(username, password, receiveStories, null)
+  }
 }
 
 /**
@@ -34,4 +39,6 @@ fun Network.applyConfiguration(config: SignalServiceConfiguration) {
   } else {
     this.setProxy(proxy.host, proxy.port)
   }
+
+  this.setCensorshipCircumventionEnabled(config.censored)
 }

@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.backup.BackupEvent
 import org.thoughtcrime.securesms.keyvalue.SignalStore
-import org.thoughtcrime.securesms.registration.RegistrationUtil
 import org.thoughtcrime.securesms.registration.data.RegistrationRepository
+import org.thoughtcrime.securesms.registration.util.RegistrationUtil
 import org.thoughtcrime.securesms.restore.RestoreRepository
 
 /**
@@ -30,7 +30,7 @@ class RestoreLocalBackupViewModel(fileBackupUri: Uri) : ViewModel() {
 
   val backupReadError = store.map { it.backupFileStateError }.asLiveData()
 
-  val backupComplete = store.map { Pair(it.backupRestoreComplete, it.backupImportResult) }.asLiveData()
+  val importResult = store.map { it.backupImportResult }.asLiveData()
 
   fun prepareRestore(context: Context) {
     val backupFileUri = store.value.uri
@@ -90,7 +90,7 @@ class RestoreLocalBackupViewModel(fileBackupUri: Uri) : ViewModel() {
       if (importResult == RestoreRepository.BackupImportResult.SUCCESS) {
         SignalStore.registration.localRegistrationMetadata?.let {
           RegistrationRepository.registerAccountLocally(context, it)
-          SignalStore.registration.clearLocalRegistrationMetadata()
+          SignalStore.registration.localRegistrationMetadata = null
           RegistrationUtil.maybeMarkRegistrationComplete()
         }
 
@@ -99,9 +99,8 @@ class RestoreLocalBackupViewModel(fileBackupUri: Uri) : ViewModel() {
 
       store.update {
         it.copy(
-          backupImportResult = if (importResult == RestoreRepository.BackupImportResult.SUCCESS) null else importResult,
+          backupImportResult = importResult,
           restoreInProgress = false,
-          backupRestoreComplete = importResult == RestoreRepository.BackupImportResult.SUCCESS,
           backupEstimatedTotalCount = -1L,
           backupProgressCount = -1L,
           backupVerifyingInProgress = false

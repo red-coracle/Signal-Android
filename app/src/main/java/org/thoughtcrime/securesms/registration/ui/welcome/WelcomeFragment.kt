@@ -28,10 +28,7 @@ import org.thoughtcrime.securesms.registration.ui.grantpermissions.GrantPermissi
 import org.thoughtcrime.securesms.restore.RestoreActivity
 import org.thoughtcrime.securesms.util.BackupUtil
 import org.thoughtcrime.securesms.util.CommunicationActions
-import org.thoughtcrime.securesms.util.RemoteConfig
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
-import org.thoughtcrime.securesms.util.visible
 
 /**
  * First screen that is displayed on the very first app launch.
@@ -60,11 +57,9 @@ class WelcomeFragment : LoggingFragment(R.layout.fragment_registration_welcome) 
     binding.welcomeContinueButton.setOnClickListener { onContinueClicked() }
     binding.welcomeTermsButton.setOnClickListener { onTermsClicked() }
     binding.welcomeTransferOrRestore.setOnClickListener { onTransferOrRestoreClicked() }
-    binding.welcomeTransferOrRestore.visible = !RemoteConfig.restoreAfterRegistration
   }
 
   private fun onContinueClicked() {
-    TextSecurePreferences.setHasSeenWelcomeScreen(requireContext(), true)
     if (Permissions.isRuntimePermissionsRequired() && !hasAllPermissions()) {
       findNavController().safeNavigate(WelcomeFragmentDirections.actionWelcomeFragmentToGrantPermissionsFragment(GrantPermissionsFragment.WelcomeAction.CONTINUE))
     } else {
@@ -88,7 +83,7 @@ class WelcomeFragment : LoggingFragment(R.layout.fragment_registration_welcome) 
     } else {
       sharedViewModel.setRegistrationCheckpoint(RegistrationCheckpoint.PERMISSIONS_GRANTED)
 
-      val restoreIntent = RestoreActivity.getIntentForTransferOrRestore(requireActivity())
+      val restoreIntent = RestoreActivity.getRestoreIntent(requireActivity())
       launchRestoreActivity.launch(restoreIntent)
     }
   }

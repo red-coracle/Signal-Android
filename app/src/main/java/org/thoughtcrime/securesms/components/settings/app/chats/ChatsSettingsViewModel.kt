@@ -2,11 +2,10 @@ package org.thoughtcrime.securesms.components.settings.app.chats
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import io.reactivex.rxjava3.schedulers.Schedulers
-import org.thoughtcrime.securesms.backup.v2.BackupRepository
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.thoughtcrime.securesms.components.settings.app.chats.folders.ChatFoldersRepository
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.util.BackupUtil
@@ -28,22 +27,11 @@ class ChatsSettingsViewModel @JvmOverloads constructor(
       useSystemEmoji = SignalStore.settings.isPreferSystemEmoji,
       enterKeySends = SignalStore.settings.isEnterKeySends,
       localBackupsEnabled = SignalStore.settings.isBackupEnabled && BackupUtil.canUserAccessBackupDirectory(AppDependencies.application),
-      canAccessRemoteBackupsSettings = SignalStore.backup.areBackupsEnabled
+      folderCount = 0
     )
   )
 
   val state: LiveData<ChatsSettingsState> = store.stateLiveData
-
-  private val disposable = Single.fromCallable { BackupRepository.canAccessRemoteBackupSettings() }
-    .subscribeOn(Schedulers.io())
-    .observeOn(AndroidSchedulers.mainThread())
-    .subscribeBy { canAccessRemoteBackupSettings ->
-      store.update { it.copy(canAccessRemoteBackupsSettings = canAccessRemoteBackupSettings) }
-    }
-
-  override fun onCleared() {
-    disposable.dispose()
-  }
 
   fun setGenerateLinkPreviewsEnabled(enabled: Boolean) {
     store.update { it.copy(generateLinkPreviews = enabled) }
@@ -75,13 +63,24 @@ class ChatsSettingsViewModel @JvmOverloads constructor(
   }
 
   fun refresh() {
-    val backupsEnabled = SignalStore.settings.isBackupEnabled && BackupUtil.canUserAccessBackupDirectory(AppDependencies.application)
-    val remoteBackupsEnabled = SignalStore.backup.areBackupsEnabled
+    viewModelScope.launch(Dispatchers.IO) {
+      val count = ChatFoldersRepository.getFolderCount()
+      val backupsEnabled = SignalStore.settings.isBackupEnabled && BackupUtil.canUserAccessBackupDirectory(AppDependencies.application)
 
-    if (store.state.localBackupsEnabled != backupsEnabled ||
-      store.state.canAccessRemoteBackupsSettings != remoteBackupsEnabled
-    ) {
-      store.update { it.copy(localBackupsEnabled = backupsEnabled, canAccessRemoteBackupsSettings = remoteBackupsEnabled) }
+      if (store.state.localBackupsEnabled != backupsEnabled) {
+        store.update {
+          it.copy(
+            folderCount = count,
+            localBackupsEnabled = backupsEnabled
+          )
+        }
+      } else {
+        store.update {
+          it.copy(
+            folderCount = count
+          )
+        }
+      }
     }
   }
 }

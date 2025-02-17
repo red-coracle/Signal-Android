@@ -1,7 +1,10 @@
 package org.thoughtcrime.securesms.components.settings.app.subscription
 
+import android.content.Context
 import org.signal.donations.InAppPaymentType
 import org.signal.donations.PaymentSourceType
+import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.database.model.InAppPaymentReceiptRecord
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.LocaleRemoteConfig
@@ -24,13 +27,18 @@ object InAppDonations {
     return isCreditCardAvailable() || isPayPalAvailable() || isGooglePayAvailable() || isSEPADebitAvailable() || isIDEALAvailable()
   }
 
-  fun isPaymentSourceAvailable(paymentSourceType: PaymentSourceType, inAppPaymentType: InAppPaymentType): Boolean {
+  fun isDonationsPaymentSourceAvailable(paymentSourceType: PaymentSourceType, inAppPaymentType: InAppPaymentType): Boolean {
+    if (inAppPaymentType == InAppPaymentType.RECURRING_BACKUP) {
+      error("Not supported.")
+    }
+
     return when (paymentSourceType) {
       PaymentSourceType.PayPal -> isPayPalAvailableForDonateToSignalType(inAppPaymentType)
       PaymentSourceType.Stripe.CreditCard -> isCreditCardAvailable()
       PaymentSourceType.Stripe.GooglePay -> isGooglePayAvailable()
       PaymentSourceType.Stripe.SEPADebit -> isSEPADebitAvailableForDonateToSignalType(inAppPaymentType)
       PaymentSourceType.Stripe.IDEAL -> isIDEALAvailbleForDonateToSignalType(inAppPaymentType)
+      PaymentSourceType.GooglePlayBilling -> false
       PaymentSourceType.Unknown -> false
     }
   }
@@ -40,7 +48,7 @@ object InAppDonations {
       InAppPaymentType.UNKNOWN -> error("Unsupported type UNKNOWN")
       InAppPaymentType.ONE_TIME_DONATION, InAppPaymentType.ONE_TIME_GIFT -> RemoteConfig.paypalOneTimeDonations
       InAppPaymentType.RECURRING_DONATION -> RemoteConfig.paypalRecurringDonations
-      InAppPaymentType.RECURRING_BACKUP -> RemoteConfig.messageBackups && RemoteConfig.paypalRecurringDonations
+      InAppPaymentType.RECURRING_BACKUP -> false
     } && !LocaleRemoteConfig.isPayPalDisabled()
   }
 
@@ -93,5 +101,33 @@ object InAppDonations {
    */
   fun isIDEALAvailbleForDonateToSignalType(inAppPaymentType: InAppPaymentType): Boolean {
     return inAppPaymentType != InAppPaymentType.ONE_TIME_GIFT && isIDEALAvailable()
+  }
+
+  /**
+   * Labels are utilized when displaying Google Play sheet and when displaying receipts.
+   */
+  fun resolveLabel(context: Context, inAppPaymentType: InAppPaymentType, level: Long): String {
+    return when (inAppPaymentType) {
+      InAppPaymentType.UNKNOWN -> error("Unsupported type.")
+      InAppPaymentType.ONE_TIME_GIFT -> context.getString(R.string.DonationReceiptListFragment__donation_for_a_friend)
+      InAppPaymentType.ONE_TIME_DONATION -> context.getString(R.string.DonationReceiptListFragment__one_time)
+      InAppPaymentType.RECURRING_DONATION -> context.getString(R.string.InAppDonations__recurring_d, level)
+      InAppPaymentType.RECURRING_BACKUP -> error("Unsupported type.")
+    }
+  }
+
+  /**
+   * Labels are utilized when displaying Google Play sheet and when displaying receipts.
+   */
+  fun resolveLabel(context: Context, inAppPaymentReceiptRecord: InAppPaymentReceiptRecord): String {
+    val level = inAppPaymentReceiptRecord.subscriptionLevel
+    val type: InAppPaymentType = when (inAppPaymentReceiptRecord.type) {
+      InAppPaymentReceiptRecord.Type.RECURRING_BACKUP -> InAppPaymentType.RECURRING_BACKUP
+      InAppPaymentReceiptRecord.Type.RECURRING_DONATION -> InAppPaymentType.RECURRING_DONATION
+      InAppPaymentReceiptRecord.Type.ONE_TIME_DONATION -> InAppPaymentType.ONE_TIME_DONATION
+      InAppPaymentReceiptRecord.Type.ONE_TIME_GIFT -> InAppPaymentType.ONE_TIME_GIFT
+    }
+
+    return resolveLabel(context, type, level.toLong())
   }
 }

@@ -35,6 +35,9 @@ public class SubscriptionsConfiguration {
   @JsonProperty("sepaMaximumEuros")
   private BigDecimal sepaMaximumEuros;
 
+  @JsonProperty("backup")
+  private BackupConfiguration backupConfiguration;
+
   public static class CurrencyConfiguration {
     @JsonProperty("minimum")
     private BigDecimal minimum;
@@ -73,18 +76,51 @@ public class SubscriptionsConfiguration {
   }
 
   public static class LevelConfiguration {
-    @JsonProperty("name")
-    private String name;
 
     @JsonProperty("badge")
     private SignalServiceProfile.Badge badge;
 
-    public String getName() {
-      return name;
-    }
-
     public SignalServiceProfile.Badge getBadge() {
       return badge;
+    }
+  }
+
+  public static class BackupConfiguration {
+    @JsonProperty("levels")
+    private Map<Integer, BackupLevelConfiguration> backupLevelConfigurationMap;
+
+    @JsonProperty("backupFreeTierMediaDays")
+    private int freeTierMediaDays;
+
+    public Map<Integer, BackupLevelConfiguration> getBackupLevelConfigurationMap() {
+      return backupLevelConfigurationMap;
+    }
+
+    public int getFreeTierMediaDays() {
+      return freeTierMediaDays;
+    }
+  }
+
+  public static class BackupLevelConfiguration {
+    @JsonProperty("storageAllowanceBytes")
+    private long storageAllowanceBytes;
+
+    @JsonProperty("playProductId")
+    private String playProductId;
+
+    @JsonProperty("mediaTtlDays")
+    private long mediaTtlDays;
+
+    public long getStorageAllowanceBytes() {
+      return storageAllowanceBytes;
+    }
+
+    public String getPlayProductId() {
+      return playProductId;
+    }
+
+    public long getMediaTtlDays() {
+      return mediaTtlDays;
     }
   }
 
@@ -98,5 +134,9 @@ public class SubscriptionsConfiguration {
 
   public BigDecimal getSepaMaximumEuros() {
     return sepaMaximumEuros;
+  }
+
+  public BackupConfiguration getBackupConfiguration() {
+    return backupConfiguration;
   }
 }

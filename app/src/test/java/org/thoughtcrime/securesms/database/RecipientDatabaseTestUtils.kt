@@ -44,6 +44,7 @@ object RecipientDatabaseTestUtils {
     messageRingtone: Uri = Uri.EMPTY,
     callRingtone: Uri = Uri.EMPTY,
     expireMessages: Int = 0,
+    expireTimerVersion: Int = 1,
     registered: RecipientTable.RegisteredState = RecipientTable.RegisteredState.REGISTERED,
     profileKey: ByteArray = Random.nextBytes(32),
     expiringProfileKeyCredential: ExpiringProfileKeyCredential? = null,
@@ -107,6 +108,7 @@ object RecipientDatabaseTestUtils {
       messageRingtone = messageRingtone,
       callRingtone = callRingtone,
       expireMessages = expireMessages,
+      expireTimerVersion = expireTimerVersion,
       registered = registered,
       profileKey = profileKey,
       expiringProfileKeyCredential = expiringProfileKeyCredential,
@@ -124,7 +126,9 @@ object RecipientDatabaseTestUtils {
       sealedSenderAccessMode = sealedSenderAccessMode,
       capabilities = RecipientRecord.Capabilities(
         rawBits = capabilities,
-        deleteSync = Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientTable.Capabilities.DELETE_SYNC, RecipientTable.Capabilities.BIT_LENGTH).toInt())
+        deleteSync = Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientTable.Capabilities.DELETE_SYNC, RecipientTable.Capabilities.BIT_LENGTH).toInt()),
+        versionedExpirationTimer = Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientTable.Capabilities.VERSIONED_EXPIRATION_TIMER, RecipientTable.Capabilities.BIT_LENGTH).toInt()),
+        storageServiceEncryptionV2 = Recipient.Capability.deserialize(Bitmask.read(capabilities, RecipientTable.Capabilities.STORAGE_SERVICE_ENCRYPTION_V2, RecipientTable.Capabilities.BIT_LENGTH).toInt())
       ),
       storageId = storageId,
       mentionSetting = mentionSetting,

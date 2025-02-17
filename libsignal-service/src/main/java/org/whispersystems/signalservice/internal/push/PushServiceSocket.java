@@ -65,10 +65,12 @@ import org.whispersystems.signalservice.api.archive.GetArchiveCdnCredentialsResp
 import org.whispersystems.signalservice.api.crypto.SealedSenderAccess;
 import org.whispersystems.signalservice.api.groupsv2.CredentialResponse;
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2AuthorizationString;
+import org.whispersystems.signalservice.api.link.LinkedDeviceVerificationCodeResponse;
+import org.whispersystems.signalservice.api.link.SetLinkedDeviceTransferArchiveRequest;
+import org.whispersystems.signalservice.api.link.WaitForLinkedDeviceResponse;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachment.ProgressListener;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachmentRemoteId;
 import org.whispersystems.signalservice.api.messages.calls.CallingResponse;
-import org.whispersystems.signalservice.api.messages.calls.TurnServerInfo;
 import org.whispersystems.signalservice.api.messages.multidevice.DeviceInfo;
 import org.whispersystems.signalservice.api.payments.CurrencyConversions;
 import org.whispersystems.signalservice.api.profiles.ProfileAndCredential;
@@ -113,6 +115,7 @@ import org.whispersystems.signalservice.api.push.exceptions.UsernameIsNotAssocia
 import org.whispersystems.signalservice.api.push.exceptions.UsernameIsNotReservedException;
 import org.whispersystems.signalservice.api.push.exceptions.UsernameMalformedException;
 import org.whispersystems.signalservice.api.push.exceptions.UsernameTakenException;
+import org.whispersystems.signalservice.api.registration.RestoreMethodBody;
 import org.whispersystems.signalservice.api.storage.StorageAuthResponse;
 import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription;
 import org.whispersystems.signalservice.api.subscriptions.PayPalConfirmPaymentIntentResponse;
@@ -131,14 +134,14 @@ import org.whispersystems.signalservice.internal.configuration.SignalServiceConf
 import org.whispersystems.signalservice.internal.configuration.SignalUrl;
 import org.whispersystems.signalservice.internal.crypto.AttachmentDigest;
 import org.whispersystems.signalservice.internal.push.exceptions.CaptchaRejectedException;
-import org.whispersystems.signalservice.internal.push.exceptions.DonationProcessorError;
-import org.whispersystems.signalservice.internal.push.exceptions.DonationReceiptCredentialError;
 import org.whispersystems.signalservice.internal.push.exceptions.ForbiddenException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupExistsException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupMismatchedDevicesException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupNotFoundException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupPatchNotAcceptedException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupStaleDevicesException;
+import org.whispersystems.signalservice.internal.push.exceptions.InAppPaymentProcessorError;
+import org.whispersystems.signalservice.internal.push.exceptions.InAppPaymentReceiptCredentialError;
 import org.whispersystems.signalservice.internal.push.exceptions.InvalidUnidentifiedAccessHeaderException;
 import org.whispersystems.signalservice.internal.push.exceptions.MismatchedDevicesException;
 import org.whispersystems.signalservice.internal.push.exceptions.NotInGroupException;
@@ -246,11 +249,15 @@ public class PushServiceSocket {
   private static final String PREKEY_DEVICE_PATH        = "/v2/keys/%s/%s";
   private static final String PREKEY_CHECK_PATH        = "/v2/keys/check";
 
-  private static final String TURN_SERVER_INFO           = "/v1/calling/relays";
+  private static final String CALLING_RELAYS = "/v2/calling/relays";
 
   private static final String PROVISIONING_CODE_PATH    = "/v1/devices/provisioning/code";
   private static final String PROVISIONING_MESSAGE_PATH = "/v1/provisioning/%s";
   private static final String DEVICE_PATH               = "/v1/devices/%s";
+  private static final String WAIT_FOR_DEVICES_PATH     = "/v1/devices/wait_for_linked_device/%s?timeout=%s";
+  private static final String TRANSFER_ARCHIVE_PATH     = "/v1/devices/transfer_archive";
+  private static final String SET_RESTORE_METHOD_PATH   = "/v1/devices/restore_account/%s";
+  private static final String WAIT_RESTORE_METHOD_PATH  = "/v1/devices/restore_account/%s?timeout=%s";
 
   private static final String MESSAGE_PATH              = "/v1/messages/%s";
   private static final String GROUP_MESSAGE_PATH        = "/v1/messages/multi_recipient?ts=%s&online=%s&urgent=%s&story=%s";
@@ -274,7 +281,7 @@ public class PushServiceSocket {
   private static final String STICKER_MANIFEST_PATH          = "stickers/%s/manifest.proto";
   private static final String STICKER_PATH                   = "stickers/%s/full/%d";
 
-  private static final String GROUPSV2_CREDENTIAL       = "/v1/certificate/auth/group?redemptionStartSeconds=%d&redemptionEndSeconds=%d&zkcCredential=true";
+  private static final String GROUPSV2_CREDENTIAL       = "/v1/certificate/auth/group?redemptionStartSeconds=%d&redemptionEndSeconds=%d";
   private static final String GROUPSV2_GROUP            = "/v2/groups/";
   private static final String GROUPSV2_GROUP_PASSWORD   = "/v2/groups/?inviteLinkPassword=%s";
   private static final String GROUPSV2_GROUP_CHANGES    = "/v2/groups/logs/%s?maxSupportedChangeEpoch=%d&includeFirstState=%s&includeLastState=false";
@@ -306,6 +313,7 @@ public class PushServiceSocket {
   private static final String BOOST_RECEIPT_CREDENTIALS                  = "/v1/subscription/boost/receipt_credentials";
   private static final String DONATIONS_CONFIGURATION                    = "/v1/subscription/configuration";
   private static final String BANK_MANDATE                               = "/v1/subscription/bank_mandate/%s";
+  private static final String LINK_PLAY_BILLING_PURCHASE_TOKEN           = "/v1/subscription/%s/playbilling/%s";
 
   private static final String VERIFICATION_SESSION_PATH = "/v1/verification/session";
   private static final String VERIFICATION_CODE_PATH    = "/v1/verification/session/%s/code";
@@ -332,18 +340,20 @@ public class PushServiceSocket {
   private static final String ARCHIVE_MEDIA_LIST          = "/v1/archives/media?limit=%d";
   private static final String ARCHIVE_MEDIA_BATCH         = "/v1/archives/media/batch";
   private static final String ARCHIVE_MEDIA_DELETE        = "/v1/archives/media/delete";
-  private static final String ARCHIVE_MEDIA_DOWNLOAD_PATH = "backups/%s/%s/%s";
+  private static final String ARCHIVE_MEDIA_DOWNLOAD_PATH = "backups/%s/%s";
 
   private static final String SET_SHARE_SET_PATH = "/v3/backup/share-set";
 
   private static final String CALL_LINK_CREATION_AUTH = "/v1/call-link/create-auth";
   private static final String SERVER_DELIVERED_TIMESTAMP_HEADER = "X-Signal-Timestamp";
 
-  private static final Map<String, String> NO_HEADERS            = Collections.emptyMap();
-  private static final ResponseCodeHandler NO_HANDLER            = new EmptyResponseCodeHandler();
-  private static final ResponseCodeHandler UNOPINIONATED_HANDLER = new UnopinionatedResponseCodeHandler();
+  private static final Map<String, String> NO_HEADERS                         = Collections.emptyMap();
+  private static final ResponseCodeHandler NO_HANDLER                         = new EmptyResponseCodeHandler();
+  private static final ResponseCodeHandler LONG_POLL_HANDLER                  = new LongPollingResponseCodeHandler();
+  private static final ResponseCodeHandler UNOPINIONATED_HANDLER              = new UnopinionatedResponseCodeHandler();
+  private static final ResponseCodeHandler UNOPINIONATED_BINARY_ERROR_HANDLER = new UnopinionatedBinaryErrorResponseCodeHandler();
 
-  private static final long CDN2_RESUMABLE_LINK_LIFETIME_MILLIS = TimeUnit.DAYS.toMillis(7);
+  public static final long CDN2_RESUMABLE_LINK_LIFETIME_MILLIS = TimeUnit.DAYS.toMillis(7);
 
   private static final int MAX_FOLLOW_UPS = 20;
 
@@ -354,6 +364,7 @@ public class PushServiceSocket {
   private final Map<Integer, ConnectionHolder[]> cdnClientsMap;
   private final ConnectionHolder[]               storageClients;
 
+  private final SignalServiceConfiguration       configuration;
   private final CredentialsProvider              credentialsProvider;
   private final String                           signalAgent;
   private final SecureRandom                     random;
@@ -366,6 +377,7 @@ public class PushServiceSocket {
                            ClientZkProfileOperations clientZkProfileOperations,
                            boolean automaticNetworkRetry)
   {
+    this.configuration             = configuration;
     this.credentialsProvider       = credentialsProvider;
     this.signalAgent               = signalAgent;
     this.automaticNetworkRetry     = automaticNetworkRetry;
@@ -374,6 +386,14 @@ public class PushServiceSocket {
     this.storageClients            = createConnectionHolders(configuration.getSignalStorageUrls(), configuration.getNetworkInterceptors(), configuration.getDns(), configuration.getSignalProxy());
     this.random                    = new SecureRandom();
     this.clientZkProfileOperations = clientZkProfileOperations;
+  }
+
+  public SignalServiceConfiguration getConfiguration() {
+    return configuration;
+  }
+
+  public CredentialsProvider getCredentialsProvider() {
+    return credentialsProvider;
   }
 
   public RegistrationSessionMetadataResponse createVerificationSession(@Nullable String pushToken, @Nullable String mcc, @Nullable String mnc) throws IOException {
@@ -447,30 +467,36 @@ public class PushServiceSocket {
       gcmRegistrationId = new GcmRegistrationId(fcmToken, true);
     }
 
-    final SignedPreKeyEntity aciSignedPreKey = new SignedPreKeyEntity(Objects.requireNonNull(aciPreKeys.getSignedPreKey()).getId(),
-                                                                      aciPreKeys.getSignedPreKey().getKeyPair().getPublicKey(),
-                                                                      aciPreKeys.getSignedPreKey().getSignature());
-    final SignedPreKeyEntity pniSignedPreKey = new SignedPreKeyEntity(Objects.requireNonNull(pniPreKeys.getSignedPreKey()).getId(),
-                                                                      pniPreKeys.getSignedPreKey().getKeyPair().getPublicKey(),
-                                                                      pniPreKeys.getSignedPreKey().getSignature());
-    final KyberPreKeyEntity aciLastResortKyberPreKey = new KyberPreKeyEntity(Objects.requireNonNull(aciPreKeys.getLastResortKyberPreKey()).getId(),
-                                                                             aciPreKeys.getLastResortKyberPreKey().getKeyPair().getPublicKey(),
-                                                                             aciPreKeys.getLastResortKyberPreKey().getSignature());
-    final KyberPreKeyEntity pniLastResortKyberPreKey = new KyberPreKeyEntity(Objects.requireNonNull(pniPreKeys.getLastResortKyberPreKey()).getId(),
-                                                                             pniPreKeys.getLastResortKyberPreKey().getKeyPair().getPublicKey(),
-                                                                             pniPreKeys.getLastResortKyberPreKey().getSignature());
-    RegistrationSessionRequestBody body = new RegistrationSessionRequestBody(sessionId,
-                                                                             recoveryPassword,
-                                                                             attributes,
-                                                                             Base64.encodeWithoutPadding(aciPreKeys.getIdentityKey().serialize()),
-                                                                             Base64.encodeWithoutPadding(pniPreKeys.getIdentityKey().serialize()),
-                                                                             aciSignedPreKey,
-                                                                             pniSignedPreKey,
-                                                                             aciLastResortKyberPreKey,
-                                                                             pniLastResortKyberPreKey,
-                                                                             gcmRegistrationId,
-                                                                             skipDeviceTransfer,
-                                                                             true);
+    RegistrationSessionRequestBody body;
+    try {
+      final SignedPreKeyEntity aciSignedPreKey = new SignedPreKeyEntity(Objects.requireNonNull(aciPreKeys.getSignedPreKey()).getId(),
+                                                                        aciPreKeys.getSignedPreKey().getKeyPair().getPublicKey(),
+                                                                        aciPreKeys.getSignedPreKey().getSignature());
+      final SignedPreKeyEntity pniSignedPreKey = new SignedPreKeyEntity(Objects.requireNonNull(pniPreKeys.getSignedPreKey()).getId(),
+                                                                        pniPreKeys.getSignedPreKey().getKeyPair().getPublicKey(),
+                                                                        pniPreKeys.getSignedPreKey().getSignature());
+      final KyberPreKeyEntity aciLastResortKyberPreKey = new KyberPreKeyEntity(Objects.requireNonNull(aciPreKeys.getLastResortKyberPreKey()).getId(),
+                                                                               aciPreKeys.getLastResortKyberPreKey().getKeyPair().getPublicKey(),
+                                                                               aciPreKeys.getLastResortKyberPreKey().getSignature());
+      final KyberPreKeyEntity pniLastResortKyberPreKey = new KyberPreKeyEntity(Objects.requireNonNull(pniPreKeys.getLastResortKyberPreKey()).getId(),
+                                                                               pniPreKeys.getLastResortKyberPreKey().getKeyPair().getPublicKey(),
+                                                                               pniPreKeys.getLastResortKyberPreKey().getSignature());
+
+      body = new RegistrationSessionRequestBody(sessionId,
+                                                recoveryPassword,
+                                                attributes,
+                                                Base64.encodeWithoutPadding(aciPreKeys.getIdentityKey().serialize()),
+                                                Base64.encodeWithoutPadding(pniPreKeys.getIdentityKey().serialize()),
+                                                aciSignedPreKey,
+                                                pniSignedPreKey,
+                                                aciLastResortKyberPreKey,
+                                                pniLastResortKyberPreKey,
+                                                gcmRegistrationId,
+                                                skipDeviceTransfer,
+                                                true);
+    } catch (InvalidKeyException e) {
+      throw new AssertionError("unexpected invalid key", e);
+    }
 
     String response = makeServiceRequest(path, "POST", JsonUtil.toJson(body), NO_HEADERS, new RegistrationSessionResponseHandler(), SealedSenderAccess.NONE);
     return JsonUtil.fromJson(response, VerifyAccountResponse.class);
@@ -519,8 +545,8 @@ public class PushServiceSocket {
     return JsonUtil.fromJson(response, ArchiveServiceCredentialsResponse.class);
   }
 
-  public void setArchiveBackupId(BackupAuthCredentialRequest request) throws IOException {
-    String body = JsonUtil.toJson(new ArchiveSetBackupIdRequest(request));
+  public void setArchiveBackupId(BackupAuthCredentialRequest messageRequest, BackupAuthCredentialRequest mediaRequest) throws IOException {
+    String body = JsonUtil.toJson(new ArchiveSetBackupIdRequest(messageRequest, mediaRequest));
     makeServiceRequest(ARCHIVE_BACKUP_ID, "PUT", body, NO_HEADERS, UNOPINIONATED_HANDLER, SealedSenderAccess.NONE);
   }
 
@@ -536,6 +562,24 @@ public class PushServiceSocket {
 
     String response = makeServiceRequestWithoutAuthentication(ARCHIVE_INFO, "GET", null, headers, NO_HANDLER);
     return JsonUtil.fromJson(response, ArchiveGetBackupInfoResponse.class);
+  }
+
+  /**
+   * POST credential presentation to the server to keep backup alive.
+   */
+  public void refreshBackup(ArchiveCredentialPresentation credentialPresentation) throws IOException {
+    Map<String, String> headers = credentialPresentation.toHeaders();
+
+    makeServiceRequestWithoutAuthentication(ARCHIVE_INFO, "POST", null, headers, UNOPINIONATED_HANDLER);
+  }
+
+  /**
+   * DELETE credential presentation to the server to delete backup.
+   */
+  public void deleteBackup(ArchiveCredentialPresentation credentialPresentation) throws IOException {
+    Map<String, String> headers = credentialPresentation.toHeaders();
+
+    makeServiceRequestWithoutAuthentication(ARCHIVE_INFO, "DELETE", null, headers, UNOPINIONATED_HANDLER);
   }
 
   public List<ArchiveGetMediaItemsResponse.StoredMediaObject> debugGetAllArchiveMediaItems(ArchiveCredentialPresentation credentialPresentation) throws IOException {
@@ -652,9 +696,9 @@ public class PushServiceSocket {
     makeServiceRequest(SET_ACCOUNT_ATTRIBUTES, "PUT", JsonUtil.toJson(accountAttributes));
   }
 
-  public String getNewDeviceVerificationCode() throws IOException {
-    String responseText = makeServiceRequest(PROVISIONING_CODE_PATH, "GET", null);
-    return JsonUtil.fromJson(responseText, DeviceCode.class).getVerificationCode();
+  public LinkedDeviceVerificationCodeResponse getLinkedDeviceVerificationCode() throws IOException {
+    String responseText = makeServiceRequest(PROVISIONING_CODE_PATH, "GET", null, NO_HEADERS, UNOPINIONATED_HANDLER, SealedSenderAccess.NONE);
+    return JsonUtil.fromJson(responseText, LinkedDeviceVerificationCodeResponse.class);
   }
 
   public List<DeviceInfo> getDevices() throws IOException {
@@ -662,12 +706,38 @@ public class PushServiceSocket {
     return JsonUtil.fromJson(responseText, DeviceInfoList.class).getDevices();
   }
 
+  /**
+   * This is a long-polling endpoint that relies on the fact that our normal connection timeout is already 30s.
+   */
+  public WaitForLinkedDeviceResponse waitForLinkedDevice(String token, int timeoutSeconds) throws IOException {
+    String response = makeServiceRequest(String.format(Locale.US, WAIT_FOR_DEVICES_PATH, token, timeoutSeconds), "GET", null, NO_HEADERS, LONG_POLL_HANDLER, SealedSenderAccess.NONE);
+    return JsonUtil.fromJsonResponse(response, WaitForLinkedDeviceResponse.class);
+  }
+
+  public void setLinkedDeviceTransferArchive(SetLinkedDeviceTransferArchiveRequest request) throws IOException {
+    String body = JsonUtil.toJson(request);
+    makeServiceRequest(String.format(Locale.US, TRANSFER_ARCHIVE_PATH), "PUT", body, NO_HEADERS, UNOPINIONATED_HANDLER, SealedSenderAccess.NONE);
+  }
+
+  public void setRestoreMethodChosen(@Nonnull String token, @Nonnull RestoreMethodBody request) throws IOException {
+    String body = JsonUtil.toJson(request);
+    makeServiceRequest(String.format(Locale.US, SET_RESTORE_METHOD_PATH, urlEncode(token)), "PUT", body, NO_HEADERS, UNOPINIONATED_HANDLER, SealedSenderAccess.NONE);
+  }
+
+  /**
+   * This is a long-polling endpoint that relies on the fact that our normal connection timeout is already 30s.
+   */
+  public @Nonnull RestoreMethodBody waitForRestoreMethodChosen(@Nonnull String token, int timeoutSeconds) throws IOException {
+    String response = makeServiceRequest(String.format(Locale.US, WAIT_RESTORE_METHOD_PATH, urlEncode(token), timeoutSeconds), "GET", null, NO_HEADERS, LONG_POLL_HANDLER, SealedSenderAccess.NONE);
+    return JsonUtil.fromJsonResponse(response, RestoreMethodBody.class);
+  }
+
   public void removeDevice(long deviceId) throws IOException {
     makeServiceRequest(String.format(DEVICE_PATH, String.valueOf(deviceId)), "DELETE", null);
   }
 
   public void sendProvisioningMessage(String destination, byte[] body) throws IOException {
-    makeServiceRequest(String.format(PROVISIONING_MESSAGE_PATH, destination), "PUT",
+    makeServiceRequest(String.format(PROVISIONING_MESSAGE_PATH, urlEncode(destination)), "PUT",
                        JsonUtil.toJson(new ProvisioningMessage(Base64.encodeWithPadding(body))));
   }
 
@@ -817,10 +887,14 @@ public class PushServiceSocket {
     KyberPreKeyEntity       lastResortKyberPreKey = null;
     List<KyberPreKeyEntity> oneTimeKyberPreKeys   = null;
 
-    if (preKeyUpload.getSignedPreKey() != null) {
-      signedPreKey = new SignedPreKeyEntity(preKeyUpload.getSignedPreKey().getId(),
-                                            preKeyUpload.getSignedPreKey().getKeyPair().getPublicKey(),
-                                            preKeyUpload.getSignedPreKey().getSignature());
+    try {
+      if (preKeyUpload.getSignedPreKey() != null) {
+        signedPreKey = new SignedPreKeyEntity(preKeyUpload.getSignedPreKey().getId(),
+                                              preKeyUpload.getSignedPreKey().getKeyPair().getPublicKey(),
+                                              preKeyUpload.getSignedPreKey().getSignature());
+      }
+    } catch (InvalidKeyException e) {
+      throw new AssertionError("unexpected invalid key", e);
     }
 
     if (preKeyUpload.getOneTimeEcPreKeys() != null) {
@@ -838,16 +912,26 @@ public class PushServiceSocket {
     }
 
     if (preKeyUpload.getLastResortKyberPreKey() != null) {
-      lastResortKyberPreKey = new KyberPreKeyEntity(preKeyUpload.getLastResortKyberPreKey().getId(),
-                                                    preKeyUpload.getLastResortKyberPreKey().getKeyPair().getPublicKey(),
-                                                    preKeyUpload.getLastResortKyberPreKey().getSignature());
+      try {
+        lastResortKyberPreKey = new KyberPreKeyEntity(preKeyUpload.getLastResortKyberPreKey().getId(),
+                                                      preKeyUpload.getLastResortKyberPreKey().getKeyPair().getPublicKey(),
+                                                      preKeyUpload.getLastResortKyberPreKey().getSignature());
+      } catch (InvalidKeyException e) {
+        throw new AssertionError("unexpected invalid key", e);
+      }
     }
 
     if (preKeyUpload.getOneTimeKyberPreKeys() != null) {
       oneTimeKyberPreKeys = preKeyUpload
           .getOneTimeKyberPreKeys()
           .stream()
-          .map(it -> new KyberPreKeyEntity(it.getId(), it.getKeyPair().getPublicKey(), it.getSignature()))
+          .map(it -> {
+            try {
+              return new KyberPreKeyEntity(it.getId(), it.getKeyPair().getPublicKey(), it.getSignature());
+            } catch (InvalidKeyException e) {
+              throw new AssertionError("unexpected invalid key", e);
+            }
+          })
           .collect(Collectors.toList());
     }
 
@@ -969,19 +1053,21 @@ public class PushServiceSocket {
     downloadFromCdn(destination, cdnNumber, headers, cdnPath, maxSizeBytes, listener);
   }
 
-  public void retrieveAttachment(int cdnNumber, Map<String, String> headers, SignalServiceAttachmentRemoteId cdnPath, File destination, long maxSizeBytes, ProgressListener listener)
+  public void retrieveAttachment(int cdnNumber, Map<String, String> headers, SignalServiceAttachmentRemoteId remoteId, File destination, long maxSizeBytes, ProgressListener listener)
       throws IOException, MissingConfigurationException
   {
     final String path;
-    if (cdnPath instanceof SignalServiceAttachmentRemoteId.V2) {
-      path = String.format(Locale.US, ATTACHMENT_ID_DOWNLOAD_PATH, ((SignalServiceAttachmentRemoteId.V2) cdnPath).getCdnId());
-    } else if (cdnPath instanceof SignalServiceAttachmentRemoteId.V4) {
-      path = String.format(Locale.US, ATTACHMENT_KEY_DOWNLOAD_PATH, ((SignalServiceAttachmentRemoteId.V4) cdnPath).getCdnKey());
-    } else if (cdnPath instanceof SignalServiceAttachmentRemoteId.Backup) {
-      SignalServiceAttachmentRemoteId.Backup backupCdnId = (SignalServiceAttachmentRemoteId.Backup) cdnPath;
-      path = String.format(Locale.US, ARCHIVE_MEDIA_DOWNLOAD_PATH, backupCdnId.getBackupDir(), backupCdnId.getMediaDir(), backupCdnId.getMediaId());
+    if (remoteId instanceof SignalServiceAttachmentRemoteId.V2) {
+      path = String.format(Locale.US, ATTACHMENT_ID_DOWNLOAD_PATH, ((SignalServiceAttachmentRemoteId.V2) remoteId).getCdnId());
+    } else if (remoteId instanceof SignalServiceAttachmentRemoteId.V4) {
+      String urlEncodedKey = urlEncode(((SignalServiceAttachmentRemoteId.V4) remoteId).getCdnKey());
+      path = String.format(Locale.US, ATTACHMENT_KEY_DOWNLOAD_PATH, urlEncodedKey);
+    } else if (remoteId instanceof SignalServiceAttachmentRemoteId.Backup) {
+      //noinspection PatternVariableCanBeUsed
+      SignalServiceAttachmentRemoteId.Backup backupCdnRemoteId = (SignalServiceAttachmentRemoteId.Backup) remoteId;
+      path = String.format(Locale.US, ARCHIVE_MEDIA_DOWNLOAD_PATH, backupCdnRemoteId.getMediaCdnPath(), backupCdnRemoteId.getMediaId());
     } else {
-      throw new IllegalArgumentException("Invalid cdnPath type: " + cdnPath.getClass().getSimpleName());
+      throw new IllegalArgumentException("Invalid cdnPath type: " + remoteId.getClass().getSimpleName());
     }
     downloadFromCdn(destination, cdnNumber, headers, path, maxSizeBytes, listener);
   }
@@ -1187,7 +1273,7 @@ public class PushServiceSocket {
    */
   public @NonNull ACI getAciByUsernameHash(String usernameHash) throws IOException {
     String response = makeServiceRequestWithoutAuthentication(
-        String.format(GET_USERNAME_PATH, URLEncoder.encode(usernameHash, StandardCharsets.UTF_8.name())),
+        String.format(GET_USERNAME_PATH, urlEncode(usernameHash)),
         "GET",
         null,
         NO_HEADERS,
@@ -1339,7 +1425,7 @@ public class PushServiceSocket {
 
   public PayPalConfirmPaymentIntentResponse confirmPayPalOneTimePaymentIntent(String currency, String amount, long level, String payerId, String paymentId, String paymentToken) throws IOException {
     String payload = JsonUtil.toJson(new PayPalConfirmOneTimePaymentIntentPayload(amount, currency, level, payerId, paymentId, paymentToken));
-    String result  = makeServiceRequestWithoutAuthentication(CONFIRM_PAYPAL_ONE_TIME_PAYMENT_INTENT, "POST", payload, NO_HEADERS, new DonationResponseHandler());
+    String result  = makeServiceRequestWithoutAuthentication(CONFIRM_PAYPAL_ONE_TIME_PAYMENT_INTENT, "POST", payload, NO_HEADERS, new InAppPaymentResponseCodeHandler());
     return JsonUtil.fromJsonResponse(result, PayPalConfirmPaymentIntentResponse.class);
   }
 
@@ -1360,14 +1446,14 @@ public class PushServiceSocket {
         (code, body) -> {
           if (code == 204) throw new NonSuccessfulResponseCodeException(204);
           if (code == 402) {
-            DonationReceiptCredentialError donationReceiptCredentialError;
+            InAppPaymentReceiptCredentialError inAppPaymentReceiptCredentialError;
             try {
-              donationReceiptCredentialError = JsonUtil.fromJson(body.string(), DonationReceiptCredentialError.class);
+              inAppPaymentReceiptCredentialError = JsonUtil.fromJson(body.string(), InAppPaymentReceiptCredentialError.class);
             } catch (IOException e) {
               throw new NonSuccessfulResponseCodeException(402);
             }
 
-            throw donationReceiptCredentialError;
+            throw inAppPaymentReceiptCredentialError;
           }
         });
 
@@ -1395,13 +1481,17 @@ public class PushServiceSocket {
    */
   public BankMandate getBankMandate(Locale locale, String bankTransferType) throws IOException {
     Map<String, String> headers = Collections.singletonMap("Accept-Language", locale.getLanguage() + "-" + locale.getCountry());
-    String              result  = makeServiceRequestWithoutAuthentication(String.format(BANK_MANDATE, bankTransferType), "GET", null, headers, NO_HANDLER);
+    String              result  = makeServiceRequestWithoutAuthentication(String.format(BANK_MANDATE, urlEncode(bankTransferType)), "GET", null, headers, NO_HANDLER);
 
     return JsonUtil.fromJson(result, BankMandate.class);
   }
 
+  public void linkPlayBillingPurchaseToken(String subscriberId, String purchaseToken) throws IOException {
+    makeServiceRequestWithoutAuthentication(String.format(LINK_PLAY_BILLING_PURCHASE_TOKEN, subscriberId, urlEncode(purchaseToken)), "POST", "", NO_HEADERS, new LinkGooglePlayBillingPurchaseTokenResponseCodeHandler());
+  }
+
   public void updateSubscriptionLevel(String subscriberId, String level, String currencyCode, String idempotencyKey) throws IOException {
-    makeServiceRequestWithoutAuthentication(String.format(UPDATE_SUBSCRIPTION_LEVEL, subscriberId, level, currencyCode, idempotencyKey), "PUT", "", NO_HEADERS, new DonationResponseHandler());
+    makeServiceRequestWithoutAuthentication(String.format(UPDATE_SUBSCRIPTION_LEVEL, subscriberId, urlEncode(level), urlEncode(currencyCode), idempotencyKey), "PUT", "", NO_HEADERS, new InAppPaymentResponseCodeHandler());
   }
 
   public ActiveSubscription getSubscription(String subscriberId) throws IOException {
@@ -1421,20 +1511,20 @@ public class PushServiceSocket {
    * @param type One of CARD or SEPA_DEBIT
    */
   public StripeClientSecret createStripeSubscriptionPaymentMethod(String subscriberId, String type) throws IOException {
-    String response = makeServiceRequestWithoutAuthentication(String.format(CREATE_STRIPE_SUBSCRIPTION_PAYMENT_METHOD, subscriberId, type), "POST", "");
+    String response = makeServiceRequestWithoutAuthentication(String.format(CREATE_STRIPE_SUBSCRIPTION_PAYMENT_METHOD, subscriberId, urlEncode(type)), "POST", "");
     return JsonUtil.fromJson(response, StripeClientSecret.class);
   }
 
   public void setDefaultStripeSubscriptionPaymentMethod(String subscriberId, String paymentMethodId) throws IOException {
-    makeServiceRequestWithoutAuthentication(String.format(DEFAULT_STRIPE_SUBSCRIPTION_PAYMENT_METHOD, subscriberId, paymentMethodId), "POST", "");
+    makeServiceRequestWithoutAuthentication(String.format(DEFAULT_STRIPE_SUBSCRIPTION_PAYMENT_METHOD, subscriberId, urlEncode(paymentMethodId)), "POST", "");
   }
 
   public void setDefaultIdealSubscriptionPaymentMethod(String subscriberId, String setupIntentId) throws IOException {
-    makeServiceRequestWithoutAuthentication(String.format(DEFAULT_IDEAL_SUBSCRIPTION_PAYMENT_METHOD, subscriberId, setupIntentId), "POST", "");
+    makeServiceRequestWithoutAuthentication(String.format(DEFAULT_IDEAL_SUBSCRIPTION_PAYMENT_METHOD, subscriberId, urlEncode(setupIntentId)), "POST", "");
   }
 
   public void setDefaultPaypalSubscriptionPaymentMethod(String subscriberId, String paymentMethodId) throws IOException {
-    makeServiceRequestWithoutAuthentication(String.format(DEFAULT_PAYPAL_SUBSCRIPTION_PAYMENT_METHOD, subscriberId, paymentMethodId), "POST", "");
+    makeServiceRequestWithoutAuthentication(String.format(DEFAULT_PAYPAL_SUBSCRIPTION_PAYMENT_METHOD, subscriberId, urlEncode(paymentMethodId)), "POST", "");
   }
 
   public ReceiptCredentialResponse submitReceiptCredentials(String subscriptionId, ReceiptCredentialRequest receiptCredentialRequest) throws IOException {
@@ -1481,9 +1571,9 @@ public class PushServiceSocket {
     return getAuthCredentials(PAYMENTS_AUTH_PATH);
   }
 
-  public TurnServerInfo getTurnServerInfo() throws IOException {
-    String response = makeServiceRequest(TURN_SERVER_INFO, "GET", null);
-    return JsonUtil.fromJson(response, TurnServerInfo.class);
+  public GetCallingRelaysResponse getCallingRelays() throws IOException {
+    String response = makeServiceRequest(CALLING_RELAYS, "GET", null);
+    return JsonUtil.fromJson(response, GetCallingRelaysResponse.class);
   }
 
   public String getStorageAuth() throws IOException {
@@ -1517,6 +1607,10 @@ public class PushServiceSocket {
     } catch (ContactManifestMismatchException e) {
       return Optional.of(StorageManifest.ADAPTER.decode(e.getResponseBody()));
     }
+  }
+
+  public void writeStorageItems(String authToken, WriteOperation writeOperation) throws IOException {
+    makeStorageRequest(authToken, "/v1/storage", "PUT", protobufRequestBody(writeOperation), UNOPINIONATED_BINARY_ERROR_HANDLER);
   }
 
   public void pingStorageService() throws IOException {
@@ -1569,21 +1663,6 @@ public class PushServiceSocket {
                        null, null);
   }
 
-  public Pair<Long, AttachmentDigest> uploadAttachment(PushAttachmentData attachment, AttachmentV2UploadAttributes uploadAttributes)
-      throws PushNetworkException, NonSuccessfulResponseCodeException
-  {
-    long             id     = Long.parseLong(uploadAttributes.getAttachmentId());
-    AttachmentDigest digest = uploadToCdn0(ATTACHMENT_UPLOAD_PATH, uploadAttributes.getAcl(), uploadAttributes.getKey(),
-                                           uploadAttributes.getPolicy(), uploadAttributes.getAlgorithm(),
-                                           uploadAttributes.getCredential(), uploadAttributes.getDate(),
-                                           uploadAttributes.getSignature(), attachment.getData(),
-                                           "application/octet-stream", attachment.getDataSize(),
-                                           attachment.getIncremental(), attachment.getOutputStreamFactory(),
-                                           attachment.getListener(), attachment.getCancelationSignal());
-
-    return new Pair<>(id, digest);
-  }
-
   public ResumableUploadSpec getResumableUploadSpec(AttachmentUploadForm uploadForm) throws IOException {
     return new ResumableUploadSpec(Util.getSecretBytes(64),
                                    Util.getSecretBytes(16),
@@ -1594,19 +1673,9 @@ public class PushServiceSocket {
                                    uploadForm.headers);
   }
 
-  public ResumableUploadSpec getResumableUploadSpecWithKey(AttachmentUploadForm uploadForm, byte[] secretKey) throws IOException {
-    return new ResumableUploadSpec(secretKey,
-                                   Util.getSecretBytes(16),
-                                   uploadForm.key,
-                                   uploadForm.cdn,
-                                   getResumableUploadUrl(uploadForm),
-                                   System.currentTimeMillis() + CDN2_RESUMABLE_LINK_LIFETIME_MILLIS,
-                                   uploadForm.headers);
-  }
-
   public AttachmentDigest uploadAttachment(PushAttachmentData attachment) throws IOException {
 
-    if (attachment.getResumableUploadSpec() == null || attachment.getResumableUploadSpec().getExpirationTimestamp() < System.currentTimeMillis()) {
+    if (attachment.getResumableUploadSpec().getExpirationTimestamp() < System.currentTimeMillis()) {
       throw new ResumeLocationInvalidException();
     }
 
@@ -1928,7 +1997,11 @@ public class PushServiceSocket {
   }
 
   public void uploadBackupFile(AttachmentUploadForm uploadForm, String resumableUploadUrl, InputStream data, long dataLength) throws IOException {
-    uploadToCdn3(resumableUploadUrl, data, "application/octet-stream", dataLength, false, new NoCipherOutputStreamFactory(), null, null, uploadForm.headers);
+    if (uploadForm.cdn == 2) {
+      uploadToCdn2(resumableUploadUrl, data, "application/octet-stream", dataLength, false, new NoCipherOutputStreamFactory(), null, null);
+    } else {
+      uploadToCdn3(resumableUploadUrl, data, "application/octet-stream", dataLength, false, new NoCipherOutputStreamFactory(), null, null, uploadForm.headers);
+    }
   }
 
   private AttachmentDigest uploadToCdn3(String resumableUrl,
@@ -2773,6 +2846,46 @@ public class PushServiceSocket {
     }
   }
 
+  /**
+   * Like {@link UnopinionatedResponseCodeHandler} but also treats a 204 as a failure, since that means that the server intentionally
+   * timed out before a valid result for the long poll was returned. Easier that way.
+   */
+  private static class LongPollingResponseCodeHandler implements ResponseCodeHandler {
+    @Override
+    public void handle(int responseCode, ResponseBody body) throws NonSuccessfulResponseCodeException, PushNetworkException {
+      if (responseCode == 204 || responseCode < 200 || responseCode > 299) {
+        String bodyString = null;
+        if (body != null) {
+          try {
+            bodyString = readBodyString(body);
+          } catch (MalformedResponseException e) {
+            Log.w(TAG, "Failed to read body string", e);
+          }
+        }
+
+        throw new NonSuccessfulResponseCodeException(responseCode, "Response: " + responseCode, bodyString);
+      }
+    }
+  }
+
+  /**
+   * A {@link ResponseCodeHandler} that only throws {@link NonSuccessfulResponseCodeException} with the response body.
+   * Any further processing is left to the caller.
+   */
+  private static class UnopinionatedBinaryErrorResponseCodeHandler implements ResponseCodeHandler {
+    @Override
+    public void handle(int responseCode, ResponseBody body) throws NonSuccessfulResponseCodeException, PushNetworkException {
+      if (responseCode < 200 || responseCode > 299) {
+        byte[] bodyBytes = null;
+        if (body != null) {
+          bodyBytes = readBodyBytes(body);
+        }
+
+        throw new NonSuccessfulResponseCodeException(responseCode, "Response: " + responseCode, bodyBytes);
+      }
+    }
+  }
+
   public enum ClientSet { KeyBackup }
 
   public CredentialResponse retrieveGroupsV2Credentials(long todaySeconds)
@@ -2791,16 +2904,19 @@ public class PushServiceSocket {
 
   private static final ResponseCodeHandler GROUPS_V2_PUT_RESPONSE_HANDLER   = (responseCode, body) -> {
     if (responseCode == 409) throw new GroupExistsException();
-  };;
+  };
+
   private static final ResponseCodeHandler GROUPS_V2_GET_CURRENT_HANDLER    = (responseCode, body) -> {
     switch (responseCode) {
       case 403: throw new NotInGroupException();
       case 404: throw new GroupNotFoundException();
     }
   };
+
   private static final ResponseCodeHandler GROUPS_V2_PATCH_RESPONSE_HANDLER = (responseCode, body) -> {
     if (responseCode == 400) throw new GroupPatchNotAcceptedException();
   };
+
   private static final ResponseCodeHandler GROUPS_V2_GET_JOIN_INFO_HANDLER  = new ResponseCodeHandler() {
     @Override
     public void handle(int responseCode, ResponseBody body) throws NonSuccessfulResponseCodeException {
@@ -2971,9 +3087,23 @@ public class PushServiceSocket {
   }
 
   /**
-   * Handler for a couple donation endpoints.
+   * Handler for Google Play Billing purchase token linking
    */
-  private static class DonationResponseHandler implements ResponseCodeHandler {
+  private static class LinkGooglePlayBillingPurchaseTokenResponseCodeHandler implements ResponseCodeHandler {
+    @Override
+    public void handle(int responseCode, ResponseBody body) throws NonSuccessfulResponseCodeException, PushNetworkException {
+      if (responseCode < 400) {
+        return;
+      }
+
+      throw new NonSuccessfulResponseCodeException(responseCode);
+    }
+  }
+
+  /**
+   * Handler for a couple in app payment endpoints.
+   */
+  private static class InAppPaymentResponseCodeHandler implements ResponseCodeHandler {
     @Override
     public void handle(int responseCode, ResponseBody body) throws NonSuccessfulResponseCodeException, PushNetworkException {
       if (responseCode < 400) {
@@ -2981,9 +3111,9 @@ public class PushServiceSocket {
       }
 
       if (responseCode == 440) {
-        DonationProcessorError exception;
+        InAppPaymentProcessorError exception;
         try {
-          exception = JsonUtil.fromJson(body.string(), DonationProcessorError.class);
+          exception = JsonUtil.fromJson(body.string(), InAppPaymentProcessorError.class);
         } catch (IOException e) {
           throw new NonSuccessfulResponseCodeException(440);
         }
@@ -3169,6 +3299,11 @@ public class PushServiceSocket {
     RegistrationSessionMetadataJson responseBody = JsonUtil.fromJson(readBodyString(response), RegistrationSessionMetadataJson.class);
 
     return new RegistrationSessionMetadataResponse(responseHeaders, responseBody, null);
+  }
+
+  private static @Nonnull String urlEncode(@Nonnull String data) throws IOException {
+    //noinspection CharsetObjectCanBeUsed
+    return URLEncoder.encode(data, StandardCharsets.UTF_8.name());
   }
 
   public static final class GroupHistory {

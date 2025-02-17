@@ -66,7 +66,7 @@ public class MultiDeviceProfileKeyUpdateJob extends BaseJob {
       throw new NotPushRegisteredException();
     }
 
-    if (!TextSecurePreferences.isMultiDevice(context)) {
+    if (!SignalStore.account().hasLinkedDevices()) {
       Log.i(TAG, "Not multi device...");
       return;
     }
@@ -82,6 +82,7 @@ public class MultiDeviceProfileKeyUpdateJob extends BaseJob {
                                 Optional.empty(),
                                 Optional.empty(),
                                 profileKey,
+                                Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
                                 false));

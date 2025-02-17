@@ -37,7 +37,7 @@ import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.util.rx.RxStore
 import org.whispersystems.signalservice.api.util.Preconditions
-import org.whispersystems.signalservice.internal.push.exceptions.DonationProcessorError
+import org.whispersystems.signalservice.internal.push.exceptions.InAppPaymentProcessorError
 
 class StripePaymentInProgressViewModel(
   private val stripeRepository: StripeRepository,
@@ -160,6 +160,8 @@ class StripePaymentInProgressViewModel(
         nextActionHandler.handle(
           action = secure3DSAction,
           inAppPayment = inAppPayment.copy(
+            subscriberId = InAppPaymentsRepository.requireSubscriber(inAppPayment.type.requireSubscriberType()).subscriberId,
+            state = InAppPaymentTable.State.WAITING_FOR_AUTHORIZATION,
             data = inAppPayment.data.copy(
               redemption = null,
               waitForAuth = InAppPaymentData.WaitingForAuthorizationState(
@@ -175,7 +177,7 @@ class StripePaymentInProgressViewModel(
       .onErrorResumeNext {
         when (it) {
           is DonationError -> Completable.error(it)
-          is DonationProcessorError -> Completable.error(it.toDonationError(DonationErrorSource.MONTHLY, paymentSourceProvider.paymentSourceType))
+          is InAppPaymentProcessorError -> Completable.error(it.toDonationError(DonationErrorSource.MONTHLY, paymentSourceProvider.paymentSourceType))
           else -> Completable.error(DonationError.getPaymentSetupError(DonationErrorSource.MONTHLY, it, paymentSourceProvider.paymentSourceType))
         }
       }

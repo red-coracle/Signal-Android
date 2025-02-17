@@ -10,8 +10,7 @@ import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.components.settings.app.subscription.DonationSerializationHelper.toDecimalValue
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
-import org.thoughtcrime.securesms.components.settings.app.subscription.manage.DonationRedemptionJobStatus
-import org.thoughtcrime.securesms.components.settings.app.subscription.manage.DonationRedemptionJobWatcher
+import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository.toPaymentSourceType
 import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
@@ -26,6 +25,7 @@ import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
 import org.whispersystems.signalservice.internal.EmptyResponse
 import org.whispersystems.signalservice.internal.ServiceResponse
 import java.util.Locale
+import kotlin.concurrent.withLock
 import kotlin.jvm.optionals.getOrNull
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -47,6 +47,7 @@ class InAppPaymentKeepAliveJob private constructor(
 
     private val TIMEOUT = 3.days
 
+    const val KEEP_ALIVE = "keep-alive"
     private const val DATA_TYPE = "type"
 
     fun create(type: InAppPaymentSubscriberRecord.Type): Job {
@@ -88,7 +89,7 @@ class InAppPaymentKeepAliveJob private constructor(
   }
 
   override fun onRun() {
-    synchronized(type) {
+    type.lock.withLock {
       doRun()
     }
   }
@@ -122,23 +123,15 @@ class InAppPaymentKeepAliveJob private constructor(
       return
     }
 
-    // Note that this can be removed once the old jobs are decommissioned. These jobs live in different queues, and should still be respected.
-    if (type == InAppPaymentSubscriberRecord.Type.DONATION) {
-      val legacyRedemptionStatus = DonationRedemptionJobWatcher.getSubscriptionRedemptionJobStatus()
-      if (legacyRedemptionStatus != DonationRedemptionJobStatus.None && legacyRedemptionStatus != DonationRedemptionJobStatus.FailedSubscription) {
-        info(type, "Already trying to redeem donation, current status: ${legacyRedemptionStatus.javaClass.simpleName}")
-        return
-      }
-    }
-
-    if (SignalDatabase.inAppPayments.hasPending(type.inAppPaymentType)) {
-      info(type, "Already trying to redeem $type. Exiting.")
-      return
-    }
-
     val activeInAppPayment = getActiveInAppPayment(subscriber, subscription)
     if (activeInAppPayment == null) {
       warn(type, "Failed to generate active in-app payment. Exiting")
+      return
+    }
+
+    if (activeInAppPayment.state == InAppPaymentTable.State.END) {
+      warn(type, "Active in-app payment is in the END state. Cannot proceed.")
+      warn(type, "Active in-app payment cancel state: ${activeInAppPayment.data.cancellation}")
       return
     }
 
@@ -218,23 +211,23 @@ class InAppPaymentKeepAliveJob private constructor(
         return null
       }
 
-      val (badge, label) = if (oldInAppPayment == null) {
+      val badge = if (oldInAppPayment == null) {
         info(type, "Old payment not found in database. Loading badge / label information from donations configuration.")
         val configuration = AppDependencies.donationsService.getDonationsConfiguration(Locale.getDefault())
         if (configuration.result.isPresent) {
           val subscriptionConfig = configuration.result.get().levels[subscription.level]
           if (subscriptionConfig == null) {
             info(type, "Failed to load subscription configuration for level ${subscription.level} for type $type")
-            null to ""
+            null
           } else {
-            Badges.toDatabaseBadge(Badges.fromServiceBadge(subscriptionConfig.badge)) to subscriptionConfig.name
+            Badges.toDatabaseBadge(Badges.fromServiceBadge(subscriptionConfig.badge))
           }
         } else {
           warn(TAG, "Failed to load configuration while processing $type")
-          null to ""
+          null
         }
       } else {
-        oldInAppPayment.data.badge to oldInAppPayment.data.label
+        oldInAppPayment.data.badge
       }
 
       info(type, "End of period has changed. Requesting receipt refresh. (old: $oldEndOfPeriod, new: $endOfCurrentPeriod)")
@@ -248,6 +241,7 @@ class InAppPaymentKeepAliveJob private constructor(
         subscriberId = subscriber.subscriberId,
         endOfPeriod = endOfCurrentPeriod,
         inAppPaymentData = InAppPaymentData(
+          paymentMethodType = subscriber.paymentMethodType,
           badge = badge,
           amount = FiatValue(
             currencyCode = subscriber.currency.currencyCode,
@@ -256,7 +250,6 @@ class InAppPaymentKeepAliveJob private constructor(
           error = null,
           level = subscription.level.toLong(),
           cancellation = null,
-          label = label,
           recipientId = null,
           additionalMessage = null,
           redemption = InAppPaymentData.RedemptionState(
@@ -268,6 +261,30 @@ class InAppPaymentKeepAliveJob private constructor(
 
       MultiDeviceSubscriptionSyncRequestJob.enqueue()
       SignalDatabase.inAppPayments.getById(inAppPaymentId)
+    } else if (current.state == InAppPaymentTable.State.PENDING && current.data.error?.data_ == KEEP_ALIVE) {
+      info(type, "Found failed keep-alive. Retrying.")
+      SignalDatabase.inAppPayments.update(
+        current.copy(
+          data = current.data.copy(
+            error = null
+          )
+        )
+      )
+
+      SignalDatabase.inAppPayments.getById(current.id)
+    } else if (current.state == InAppPaymentTable.State.END && current.data.error != null && current.data.paymentMethodType == InAppPaymentData.PaymentMethodType.UNKNOWN && subscriber.paymentMethodType.toPaymentSourceType().isBankTransfer) {
+      info(type, "Found failed SEPA payment but there's no payment method assigned. Assigning payment method and retrying.")
+      SignalDatabase.inAppPayments.update(
+        current.copy(
+          state = InAppPaymentTable.State.PENDING,
+          data = current.data.copy(
+            paymentMethodType = subscriber.paymentMethodType,
+            error = null
+          )
+        )
+      )
+
+      SignalDatabase.inAppPayments.getById(current.id)
     } else {
       current
     }
@@ -293,7 +310,7 @@ class InAppPaymentKeepAliveJob private constructor(
     override fun create(parameters: Parameters, serializedData: ByteArray?): InAppPaymentKeepAliveJob {
       return InAppPaymentKeepAliveJob(
         parameters,
-        InAppPaymentSubscriberRecord.Type.values().first { it.code == JsonJobData.deserialize(serializedData).getInt(DATA_TYPE) }
+        InAppPaymentSubscriberRecord.Type.entries.first { it.code == JsonJobData.deserialize(serializedData).getInt(DATA_TYPE) }
       )
     }
   }

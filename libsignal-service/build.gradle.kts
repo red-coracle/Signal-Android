@@ -33,13 +33,15 @@ java {
 tasks.withType<KotlinCompile>().configureEach {
   kotlinOptions {
     jvmTarget = signalKotlinJvmTarget
+    freeCompilerArgs = listOf("-Xjvm-default=all")
   }
 }
 
 afterEvaluate {
   listOf(
     "runKtlintCheckOverMainSourceSet",
-    "runKtlintFormatOverMainSourceSet"
+    "runKtlintFormatOverMainSourceSet",
+    "sourcesJar"
   ).forEach { taskName ->
     tasks.named(taskName) {
       mustRunAfter(tasks.named("generateMainProtos"))
@@ -93,6 +95,8 @@ dependencies {
   api(libs.rxjava3.rxjava)
 
   implementation(libs.kotlin.stdlib.jdk8)
+  implementation(libs.kotlinx.coroutines.core)
+  implementation(libs.kotlinx.coroutines.core.jvm)
 
   implementation(project(":core-util-jvm"))
 
@@ -101,6 +105,7 @@ dependencies {
   testImplementation(testLibs.conscrypt.openjdk.uber)
   testImplementation(testLibs.mockito.core)
   testImplementation(testLibs.mockk)
+  testImplementation(testLibs.hamcrest.hamcrest)
 
   testFixturesImplementation(libs.libsignal.client)
   testFixturesImplementation(testLibs.junit.junit)

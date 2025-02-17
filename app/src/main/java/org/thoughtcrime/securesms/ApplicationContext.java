@@ -16,13 +16,13 @@
  */
 package org.thoughtcrime.securesms;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.multidex.MultiDexApplication;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.security.ProviderInstaller;
@@ -42,6 +42,7 @@ import org.signal.libsignal.protocol.logging.SignalProtocolLoggerProvider;
 import org.signal.ringrtc.CallManager;
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener;
 import org.thoughtcrime.securesms.avatar.AvatarPickerStorage;
+import org.thoughtcrime.securesms.backup.v2.BackupRepository;
 import org.thoughtcrime.securesms.crypto.AttachmentSecretProvider;
 import org.thoughtcrime.securesms.crypto.DatabaseSecretProvider;
 import org.thoughtcrime.securesms.database.LogDatabase;
@@ -53,6 +54,8 @@ import org.thoughtcrime.securesms.emoji.EmojiSource;
 import org.thoughtcrime.securesms.emoji.JumboEmoji;
 import org.thoughtcrime.securesms.gcm.FcmFetchManager;
 import org.thoughtcrime.securesms.jobs.AccountConsistencyWorkerJob;
+import org.thoughtcrime.securesms.jobs.BackupRefreshJob;
+import org.thoughtcrime.securesms.jobs.BackupSubscriptionCheckJob;
 import org.thoughtcrime.securesms.jobs.BuildExpirationConfirmationJob;
 import org.thoughtcrime.securesms.jobs.CheckServiceReachabilityJob;
 import org.thoughtcrime.securesms.jobs.DownloadLatestEmojiDataJob;
@@ -69,6 +72,7 @@ import org.thoughtcrime.securesms.jobs.PnpInitializeDevicesJob;
 import org.thoughtcrime.securesms.jobs.PreKeysSyncJob;
 import org.thoughtcrime.securesms.jobs.ProfileUploadJob;
 import org.thoughtcrime.securesms.jobs.RefreshSvrCredentialsJob;
+import org.thoughtcrime.securesms.jobs.RestoreOptimizedMediaJob;
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
 import org.thoughtcrime.securesms.jobs.RetrieveRemoteAnnouncementsJob;
 import org.thoughtcrime.securesms.jobs.StoryOnboardingDownloadJob;
@@ -84,7 +88,7 @@ import org.thoughtcrime.securesms.mms.SignalGlideModule;
 import org.thoughtcrime.securesms.providers.BlobProvider;
 import org.thoughtcrime.securesms.ratelimit.RateLimitUtil;
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.registration.RegistrationUtil;
+import org.thoughtcrime.securesms.registration.util.RegistrationUtil;
 import org.thoughtcrime.securesms.ringrtc.RingRtcLogger;
 import org.thoughtcrime.securesms.service.AnalyzeDatabaseAlarmListener;
 import org.thoughtcrime.securesms.service.DirectoryRefreshListener;
@@ -107,8 +111,8 @@ import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.VersionTracker;
 import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWrapper;
 
+import java.io.InterruptedIOException;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
@@ -129,7 +133,7 @@ import rxdogtag2.RxDogTag;
  *
  * @author Moxie Marlinspike
  */
-public class ApplicationContext extends MultiDexApplication implements AppForegroundObserver.Listener {
+public class ApplicationContext extends Application implements AppForegroundObserver.Listener {
 
   private static final String TAG = Log.tag(ApplicationContext.class);
 
@@ -153,6 +157,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                                                   DatabaseSecretProvider.getOrCreateDatabaseSecret(this),
                                                   AttachmentSecretProvider.getInstance(this).getOrCreateAttachmentSecret());
                             })
+                            .addBlocking("signal-store", () -> SignalStore.init(this))
                             .addBlocking("logging", () -> {
                               initializeLogging();
                               Log.i(TAG, "onCreate()");
@@ -163,10 +168,10 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                             .addBlocking("crash-handling", this::initializeCrashHandling)
                             .addBlocking("rx-init", this::initializeRx)
                             .addBlocking("event-bus", () -> EventBus.builder().logNoSubscriberMessages(false).installDefaultEventBus())
-                            .addBlocking("scrubber", () -> Scrubber.setIdentifierHmacKeyProvider(() -> SignalStore.svr().getOrCreateMasterKey().deriveLoggingKey()))
+                            .addBlocking("scrubber", () -> Scrubber.setIdentifierHmacKeyProvider(() -> SignalStore.svr().getMasterKey().deriveLoggingKey()))
                             .addBlocking("first-launch", this::initializeFirstEverAppLaunch)
                             .addBlocking("app-migrations", this::initializeApplicationMigrations)
-                            .addBlocking("lifecycle-observer", () -> AppDependencies.getAppForegroundObserver().addListener(this))
+                            .addBlocking("lifecycle-observer", () -> AppForegroundObserver.addListener(this))
                             .addBlocking("message-retriever", this::initializeMessageRetrieval)
                             .addBlocking("dynamic-theme", () -> DynamicTheme.setDefaultDayNightMode(this))
                             .addBlocking("proxy-init", () -> {
@@ -196,6 +201,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                             .addNonBlocking(this::beginJobLoop)
                             .addNonBlocking(EmojiSource::refresh)
                             .addNonBlocking(() -> AppDependencies.getGiphyMp4Cache().onAppStart(this))
+                            .addNonBlocking(AppDependencies::getBillingApi)
                             .addNonBlocking(this::ensureProfileUploaded)
                             .addNonBlocking(() -> AppDependencies.getExpireStoriesManager().scheduleIfNecessary())
                             .addPostRender(() -> AppDependencies.getDeletedCallEventManager().scheduleIfNecessary())
@@ -221,6 +227,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                             .addPostRender(LinkedDeviceInactiveCheckJob::enqueueIfNecessary)
                             .addPostRender(() -> ActiveCallManager.clearNotifications(this))
                             .addPostRender(() -> GroupSendEndorsementInternalNotifier.init())
+                            .addPostRender(RestoreOptimizedMediaJob::enqueueIfNecessary)
                             .execute();
 
     Log.d(TAG, "onCreate() took " + (System.currentTimeMillis() - startTime) + " ms");
@@ -241,6 +248,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
     startAnrDetector();
 
     SignalExecutors.BOUNDED.execute(() -> {
+      BackupRefreshJob.enqueueIfNecessary();
       InAppPaymentAuthCheckJob.enqueueIfNeeded();
       RemoteConfig.refreshIfNecessary();
       RetrieveProfileJob.enqueueRoutineFetchIfNecessary();
@@ -248,7 +256,9 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
       KeyCachingService.onAppForegrounded(this);
       AppDependencies.getShakeToReport().enable();
       checkBuildExpiration();
+      checkFreeDiskSpace();
       MemoryTracker.start();
+      BackupSubscriptionCheckJob.enqueueIfAble();
 
       long lastForegroundTime = SignalStore.misc().getLastForegroundTime();
       long currentTime        = System.currentTimeMillis();
@@ -281,6 +291,13 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
     //  Log.w(TAG, "Build potentially expired! Enqueing job to check.", true);
     //  AppDependencies.getJobManager().add(new BuildExpirationConfirmationJob());
     //}
+  }
+
+  public void checkFreeDiskSpace() {
+    if (RemoteConfig.messageBackups()) {
+      long availableBytes = BackupRepository.INSTANCE.getFreeStorageSpace().getBytes();
+      SignalStore.backup().setSpaceAvailableOnDiskBytes(availableBytes);
+    }
   }
 
   /**
@@ -341,7 +358,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
         e = e.getCause();
       }
 
-      if (wasWrapped && (e instanceof SocketException || e instanceof SocketTimeoutException || e instanceof InterruptedException)) {
+      if (wasWrapped && (e instanceof SocketException || e instanceof InterruptedException || e instanceof InterruptedIOException)) {
         return;
       }
 
@@ -364,7 +381,11 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
 
   @VisibleForTesting
   void initializeAppDependencies() {
-    AppDependencies.init(this, new ApplicationDependencyProvider(this));
+    if (!AppDependencies.isInitialized()) {
+      Log.i(TAG, "Initializing AppDependencies.");
+      AppDependencies.init(this, new ApplicationDependencyProvider(this));
+    }
+    AppForegroundObserver.begin();
   }
 
   private void initializeFirstEverAppLaunch() {

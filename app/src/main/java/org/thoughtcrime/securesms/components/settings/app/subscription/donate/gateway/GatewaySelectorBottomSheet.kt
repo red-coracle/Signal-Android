@@ -60,7 +60,6 @@ class GatewaySelectorBottomSheet : DSLSettingsBottomSheetFragment() {
 
   private fun getConfiguration(state: GatewaySelectorState): DSLConfiguration {
     return configure {
-      // TODO [message-backups] -- No badge on message backups.
       customPref(
         BadgeDisplay112.Model(
           badge = state.inAppPayment.data.badge!!.let { Badges.fromDatabaseBadge(it) },
@@ -83,6 +82,7 @@ class GatewaySelectorBottomSheet : DSLSettingsBottomSheetFragment() {
 
       state.gatewayOrderStrategy.orderedGateways.forEach { gateway ->
         when (gateway) {
+          InAppPaymentData.PaymentMethodType.GOOGLE_PLAY_BILLING -> error("Unsupported payment method.")
           InAppPaymentData.PaymentMethodType.GOOGLE_PAY -> renderGooglePayButton(state)
           InAppPaymentData.PaymentMethodType.PAYPAL -> renderPayPalButton(state)
           InAppPaymentData.PaymentMethodType.CARD -> renderCreditCardButton(state)
@@ -208,7 +208,7 @@ class GatewaySelectorBottomSheet : DSLSettingsBottomSheetFragment() {
     fun DSLConfiguration.presentTitleAndSubtitle(context: Context, inAppPayment: InAppPaymentTable.InAppPayment) {
       when (inAppPayment.type) {
         InAppPaymentType.UNKNOWN -> error("Unsupported type UNKNOWN")
-        InAppPaymentType.RECURRING_BACKUP -> error("This type is not supported") // TODO [message-backups] necessary?
+        InAppPaymentType.RECURRING_BACKUP -> error("This type is not supported")
         InAppPaymentType.RECURRING_DONATION -> presentMonthlyText(context, inAppPayment)
         InAppPaymentType.ONE_TIME_DONATION -> presentOneTimeText(context, inAppPayment)
         InAppPaymentType.ONE_TIME_GIFT -> presentGiftText(context, inAppPayment)

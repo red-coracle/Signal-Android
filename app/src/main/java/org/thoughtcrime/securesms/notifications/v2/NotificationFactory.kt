@@ -225,7 +225,7 @@ object NotificationFactory {
 
     builder.apply {
       setSmallIcon(R.drawable.ic_notification)
-      setColor(ContextCompat.getColor(context, R.color.core_ultramarine))
+      setColor(ContextCompat.getColor(context, R.color.notification_background_ultramarine))
       setCategory(NotificationCompat.CATEGORY_MESSAGE)
       setGroup(DefaultMessageNotifier.NOTIFICATION_GROUP)
       setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
@@ -274,7 +274,7 @@ object NotificationFactory {
 
     builder.apply {
       setSmallIcon(R.drawable.ic_notification)
-      setColor(ContextCompat.getColor(context, R.color.core_ultramarine))
+      setColor(ContextCompat.getColor(context, R.color.notification_background_ultramarine))
       setCategory(NotificationCompat.CATEGORY_MESSAGE)
       setGroup(DefaultMessageNotifier.NOTIFICATION_GROUP)
       setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
@@ -458,7 +458,7 @@ object NotificationFactory {
 
     builder.apply {
       setSmallIcon(R.drawable.ic_notification)
-      setColor(ContextCompat.getColor(context, R.color.core_ultramarine))
+      setColor(ContextCompat.getColor(context, R.color.notification_background_ultramarine))
       setCategory(NotificationCompat.CATEGORY_MESSAGE)
       setGroup(DefaultMessageNotifier.NOTIFICATION_GROUP)
       setChannelId(conversation.getChannelId())
@@ -480,7 +480,7 @@ object NotificationFactory {
       notify(notificationId, notification)
       Log.internal().i(TAG, "Posted notification: $notification")
     } catch (e: SecurityException) {
-      Log.i(TAG, "Security exception when posting notification, clearing ringtone")
+      Log.w(TAG, "Security exception when posting notification, clearing ringtone", e)
       if (threadRecipient != null) {
         SignalExecutors.BOUNDED.execute {
           SignalDatabase.recipients.setMessageRingtone(threadRecipient.id, null)

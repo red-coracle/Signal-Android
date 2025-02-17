@@ -22,6 +22,9 @@
   <!-- Removed by excludeNonTranslatables <string name="pending_transfer_url" translatable="false">https://support.signal.org/hc/articles/360031949872#pending</string> -->
   <!-- Removed by excludeNonTranslatables <string name="donate_faq_url" translatable="false">https://support.signal.org/hc/articles/360031949872#donate</string> -->
 
+    <!-- First placeholder is productId, second placeholder is app package -->
+    <string name="backup_subscription_management_url">https://play.google.com/store/account/subscriptions?sku=%1$s&amp;package=%2$s</string>
+
     <string name="yes">Да</string>
     <string name="no">Не</string>
     <string name="delete">Избриши</string>
@@ -260,6 +263,7 @@
 
     <!-- CameraXFragment -->
     <string name="CameraXFragment_tap_for_photo_hold_for_video">Додирните да снимите фотографију, држите да снимите видео</string>
+    <!-- Accessibility content description to describe the capture button when taking an image/video -->
     <string name="CameraXFragment_capture_description">Сними</string>
     <string name="CameraXFragment_change_camera_description">Промени камеру</string>
     <string name="CameraXFragment_open_gallery_description">Отвори галерију</string>
@@ -345,6 +349,8 @@
     <string name="CommunicationActions_invalid_link">Неважећи линк</string>
     <!-- Message on dialog when call link url cannot be parsed -->
     <string name="CommunicationActions_this_is_not_a_valid_call_link">Овај линк није важећи линк за позив. Проверите да ли је цео линк комплетан и исправан пре него што покушате да се придружите.</string>
+    <!-- Displayed in a snackbar when the user is already in a call -->
+    <string name="CommunicationActions__you_are_already_in_a_call">Већ сте у позиву</string>
 
     <!-- ConfirmIdentityDialog -->
 
@@ -362,6 +368,8 @@
     <string name="ContactsCursorLoader__chats">Ћаскања</string>
     <!-- Header for conversation search section labeled "Messages" -->
     <string name="ContactsCursorLoader__messages">Поруке</string>
+    <!-- Header for conversation search section labeled "Chat types" -->
+    <string name="ContactsCursorLoader__chat_types">Типови ћаскања</string>
 
     <!-- ContactsDatabase -->
     <string name="ContactsDatabase_message_s">Порука: %1$s</string>
@@ -401,6 +409,7 @@
     <string name="ConversationItem_unable_to_open_media">Није пронађена апликација која може да отвори овај медиј.</string>
     <string name="ConversationItem_copied_text">Копирано: %1$s</string>
     <string name="ConversationItem_from_s">пошиљалац: %1$s</string>
+    <!-- Footer shown in legacy SMS message where %s is the name of the recipient the message is going to -->
     <string name="ConversationItem_to_s">прималац: %1$s</string>
     <string name="ConversationItem_read_more">  Прочитајте више</string>
     <string name="ConversationItem_download_more">  Преузмите више</string>
@@ -434,6 +443,7 @@
     <string name="ConversationActivity_send_edit">Пошаљи измену</string>
     <string name="ConversationActivity_compose_message">Напишите поруку</string>
     <string name="ConversationActivity_sorry_there_was_an_error_setting_your_attachment">Дошло је до грешке приликом постављања прилога.</string>
+    <!-- Toast shown when user is unable to find the recipient when sending a message -->
     <string name="ConversationActivity_recipient_is_not_a_valid_sms_or_email_address_exclamation">Прималац није важећи број за SMS или имејл!</string>
     <string name="ConversationActivity_message_is_empty_exclamation">Порука је празна!</string>
     <string name="ConversationActivity_group_members">Чланови групе</string>
@@ -574,6 +584,7 @@
         <item quantity="other">Прилози се чувају на меморијском простору (%1$d)…</item>
     </plurals>
     <string name="ConversationFragment_pending">На чекању…</string>
+    <!-- Describes how the message was sent when looking at a message detail. Previously, messages could be through other means like SMS -->
     <string name="ConversationFragment_push">Мобилни интернет (Signal)</string>
     <string name="ConversationFragment_mms">MMS</string>
     <string name="ConversationFragment_sms">SMS</string>
@@ -728,6 +739,17 @@
         <item quantity="one">Изабрано: %1$d</item>
         <item quantity="other">Изабрано: %1$d</item>
     </plurals>
+    <!-- Context menu option to add a chat to a folder -->
+    <string name="ConversationListFragment_add_to_folder">Додај у фолдер</string>
+    <!-- Context menu option to remove a chat from a folder -->
+    <string name="ConversationListFragment_remove_from_folder">Уклони из фолдера</string>
+
+    <!-- Bottom sheet title when choosing a folder to add a chat to -->
+    <string name="AddToFolderBottomSheet_choose_a_folder">Изабери фолдер</string>
+    <!-- Toast shown when a chat has been added to a folder, where %s is the name of the folder -->
+    <string name="AddToFolderBottomSheet_added_to_s">Додато је у „%1$s“</string>
+    <!-- Toast shown when a user tries to add a chat to a folder, but the folder already has that chat. %s is the name of the folder -->
+    <string name="AddToFolderBottomSheet_this_chat_is_already">Ово ћаскање је већ у фолдеру „%1$s“</string>
 
     <!-- Show in conversation list overflow menu to open selection bottom sheet -->
     <string name="ConversationListFragment__notification_profile">Профил за обавештења</string>
@@ -807,7 +829,7 @@
 
     <!-- CreateBackupBottomSheet -->
     <!-- Bottom sheet title -->
-    <string name="CreateBackupBottomSheet__create_backup">Креирајте резервну копију</string>
+    <string name="CreateBackupBottomSheet__you_are_all_set">Све је спремно. Покрените креирање резервне копије.</string>
     <!-- Bottom sheet message -->
     <string name="CreateBackupBottomSheet__depending_on_the_size">У зависности од величине ваше резервне копије, ово може дуже потрајати. Можете нормално да користите телефон док се прави резервна копија.</string>
     <!-- Action button to dismiss sheet and back up later -->
@@ -959,18 +981,36 @@
     <string name="LinkDeviceFragment__my_linked_devices">Моји повезани уређаји</string>
     <!-- Dialog confirmation to unlink a device -->
     <string name="LinkDeviceFragment__unlink">Прекини везу</string>
-    <!-- Toast message indicating a device has been unlinked where %s is the name of the device -->
-    <string name="LinkDeviceFragment__s_unlinked">Прекинуто повезивање са %1$s</string>
+    <!-- Toast message indicating a device has been unlinked, where %s is the name of the device -->
+    <string name="LinkDeviceFragment__s_unlinked">Веза са уређајем „%1$s“ је прекинута</string>
+    <!-- Toast message indicating a device has been successfully linked, where %s is the name of the device -->
+    <string name="LinkDeviceFragment__s_linked">Уређај „%1$s“ је повезан</string>
     <!-- Progress dialog message indicating that a device is currently being linked with an account -->
     <string name="LinkDeviceFragment__linking_device">Повезивање уређаја…</string>
     <!-- Toast message shown after a device has been linked -->
     <string name="LinkDeviceFragment__device_approved">Уређај је одобрен</string>
     <!-- Progress dialog message indicating that the list of linked devices is currently loading -->
     <string name="LinkDeviceFragment__loading">Учитава се…</string>
+    <!-- Progress dialog message indicating that you are syncing messages to your linked device -->
+    <string name="LinkDeviceFragment__syncing_messages">Синхронизују се поруке…</string>
     <!-- Text message shown when the user has no linked devices -->
     <string name="LinkDeviceFragment__no_linked_devices">Нема повезаних уређаја</string>
     <!-- Title on biometrics prompt explaining what biometrics are being used for -->
     <string name="LinkDeviceFragment__unlock_to_link">Откључајте да бисте повезали уређај</string>
+    <!-- Title on bottom sheet explaining our usage of biometrics to link a device -->
+    <string name="LinkDeviceFragment__before_linking">Пре повезивања потврдите да сте то ви</string>
+    <!-- Body of bottom sheet explaining that users should use their device pin or biometrics and not their Signal pin -->
+    <string name="LinkDeviceFragment__tap_continue_and_enter_phone">Да бисте потврдили, додирните „Настави” и унесите шифру за откључавање телефона. Не уносите PIN за Signal.</string>
+    <!-- Button that dismisses the bottom sheet -->
+    <string name="LinkDeviceFragment__continue">Настави</string>
+    <!-- Title of a dialog letting the user know that syncing messages to their linked device failed -->
+    <string name="LinkDeviceFragment__sync_failure_title">Синхронизација порука није успела</string>
+    <!-- Body of a dialog letting the user know that syncing messages to their linked device failed -->
+    <string name="LinkDeviceFragment__sync_failure_body">Пренос порука на ваш повезани уређај није успео. Можете да пробате поново да повежете уређај и започнете пренос или да наставите без преноса историје порука.</string>
+    <!-- Text button of a button in a dialog that, when pressed, will restart the process of linking a device -->
+    <string name="LinkDeviceFragment__sync_failure_retry_button">Повежи поново</string>
+    <!-- Text button of a button in a dialog that, when pressed, will ignore syncing errors and link a new device without syncing message content -->
+    <string name="LinkDeviceFragment__sync_failure_dismiss_button">Настави без преноса</string>
 
     <!-- AddLinkDeviceFragment -->
     <!-- Description text shown on the QR code scanner when linking a device -->
@@ -994,10 +1034,21 @@
     <!-- Button in dialog to retry linking a device with a qr code -->
     <string name="AddLinkDeviceFragment__retry">Пробај поново</string>
 
+    <!-- LinkDeviceSyncBottomSheet -->
+    <!-- Option in bottom sheet to transfer message history -->
+    <string name="LinkDeviceSyncBottomSheet_transfer">Пренеси историју порука</string>
+    <!-- Description in bottom sheet of what transferring message history will do -->
+    <string name="LinkDeviceSyncBottomSheet_transfer_your_text">Пренесите текстуалне поруке и недавне медије на рачунар</string>
+    <!-- Option in bottom sheet to not transfer message history -->
+    <string name="LinkDeviceSyncBottomSheet_dont_transfer">Немој да пренесеш</string>
+    <!-- Description in bottom sheet of what not transferring history will do -->
+    <string name="LinkDeviceSyncBottomSheet_no_old_messages">Старе поруке или медији неће бити пренесени на рачунар</string>
+
     <!-- DeviceListActivity -->
-    <string name="DeviceListActivity_unlink_s">Желите ли да прекинете везу са уређајем „%1$s“?</string>
+    <string name="DeviceListActivity_unlink_s">Прекините везу са уређајем „%1$s“?</string>
     <string name="DeviceListActivity_by_unlinking_this_device_it_will_no_longer_be_able_to_send_or_receive">Овај уређај више неће моћи да шаље или прима поруке ако прекинете везу с њим.</string>
     <string name="DeviceListActivity_network_connection_failed">Повезивање на мрежу није успело</string>
+    <!-- Button label on an alert dialog. The dialog informs the user they have network issues. If pressed, we will retry the network request. -->
     <string name="DeviceListActivity_try_again">Пробајте поново</string>
     <string name="DeviceListActivity_unlinking_device">Прекида се веза са уређајем…</string>
     <string name="DeviceListActivity_unlinking_device_no_ellipsis">Прекидање везе са уређајем</string>
@@ -1287,20 +1338,6 @@
     <string name="ManageGroupActivity_more">више</string>
     <string name="ManageGroupActivity_add_group_description">Унесите опис групе…</string>
 
-    <!-- MoreTransferOrRestoreOptionsSheet -->
-    <!-- Row title for transfer option -->
-    <string name="MoreTransferOrRestoreOptionsSheet__transfer_from_android_device">Пренесите податке са Android уређаја</string>
-    <!-- Row description for transfer option -->
-    <string name="MoreTransferOrRestoreOptionsSheet__transfer_your_account_and_messages">Пренесите налог и поруке са старог Android уређаја.</string>
-    <!-- Row title for logging in without transfer -->
-    <string name="MoreTransferOrRestoreOptionsSheet__log_in_without_transferring">Пријави се без преноса података</string>
-    <!-- Row description for logging in without transfer -->
-    <string name="MoreTransferOrRestoreOptionsSheet__continue_without_transferring">Наставите без преноса порука и медија</string>
-    <!-- Row title for restoring from local backup -->
-    <string name="MoreTransferOrRestoreOptionsSheet__restore_local_backup">Врати локалну резервну копију</string>
-    <!-- Row description for restoring from local backup -->
-    <string name="MoreTransferOrRestoreOptionsSheet__restore_your_messages">Вратите поруке из фајла резервне копије који сте сачували на свом уређају.</string>
-
     <!-- RemoteRestoreActivity -->
     <!-- Progress dialog label when downloading a backup -->
     <string name="RemoteRestoreActivity__downloading_backup">Преузимање резервне копије…</string>
@@ -1318,12 +1355,16 @@
     <string name="RemoteRestoreActivity__all_of_your_messages">све ваше поруке</string>
     <!-- Screen title for restoring from backup -->
     <string name="RemoteRestoreActivity__restore_from_backup">Враћање садржаја из резервне копије</string>
-    <!-- Notice about what media will be included in backups. Placeholder is days, and is curerntly fixed at 30. -->
+    <!-- Notice about what media will be included in backups. Placeholder is days, and is currently fixed at 30. -->
     <string name="RemoteRestoreActivity__only_media_sent_or_received">Укључени су само медији послати или примљени у последњих %1$d дана.</string>
     <!-- Section title for explaining what your backup includes -->
     <string name="RemoteRestoreActivity__your_backup_includes">Резервна копија обухвата:</string>
     <!-- Primary action button copy for starting restoration -->
     <string name="RemoteRestoreActivity__restore_backup">Врати резервну копију</string>
+    <!-- Displayed at restore time to tell the user when their last backup was made. %$1s is replaced with the date (e.g. March 5, 2024) and %$2s is replaced with the time (e.g. 9:00am) -->
+    <string name="RemoteRestoreActivity__backup_created_at">Последња резервна копија направљена је %1$s у %2$s.</string>
+    <!-- Progress dialog label while fetching backup info if we don\'t already have it -->
+    <string name="RemoteRestoreActivity__fetching_backup_details">Преузимамо детаље о резервној копији…</string>
 
     <!-- GroupMentionSettingDialog -->
     <string name="GroupMentionSettingDialog_notify_me_for_mentions">Обавести ме за помињања</string>
@@ -1400,7 +1441,7 @@
     <string name="ShareableGroupLinkDialogFragment__group_link">Линк за групу</string>
     <string name="ShareableGroupLinkDialogFragment__share">Поделите</string>
     <string name="ShareableGroupLinkDialogFragment__reset_link">Ресетуj линк</string>
-    <string name="ShareableGroupLinkDialogFragment__approve_new_members">Одобрите нове чланове</string>
+    <string name="ShareableGroupLinkDialogFragment__require_admin_approval">Обавезно одобрење администратора</string>
     <string name="ShareableGroupLinkDialogFragment__require_an_admin_to_approve_new_members_joining_via_the_group_link">Обавезно је да администратор групе одобри нове чланове који се придружују групи преко линка за групу.</string>
     <string name="ShareableGroupLinkDialogFragment__are_you_sure_you_want_to_reset_the_group_link">Желите ли сигурно да ресетујете линк за групу? Људи више неће моћи да се придруже групи преко тренутног линка.</string>
 
@@ -1499,6 +1540,7 @@
         <item quantity="other">Желите ли да пошаљете позивнице (%1$d) SMS-ом?</item>
     </plurals>
     <string name="InviteActivity_lets_switch_to_signal">Хајде да пређемо на Signal: %1$s</string>
+    <!-- Toast shown when Signal is unable to find an external app to share the Invite text string to -->
     <string name="InviteActivity_no_app_to_share_to">Изгледа да немате ниједну апликацију на коју бисте могли да поделите.</string>
 
     <!-- LearnMoreTextView -->
@@ -1923,6 +1965,7 @@
     <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_wont_receive_any_messages_until_you_unblock_them">Желите ли да дозволите да вам %1$s шаље поруке и види ваше име и слику? Нећете примати поруке док не одблокирате овог корисника.</string>
     <!-- Shown in message request flow. Describes what will happen if you unblock an SMS user -->
     <string name="MessageRequestBottomView_do_you_want_to_let_s_message_you_wont_receive_any_messages_until_you_unblock_them_SMS">Желите ли да дозволите да вам %1$s пише? Нећете примати поруке док не одблокирате овог корисника.</string>
+    <!-- Shown in message request flow. Describes what will happen if you unblock the Signal release notes channel -->
     <string name="MessageRequestBottomView_get_updates_and_news_from_s_you_wont_receive_any_updates_until_you_unblock_them">Желите ли да вам %1$s шаље новости? Нећете примати новости док не одблокирате овог корисника.</string>
     <string name="MessageRequestBottomView_continue_your_conversation_with_this_group_and_share_your_name_and_photo">Желите ли да наставите са ћаскањем у овој групи и да са њеним члановима поделите своје име и слику?</string>
     <string name="MessageRequestBottomView_upgrade_this_group_to_activate_new_features">Ова стара група се више не може користити. Креирајте нову групу да бисте активирали нове функционалности као што су @помињања и администратори.</string>
@@ -1951,6 +1994,7 @@
         <item quantity="one">Позвана је још %1$d особа</item>
         <item quantity="other">Позвано је још њих %1$d</item>
     </plurals>
+    <!-- Describe the total number of groups, besides two groups, that you and a person have in common. Nested inside MessageRequestProfileView_member_of_many_groups -->
     <plurals name="MessageRequestProfileView_member_of_d_additional_groups">
         <item quantity="one">Додатних група: %1$d</item>
         <item quantity="other">Додатних група: %1$d</item>
@@ -1977,6 +2021,7 @@
     <string name="DeviceProvisioningActivity_content_progress_no_device">Није пронађен ниједан уређај.</string>
     <string name="DeviceProvisioningActivity_content_progress_network_error">Дошло је до грешке са мрежом.</string>
     <string name="DeviceProvisioningActivity_content_progress_key_error">QR код је неважећи.</string>
+    <!-- Toast message shown when a user has too many linked devices and needs to remove one before linking another -->
     <string name="DeviceProvisioningActivity_sorry_you_have_too_many_devices_linked_already">Већ сте повезали превише уређаја. Пробајте да уклоните неке од њих</string>
     <string name="DeviceActivity_sorry_this_is_not_a_valid_device_link_qr_code">Нажалост, ово није важећи QR код за повезивање уређаја.</string>
     <string name="DeviceProvisioningActivity_link_a_signal_device">Желите ли да повежете уређај на ком је инсталиран Signal?</string>
@@ -1999,11 +2044,13 @@
     <string name="PassphrasePromptActivity_ok_button_content_description">Пошаљи приступну фразу</string>
     <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Приступна фраза је неважећа!</string>
     <string name="PassphrasePromptActivity_unlock_signal">Откључај Signal</string>
+    <!-- This is the subject line for the email that is sent to support -->
     <string name="PassphrasePromptActivity_signal_android_lock_screen">Signal Android – закључани екран</string>
 
     <!-- PlacePickerActivity -->
     <string name="PlacePickerActivity_title">Мапа</string>
 
+    <!-- Content description of the pin image -->
     <string name="PlacePickerActivity_drop_pin">Спусти чиоду</string>
     <string name="PlacePickerActivity_accept_address">Прихвати адресу</string>
 
@@ -2097,6 +2144,16 @@
     <!-- Valentine\'s Day Megaphone -->
     <!-- Title text for the Valentine\'s Day donation megaphone. The placeholder will always be a heart emoji. Needs to be a placeholder for Android reasons. -->
     <!-- Body text for the Valentine\'s Day donation megaphone. -->
+
+    <!-- CallScreenTopBar -->
+    <!-- Content description for navigation icon -->
+    <string name="CallScreenTopBar__go_back">Иди назад</string>
+    <!-- Content description for info icon -->
+    <string name="CallScreenTopBar__call_information">Информације о позиву</string>
+
+    <!-- CallScreenPreJoinOverlay -->
+    <!-- Displayed when users camera is disabled -->
+    <string name="CallScreenPreJoinOverlay__your_camera_is_off">Камера је искључена</string>
 
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Додирните овде да укључите камеру</string>
@@ -2227,6 +2284,7 @@
 
     <string name="WebRtcCallView__no_one_else_is_here">Нема никога више овде</string>
     <string name="WebRtcCallView__s_is_in_this_call">%1$s је у овом позиву</string>
+    <!-- Description of who is in the call when it is only you, %1$s is replaced with either CallParticipant__you or CallParticipant__you_on_another_device -->
     <string name="WebRtcCallView__s_are_in_this_call">%1$s су у овом позиву</string>
     <string name="WebRtcCallView__s_and_s_are_in_this_call">%1$s и %2$s су у овом позиву</string>
 
@@ -2247,6 +2305,8 @@
     <string name="WebRtcCallView__additional_actions">Додатне радње</string>
     <!-- Content description for end-call button -->
     <string name="WebRtcCallView__end_call">Прекини позив</string>
+    <!-- Content description for toggling group ring state -->
+    <string name="WebRtcCallView__toggle_group_ringing">Укључи/искључи звоњаву за групу</string>
 
     <!-- Error message when the developer added a button in the wrong place. -->
     <string name="WebRtcAudioOutputToggleButton_fragment_activity_error">Десила се грешка у корсничком интерфејсу. Молимо да пријавите ову грешку програмерима.</string>
@@ -2494,6 +2554,7 @@
     <string name="SharedContactView_message">Signal порука</string>
 
     <!-- SignalBottomActionBar -->
+    <!-- Text to describe a button that will show more options -->
     <string name="SignalBottomActionBar_more">Више</string>
 
     <!-- SignalPinReminders -->
@@ -2525,6 +2586,7 @@
     <string name="StickerManagementAdapter_no_stickers_installed">Нема инсталираних налепница</string>
     <string name="StickerManagementAdapter_stickers_from_incoming_messages_will_appear_here">Налепнице из долазних порука ће бити приказане овде</string>
     <string name="StickerManagementAdapter_untitled">Без наслова</string>
+    <!-- Message shown when the author of the sticker pack is unknown -->
     <string name="StickerManagementAdapter_unknown">Непознато</string>
 
     <!-- StickerPackPreviewActivity -->
@@ -2627,6 +2689,7 @@
     <string name="ApkUpdateNotifications_failed_general_body">Пробаћемо поново касније.</string>
     <string name="ApkUpdateNotifications_auto_update_success_title">Signal је ажуриран</string>
     <string name="ApkUpdateNotifications_auto_update_success_body">Апликација је аутоматски ажурирана на верзију %1$s.</string>
+    <string name="ApkUpdateNotifications_manual_update_success_body">Апликација је ажурирана на верзију %1$s.</string>
 
     <!-- UntrustedSendDialog -->
     <string name="UntrustedSendDialog_send_message">Желите ли да пошаљете поруку?</string>
@@ -2745,6 +2808,7 @@
     <string name="MediaPreviewActivity_media_no_longer_available">Медиј више није доступан.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">Није могуће пустити медиј.</string>
+    <!-- Toast shown when there is an error finding a media-based message -->
     <string name="MediaPreviewActivity_error_finding_message">Грешка приликом тражења поруке.</string>
     <string name="MediaPreviewActivity_cant_find_an_app_able_to_share_this_media">Није пронађена апликација која може да подели овај медиј.</string>
     <string name="MediaPreviewActivity_dismiss_due_to_error">Затвори</string>
@@ -2816,6 +2880,7 @@
     <!-- Notification Channels -->
     <string name="NotificationChannel_channel_messages">Поруке</string>
     <string name="NotificationChannel_calls">Позиви</string>
+    <!-- Notification channel name for notifications involving failures of some sort (eg donations, message sends, etc.) -->
     <string name="NotificationChannel_failures">Грешке</string>
     <string name="NotificationChannel_backups">Резервне копије</string>
     <string name="NotificationChannel_locked_status">Статус закључавања</string>
@@ -2825,6 +2890,7 @@
     <string name="NotificationChannel_missing_display_name">Непознато</string>
     <string name="NotificationChannel_voice_notes">Гласовне белешке</string>
     <string name="NotificationChannel_contact_joined_signal">Контакт се придружио Signal-у</string>
+    <!-- Toast shown when there is no application available to open the settings -->
     <string name="NotificationChannels__no_activity_available_to_open_notification_channel_settings">Није доступна активност за отварање подешавања канала за обавештења.</string>
     <!-- Notification channel name for showing persistent background connection on devices without push notifications -->
     <string name="NotificationChannel_background_connection">Позадинска веза</string>
@@ -3046,6 +3112,7 @@
     <string name="conversation_activity__attachment_thumbnail">Сличица прилога</string>
     <string name="conversation_activity__quick_attachment_drawer_toggle_camera_description">Активирајте фиоку камере за брзе прилоге</string>
     <string name="conversation_activity__quick_attachment_drawer_record_and_send_audio_description">Сними и пошаљи аудио прилог</string>
+    <!-- Accessibility content description describing how a user can lock voice note recording. -->
     <string name="conversation_activity__quick_attachment_drawer_lock_record_description">Закључај снимање аудио прилога</string>
     <string name="conversation_activity__message_could_not_be_sent">Порука није послата. Проверите да ли сте повезани на интернет и пробајте поново.</string>
 
@@ -3064,6 +3131,7 @@
     <string name="conversation_item_sent__message_read">Порука је прочитана</string>
 
     <!-- conversation_item_received -->
+    <!-- Content description for profile pictures -->
     <string name="conversation_item_received__contact_photo_description">Слика контакта</string>
 
     <!-- ConversationUpdateItem -->
@@ -3148,6 +3216,7 @@
     <string name="EnableCallNotificationSettingsDialog__everything_looks_good_now">Сада све изгледа добро!</string>
     <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_show_notifications">Да бисте примали обавештења о позивима, додирните овде и укључите „Прикажи обавештења“.</string>
     <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_turn_on_notifications">Да бисте примали обавештења о позивима, додирните овде и укључите обавештења и проверите да ли су упаљени звук и искачући прозор.</string>
+    <!-- Message shown when Signal determines potential issues with getting call notifications and how to fix it -->
     <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_here_and_enable_background_activity_in_battery_settings">Да бисте примали обавештења о позивима, додирните овде и омогућите активност у позадини у подешавањима за батерију. </string>
     <string name="EnableCallNotificationSettingsDialog__settings">Подешавања</string>
     <string name="EnableCallNotificationSettingsDialog__to_receive_call_notifications_tap_settings_and_turn_on_show_notifications">Да бисте примали обавештења о позивима, додирните „Подешавања“ и укључите „Прикажи обавештења“.</string>
@@ -3382,20 +3451,22 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__emoji_1" translatable="false">emoji_1</string> -->
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__debug_info" translatable="false">https://support.signal.org/hc/articles/360007318591</string> -->
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
+    <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">Информације о подршци</string>
     <string name="HelpFragment__signal_android_support_request">Signal Android – захтев за подршку</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">Отпремање извештаја није успело</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">Будите што детаљнији како бисте нам помогли да разумемо проблем.</string>
-    <string-array name="HelpFragment__categories_5">
+    <string-array name="HelpFragment__categories_6">
         <item>Изаберите опцију</item>
         <item>Нешто не ради</item>
         <item>Захтев за функционалност</item>
         <item>Питање</item>
         <item>Коментар</item>
-        <item>Остало</item>
+        <item>Друго</item>
         <item>Плаћања (MobileCoin)</item>
         <item>Донације и значке</item>
+        <item>Резервне копије – Signal за Android</item>
     </string-array>
     <!-- Subject of email when submitting debug logs to help debug slow notifications -->
     <string name="DebugLogsPromptDialogFragment__signal_android_support_request">Слање извештаја о грешкама за Signal Android</string>
@@ -3470,6 +3541,7 @@
     <string name="preferences__retrieve_link_previews_from_websites_for_messages">Директно са веб-сајтова преузимајте приказе линкова за поруке које шаљете.</string>
     <string name="preferences__change_passphrase">Промените приступну фразу</string>
     <string name="preferences__change_your_passphrase">Промените приступну фразу</string>
+    <!-- Legacy preference menu item to enable a passphrase screen lock that is only available to those who have previously had a passphrase -->
     <string name="preferences__enable_passphrase">Укључи приступну фразу за закључавање екрана</string>
     <string name="preferences__lock_signal_and_message_notifications_with_a_passphrase">Закључај екран и обавештења приступном фразом</string>
     <string name="preferences__screen_security">Безбедност екрана</string>
@@ -3482,6 +3554,7 @@
     <string name="preferences__pref_led_blink_title">Шаблон трептања LED светла</string>
     <string name="preferences__customize">Прилагоди</string>
     <string name="preferences__change_sound_and_vibration">Промените звук и вибрацију</string>
+    <!-- Preference menu item to control the sound of notifications -->
     <string name="preferences__sound">Звук</string>
     <string name="preferences__silent">Без звука</string>
     <string name="preferences__default">Подразумевано</string>
@@ -3603,17 +3676,19 @@
     <!-- Secondary warning dialog message about deleting all chat message history from everything everywhere including linked devices -->
     <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone_linked_device">Целокупна историја порука биће трајно уклоњена са свих уређаја. Ова радња се не може опозвати.</string>
     <string name="preferences_storage__delete_all_now">Избриши све сада</string>
+    <!-- Option for keeping messages forever when managing storage -->
     <string name="preferences_storage__forever">Заувек</string>
-    <string name="preferences_storage__one_year">1 година</string>
+    <string name="preferences_storage__one_year">1 годину</string>
     <string name="preferences_storage__six_months">6 месеци</string>
     <string name="preferences_storage__thirty_days">30 дана</string>
-    <string name="preferences_storage__none">Нема</string>
+    <!-- Option for setting no limit of the length of chat messages -->
+    <string name="preferences_storage__none">Неограничен</string>
     <plurals name="preferences_storage__s_messages_plural">
-        <item quantity="one">Порука: %1$s</item>
-        <item quantity="other">Порука: %1$s</item>
+        <item quantity="one">%1$s порука</item>
+        <item quantity="other">%1$s порука </item>
     </plurals>
 
-    <string name="preferences_storage__custom">Прилагођено</string>
+    <string name="preferences_storage__custom">Прилагођен</string>
     <string name="preferences_advanced__use_system_emoji">Користи системске емоџије</string>
     <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Преусмерава све позиве преко Signal-овог сервера да би се избегло откривање ваше IP адресе вашем контакту. Умањује квалитет позива.</string>
     <string name="preferences_advanced__always_relay_calls">Увек преусмеравај позиве</string>
@@ -3625,12 +3700,13 @@
     <string name="preferences_data_and_storage__use_less_data_for_calls">Користите мање података за позиве</string>
     <string name="preferences_data_and_storage__never">Никад</string>
     <string name="preferences_data_and_storage__wifi_and_mobile_data">WiFi и мобилни интернет</string>
-    <string name="preferences_data_and_storage__mobile_data_only">Само мобилни инттернет</string>
+    <string name="preferences_data_and_storage__mobile_data_only">Само мобилни интернет</string>
     <string name="preference_data_and_storage__using_less_data_may_improve_calls_on_bad_networks">Ако користите мање података можете побољшати позиве на лошим мрежама</string>
     <string name="preferences_notifications__in_chat_sounds">Звуци ћаскања</string>
     <string name="preferences_notifications__show">Прикажи</string>
     <string name="preferences_notifications__ringtone">Звоно</string>
     <string name="preferences_chats__message_text_size">Величина фонта поруке</string>
+    <!-- Option in settings that will provide a shortcut to notification system settings to control the priority of Signal notifications -->
     <string name="preferences_notifications__priority">Приоритет</string>
     <!-- Option in settings to trouble shoot delayed notifications -->
     <string name="preferences_notifications__troubleshoot">Решавање проблема у вези са обавештењима</string>
@@ -3859,6 +3935,7 @@
     <string name="PaymentsTransferQrScanFragment__scan_the_address_qr_code_of_the_payee">Скенирајте QR код за адресу примаоца уплате</string>
 
     <!-- CreatePaymentFragment -->
+    <!-- Button text to request the payment from a user -->
     <string name="CreatePaymentFragment__request">Захтев</string>
     <string name="CreatePaymentFragment__pay">Плати</string>
     <string name="CreatePaymentFragment__available_balance_s">Доступан износ: %1$s</string>
@@ -3990,6 +4067,7 @@
     <string name="conversation_list__you_can_only_pin_up_to_d_chats">Могуће је закачити највише %1$d ћаскања</string>
 
     <!-- conversation_list_item_view -->
+    <!-- Content description for contact avatar photo -->
     <string name="conversation_list_item_view__contact_photo_image">Слика контакта</string>
     <string name="conversation_list_item_view__archived">Архивирано</string>
 
@@ -3998,6 +4076,10 @@
     <string name="conversation_list_fragment__fab_content_description">Ново ћаскање</string>
     <string name="conversation_list_fragment__open_camera_description">Отвори камеру</string>
     <string name="conversation_list_fragment__no_chats_yet_get_started_by_messaging_a_friend">Још нема ћаскања.\nЗапочните слањем поруке пријатељу.</string>
+    <!-- Message shown when there are no chats in the chat folder to display -->
+    <string name="conversation_list_fragment__no_chats_to_display">Нема ћаскања</string>
+    <!-- Button text that will open up chat folder settings -->
+    <string name="conversation_list_fragment__folder_settings">Подешавања фолдера</string>
 
 
     <!-- conversation_secure_verified -->
@@ -4225,11 +4307,14 @@
     <string name="backup_enable_dialog__i_have_written_down_this_passphrase">Записао/ла сам ову приступну фразу. Без ње нећу моћи да вратим резервну копију.</string>
     <string name="registration_activity__restore_backup">Врати резервну копију</string>
     <string name="registration_activity__transfer_or_restore_account">Пренесите или вратите налог</string>
+    <!-- Screen title for restoring or transfering account -->
+    <string name="registration_activity__restore_or_transfer">Врати или пренеси</string>
     <string name="registration_activity__transfer_account">Пренесите налог</string>
     <string name="registration_activity__skip">Прескочи</string>
     <string name="preferences_chats__chat_backups">Резерве ћаскања</string>
     <string name="preferences_chats__transfer_account">Пренесите налог</string>
     <string name="preferences_chats__transfer_account_to_a_new_android_device">Пренесите налог на нови Android уређај</string>
+    <!-- Title for dialog to enter in the backup passphrase -->
     <string name="RegistrationActivity_enter_backup_passphrase">Унесите приступну фразу за резервне копије</string>
     <string name="RegistrationActivity_restore">Врати</string>
     <string name="RegistrationActivity_backup_failure_downgrade">Није могуће увести резервну копију из новије верзије.</string>
@@ -4437,6 +4522,7 @@
 
     <!-- DeviceTransferSetupFragment -->
     <string name="DeviceTransferSetup__unable_to_open_wifi_settings">Отварање подешавања Wi-Fi мреже није успело. Упалите Wi-Fi ручно.</string>
+    <!-- Message on button that will prompt for location permissions in order to complete a device transfer -->
     <string name="DeviceTransferSetup__grant_location_permission">Одобрите дозволу за приступ локацији</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Укључите локацију</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Укључите Wi-Fi</string>
@@ -4690,6 +4776,7 @@
 
     <!-- ShareActivity -->
     <string name="ShareActivity__share">Поделите</string>
+    <!-- Label to describe circular spinner button -->
     <string name="ShareActivity__send">Пошаљи</string>
     <string name="ShareActivity__comma_s">, %1$s</string>
     <!-- Toast when the incoming intent is invalid -->
@@ -4876,6 +4963,11 @@
     <string name="QualitySelectorBottomSheetDialog__media_quality">Квалитет медија</string>
 
     <!-- AppSettingsFragment -->
+    <!-- String alerting user that something is wrong with their backups subscription -->
+    <string name="AppSettingsFragment__renew_your_signal_backups_subscription">Обновите претплату на резервне копије на Signal-у</string>
+    <!-- String alerting user that backup failed -->
+    <string name="AppSettingsFragment__couldnt_complete_backup">Прављење резервне копије није успело</string>
+    <!-- String displayed telling user to invite their friends to Signal -->
     <string name="AppSettingsFragment__invite_your_friends">Позовите пријатеље</string>
     <!-- String displayed in a toast when we successfully copy the donations subscriber id to the clipboard -->
     <string name="AppSettingsFragment__copied_donor_subscriber_id_to_clipboard">Копиран је идентификациони број претплатника донатора</string>
@@ -4993,6 +5085,130 @@
     <!-- ChatsSettingsFragment -->
     <string name="ChatsSettingsFragment__keyboard">Тастатура</string>
     <string name="ChatsSettingsFragment__send_with_enter">Шаљи помоћу тастера за нови ред</string>
+    <!-- Heading within chats settings for chat folders -->
+    <string name="ChatsSettingsFragment__chat_folders">Фолдери за ћаскања</string>
+    <!-- Option within settings to add a new chat folder if you have never created a folder before -->
+    <string name="ChatsSettingsFragment__add_chat_folder">Додај фолдер за ћаскања</string>
+    <!-- Option within settings to add or edit chat folders that is shown when you have already created folders -->
+    <string name="ChatsSettingsFragment__add_edit_chat_folder">Додајте или измените фолдере</string>
+    <!-- Text describing the number of folders you have -->
+    <plurals name="ChatsSettingsFragment__d_folder">
+        <item quantity="one">%1$d фолдер</item>
+        <item quantity="other">%1$d фолдер(а)</item>
+    </plurals>
+
+    <!-- ChatFoldersEducationSheet -->
+    <!-- Text in a bottom sheet describing chat folders and what they can be created for -->
+    <string name="ChatFoldersEducationSheet__create_folders_for_family">Креирајте фолдере за породицу, пријатеље, посао и друго</string>
+    <!-- Text in a bottom sheet explaining how chat folders can be configured to only show unread chats  -->
+    <string name="ChatFoldersEducationSheet__choose_to_show_unread">Изаберите да се приказују само непрочитана ћаскања </string>
+    <!-- Text in a bottom sheet stating that suggested folders can be easily created -->
+    <string name="ChatFoldersEducationSheet__easily_add_suggested">Лако додајте предложене фолдере</string>
+    <!-- Button text to dismiss bottom sheet -->
+    <string name="ChatFoldersEducationSheet__continue">Настави</string>
+
+    <!-- ChatFoldersFragment -->
+    <!-- Description of what chat folders are -->
+    <string name="ChatFoldersFragment__organize_your_chats">Организујте ћаскања по фолдерима и брзо се пребацујте између њих на листи ћаскања.</string>
+    <!-- Header for section showing current chat folders -->
+    <string name="ChatFoldersFragment__folders">Фолдери</string>
+    <!-- Text next to button that allows users to create a new chat folder -->
+    <string name="ChatFoldersFragment__create_a_folder">Креирај фолдер</string>
+    <!-- Name of a chat folder that represents the folder containing all chats -->
+    <string name="ChatFoldersFragment__all_chats">Сва ћаскања</string>
+    <!-- Header for section showing suggested chat folders for users to have -->
+    <string name="ChatFoldersFragment__suggested_folders">Предложени фолдери</string>
+    <!-- Name of a chat folder that contains all chats that currently have unread messages -->
+    <string name="ChatFoldersFragment__unread">Непрочитано</string>
+    <!-- Description of the suggested unread chat folder -->
+    <string name="ChatFoldersFragment__unread_messages">Непрочитане поруке из свих ћаскања</string>
+    <!-- Name of a chat folder that contains all 1:1 (individual) chats -->
+    <string name="ChatFoldersFragment__one_on_one_chats">Ћаскања 1 на 1</string>
+    <!-- Description of the suggested 1:1 chat folder -->
+    <string name="ChatFoldersFragment__only_direct_messages">Само поруке из директних ћаскања</string>
+    <!-- Name of a chat folder that contains all groups chats -->
+    <string name="ChatFoldersFragment__groups">Групе</string>
+    <!-- Description of the suggested group chat folder -->
+    <string name="ChatFoldersFragment__only_group_messages">Само поруке из групних ћаскања</string>
+    <!-- Button text to add a suggested folder to a user\'s chat folders -->
+    <string name="ChatFoldersFragment__add">Додај</string>
+    <!-- Toast shown when a folder gets added where %s is the name of the folder -->
+    <string name="ChatFoldersFragment__folder_added">Додат је фолдер %1$s.</string>
+    <!-- Option in context menu to edit the folder -->
+    <string name="ChatFoldersFragment__edit_folder">Измени фолдер</string>
+    <!-- Option in context menu to mute all chats in the folder -->
+    <string name="ChatFoldersFragment__mute_all">Искључи сва обавештења</string>
+    <!-- Option in context menu to unmute all chats in the folder -->
+    <string name="ChatFoldersFragment__unmute_all">Укључи сва обавештења</string>
+    <!-- Option in context menu to mark all of the chats in a folder as read -->
+    <string name="ChatFoldersFragment__mark_all_read">Означи све као прочитано</string>
+    <!-- Text describing the number of chat types in a folder -->
+    <plurals name="ChatFoldersFragment__d_chat_types">
+        <item quantity="one">Типова ћаскања: %1$d</item>
+        <item quantity="other">Типова ћаскања: %1$d</item>
+    </plurals>
+    <!-- Text describing the number of chat in a folder -->
+    <plurals name="ChatFoldersFragment__d_chats">
+        <item quantity="one">Ћаскања: %1$d</item>
+        <item quantity="other">Ћаскања: %1$d</item>
+    </plurals>
+    <!-- Text describing the number of chats that are excluded in a folder -->
+    <plurals name="ChatFoldersFragment__d_chats_excluded">
+        <item quantity="one">Изузетих ћаскања: %1$d</item>
+        <item quantity="other">Изузетих ћаскања: %1$d</item>
+    </plurals>
+    <!-- Badge shown in chat folder tab when unread count is greater than 99 -->
+    <string name="ChatFolderAdapter__99p">99+</string>
+
+    <!-- CreateFoldersFragment -->
+    <!-- Title of the screen when creating a folder, displayed in the toolbar -->
+    <string name="CreateFoldersFragment__create_a_folder">Креирај фолдер</string>
+    <!-- Hint text shown in text field to enter a name for the folder -->
+    <string name="CreateFoldersFragment__folder_name">Назив фолдера (обавезно)</string>
+    <!-- Section title representing what chats are included in the folder -->
+    <string name="CreateFoldersFragment__included_chats">Укључена ћаскања</string>
+    <!-- Text next to button that allows users to add chats to the folder    -->
+    <string name="CreateFoldersFragment__add_chats">Додај ћаскања</string>
+    <!-- Description explaining the purpose of the included chats section -->
+    <string name="CreateFoldersFragment__choose_chats_you_want">Изаберите ћаскања која желите да се појаве у овом фолдеру.</string>
+    <!-- Section title representing what chats are excluded from the folder -->
+    <string name="CreateFoldersFragment__exceptions">Изузеци</string>
+    <!-- Text next to button that allows users to exclude chats from the folder   -->
+    <string name="CreateFoldersFragment__exclude_chats">Искључи ћаскања</string>
+    <!-- Description explaining the purpose of the excluded chats section -->
+    <string name="CreateFoldersFragment__choose_chats_you_do_not_want">Изаберите ћаскања која не желите да се појаве у овом фолдеру.</string>
+    <!-- Toggle switch for folder to show unread chats -->
+    <string name="CreateFoldersFragment__only_show_unread_chats">Прикажи само непрочитана ћаскања</string>
+    <!-- Explanation of unread toggle option -->
+    <string name="CreateFoldersFragment__when_enabled_only_chats">Када је ова опција активирана, у овом фолдеру ће бити приказана само ћаскања са непрочитаним порукама.</string>
+    <!-- Toggle switch to display muted chats in chat folders -->
+    <string name="CreateFoldersFragment__include_muted_chats">Укључи ћаскања са искљученим обавештењима</string>
+    <!-- Button text to create a folder -->
+    <string name="CreateFoldersFragment__create">Креирај</string>
+    <!-- Section title shown when editing an existing folder   -->
+    <string name="CreateFoldersFragment__edit_folder">Измени фолдер</string>
+    <!-- Button text to save the changes to a folder after it has been edited -->
+    <string name="CreateFoldersFragment__save">Сачувај</string>
+    <!-- Alert dialog title shown when users are going to discard any changes made to a folder without saving -->
+    <string name="CreateFoldersFragment__discard_changes_title">Желите ли да одбаците промене?</string>
+    <!-- Alert dialog description explaining that any changes made will be discarded -->
+    <string name="CreateFoldersFragment__you_will_lose_changes">Изгубићете промене које сте направили у овом фолдеру.</string>
+    <!-- Alert dialog confirmation text to discard the changes -->
+    <string name="CreateFoldersFragment__discard">Одбаци</string>
+    <!-- Text that when pressed will delete the current folder -->
+    <string name="CreateFoldersFragment__delete_folder">Избриши фолдер</string>
+    <!-- Alert dialog title to delete the current folder -->
+    <string name="CreateFoldersFragment__delete_this_chat_folder">Желите ли да избришете овај фолдер за ћаскања?</string>
+    <!-- Option to see all of the chats if the chat list was too long and had been truncated -->
+    <string name="CreateFoldersFragment__see_all">Прикажи све</string>
+    <!-- Toast shown when trying to make a folder with no name -->
+    <string name="CreateFoldersFragment__please_enter_name">Унесите назив фолдера</string>
+
+    <!-- ChooseChatsFragment -->
+    <!-- Section title representing chat types that can be added to the folder  -->
+    <string name="ChooseChatsFragment__chat_types">Типови ћаскања</string>
+    <!-- Done button label to save selected chats to folder -->
+    <string name="ChooseChatsFragment__done">Готово</string>
 
     <!-- NotificationsSettingsFragment -->
     <string name="NotificationsSettingsFragment__messages">Поруке</string>
@@ -5077,6 +5293,7 @@
 
     <!-- DataAndStorageSettingsFragment -->
     <string name="DataAndStorageSettingsFragment__media_quality">Квалитет медија</string>
+    <!-- Category title for the quality of the media to be sent -->
     <string name="DataAndStorageSettingsFragment__sent_media_quality">Квалитет послатог медија</string>
     <string name="DataAndStorageSettingsFragment__sending_high_quality_media_will_use_more_data">Слање висококвалитетних медија ће користити више података.</string>
     <!-- Setting option that can be selected to default media to be sent as high quality by default -->
@@ -5355,6 +5572,7 @@
     <!-- Positive dialog action when sending a story via an add to group story button -->
     <string name="MediaReviewFragment__add_to_story">Додај садржај у причу</string>
     <string name="MediaReviewFragment__add_a_message">Напишите поруку</string>
+    <!-- Hint text inside of a compose box that is shown when the user is adding media while quoting a message. -->
     <string name="MediaReviewFragment__add_a_reply">Напишите одговор</string>
     <string name="MediaReviewFragment__send_to">Пошаљи кориснику</string>
     <string name="MediaReviewFragment__view_once_message">Једнократни медиј</string>
@@ -5575,6 +5793,10 @@
     <string name="InAppPaymentInProgressFragment__processing_donation">Обрађујемо донацију…</string>
     <string name="InAppPaymentInProgressFragment__processing_payment">Обрађивање уплате…</string>
 
+    <!--InAppDonations -->
+    <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">Периодично %1$d</string>
+
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
     <string name="InAppPaymentErrors__error_processing_payment">Грешка при обради претплате</string>
@@ -5600,6 +5822,10 @@
     <string name="DonationsErrors__your_payment">Нисмо успели да обрадимо вашу донацију и није вам наплаћено. Пробајте поново.</string>
     <string name="DonationsErrors__still_processing">Још увек се обрађује</string>
     <string name="DonationsErrors__couldnt_add_badge">Додавање значке није успело</string>
+    <!-- Displayed when backup credential could not be redeemed. Dialog or notification title -->
+    <string name="DonationsError__something_went_wrong">Дошло је до грешке</string>
+    <!-- Displayed when backup credential could not be redeemed. Dialog or notification body -->
+    <string name="DonationsError__your_backups_subscription_couldnt_be_displayed">Ваша претплата на резервне копије не може да се прикаже. Обратите се подршци.</string>
     <!-- Displayed when badge credential couldn\'t be verified -->
     <string name="DonationsErrors__failed_to_validate_badge">Провера значке није успела</string>
     <!-- Displayed when badge credential couldn\'t be verified -->
@@ -5879,8 +6105,6 @@
     <string name="DonationReceiptDetailsFragment__amount">Износ</string>
     <!-- Donation receipts thanks -->
     <string name="DonationReceiptDetailsFragment__thank_you_for_supporting">Хвала вам што подржавате Signal. Ваш допринос омогућава подстицање мисије развоја технологије отвореног кода за заштиту приватности која штити слободно изражавање и омогућава безбедну глобалну комуникацију милионима широм света. Ако сте резидент Сједињених Америчких Држава, сачувајте ову признаницу за своју пореску евиденцију. Signal Technology Foundation је непрофитна организација изузета од опорезивања у Сједињеним Америчким Државама према одељку 501c3 Закона о интерним приходима. Наш савезни порески број је 82–4506840.</string>
-    <!-- Donation receipt type -->
-    <string name="DonationReceiptDetailsFragment__s_dash_s">%1$s – %2$s</string>
     <!-- Donation reciepts screen empty state title -->
     <string name="DonationReceiptListFragment__no_receipts">Нема признаница</string>
 
@@ -5959,6 +6183,8 @@
         <item quantity="one">Одговора: %1$d</item>
         <item quantity="other">Одговора: %1$d</item>
     </plurals>
+    <!-- Toast / Snackbar label when unhiding a story during viewer -->
+    <string name="StoryViewerPageFragment__story_no_longer_hidden">Прича више није скривена</string>
     <!-- Label on group stories to add a story -->
     <string name="StoryViewerPageFragment__add">Додај</string>
     <!-- Used when view receipts are disabled -->
@@ -6468,7 +6694,7 @@
     <!-- Re-enable backups permission bottom sheet instruction 1 text -->
     <string name="BackupSchedulePermissionMegaphone__tap_the_go_to_settings_button_below">Додирните дугме „Иди на подешавања“ у наставку</string>
     <!-- Re-enable backups permission bottom sheet instruction 2 text -->
-    <string name="BackupSchedulePermissionMegaphone__turn_on_allow_settings_alarms_and_reminders">Активирајте „Дозволи подешавања за обавештења и подсетнике.“</string>
+    <string name="BackupSchedulePermissionMegaphone__turn_on_allow_settings_alarms_and_reminders">Активирајте „Дозволи подешавање обавештења и подсетника.“</string>
     <!-- Re-enable backups permission bottom sheet call to action button to open settings -->
     <string name="BackupSchedulePermissionMegaphone__go_to_settings">Idite na podešavanja</string>
 
@@ -6926,7 +7152,7 @@
     <!-- Option to open a full screen dialog to edit a call name -->
     <string name="CreateCallLinkBottomSheetDialogFragment__edit_call_name">Измените назив позива</string>
     <!-- Toggle to require approval for all members before joining -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__approve_all_members">Обавезно одобрење за све чланове</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">Обавезно одобрење администратора</string>
     <!-- Row label to share the link via Signal -->
     <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Подели линк преко Signal-а</string>
     <!-- Row label to copy the link to the clipboard -->
@@ -6982,17 +7208,19 @@
     <!-- Displayed in a text row, allowing the user to click and add a call name -->
     <string name="CallLinkDetailsFragment__add_call_name">Унесите назив позива</string>
     <!-- Displayed in a toggle row, allowing the user to click to enable or disable member approval -->
-    <string name="CallLinkDetailsFragment__approve_all_members">Обавезно одобрење за све чланове</string>
+    <string name="CallLinkDetailsFragment__require_admin_approval">Обавезно одобрење администратора</string>
     <!-- Displayed in a text row, allowing the user to share the call link -->
     <string name="CallLinkDetailsFragment__share_link">Подели линк</string>
     <!-- Displayed in a text row, allowing the user to delete the call link -->
     <string name="CallLinkDetailsFragment__delete_call_link">Избриши линк за позив</string>
     <!-- Displayed whenever a name change, revocation, etc, fails. -->
     <string name="CallLinkDetailsFragment__couldnt_save_changes">Нисмо успели да сачувамо промене. Проверите да ли сте повезани на мрежу и пробајте поново.</string>
+    <!-- Displayed when the call link is in use when the user tries to delete it -->
+    <string name="CallLinkDetailsFragment__couldnt_delete_call_link">Нисмо успели да избришемо линк за позив јер се тренутно користи.</string>
     <!-- Displayed as title in dialog when user attempts to delete the link -->
     <string name="CallLinkDetailsFragment__delete_link">Желите ли да избришете линк?</string>
     <!-- Displayed as body in dialog when user attempts to delete the link -->
-    <string name="CallLinkDetailsFragment__this_link_will_no_longer_work">Овај линк више неће радити ни за кога ко га има.</string>
+    <string name="CallLinkDetailsFragment__this_link_will_no_longer_work">Овај линк више неће радити никоме ко га има.</string>
 
     <!-- Button label for the link button in the username link settings -->
     <string name="UsernameLinkSettings_link_button_label">Линк</string>
@@ -7194,11 +7422,11 @@
 
     <!-- BackupAlertBottomSheet -->
     <!-- Sheet title when media backups have been disabled -->
-    <string name="BackupAlertBottomSheet__media_backups_are_off">Прављење резервних копија медија је искључено</string>
+    <string name="BackupAlertBottomSheet__your_backups_subscription_expired">Ваша претплата на резервне копије је истекла</string>
     <!-- Sheet body part 1 when media backups have been disabled. Placeholder is the number of days until deletion. -->
-    <plurals name="BackupAlertBottomSheet__your_signal_media_backup_plan">
-        <item quantity="one">Ваш резервни пакет за медије у Signal-у је отказан јер нисмо могли да обрадимо вашу уплату. Имате %1$d дан да преузмете све медије сачуване у вашој резервној копији. Након %1$d дана, медији у вашој резервној копији ће бити избрисани.</item>
-        <item quantity="other">Ваш резервни пакет за медије у Signal-у је отказан јер нисмо могли да обрадимо вашу уплату. Имате %1$d дан(а) да преузмете све медије сачуване у вашој резервној копији. Након %1$d дана, медији у вашој резервној копији ће бити избрисани.</item>
+    <plurals name="BackupAlertBottomSheet__your_backup_plan_has_expired">
+        <item quantity="one">Ваш пакет за резервне копије је истекао јер се не може обновити са тренутним начином плаћања. Након %1$d дана, медији у резервној копији ће бити избрисани.</item>
+        <item quantity="other">Ваш пакет за резервне копије је истекао јер се не може обновити са тренутним начином плаћања. Након %1$d дана, медији у резервној копији ће бити избрисани.</item>
     </plurals>
     <!-- Sheet body part 2 when media backups have been disabled. -->
     <string name="BackupAlertBottomSheet__you_can_begin_paying_for_backups_again">Можете поново да почнете да плаћате резервне копије у било ком тренутку да бисте наставили са прављењем резервних копија свих својих медија. </string>
@@ -7206,19 +7434,16 @@
     <string name="BackupAlertBottomSheet__your_media_will_be_deleted_today">Ваши медији ће бити избрисани данас</string>
     <!-- Sheet body part 1 when user\'s media will be deleted today -->
     <string name="BackupAlertBottomSheet__your_signal_media_backup_plan_has_been">Ваш резервни пакет за медије у Signal-у је отказан јер нисмо могли да обрадимо вашу уплату. Ово вам је последња прилика да преузмете медије у вашој резервној копији пре него што буду избрисани.</string>
-    <!-- Sheet title when user does not have enough space to download their backup -->
-    <string name="BackupAlertBottomSheet__cant_complete_download">Није могуће завршити преузимање</string>
+    <!-- Sheet title when user does not have enough space to download their backup. Placeholder is formatted byte size, for example 12GB. -->
+    <string name="BackupAlertBottomSheet__free_up_s_on_this_device">Ослободите %1$s на овом уређају</string>
     <!-- Sheet body part 1 when user does not have enough space to download their backup. Placeholder is the amount of space needed. -->
-    <string name="BackupAlertBottomSheet__your_device_does_not_have_enough_free_space">На уређају нема довољно слободног простора. Да преузмете медије сачуване у резервној копији ослободите %1$s простора.</string>
-    <!-- Sheet body part 2 when user does not have enough space to download their backup. Placeholder is the number of days until deletion -->
-    <plurals name="BackupAlertBottomSheet__if_you_choose_skip">
-        <item quantity="one">Ако изаберете „Прескочи“, медији у вашој резервној копији ће бити избрисани за %1$d дан.</item>
-        <item quantity="other">Ако изаберете „Прескочи“, медији у вашој резервној копији ће бити избрисани за %1$d дан(а).</item>
-    </plurals>
+    <string name="BackupAlertBottomSheet__to_finish_downloading_your_signal_backup">Да би креирање резервних копија на Signal-у могло да се заврши, потребно је %1$s слободног меморијског простора на вашем уређају.</string>
+    <!-- Sheet body part 2 when user does not have enough space to download their backup. -->
+    <string name="BackupAlertBottomSheet__to_free_up_space_offload">Да бисте ослободили простор, деинсталирајте или избришете апликације које не користите или садржај који заузима пуно простора.</string>
     <!-- Sheet title when user payment failed to process -->
-    <string name="BackupAlertBottomSheet__cant_process_backup_payment">Нисмо успели да обрадимо уплату за резервну копију</string>
+    <string name="BackupAlertBottomSheet__your_backups_subscription_failed_to_renew">Ваша претплата на резервне копије није обновљена</string>
     <!-- Sheet body when user payment failed to process -->
-    <string name="BackupAlertBottomSheet__were_having_trouble_collecting__google_pay">Нисмо успели да преузмемо вашу месечну уплату за резервне копије. Проверите да ли је ваш начин плаћања ажуран. Ако није, ажурирајте га у Google Pay-у. Signal ће поново покушати да обради уплату за неколико дана.</string>
+    <string name="BackupAlertBottomSheet__check_to_make_sure_your_payment_method">Проверите да ли је ваш начин плаћања ажуриран. Додирните „Управљање претплатом“ и под „Начини плаћања“ додирните „Ажурирај“.</string>
     <!-- Sheet title for generic backup error -->
     <string name="BackupAlertBottomSheet__couldnt_complete_backup">Прављење резервне копије није успело</string>
     <!-- Sheet body for generic backup error. Placeholder is days since last backup. -->
@@ -7226,13 +7451,23 @@
     <!-- Clickable text to learn more about the content of this bottom sheet -->
     <string name="BackupAlertBottomSheet__learn_more">Сазнајте више</string>
     <!-- Secondary action button text when user does not have enough free space to download their backup. -->
-    <string name="BackupAlertBottomSheet__skip">Прескочи</string>
+    <string name="BackupAlertBottomSheet__skip_restore">Прескочи враћање</string>
+    <!-- Primary action button to start backup immediately -->
+    <string name="BackupAlertBottomSheet__back_up_now">Направи резервну копију</string>
+    <!-- Primary action button when user doesn\'t have enough space -->
+    <string name="BackupAlertBottomSheet__got_it">Разумем</string>
+    <!-- Primary action button to manage subscription in Google Play -->
+    <string name="BackupAlertBottomSheet__manage_subscription">Управљање претплатом</string>
+    <!-- Primary action button text prompting user to subscriber. Placeholder is formatted price -->
+    <string name="BackupAlertBottomSheet__subscribe_for_s_month">Претплатите се за %1$s месечно</string>
     <!-- Primary action button text prompting user to download their media -->
     <string name="BackupAlertBottomSheet__download_media_now">Преузми медије</string>
-    <!-- Secondary action button text to dismiss sheet, noting the user can download later -->
-    <string name="BackupAlertBottomSheet__download_later">Преузми касније</string>
     <!-- Secondary action button text to dismiss sheet, skipping media download -->
     <string name="BackupAlertBottomSheet__dont_download_media">Не преузимај медије</string>
+    <!-- Secondary generic action button to dismiss sheet without performing an action -->
+    <string name="BackupAlertBottomSheet__not_now">Не сада</string>
+    <!-- Secondary action button to dismiss could not complete backup sheet -->
+    <string name="BackupAlertBottomSheet__try_later">Пробајте поново</string>
     <!-- Dialog title for last chance to download backup -->
     <string name="BackupAlertBottomSheet__media_will_be_deleted">Медији ће бити избрисани</string>
     <!-- Dialog message for last chance to download backup -->
@@ -7241,12 +7476,49 @@
     <string name="BackupAlertBottomSheet__download">Преузми</string>
     <!-- Dialog action to not download now -->
     <string name="BackupAlertBottomSheet__dont_download">Не преузимај</string>
+    <!-- Dialog action to skip media download -->
+    <string name="BackupAlertBottomSheet__skip">Прескочи</string>
+    <!-- Dialog title for skipping media restore -->
+    <string name="BackupAlertBottomSheet__skip_restore_question">Желите ли да прескочите враћање?</string>
+    <!-- Dialog text for skipping media restore -->
+    <string name="BackupAlertBottomSheet__if_you_skip_restore_the">Ако прескочите враћање преосталих медија и прилога у резервној копији, можете их преузети касније када меморијски простор постане доступан.</string>
 
     <!-- BackupStatus -->
     <!-- Status title when user does not have enough free space to download their media. Placeholder is required disk space. -->
-    <string name="BackupStatus__free_up_s_of_space_to_download_your_media">За преузимање медија ослободите %1$s простора.</string>
+    <string name="BackupStatus__free_up_s_of_space_to_download_your_media">Ослободите %1$s меморијског простора да бисте вратили медије.</string>
+    <!-- Status title for banner when user is actively restoring media from a backup -->
+    <string name="BackupStatus__restoring_media">Враћање медија</string>
+    <!-- Status title for banner when user has paused restore media from a backup -->
+    <string name="BackupStatus__restore_paused">Враћање је паузирано</string>
+    <!-- Status title for banner when user has completed restoring restore media from a backup -->
+    <string name="BackupStatus__restore_complete">Враћање је завршено</string>
+    <!-- Status action label for seeing more details about storage space -->
+    <string name="BackupStatus__details">Опширније</string>
+
+    <!-- Status subtitle for banner when restoring media pauses for Wi-Fi -->
+    <string name="BackupStatus__status_waiting_for_wifi">Чекамо Wi-Fi…</string>
+    <!-- Status subtitle for banner when restoring media pauses for internet in general -->
+    <string name="BackupStatus__status_no_internet">Нема интернета…</string>
+    <!-- Status subtitle for banner when restoring media pauses for low battery -->
+    <string name="BackupStatus__status_device_has_low_battery">Батерија уређаја је скоро празна</string>
+    <!-- Status subtitle for banner when restoring media. Placeholders are size already restored and total size to restore. e.g., 4.5MB of 100MB -->
+    <string name="BackupStatus__status_size_of_size">%1$s од %2$s</string>
+
+    <!-- BackupStatusRow -->
+    <!-- Content description for x icon at the end of the linear progress indicator -->
+    <string name="BackupStatusRow__cancel_download">Откажи преузимање</string>
+    <!-- Backup progress. Placeholders are size restored, size to restore, and percent, i.e. 50MB of 100MB (50%) -->
+    <string name="BackupStatusRow__downloading_s_of_s_s">Преузима се: %1$s од %2$s (%3$s%%)</string>
+    <!-- Notice that there is not enough free space to continue restore. Placeholder is required space, for example 1.6GB -->
+    <string name="BackupStatusRow__not_enough_space">Нема довољно простора за преузимање резервне копије. Да бисте наставили, ослободите %1$s простора.</string>
+    <!-- Text row label to skip download -->
+    <string name="BackupStatusRow__skip_download">Прескочи преузимање</string>
+    <!-- Text displayed when a backup could not be completed -->
+    <string name="BackupStatusRow__your_last_backup">"Последње креирање резервне копије није успело. Проверите да ли вам је телефон повезан на Wi-Fi, а затим додирните „Направи резервну копију“ да пробате поново."</string>
 
     <!-- BackupsTypeSettingsFragment -->
+    <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__google_play">Google Play</string>
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
     <string name="BackupsTypeSettingsFragment__credit_or_debit_card">Кредитна или дебитна картица</string>
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
@@ -7265,10 +7537,6 @@
     <string name="BackupsTypeSettingsFragment__s_month_renews_s">%1$s/месечно · Обнова %2$s</string>
     <!-- Row title to change or cancel subscription -->
     <string name="BackupsTypeSettingsFragment__change_or_cancel_subscription">Промените или откажите претплату</string>
-
-    <!-- RemoteRestoreActivity -->
-    <!-- Displayed at restore time to tell the user when their last backup was made. %$1s is replaced with the date (e.g. March 5, 2024) and %$2s is replaced with the time (e.g. 9:00am) -->
-    <string name="RemoteRestoreActivity__backup_created_at">Последња резервна копија направљена је %1$s у %2$s.</string>
 
     <!-- ManageStorageSettingsFragment -->
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -7289,14 +7557,37 @@
     <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Оптимизуј чување на уређају</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Неискоришћени медији ће бити уклоњени, али се могу преузети из резервне копије у било ком тренутку.</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Оптимизација меморијског простора се може користити само ако имате плаћени пакет резервних копија Signal-а. Ваша претплата на резервне копије се још увек обрађује и још није активна. Пробајте поново касније.</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Надоградите се да бисте активирали ову функционалност</string>
     <!-- Subtitle of bottom sheet detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__storage_optimization_can_only_be_used">Оптимизација меморијског простора се може користити само ако имате плаћени пакет резервних копија на Signal-у. Надоградите пакет резервних копија да бисте могли да користите ову функционалност.</string>
-    <!-- Primary action to launch upgrade flow -->
-    <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_now">Надоградите сада</string>
+    <!-- Primary action to launch upgrade flow. Placeholder is formatted price. -->
+    <string name="UpgradeToEnableOptimizedStorageSheet__subscribe_for_s_month">Претплатите се за %1$s месечно</string>
+
+    <!-- UpgradeToStartMediaBackupSheet -->
+    <!-- Title on a bottom sheet, detailing that in order to start backing up media, they need to upgrade to paid backup storage -->
+    <string name="UpgradeToStartMediaBackupSheet__this_media_is_no_longer_available">Овај медиј више није доступан</string>
+    <!-- Subtitle of bottom sheet detailing that with their current plan, there is a limitation to how many days media is stored for. Placeholder is number of days. -->
+    <plurals name="UpgradeToStartMediaBackupSheet__your_current_signal_backup_plan_includes">
+        <item quantity="one">Ваш тренутни пакет за резервне копије на Signal-у обухвата најскорији период од %1$d дана медија. Да бисте започели креирање резервних копија свих медија, надоградите се сада.</item>
+        <item quantity="other">Ваш тренутни пакет за резервне копије на Signal-у обухвата најскорији период од %1$d дана медија. Да бисте започели креирање резервних копија свих медија, надоградите се сада.</item>
+    </plurals>
+    <!-- Primary action to launch upgrade flow. Placeholder is formatted price. -->
+    <string name="UpgradeToStartMediaBackupSheet__subscribe_for_s_month">Претплатите се за %1$s месечно</string>
+
+    <!-- MediaNoLongerAvailableSheet -->
+    <!-- Title on a bottom sheet explaining that the given media is no longer available. -->
+    <string name="MediaNoLongerAvailableSheet__this_media_is_no_longer_available">Овај медиј више није доступан</string>
+    <!-- Body on a bottom sheet explaining that the user can enable backups -->
+    <string name="MediaNoLongerAvailableSheet__to_start_backing_up_all_your_media">Да бисте могли да креирате резервне копије свих медија, омогућите резервне копије на Signal-у и изаберите плаћени пакет.</string>
+    <!-- Primary action button on bottom sheet -->
+    <string name="MediaNoLongerAvailableSheet__continue">Настави</string>
+    <!-- Secondary action button on bottom sheet -->
+    <string name="MediaNoLongerAvailableSheet__not_now">Не сада</string>
 
     <!-- Educational bottom sheet dialog title shown to notify about delete syncs causing deletes to happen across all devices -->
     <string name="DeleteSyncEducation_title">Брисање је сада синхронизовано на свим вашим уређајима</string>
@@ -7305,19 +7596,15 @@
     <!-- Educational bottom sheet confirm/dismiss button text shown to notify about delete syncs causing deletes to happen across all devices -->
     <string name="DeleteSyncEducation_acknowledge_button">У реду</string>
 
-    <!-- RemoteBackupsPaymentHistoryFragment -->
-    <!-- Title of the screen for payment history -->
-    <string name="RemoteBackupsPaymentHistoryFragment__payment_history">Историја плаћања</string>
-    <!-- Description for backup rows -->
-    <string name="RemoteBackupsPaymentHistoryFragment__text_and_all_media_backup">Резервна копија текста и осталих медија</string>
-    <!-- Title of the screen for payment details -->
-    <string name="RemoteBackupsPaymentHistoryFragment__payment_details">Подаци о плаћању</string>
-    <!-- Title of row specifying the type of backup -->
-    <string name="RemoteBackupsPaymentHistoryFragment__backup_type">Врста резервне копије</string>
-    <!-- Title of row specifying the date the backup was paid on -->
-    <string name="RemoteBackupsPaymentHistoryFragment__date_paid">Датум плаћања</string>
-    <!-- Button label to share the receipt -->
-    <string name="RemoteBackupsPaymentHistoryFragment__share">Поделите</string>
+    <!-- BackupsSettingsFragment -->
+    <!-- Subtitle for row for active backup, first placeholder is formatted amount, second is renewal date -->
+    <string name="BackupsSettingsFragment_s_month_renews_s">%1$s месечно, обнавља се %2$s</string>
+    <!-- Subtitle for row for active backup, placeholder is last date of backup -->
+    <string name="BackupsSettingsFragment_last_backup_s">Последња резервна копија: %1$s</string>
+    <!-- Subtitle for row for no backup ever created -->
+    <string name="BackupsSettingsFragment_automatic_backups_with_signals">Аутоматске резервне копије уз помоћ Signal-ове безбедне потпуно шифроване услуге складиштења</string>
+    <!-- Action button label to set up backups -->
+    <string name="BackupsSettingsFragment_set_up">Подесите</string>
 
     <!-- RemoteBackupsSettingsFragment -->
     <!-- Displayed on the title bar -->
@@ -7332,6 +7619,10 @@
     <string name="RemoteBackupsSettingsFragment__backup_frequency">Учесталост резервних копија</string>
     <!-- Toggle row label for allowing backups to occur while on cellular connection -->
     <string name="RemoteBackupsSettingsFragment__back_up_using_cellular">Резервне копије преко мобилне мреже</string>
+    <!-- Row label for viewing backup key -->
+    <string name="RemoteBackupsSettingsFragment__view_backup_key">Прикажи кључ за резервне копије</string>
+    <!-- Prompt title for unlocking device to view backup key -->
+    <string name="RemoteBackupsSettingsFragment__unlock_to_view_backup_key">Откључајте да видите кључ за резервне копије</string>
     <!-- Row label for cancelling and deleting backup -->
     <string name="RemoteBackupsSettingsFragment__turn_off_and_delete_backup">Искључи и избриши резервне копије</string>
     <!-- Snackbar text displayed when backup has been deleted and turned off -->
@@ -7344,14 +7635,40 @@
     <string name="RemoteBackupsSettingsFragment__download_complete">Преузимање је завршено</string>
     <!-- Snackbar text displayed when backup will be created overnight -->
     <string name="RemoteBackupsSettingsFragment__backup_will_be_created_overnight">Резервна копија ће бити направљена преко ноћи.</string>
+    <!-- Text displayed in card when subscription is inactive -->
+    <string name="RemoteBackupsSettingsFragment__subscription_inactive">Претплата је неактивна</string>
+    <!-- Text displayed in card when free tier is inactive -->
+    <string name="RemoteBackupsSettingsFragment__you_turned_off_backups">Искључили сте резервне копије</string>
     <!-- Title text in row detailing selected backup type -->
-    <string name="RemoteBackupsSettingsFragment__backup_type">Врста резервне копије</string>
+    <string name="RemoteBackupsSettingsFragment__backup_plan">План за резервне копије</string>
     <!-- Subtitle text in row detailing selected backup type displayed when backups are disabled -->
     <string name="RemoteBackupsSettingsFragment__backups_disabled">Резервне копије су онемогућене</string>
-    <!-- Format string for backup and cost. First placeholder is backup title, second is cost per month. -->
-    <string name="RemoteBackupsSettingsFragment__s_dot_s_per_month">%1$s · %2$s/месечно</string>
-    <!-- Button label to enable backups -->
-    <string name="RemoteBackupsSettingsFragment__enable_backups">Укључи резервне копије</string>
+    <!-- Format string for backup and cost. First placeholder is cost per month. -->
+    <string name="RemoteBackupsSettingsFragment__s_per_month">%1$s месечно</string>
+    <!-- Displayed in card at top of screen while payment processing is pending -->
+    <string name="RemoteBackupsSettingsFragment__payment_pending">Уплата је на чекању…</string>
+    <!-- Displayed in card while waiting for network -->
+    <string name="RemoteBackupsSettingsFragment__waiting_for_network">Чека се мрежа…</string>
+    <!-- String for free backups -->
+    <string name="RemoteBackupsSettingsFragment__your_backup_plan_is_free">Овај план за резервне копије је бесплатан</string>
+    <!-- Displays the date the subscription will renew. Placeholder is the date. -->
+    <string name="RemoteBackupsSettingsFragment__renews_s">Обнавља се на дан %1$s</string>
+    <!-- Displays the date the subscription will expire. Placeholder is the date. -->
+    <string name="RemoteBackupsSettingsFragment__expires_on_s">Истиче %1$s</string>
+    <!-- Displays the date the subscription expired. Placeholder is the date. -->
+    <string name="RemoteBackupsSettingsFragment__expired_on_s">Истекло је %1$s</string>
+    <!-- Displayed at the top of the screen when no backup is currently enabled -->
+    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Направите резервне копије историје порука да не бисте изгубили податке када набавите нови телефон или поново инсталирате Signal.</string>
+    <!-- Section header for other ways to back up -->
+    <string name="RemoteBackupsSettingsFragment__other_ways_to_backup">Други начини за прављење резервних копија</string>
+    <!-- Row title for performing on-device backup -->
+    <string name="RemoteBackupsSettingsFragment__on_device_backups">Резервне копије на уређају</string>
+    <!-- Row label for performing on-device backup -->
+    <string name="RemoteBackupsSettingsFragment__save_your_backups_to">Сачувајте резервне копије у фолдер на овом уређају</string>
+    <!-- Button label to manage or cancel backups -->
+    <string name="RemoteBackupsSettingsFragment__manage_or_cancel">Измени или откажи</string>
+    <!-- button label to upgrade backups -->
+    <string name="RemoteBackupsSettingsFragment__upgrade">Ажурирај</string>
     <!-- Progress indicator subtext displayed when a backup is in progress -->
     <string name="RemoteBackupsSettingsFragment__d_slash_d">%1$d/%2$d</string>
     <!-- Title text in row detailing last backup -->
@@ -7384,12 +7701,63 @@
     <string name="RemoteBackupsSettingsFragment__manually_back_up">Ручно прави резервне копије</string>
     <!-- The body of an alert dialog shown when we detect the user may be confused by the lock screen -->
     <string name="PassphrasePromptActivity_help_prompt_body">Унесите PIN, лозинку или шаблон за уређај.</string>
+    <!-- Button label to re-enable backups (launches into checkout flow) -->
+    <string name="RemoteBackupsSettingsFragment__reenable_backups">Поново омогући резервне копије</string>
+    <!-- Notice displayed when backups have been disabled and deleted -->
+    <string name="RemoteBackupsSettingsFragment__backups_have_been_turned_off">Резервне копије су искључене и ваши подаци су избрисани из Signal-овог сервиса за безбедно складиштење.</string>
+    <!-- Dialog title for dialog which alerts user their optimized media will be downloaded -->
+    <string name="RemoteBackupsSettingsFragment__downloading_your_backup">Преузимање резервне копије</string>
+    <!-- Dialog message for dialog which alerts user their optimized media will be downloaded -->
+    <string name="RemoteBackupsSettingsFragment__depending_on_the_size">У зависности од величине ваше резервне копије, преузимање може дуже потрајати. Можете нормално да користите телефон док траје преузимање.</string>
+    <!-- Displayed in card when user has a signal subscription but the device doesn\'t see a google play billing subscription. Placeholder is days until subscription expiration. -->
+    <plurals name="RemoteBackupsSettingsFragment__your_subscription_on_this_device_is_valid">
+        <item quantity="one">Ваша претплата на овом уређају важи наредни %1$d дан. Обновите претплату да бисте наставили да користите резервне копије на Signal-у</item>
+        <item quantity="other">Ваша претплата на овом уређају важи наредних %1$d дан(а). Обновите претплату да бисте наставили да користите резервне копије на Signal-у</item>
+    </plurals>
+    <!-- Button label to start subscription renewal -->
+    <string name="RemoteBackupsSettingsFragment__renew">Обновите</string>
+    <!-- Button label to learn more about why subscription disappeared -->
+    <string name="RemoteBackupsSettingsFragment__learn_more">Сазнајте више</string>
+    <!-- Displayed in row when backup is available for download and users subscription has expired. First placeholder is data size e.g. 12MB, second is days before expiration -->
+    <plurals name="RemoteBackupsSettingsFragment__you_have_s_of_backup_data">
+        <item quantity="one">Имате %1$s резервне копије података, који нису на овом уређају. Ваша резервна копија ће бити избрисана када се претплата заврши за %2$d дан.</item>
+        <item quantity="other">Имате %1$s резервне копије података, који нису на овом уређају. Ваша резервна копија ће бити избрисана када се претплата заврши за %2$d дан(а).</item>
+    </plurals>
+    <!-- Displayed in row when backup is available for download to let user start download -->
+    <string name="RemoteBackupsSettingsFragment__download">Преузми</string>
+    <!-- Dialog title for skipping download of backed up media -->
+    <string name="RemoteBackupsSettingsFragment__skip_download_question">Желите ли да прескочите преузимање?</string>
+    <!-- Dialog body for skiping download of backed up media -->
+    <plurals name="RemoteBackupsSettingsFragment__if_you_skip_downloading">
+        <item quantity="one">Ако прескочите преузимање, преостали медији и прилози у вашој резервној копији биће избрисани за %1$d дан.</item>
+        <item quantity="other">Ако прескочите преузимање, преостали медији и прилози у вашој резервној копији биће избрисани за %1$d дан(а).</item>
+    </plurals>
+    <!-- Positive dialog action to skip download -->
+    <string name="RemoteBackupsSettingsFragment__skip">Прескочи</string>
+    <!-- Dialog title for network error while trying to disable backups -->
+    <string name="RemoteBackupsSettingsFragment__couldnt_turn_off_and_delete_backups">Искључивање и брисање резервне копије није успело</string>
+    <!-- Dialog body for network error while trying to disable backups -->
+    <string name="RemoteBackupsSettingsFragment__a_network_error_occurred">Дошло је до грешке у мрежи. Проверите да ли сте повезани на интернет и пробајте поново.</string>
 
-    <!-- MessageBackupsCheckoutSheet -->
-    <!-- Sheet title. Placeholder is formatted price. -->
-    <string name="MessageBackupsCheckoutSheet__pay_s_per_month">Платите %1$s месечно Signal-у</string>
-    <!-- Sheet subtitle -->
-    <string name="MessageBackupsCheckoutSheet__youll_get">Добијате:</string>
+    <!-- SubscriptionNotFoundBottomSheet -->
+    <!-- Displayed as a bottom sheet title -->
+    <string name="SubscriptionNotFoundBottomSheet__subscription_not_found">Претплата није пронађена</string>
+    <!-- Displayed below title on bottom sheet -->
+    <string name="SubscriptionNotFoundBottomSheet__your_subscription_couldnt_be_restored">Активирање претплате није успело.</string>
+    <!-- Displayed below title on bottom sheet -->
+    <string name="SubscriptionNotFoundBottomSheet__this_could_happen_if">То се може десити из следећих разлога:</string>
+    <!-- First item in a bulleted list of reasons -->
+    <string name="SubscriptionNotFoundBottomSheet__youre_signed_into_the_play_store_with_a_different_google_account">Пријављени сте на Play продавницу преко другог налога на Google-у.</string>
+    <!-- Second item in a bulleted list of reasons -->
+    <string name="SubscriptionNotFoundBottomSheet__you_transferred_from_an_iphone">Пребацили сте се са iPhone-а.</string>
+    <!-- Third item in a bulleted list of reasons -->
+    <string name="SubscriptionNotFoundBottomSheet__your_subscription_recently_expired">Претплата вам је недавно истекла.</string>
+    <!-- Note underneath bullet points -->
+    <string name="SubscriptionNotFoundBottomSheet__if_you_have_an_active_subscription_on">Ако имате активну претплату на старом телефону, саветујемо вам да је откажете пре него што се обнови.</string>
+    <!-- Action button label to acknowledge and dismiss sheet -->
+    <string name="SubscriptionNotFoundBottomSheet__got_it">Разумем</string>
+    <!-- Action button label to contact support -->
+    <string name="SubscriptionNotFoundBottomSheet__contact_support">Обратите се подршци</string>
 
     <!-- MessageBackupsEducationScreen -->
     <!-- Screen subtitle underneath large headline title -->
@@ -7405,29 +7773,35 @@
     <!-- Action button label to learn more -->
     <string name="MessageBackupsEducationScreen__learn_more">Сазнајте више</string>
 
-    <!-- MessageBackupsPinConfirmationScreen -->
-    <!-- Screen title -->
-    <string name="MessageBackupsPinConfirmationScreen__enter_your_pin">Унесите PIN</string>
-    <!-- Screen subtitle -->
-    <string name="MessageBackupsPinConfirmationScreen__enter_your_signal_pin_to_enable_backups">Унесите Signal PIN да активирате резервне копије</string>
-    <!-- Action button to confirm pin entry and continue -->
-    <string name="MessageBackupsPinConfirmationScreen__next">Следеће</string>
-    <!-- Action button to switch keyboard type -->
-    <string name="MessageBackupsPinConfirmationScreen__switch_keyboard">Промени тастатуру</string>
-    <!-- Action button to create a new pin if we type the incorrect one -->
-    <string name="MessageBackupsPinConfirmationScreen__create_new_pin">Креирај нови PIN</string>
-
-    <!-- MessageBackupsPinEducationScreen -->
+    <!-- MessageBackupsKeyEducationScreen -->
     <!-- Screen headline -->
-    <string name="MessageBackupsPinEducationScreen__pins_protect_your_backup">PIN-ови штите вашу резервну копију</string>
-    <!-- Notice about pin length. Placeholder is recommended pin length -->
-    <string name="MessageBackupsPinEducationScreen__your_signal_pin_lets_you">Signal PIN вам омогућава да вратите резервну копију када поново инсталирате Signal. Препоручујемо да вам најмањи број цифара за PIN буде %1$d.</string>
-    <!-- Notice about changing your pin. -->
-    <string name="MessageBackupsPinEducationScreen__if_you_forget_your_pin">Ако заборавите PIN, нећете моћи да вратите резервну копију. PIN можете променити у било ком тренутку у подешавањима.</string>
-    <!-- Action button label to utilize current pin -->
-    <string name="MessageBackupsPinEducationScreen__use_current_signal_pin">Користи тренутни Signal PIN</string>
-    <!-- Action button to create a new pin -->
-    <string name="MessageBackupsPinEducationScreen__create_new_pin">Креирај нови PIN</string>
+    <string name="MessageBackupsKeyEducationScreen__your_backup_key">Ваш кључ за резервне копије</string>
+    <!-- Screen body part 1 -->
+    <string name="MessageBackupsKeyEducationScreen__your_backup_key_is_a">Кључ за резервне копије је шифра од 64 знака која вам омогућава да вратите резервну копију када поново инсталирате Signal.</string>
+    <!-- Screen body part 2 -->
+    <string name="MessageBackupsKeyEducationScreen__if_you_forget_your_key">Ако заборавите кључ, нећете моћи да вратите резервну копију. Signal вам не може помоћи да повратите резервну копију.</string>
+    <!-- Action button label -->
+    <string name="MessageBackupsKeyEducationScreen__next">Следеће</string>
+
+    <!-- MessageBackupsKeyRecordScreen -->
+    <!-- Screen headline -->
+    <string name="MessageBackupsKeyRecordScreen__record_your_backup_key">Сачувајте кључ за резервне копије</string>
+    <!-- Screen subhead -->
+    <string name="MessageBackupsKeyRecordScreen__this_key_is_required_to_recover">Овај кључ је потребан за враћање вашег налога и података. Чувајте овај кључ негде на сигурном. Ако га изгубите, нећете моћи да повратите свој налог.</string>
+    <!-- Copy to clipboard button label -->
+    <string name="MessageBackupsKeyRecordScreen__copy_to_clipboard">Копирај</string>
+    <!-- Action button label -->
+    <string name="MessageBackupsKeyRecordScreen__next">Следеће</string>
+    <!-- Bottom sheet title -->
+    <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Чувајте кључ на сигурном</string>
+    <!-- Bottom sheet subtitle -->
+    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Signal неће моћи да вам помогне да вратите резервну копију ако изгубите кључ. Чувајте га негде на сигурном и безбедном и немојте га давати другима.</string>
+    <!-- Checkbox label -->
+    <string name="MessageBackupsKeyRecordScreen__ive_recorded_my_key">Сачувао/-ла сам свој кључ</string>
+    <!-- Sheet action button label -->
+    <string name="MessageBackupsKeyRecordScreen__continue">Настави</string>
+    <!-- Sheet secondary action button label -->
+    <string name="MessageBackupsKeyRecordScreen__see_key_again">Види кључ поново</string>
 
     <!-- MessagesBackupsTypeSelectionScreen -->
     <!-- Screen headline -->
@@ -7442,6 +7816,32 @@
     <string name="MessageBackupsTypeSelectionScreen__change_backup_type">Промени тип резервне копије</string>
     <!-- Secondary action button label when selecting a backup tier with a current selection -->
     <string name="MessageBackupsTypeSelectionScreen__cancel_subscription">Откажи претплату</string>
+    <!-- MessageBackupsType block amount for free tier -->
+    <string name="MessageBackupsTypeSelectionScreen__free">Бесплатно</string>
+    <!-- MessageBackupsType block amount for paid tier. Placeholder is formatted currency amount. -->
+    <string name="MessageBackupsTypeSelectionScreen__s_month">%1$s месечно</string>
+    <!-- Title for free tier -->
+    <string name="MessageBackupsTypeSelectionScreen__text_plus_all_your_media">Порука + сви ваши медији</string>
+    <!-- Title for paid tier. Placeholder is days of media retention. -->
+    <plurals name="MessageBackupsTypeSelectionScreen__text_plus_d_days_of_media">
+        <item quantity="one">Порука + %1$d дан медија</item>
+        <item quantity="other">Порука + %1$d дана медија</item>
+    </plurals>
+    <!-- Description text for text history feature -->
+    <string name="MessageBackupsTypeSelectionScreen__full_text_message_backup">Комплетно чување резервних копија порука</string>
+    <!-- Description text for paid tier media retention -->
+    <string name="MessageBackupsTypeSelectionScreen__full_media_backup">Комплетно чување резервних порука медија</string>
+    <!-- Description text for storage space for paid tier media. Placeholder 1 is for byte amount, placeholder 2 is for a photo count estimate -->
+    <string name="MessageBackupsTypeSelectionScreen__s_of_storage_s_photos">%1$s складишног простора (за број слика: %2$s)</string>
+    <!-- Description text for thanks -->
+    <string name="MessageBackupsTypeSelectionScreen__thanks_for_supporting_signal">Хвала вам што подржавате Signal!</string>
+    <!-- Description text for free tier media retention. Placeholder is retention day count. -->
+    <plurals name="MessageBackupsTypeSelectionScreen__last_d_days_of_media">
+        <item quantity="one">Последњи %1$d дан медија</item>
+        <item quantity="other">Последњих %1$d дана медија</item>
+    </plurals>
+    <!-- Text designating that an option is your current plan -->
+    <string name="MessageBackupsTypeSelectionScreen__current_plan">Тренутни пакет</string>
 
     <!-- ConfirmBackupCancellationDialog -->
     <!-- Dialog title -->
@@ -7457,5 +7857,101 @@
 
     <!-- Accessible content description for the reminder view, describing the icon in the view. -->
     <string name="ReminderView_icon_content_description">Икона подсетника</string>
+
+    <!-- Row title for restore/transfer using a previous registered phone/device -->
+    <string name="WelcomeFragment_restore_action_i_have_my_old_phone">Имам свој стари телефон</string>
+    <!-- Row subtitle for restore/transfer using a previous registered phone/device -->
+    <string name="WelcomeFragment_restore_action_scan_qr">Скенирајте QR код на вашем тренутном налогу на Signal-у да бисте брзо започели</string>
+
+    <!-- Row title for restore/transfer without using a previous device -->
+    <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Немам свој стари телефон</string>
+    <!-- Row subtitle for restore/transfer without using a previous device -->
+    <string name="WelcomeFragment_restore_action_reinstalling">Или поново инсталирате Signal на истом уређају</string>
+
+    <!-- Screen title for selecting which restore method to use during registration -->
+    <string name="SelectRestoreMethodFragment__restore_or_transfer_account">Враћање или пренос налога</string>
+    <!-- Screen subtitle for selecting which restore method to use during registration -->
+    <string name="SelectRestoreMethodFragment__get_your_signal_account">Пребаците налог и историју порука на овај уређај.</string>
+    <!-- Option title for restoring via signal backups -->
+    <string name="SelectRestoreMethodFragment__from_signal_backups">Из резервних копија Signal-а</string>
+    <!-- Option subtitle for restoring via signal backups -->
+    <string name="SelectRestoreMethodFragment__your_free_or_paid_signal_backup_plan">Ваш бесплатни или плаћени пакет за резервне копије Signal-а</string>
+    <!-- Option title for restoring via a local backup folder -->
+    <string name="SelectRestoreMethodFragment__from_a_backup_folder">Из фолдера за резервне копије</string>
+    <!-- Option title for restoring via a local backup file -->
+    <string name="SelectRestoreMethodFragment__from_a_backup_file">Из фајла резервне копије</string>
+    <!-- Option subtitle for restoring via a local backup -->
+    <string name="SelectRestoreMethodFragment__choose_a_backup_youve_saved">Изаберите резервну копију коју сте сачували</string>
+    <!-- Option title for restoring via device transfer -->
+    <string name="SelectRestoreMethodFragment__from_your_old_phone">Са старог телефона</string>
+    <!-- Option subtitle for restoring via device transfer -->
+    <string name="SelectRestoreMethodFragment__transfer_directly_from_old">Пренесите директно са старог Android уређаја</string>
+
+    <!-- Screen title for restore via local backup -->
+    <string name="RestoreLocalBackup_title">Врати локалну резервну копију</string>
+    <!-- Screen subtitle for restore via local backup -->
+    <string name="RestoreLocalBackup_subtitle">Вратите поруке из резервне копије коју сте сачували на свом уређају. Ако их не вратите сада, нећете моћи да их вратите касније.</string>
+
+    <!-- Screen title for manual entry of backup key material for restoring via signal backups -->
+    <string name="EnterBackupKey_title">Унесите кључ за резервне копије</string>
+    <!-- Screen subtitle for manual entry of backup key material for restoring via signal backups -->
+    <string name="EnterBackupKey_subtitle">Кључ за резервне копије је шифра од 64 знака потребна за враћање вашег налога и података.</string>
+    <!-- Button to skip entering backup key and resuming normal registration flow -->
+    <string name="EnterBackupKey_no_backup_key">Немате кључ за резервне копије?</string>
+    <!-- Backup key text field hint -->
+    <string name="EnterBackupKey_backup_key">Кључ за резервне копије</string>
+    <!-- Backup key not known bottom sheet info paragraph 1 -->
+    <string name="EnterBackupKey_no_key_paragraph_1">Резервне копије се не могу вратити без њихове шифре за опоравак од 64 знака. Ако сте изгубили кључ за резервне копије, Signal не може да вам помогне да вратите резервну копију.</string>
+    <!-- Backup key not known bottom sheet info paragraph 2 -->
+    <string name="EnterBackupKey_no_key_paragraph_2">Ако имате свој стари уређај, можете да видите резервни кључ ако одете у Подешавања &gt; Резервне копије. Затим додирните „Прикажи кључ за резервне копије“.</string>
+    <!-- Backup key not known bottom sheet button to learn more about it -->
+    <string name="EnterBackupKey_learn_more">Сазнајте више</string>
+    <!-- Backup key not known bottom sheet button to skip backup key entry and resume normal reregistration -->
+    <string name="EnterBackupKey_skip_and_dont_restore">Прескочи и не враћај</string>
+
+    <!-- Title for restore via qr screen -->
+    <string name="RestoreViaQr_title">Скенирајте овај код старим телефоном</string>
+    <!-- First instruction on what to do with restore via qr code -->
+    <string name="RestoreViaQr_instruction_1">Отворите Signal на старом уређају</string>
+    <!-- Second instruction on what to do with restore via qr code -->
+    <string name="RestoreViaQr_instruction_2">Додирните икону камере </string>
+    <!-- Third instruction on what to do with restore via qr code -->
+    <string name="RestoreViaQr_instruction_3">Скенирајте овај код камером</string>
+    <!-- Error message shown when qr code could not be loaded -->
+    <string name="RestoreViaQr_qr_code_error">Генерисање QR кода није успело</string>
+    <!-- Status message shown when qr code already scanned by other device -->
+    <string name="RestoreViaQr_qr_code_scanned">Скенирано је на старом уређају</string>
+    <!-- Error button text to retry getting a qr code -->
+    <string name="RestoreViaQr_retry">Пробај поново</string>
+
+    <!-- Old device Transfer account screen title -->
+    <string name="TransferAccount_title">Пренесите налог</string>
+    <!-- Old device Transfer account screen body message with learn more placeholder -->
+    <string name="TransferAccount_body">Ваш налог ће бити пренесен на нови уређај. Тај уређај ће имати приступ вашим контактима, групама и ћаскањима и моћи ће да шаље поруке у ваше име. %1$s</string>
+    <!-- Old device Transfer account learn more placed into TransferAccount_body -->
+    <string name="TransferAccount_learn_more">Сазнајте више</string>
+    <!-- Old device Transfer account button text to confirm transfer account to new device -->
+    <string name="TransferAccount_button">Пренесите налог</string>
+    <!-- Old device Transfer account footnote text describing e2e encryption for all data -->
+    <string name="TransferAccount_messages_e2e">Поруке и информације о ћаскањима заштићене су потпуним шифровањем на свим уређајима</string>
+    <!-- Old device Transfer account screen title for system dialog shown to confirm OS device authentication (fingerprint, pattern, pin, etc.) -->
+    <string name="TransferAccount_unlock_to_transfer">Откључајте да пренесете налог</string>
+    <!-- Old device Transfer account bottom sheet dialog title -->
+    <string name="TransferAccount_continue_on_your_other_device">Наставите на другом уређају</string>
+    <!-- Old device Transfer account bottom sheet dialog body -->
+    <string name="TransferAccount_continue_on_your_other_device_details">Наставите са преносом налога на другом уређају.</string>
+
+    <!-- Restore Complete bottom sheet dialog title -->
+    <string name="RestoreCompleteBottomSheet_restore_complete">Враћање је завршено</string>
+    <!-- Restore Complete bottom sheet dialog message -->
+    <string name="RestoreCompleteBottomSheet_restore_complete_message">Ваш налог на Signal-у и поруке почели су да се преносе на ваш други уређај. Signal је сада неактиван на овом уређају.</string>
+    <!-- Restore Complete bottom sheet dialog title after device transfer -->
+    <string name="RestoreCompleteBottomSheet_transfer_complete">Пренос је завршен</string>
+    <!-- Restore Complete bottom sheet dialog message after device transfer -->
+    <string name="RestoreCompleteBottomSheet_transfer_complete_message">Ваш налог на Signal-у и поруке пренети су на ваш други уређај. Signal је сада неактиван на овом уређају.</string>
+    <!-- Restore Complete bottom sheet dialog button text to dismiss sheet -->
+    <string name="RestoreCompleteBottomSheet_button">У реду</string>
+
+
     <!-- EOF -->
 </resources>

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -37,14 +38,15 @@ import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.logging.Log
 import org.signal.ringrtc.CallLinkState.Restrictions
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.calls.YouAreAlreadyInACallSnackbar.YouAreAlreadyInACallSnackbar
 import org.thoughtcrime.securesms.calls.links.CallLinks
 import org.thoughtcrime.securesms.calls.links.EditCallLinkNameDialogFragment
 import org.thoughtcrime.securesms.calls.links.SignalCallRow
 import org.thoughtcrime.securesms.compose.ComposeFragment
-import org.thoughtcrime.securesms.conversation.colors.AvatarColor
 import org.thoughtcrime.securesms.database.CallLinkTable
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.service.webrtc.links.CallLinkCredentials
+import org.thoughtcrime.securesms.service.webrtc.links.CallLinkRoomId
 import org.thoughtcrime.securesms.service.webrtc.links.SignalCallLinkState
 import org.thoughtcrime.securesms.service.webrtc.links.UpdateCallLinkResult
 import org.thoughtcrime.securesms.sharing.v2.ShareActivity
@@ -80,9 +82,11 @@ class CallLinkDetailsFragment : ComposeFragment(), CallLinkDetailsCallback {
   @Composable
   override fun FragmentContent() {
     val state by viewModel.state
+    val showAlreadyInACall by viewModel.showAlreadyInACall.collectAsStateWithLifecycle(false)
 
     CallLinkDetails(
       state,
+      showAlreadyInACall,
       this
     )
   }
@@ -94,7 +98,9 @@ class CallLinkDetailsFragment : ComposeFragment(), CallLinkDetailsCallback {
   override fun onJoinClicked() {
     val recipientSnapshot = viewModel.recipientSnapshot
     if (recipientSnapshot != null) {
-      CommunicationActions.startVideoCall(this, recipientSnapshot)
+      CommunicationActions.startVideoCall(this, recipientSnapshot) {
+        viewModel.showAlreadyInACall(true)
+      }
     }
   }
 
@@ -141,9 +147,13 @@ class CallLinkDetailsFragment : ComposeFragment(), CallLinkDetailsCallback {
     viewModel.setDisplayRevocationDialog(false)
     lifecycleDisposable += viewModel.delete().observeOn(AndroidSchedulers.mainThread()).subscribeBy(onSuccess = {
       when (it) {
-        is UpdateCallLinkResult.Update -> ActivityCompat.finishAfterTransition(requireActivity())
+        is UpdateCallLinkResult.Delete -> ActivityCompat.finishAfterTransition(requireActivity())
+        is UpdateCallLinkResult.CallLinkIsInUse -> {
+          Log.w(TAG, "Failed to delete in-use call link.")
+          toastCouldNotDeleteCallLink()
+        }
         else -> {
-          Log.w(TAG, "Failed to revoke. $it")
+          Log.w(TAG, "Failed to delete call link. $it")
           toastFailure()
         }
       }
@@ -182,6 +192,10 @@ class CallLinkDetailsFragment : ComposeFragment(), CallLinkDetailsCallback {
   private fun toastFailure() {
     Toast.makeText(requireContext(), R.string.CallLinkDetailsFragment__couldnt_save_changes, Toast.LENGTH_LONG).show()
   }
+
+  private fun toastCouldNotDeleteCallLink() {
+    Toast.makeText(requireContext(), R.string.CallLinkDetailsFragment__couldnt_delete_call_link, Toast.LENGTH_LONG).show()
+  }
 }
 
 private interface CallLinkDetailsCallback {
@@ -200,22 +214,22 @@ private interface CallLinkDetailsCallback {
 @Preview
 @Composable
 private fun CallLinkDetailsPreview() {
-  val avatarColor = remember {
-    AvatarColor.random()
-  }
-
   val callLink = remember {
-    val credentials = CallLinkCredentials.generate()
+    val credentials = CallLinkCredentials(
+      byteArrayOf(1, 2, 3, 4),
+      byteArrayOf(3, 4, 5, 6)
+    )
     CallLinkTable.CallLink(
       recipientId = RecipientId.UNKNOWN,
-      roomId = credentials.roomId,
+      roomId = CallLinkRoomId.fromBytes(byteArrayOf(1, 2, 3, 4)),
       credentials = credentials,
       state = SignalCallLinkState(
         name = "Call Name",
         revoked = false,
         restrictions = Restrictions.NONE,
         expiration = Instant.MAX
-      )
+      ),
+      deletionTimestamp = 0L
     )
   }
 
@@ -225,6 +239,7 @@ private fun CallLinkDetailsPreview() {
         false,
         callLink
       ),
+      true,
       object : CallLinkDetailsCallback {
         override fun onDeleteConfirmed() = Unit
         override fun onDeleteCanceled() = Unit
@@ -244,10 +259,14 @@ private fun CallLinkDetailsPreview() {
 @Composable
 private fun CallLinkDetails(
   state: CallLinkDetailsState,
+  showAlreadyInACall: Boolean,
   callback: CallLinkDetailsCallback
 ) {
   Scaffolds.Settings(
     title = stringResource(id = R.string.CallLinkDetailsFragment__call_details),
+    snackbarHost = {
+      YouAreAlreadyInACallSnackbar(showAlreadyInACall)
+    },
     onNavigationClick = callback::onNavigationClicked,
     navigationIconPainter = painterResource(id = R.drawable.ic_arrow_left_24)
   ) { paddingValues ->
@@ -258,6 +277,7 @@ private fun CallLinkDetails(
     Column(modifier = Modifier.padding(paddingValues)) {
       SignalCallRow(
         callLink = state.callLink,
+        callLinkPeekInfo = state.peekInfo,
         onJoinClicked = callback::onJoinClicked,
         modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
       )
@@ -276,7 +296,7 @@ private fun CallLinkDetails(
 
         Rows.ToggleRow(
           checked = state.callLink.state.restrictions == Restrictions.ADMIN_APPROVAL,
-          text = stringResource(id = R.string.CallLinkDetailsFragment__approve_all_members),
+          text = stringResource(id = R.string.CallLinkDetailsFragment__require_admin_approval),
           onCheckChanged = callback::onApproveAllMembersChanged
         )
 

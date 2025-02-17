@@ -133,27 +133,24 @@ class GroupReceiptTable(context: Context?, databaseHelper: SignalDatabase?) : Da
       .readToList { it.toGroupReceiptInfo() }
   }
 
-  fun getGroupReceiptInfoForMessages(ids: Set<Long>): Map<Long, List<GroupReceiptInfo>> {
+  fun getGroupReceiptInfoForMessages(ids: Collection<Long>): Map<Long, List<GroupReceiptInfo>> {
     if (ids.isEmpty()) {
       return emptyMap()
     }
 
     val messageIdsToGroupReceipts: MutableMap<Long, MutableList<GroupReceiptInfo>> = mutableMapOf()
 
-    val args: List<Array<String>> = ids.map { SqlUtil.buildArgs(it) }
-
-    SqlUtil.buildCustomCollectionQuery("$MMS_ID = ?", args).forEach { query ->
-      readableDatabase
-        .select()
-        .from(TABLE_NAME)
-        .where(query.where, query.whereArgs)
-        .run()
-        .forEach { cursor ->
-          val messageId = cursor.requireLong(MMS_ID)
-          val receipts = messageIdsToGroupReceipts.getOrPut(messageId) { mutableListOf() }
-          receipts += cursor.toGroupReceiptInfo()
-        }
-    }
+    val query = SqlUtil.buildFastCollectionQuery(MMS_ID, ids)
+    readableDatabase
+      .select()
+      .from(TABLE_NAME)
+      .where(query.where, query.whereArgs)
+      .run()
+      .forEach { cursor ->
+        val messageId = cursor.requireLong(MMS_ID)
+        val receipts = messageIdsToGroupReceipts.getOrPut(messageId) { mutableListOf() }
+        receipts += cursor.toGroupReceiptInfo()
+      }
 
     return messageIdsToGroupReceipts
   }

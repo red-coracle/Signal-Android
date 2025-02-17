@@ -33,7 +33,7 @@ import java.util.Optional
  * Provides a [SignalServiceConfiguration] to be used with our service layer.
  * If you're looking for a place to start, look at [getConfiguration].
  */
-open class SignalServiceNetworkAccess(context: Context) {
+class SignalServiceNetworkAccess(context: Context) {
   companion object {
     private val TAG = Log.tag(SignalServiceNetworkAccess::class.java)
 
@@ -67,8 +67,8 @@ open class SignalServiceNetworkAccess(context: Context) {
     private const val COUNTRY_CODE_IRAN = 98
     private const val COUNTRY_CODE_CUBA = 53
     private const val COUNTRY_CODE_UZBEKISTAN = 998
-    private const val COUNTRY_CODE_RUSSIA = 7
     private const val COUNTRY_CODE_VENEZUELA = 58
+    private const val COUNTRY_CODE_PAKISTAN = 92
 
     private const val G_HOST = "reflector-nrgwuv7kwq-uc.a.run.app"
     private const val F_SERVICE_HOST = "chat-signal.global.ssl.fastly.net"
@@ -188,7 +188,8 @@ open class SignalServiceNetworkAccess(context: Context) {
     signalProxy = Optional.empty(),
     zkGroupServerPublicParams = zkGroupServerPublicParams,
     genericServerPublicParams = genericServerPublicParams,
-    backupServerPublicParams = backupServerPublicParams
+    backupServerPublicParams = backupServerPublicParams,
+    censored = true
   )
 
   private val censorshipConfiguration: Map<Int, SignalServiceConfiguration> = mapOf(
@@ -210,12 +211,14 @@ open class SignalServiceNetworkAccess(context: Context) {
     COUNTRY_CODE_VENEZUELA to buildGConfiguration(
       listOf(HostConfig("https://www.google.co.ve", G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
     ),
+    COUNTRY_CODE_PAKISTAN to buildGConfiguration(
+      listOf(HostConfig("https://www.google.com.pk", G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
+    ),
     COUNTRY_CODE_IRAN to fConfig,
-    COUNTRY_CODE_CUBA to fConfig,
-    COUNTRY_CODE_RUSSIA to fConfig
+    COUNTRY_CODE_CUBA to fConfig
   )
 
-  private val defaultCensoredConfiguration: SignalServiceConfiguration = buildGConfiguration(baseGHostConfigs)
+  private val defaultCensoredConfiguration: SignalServiceConfiguration = buildGConfiguration(baseGHostConfigs) + fConfig
 
   private val defaultCensoredCountryCodes: Set<Int> = setOf(
     COUNTRY_CODE_EGYPT,
@@ -224,10 +227,12 @@ open class SignalServiceNetworkAccess(context: Context) {
     COUNTRY_CODE_QATAR,
     COUNTRY_CODE_IRAN,
     COUNTRY_CODE_CUBA,
-    COUNTRY_CODE_UZBEKISTAN
+    COUNTRY_CODE_UZBEKISTAN,
+    COUNTRY_CODE_VENEZUELA,
+    COUNTRY_CODE_PAKISTAN
   )
 
-  open val uncensoredConfiguration: SignalServiceConfiguration = SignalServiceConfiguration(
+  val uncensoredConfiguration: SignalServiceConfiguration = SignalServiceConfiguration(
     signalServiceUrls = arrayOf(SignalServiceUrl(BuildConfig.SIGNAL_URL, serviceTrustStore)),
     signalCdnUrlMap = mapOf(
       0 to arrayOf(SignalCdnUrl(BuildConfig.SIGNAL_CDN_URL, serviceTrustStore)),
@@ -242,14 +247,15 @@ open class SignalServiceNetworkAccess(context: Context) {
     signalProxy = if (SignalStore.proxy.isProxyEnabled) Optional.ofNullable(SignalStore.proxy.proxy) else Optional.empty(),
     zkGroupServerPublicParams = zkGroupServerPublicParams,
     genericServerPublicParams = genericServerPublicParams,
-    backupServerPublicParams = backupServerPublicParams
+    backupServerPublicParams = backupServerPublicParams,
+    censored = false
   )
 
-  open fun getConfiguration(): SignalServiceConfiguration {
+  fun getConfiguration(): SignalServiceConfiguration {
     return getConfiguration(SignalStore.account.e164)
   }
 
-  open fun getConfiguration(e164: String?): SignalServiceConfiguration {
+  fun getConfiguration(e164: String?): SignalServiceConfiguration {
     if (e164 == null || SignalStore.proxy.isProxyEnabled) {
       return uncensoredConfiguration
     }
@@ -311,7 +317,8 @@ open class SignalServiceNetworkAccess(context: Context) {
       signalProxy = Optional.empty(),
       zkGroupServerPublicParams = zkGroupServerPublicParams,
       genericServerPublicParams = genericServerPublicParams,
-      backupServerPublicParams = backupServerPublicParams
+      backupServerPublicParams = backupServerPublicParams,
+      censored = true
     )
   }
 

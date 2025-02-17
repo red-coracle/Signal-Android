@@ -31,6 +31,7 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.registration.ui.RegistrationActivity;
 import org.thoughtcrime.securesms.restore.RestoreActivity;
 import org.thoughtcrime.securesms.service.KeyCachingService;
+import org.thoughtcrime.securesms.util.AppForegroundObserver;
 import org.thoughtcrime.securesms.util.AppStartup;
 import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
@@ -92,8 +93,8 @@ public abstract class PassphraseRequiredActivity extends BaseActivity implements
   @Override
   public void onMasterSecretCleared() {
     Log.d(TAG, "onMasterSecretCleared()");
-    if (AppDependencies.getAppForegroundObserver().isForegrounded()) routeApplicationState(true);
-    else                                                                     finish();
+    if (AppForegroundObserver.isForegrounded()) routeApplicationState(true);
+    else                                        finish();
   }
 
   protected <T extends Fragment> T initFragment(@IdRes int target,
@@ -166,10 +167,8 @@ public abstract class PassphraseRequiredActivity extends BaseActivity implements
       return STATE_UI_BLOCKING_UPGRADE;
     } else if (!TextSecurePreferences.hasPromptedPushRegistration(this)) {
       return STATE_WELCOME_PUSH_SCREEN;
-    } else if (SignalStore.storageService().needsAccountRestore()) {
+    } else if (SignalStore.storageService().getNeedsAccountRestore()) {
       return STATE_ENTER_SIGNAL_PIN;
-    } else if (userHasSkippedOrForgottenPin()) {
-      return STATE_CREATE_SIGNAL_PIN;
     } else if (userCanTransferOrRestore()) {
       return STATE_TRANSFER_OR_RESTORE;
     } else if (userMustSetProfileName()) {
@@ -192,11 +191,10 @@ public abstract class PassphraseRequiredActivity extends BaseActivity implements
   }
 
   private boolean userMustCreateSignalPin() {
-    return !SignalStore.registration().isRegistrationComplete() && !SignalStore.svr().hasPin() && !SignalStore.svr().lastPinCreateFailed() && !SignalStore.svr().hasOptedOut();
-  }
-
-  private boolean userHasSkippedOrForgottenPin() {
-    return !SignalStore.registration().isRegistrationComplete() && !SignalStore.svr().hasPin() && !SignalStore.svr().hasOptedOut() && SignalStore.svr().isPinForgottenOrSkipped();
+    return !SignalStore.registration().isRegistrationComplete() &&
+           !SignalStore.svr().hasOptedInWithAccess() &&
+           !SignalStore.svr().lastPinCreateFailed() &&
+           !SignalStore.svr().hasOptedOut();
   }
 
   private boolean userMustSetProfileName() {
@@ -209,7 +207,7 @@ public abstract class PassphraseRequiredActivity extends BaseActivity implements
 
   private Intent getPromptPassphraseIntent() {
     Intent intent = getRoutedIntent(PassphrasePromptActivity.class, getIntent());
-    intent.putExtra(PassphrasePromptActivity.FROM_FOREGROUND, AppDependencies.getAppForegroundObserver().isForegrounded());
+    intent.putExtra(PassphrasePromptActivity.FROM_FOREGROUND, AppForegroundObserver.isForegrounded());
     return intent;
   }
 
@@ -241,7 +239,7 @@ public abstract class PassphraseRequiredActivity extends BaseActivity implements
   }
 
   private Intent getTransferOrRestoreIntent() {
-    Intent intent = RestoreActivity.getIntentForTransferOrRestore(this);
+    Intent intent = RestoreActivity.getRestoreIntent(this);
     return getRoutedIntent(intent, MainActivity.clearTop(this));
   }
 
@@ -268,13 +266,13 @@ public abstract class PassphraseRequiredActivity extends BaseActivity implements
   }
 
   private Intent getRoutedIntent(Intent destination, @Nullable Intent nextIntent) {
-    if (nextIntent != null)   destination.putExtra("next_intent", nextIntent);
+    if (nextIntent != null)   destination.putExtra(NEXT_INTENT_EXTRA, nextIntent);
     return destination;
   }
 
   private Intent getRoutedIntent(Class<?> destination, @Nullable Intent nextIntent) {
     final Intent intent = new Intent(this, destination);
-    if (nextIntent != null)   intent.putExtra("next_intent", nextIntent);
+    if (nextIntent != null)   intent.putExtra(NEXT_INTENT_EXTRA, nextIntent);
     return intent;
   }
 
