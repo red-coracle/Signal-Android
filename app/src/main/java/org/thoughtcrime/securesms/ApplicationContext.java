@@ -38,6 +38,7 @@ import org.signal.core.util.logging.Log;
 import org.signal.core.util.logging.Scrubber;
 import org.signal.core.util.tracing.Tracer;
 import org.signal.glide.SignalGlideCodecs;
+import org.signal.libsignal.net.ChatServiceException;
 import org.signal.libsignal.protocol.logging.SignalProtocolLoggerProvider;
 import org.signal.ringrtc.CallManager;
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener;
@@ -102,6 +103,7 @@ import org.thoughtcrime.securesms.service.webrtc.AndroidTelecomUtil;
 import org.thoughtcrime.securesms.storage.StorageSyncHelper;
 import org.thoughtcrime.securesms.util.AppForegroundObserver;
 import org.thoughtcrime.securesms.util.AppStartup;
+import org.thoughtcrime.securesms.util.ConversationUtil;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
@@ -110,6 +112,7 @@ import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.VersionTracker;
 import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWrapper;
+import org.whispersystems.signalservice.api.websocket.SignalWebSocket;
 
 import java.io.InterruptedIOException;
 import java.net.SocketException;
@@ -187,6 +190,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
                             .addBlocking("tracer", this::initializeTracer)
                             .addNonBlocking(() -> RegistrationUtil.maybeMarkRegistrationComplete())
                             .addNonBlocking(() -> Glide.get(this))
+                            .addNonBlocking(ConversationUtil::refreshRecipientShortcuts)
                             .addNonBlocking(this::cleanAvatarStorage)
                             .addNonBlocking(this::initializeRevealableMessageManager)
                             .addNonBlocking(this::initializePendingRetryReceiptManager)
@@ -243,7 +247,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
     AppDependencies.getFrameRateTracker().start();
     AppDependencies.getMegaphoneRepository().onAppForegrounded();
     AppDependencies.getDeadlockDetector().start();
-    InAppPaymentKeepAliveJob.enqueueAndTrackTimeIfNecessary();
+    //InAppPaymentKeepAliveJob.enqueueAndTrackTimeIfNecessary();
     FcmFetchManager.onForeground(this);
     startAnrDetector();
 
@@ -259,6 +263,8 @@ public class ApplicationContext extends Application implements AppForegroundObse
       checkFreeDiskSpace();
       MemoryTracker.start();
       BackupSubscriptionCheckJob.enqueueIfAble();
+      AppDependencies.getAuthWebSocket().registerKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE);
+      AppDependencies.getUnauthWebSocket().registerKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE);
 
       long lastForegroundTime = SignalStore.misc().getLastForegroundTime();
       long currentTime        = System.currentTimeMillis();
@@ -282,6 +288,8 @@ public class ApplicationContext extends Application implements AppForegroundObse
     AppDependencies.getFrameRateTracker().stop();
     AppDependencies.getShakeToReport().disable();
     AppDependencies.getDeadlockDetector().stop();
+    AppDependencies.getAuthWebSocket().removeKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE);
+    AppDependencies.getUnauthWebSocket().removeKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE);
     MemoryTracker.stop();
     AnrDetector.stop();
   }
@@ -349,7 +357,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
   private void initializeRx() {
     RxDogTag.install();
-    RxJavaPlugins.setInitIoSchedulerHandler(schedulerSupplier -> Schedulers.from(SignalExecutors.BOUNDED_IO, true, false));
+    RxJavaPlugins.setInitIoSchedulerHandler(schedulerSupplier -> Schedulers.from(SignalExecutors.UNBOUNDED, true, false));
     RxJavaPlugins.setInitComputationSchedulerHandler(schedulerSupplier -> Schedulers.from(SignalExecutors.BOUNDED, true, false));
     RxJavaPlugins.setErrorHandler(e -> {
       boolean wasWrapped = false;
@@ -358,7 +366,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
         e = e.getCause();
       }
 
-      if (wasWrapped && (e instanceof SocketException || e instanceof InterruptedException || e instanceof InterruptedIOException)) {
+      if (wasWrapped && (e instanceof SocketException || e instanceof InterruptedException || e instanceof InterruptedIOException || e instanceof ChatServiceException)) {
         return;
       }
 
@@ -378,7 +386,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
   }
 
   public void initializeMessageRetrieval() {
-    AppDependencies.getIncomingMessageObserver();
+    AppDependencies.startNetwork();
   }
 
   @VisibleForTesting

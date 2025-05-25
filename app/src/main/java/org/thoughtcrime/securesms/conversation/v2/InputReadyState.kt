@@ -57,7 +57,7 @@ class InputReadyState(
     if (!conversationRecipient.hasSameContent(other.conversationRecipient)) return false
     if (messageRequestState != other.messageRequestState) return false
     if (groupRecord != other.groupRecord) return false
-    if (isClientExpired != other.isClientExpired) return false
+    //if (isClientExpired != other.isClientExpired) return false
     if (isUnauthorized != other.isUnauthorized) return false
 
     return true
