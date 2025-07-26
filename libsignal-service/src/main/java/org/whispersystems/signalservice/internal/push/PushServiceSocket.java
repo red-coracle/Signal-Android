@@ -65,6 +65,7 @@ import org.whispersystems.signalservice.api.push.exceptions.SubmitVerificationCo
 import org.whispersystems.signalservice.api.push.exceptions.TokenNotAcceptedException;
 import org.whispersystems.signalservice.api.push.exceptions.UnregisteredUserException;
 import org.whispersystems.signalservice.api.registration.RestoreMethodBody;
+import org.whispersystems.signalservice.api.remoteconfig.RemoteConfigResponse;
 import org.whispersystems.signalservice.api.svr.Svr3Credentials;
 import org.whispersystems.signalservice.api.util.CredentialsProvider;
 import org.whispersystems.signalservice.api.util.Tls12SocketFactory;
@@ -531,6 +532,11 @@ public class PushServiceSocket {
     try (Response response = makeStorageRequest(null, "/ping", "GET", null, NO_HANDLER)) {
       return;
     }
+  }
+
+  public RemoteConfigResponse getRemoteConfig() throws IOException {
+    String response = makeServiceRequest("/v1/config", "GET", null);
+    return JsonUtil.fromJson(response, RemoteConfigResponse.class);
   }
 
   public void cancelInFlightRequests() {
@@ -1712,7 +1718,16 @@ public class PushServiceSocket {
       throw new NonSuccessfulResponseCodeException(500, "Missing timestamp header");
     }
 
-    if (responseCode == 400) throw new GroupPatchNotAcceptedException();
+    if (responseCode == 400) {
+      String message = null;
+      try {
+        message = JsonUtil.fromJson(body.string(), GroupPatchResponse.class).getMessage();
+      } catch (IOException e) {
+        Log.w(TAG, "Unable to parse group patch error", e);
+      }
+
+      throw message != null ? new GroupPatchNotAcceptedException(message) : new GroupPatchNotAcceptedException();
+    }
   };
 
   private static final ResponseCodeHandler GROUPS_V2_GET_JOIN_INFO_HANDLER  = (responseCode, body, getHeader) -> {

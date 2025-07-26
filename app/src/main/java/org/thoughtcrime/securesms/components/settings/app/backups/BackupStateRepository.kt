@@ -19,6 +19,7 @@ import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.whispersystems.signalservice.api.NetworkResult
 import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
 import java.math.BigDecimal
 import java.util.Currency
@@ -118,9 +119,11 @@ object BackupStateRepository {
   private suspend fun getPaidBackupState(lastPurchase: InAppPaymentTable.InAppPayment?): BackupState {
     Log.d(TAG, "Attempting to retrieve subscription details for active PAID backup.")
 
-    val type = withContext(Dispatchers.IO) {
-      BackupRepository.getBackupsType(MessageBackupTier.PAID) as? MessageBackupsType.Paid
+    val typeResult = withContext(Dispatchers.IO) {
+      BackupRepository.getPaidType()
     }
+
+    val type = if (typeResult is NetworkResult.Success) typeResult.result else null
 
     Log.d(TAG, "Attempting to retrieve current subscription...")
     val activeSubscription = withContext(Dispatchers.IO) {
@@ -194,13 +197,18 @@ object BackupStateRepository {
 
   private suspend fun getFreeBackupState(): BackupState {
     val type = withContext(Dispatchers.IO) {
-      BackupRepository.getBackupsType(MessageBackupTier.FREE) as MessageBackupsType.Free
+      BackupRepository.getFreeType()
+    }
+
+    if (type !is NetworkResult.Success) {
+      Log.w(TAG, "Failed to load FREE type.", type.getCause())
+      return BackupState.Error
     }
 
     val backupState = if (SignalStore.backup.areBackupsEnabled) {
-      BackupState.ActiveFree(type)
+      BackupState.ActiveFree(type.result)
     } else {
-      BackupState.Inactive(type)
+      BackupState.Inactive(type.result)
     }
 
     Log.d(TAG, "Updating UI state with $backupState FREE tier.")
@@ -213,7 +221,7 @@ object BackupStateRepository {
    * @return A paid type, or null if we were unable to get the backup level configuration.
    */
   private fun buildPaidTypeFromSubscription(subscription: ActiveSubscription.Subscription): MessageBackupsType.Paid? {
-    val config = BackupRepository.getBackupLevelConfiguration() ?: return null
+    val config = BackupRepository.getBackupLevelConfiguration().successOrThrow()
 
     val price = FiatMoney.fromSignalNetworkAmount(subscription.amount, Currency.getInstance(subscription.currency))
     return MessageBackupsType.Paid(
@@ -229,7 +237,7 @@ object BackupStateRepository {
    * @return A paid type, or null if we were unable to get the backup level configuration.
    */
   private fun buildPaidTypeFromInAppPayment(inAppPayment: InAppPaymentTable.InAppPayment): MessageBackupsType.Paid? {
-    val config = BackupRepository.getBackupLevelConfiguration() ?: return null
+    val config = BackupRepository.getBackupLevelConfiguration().successOrThrow()
 
     val price = inAppPayment.data.amount!!.toFiatMoney()
     return MessageBackupsType.Paid(
@@ -246,7 +254,7 @@ object BackupStateRepository {
    * @return A paid type, or null if we were unable to get the backup level configuration.
    */
   private fun buildPaidTypeWithoutPricing(): MessageBackupsType? {
-    val config = BackupRepository.getBackupLevelConfiguration() ?: return null
+    val config = BackupRepository.getBackupLevelConfiguration().successOrThrow()
 
     return MessageBackupsType.Paid(
       pricePerMonth = FiatMoney(BigDecimal.ZERO, Currency.getInstance(Locale.getDefault())),
