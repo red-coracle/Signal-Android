@@ -44,7 +44,6 @@ import java.util.UUID
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -260,6 +259,7 @@ class AttachmentTableTest {
     val messageId = SignalDatabase.messages.insertMessageInbox(message).map { it.messageId }.get()
     SignalDatabase.attachments.setArchiveTransferState(AttachmentId(1L), AttachmentTable.ArchiveTransferState.NONE)
     SignalDatabase.attachments.setTransferState(messageId, AttachmentId(1L), AttachmentTable.TRANSFER_PROGRESS_DONE)
+    SignalDatabase.attachments.finalizeAttachmentAfterUpload(AttachmentId(1L), AttachmentTableTestUtil.createUploadResult(AttachmentId(1L)))
 
     // WHEN
     val attachments = SignalDatabase.attachments.getAttachmentsThatNeedArchiveUpload()
@@ -278,31 +278,13 @@ class AttachmentTableTest {
     val messageId = SignalDatabase.messages.insertMessageInbox(message).map { it.messageId }.get()
     SignalDatabase.attachments.setArchiveTransferState(AttachmentId(1L), AttachmentTable.ArchiveTransferState.NONE)
     SignalDatabase.attachments.setTransferState(messageId, AttachmentId(1L), AttachmentTable.TRANSFER_PROGRESS_DONE)
+    SignalDatabase.attachments.finalizeAttachmentAfterUpload(AttachmentId(1L), AttachmentTableTestUtil.createUploadResult(AttachmentId(1L)))
 
     // WHEN
     val attachments = SignalDatabase.attachments.getAttachmentsThatNeedArchiveUpload()
 
     // THEN
     assertThat(attachments).isNotEmpty()
-  }
-
-  @Test
-  fun givenAnAttachmentWithAMessageWithExpirationStartedThatExpiresIn5Minutes_whenIGetAttachmentsThatNeedArchiveUpload_thenIDoNotExpectThatAttachment() {
-    // GIVEN
-    val uncompressData = byteArrayOf(1, 2, 3, 4, 5)
-    val blobUncompressed = BlobProvider.getInstance().forData(uncompressData).createForSingleSessionInMemory()
-    val attachment = createAttachment(1, blobUncompressed, AttachmentTable.TransformProperties.empty())
-    val message = createIncomingMessage(serverTime = 0.days, attachment = attachment, expiresIn = 5.days)
-    val messageId = SignalDatabase.messages.insertMessageInbox(message).map { it.messageId }.get()
-    SignalDatabase.messages.markExpireStarted(messageId, startedTimestamp = System.currentTimeMillis() - (4.days + 12.hours).inWholeMilliseconds)
-    SignalDatabase.attachments.setArchiveTransferState(AttachmentId(1L), AttachmentTable.ArchiveTransferState.NONE)
-    SignalDatabase.attachments.setTransferState(messageId, AttachmentId(1L), AttachmentTable.TRANSFER_PROGRESS_DONE)
-
-    // WHEN
-    val attachments = SignalDatabase.attachments.getAttachmentsThatNeedArchiveUpload()
-
-    // THEN
-    assertThat(attachments).isEmpty()
   }
 
   @Test
@@ -316,12 +298,32 @@ class AttachmentTableTest {
     SignalDatabase.messages.markExpireStarted(messageId)
     SignalDatabase.attachments.setArchiveTransferState(AttachmentId(1L), AttachmentTable.ArchiveTransferState.NONE)
     SignalDatabase.attachments.setTransferState(messageId, AttachmentId(1L), AttachmentTable.TRANSFER_PROGRESS_DONE)
+    SignalDatabase.attachments.finalizeAttachmentAfterUpload(AttachmentId(1L), AttachmentTableTestUtil.createUploadResult(AttachmentId(1L)))
 
     // WHEN
     val attachments = SignalDatabase.attachments.getAttachmentsThatNeedArchiveUpload()
 
     // THEN
     assertThat(attachments).isNotEmpty()
+  }
+
+  @Test
+  fun givenAnAttachmentWithALongTextAttachment_whenIGetAttachmentsThatNeedArchiveUpload_thenIDoNotExpectThatAttachment() {
+    // GIVEN
+    val uncompressData = byteArrayOf(1, 2, 3, 4, 5)
+    val blobUncompressed = BlobProvider.getInstance().forData(uncompressData).createForSingleSessionInMemory()
+    val attachment = createAttachment(1, blobUncompressed, AttachmentTable.TransformProperties.empty(), contentType = MediaUtil.LONG_TEXT)
+    val message = createIncomingMessage(serverTime = 0.days, attachment = attachment)
+    val messageId = SignalDatabase.messages.insertMessageInbox(message).map { it.messageId }.get()
+    SignalDatabase.attachments.setArchiveTransferState(AttachmentId(1L), AttachmentTable.ArchiveTransferState.NONE)
+    SignalDatabase.attachments.setTransferState(messageId, AttachmentId(1L), AttachmentTable.TRANSFER_PROGRESS_DONE)
+    SignalDatabase.attachments.finalizeAttachmentAfterUpload(AttachmentId(1L), AttachmentTableTestUtil.createUploadResult(AttachmentId(1L)))
+
+    // WHEN
+    val attachments = SignalDatabase.attachments.getAttachmentsThatNeedArchiveUpload()
+
+    // THEN
+    assertThat(attachments).isEmpty()
   }
 
   private fun createIncomingMessage(
@@ -390,16 +392,17 @@ class AttachmentTableTest {
       stickerLocator = null,
       gif = false,
       quote = false,
+      quoteTargetContentType = null,
       uuid = UUID.randomUUID(),
       fileName = null
     )
   }
 
-  private fun createAttachment(id: Long, uri: Uri, transformProperties: AttachmentTable.TransformProperties): UriAttachment {
+  private fun createAttachment(id: Long, uri: Uri, transformProperties: AttachmentTable.TransformProperties, contentType: String = MediaUtil.IMAGE_JPEG): UriAttachment {
     return UriAttachmentBuilder.build(
       id,
       uri = uri,
-      contentType = MediaUtil.IMAGE_JPEG,
+      contentType = contentType,
       transformProperties = transformProperties
     )
   }

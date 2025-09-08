@@ -68,6 +68,7 @@ import org.signal.core.ui.compose.TextFields.TextField
 import org.signal.core.util.Base64
 import org.signal.core.util.Hex
 import org.signal.core.util.getLength
+import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
@@ -78,6 +79,7 @@ import org.thoughtcrime.securesms.components.settings.app.internal.backup.Intern
 import org.thoughtcrime.securesms.compose.ComposeFragment
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ArchiveAttachmentReconciliationJob
+import org.thoughtcrime.securesms.jobs.BackupRestoreMediaJob
 import org.thoughtcrime.securesms.jobs.LocalBackupJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.util.Util
@@ -153,6 +155,7 @@ class InternalBackupPlaygroundFragment : ComposeFragment() {
           onCheckRemoteBackupStateClicked = { viewModel.checkRemoteBackupState() },
           onEnqueueRemoteBackupClicked = { viewModel.triggerBackupJob() },
           onEnqueueReconciliationClicked = { AppDependencies.jobManager.add(ArchiveAttachmentReconciliationJob(forced = true)) },
+          onEnqueueMediaRestoreClicked = { AppDependencies.jobManager.add(BackupRestoreMediaJob()) },
           onHaltAllBackupJobsClicked = { viewModel.haltAllJobs() },
           onValidateBackupClicked = { viewModel.validateBackup() },
           onSaveEncryptedBackupToDiskClicked = {
@@ -190,7 +193,12 @@ class InternalBackupPlaygroundFragment : ComposeFragment() {
             MaterialAlertDialogBuilder(context)
               .setTitle("Are you sure?")
               .setMessage("This will delete all of your chats! Make sure you've finished a backup first, we don't check for you. Only do this on a test device!")
-              .setPositiveButton("Wipe and restore") { _, _ -> viewModel.wipeAllDataAndRestoreFromRemote() }
+              .setPositiveButton("Wipe and restore") { _, _ ->
+                Toast.makeText(this@InternalBackupPlaygroundFragment.requireContext(), "Restoring backup...", Toast.LENGTH_SHORT).show()
+                viewModel.wipeAllDataAndRestoreFromRemote {
+                  startActivity(MainActivity.clearTop(this@InternalBackupPlaygroundFragment.requireActivity()))
+                }
+              }
               .show()
           },
           onImportEncryptedBackupFromDiskClicked = {
@@ -329,6 +337,7 @@ fun Screen(
   onCheckRemoteBackupStateClicked: () -> Unit = {},
   onEnqueueRemoteBackupClicked: () -> Unit = {},
   onEnqueueReconciliationClicked: () -> Unit = {},
+  onEnqueueMediaRestoreClicked: () -> Unit = {},
   onWipeDataAndRestoreFromRemoteClicked: () -> Unit = {},
   onHaltAllBackupJobsClicked: () -> Unit = {},
   onSavePlaintextCopyOfRemoteBackupClicked: () -> Unit = {},
@@ -398,6 +407,12 @@ fun Screen(
         text = "Enqueue reconciliation job",
         label = "Schedules a job that will ensure local and remote media state are in sync.",
         onClick = onEnqueueReconciliationClicked
+      )
+
+      Rows.TextRow(
+        text = "Enqueue media restore job",
+        label = "Schedules a job that will restore any NEEDS_RESTORE media.",
+        onClick = onEnqueueMediaRestoreClicked
       )
 
       Rows.TextRow(
@@ -554,7 +569,7 @@ fun Screen(
       Rows.TextRow(
         text = "Mark out of remote storage space",
         onClick = {
-          BackupRepository.markOutOfRemoteStorageError()
+          BackupRepository.markOutOfRemoteStorageSpaceError()
         }
       )
 

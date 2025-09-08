@@ -64,7 +64,7 @@ import org.thoughtcrime.securesms.database.model.StickerRecord;
 import org.thoughtcrime.securesms.keyboard.KeyboardPage;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewRepository;
-import org.thoughtcrime.securesms.mms.DecryptableStreamUriLoader;
+import org.thoughtcrime.securesms.mms.DecryptableUri;
 import org.thoughtcrime.securesms.mms.QuoteModel;
 import org.thoughtcrime.securesms.mms.Slide;
 import org.thoughtcrime.securesms.mms.SlideDeck;
@@ -219,7 +219,7 @@ public class InputPanel extends ConstraintLayout
                        @NonNull SlideDeck attachments,
                        @NonNull QuoteModel.Type quoteType)
   {
-    this.quoteView.setQuote(requestManager, id, author, body, false, attachments, null, quoteType);
+    this.quoteView.setQuote(requestManager, id, author, body, false, attachments, null, quoteType, true);
     if (listener != null) {
       this.quoteView.setOnClickListener(v -> listener.onQuoteClicked(id, author.getId()));
     }
@@ -309,7 +309,7 @@ public class InputPanel extends ConstraintLayout
                                         quoteView.getAuthor().getId(),
                                         quoteView.getBody().toString(),
                                         false,
-                                        quoteView.getAttachments(),
+                                        quoteView.getAttachment(),
                                         quoteView.getMentions(),
                                         quoteView.getQuoteType(),
                                         quoteView.getBodyRanges()));
@@ -481,7 +481,7 @@ public class InputPanel extends ConstraintLayout
 
       if (imageVideoSlide != null && imageVideoSlide.getUri() != null) {
         editMessageThumbnail.setVisibility(VISIBLE);
-        requestManager.load(new DecryptableStreamUriLoader.DecryptableUri(imageVideoSlide.getUri()))
+        requestManager.load(new DecryptableUri(imageVideoSlide.getUri()))
                      .centerCrop()
                      .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                      .into(editMessageThumbnail);

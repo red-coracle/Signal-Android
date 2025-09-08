@@ -40,7 +40,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/pin_restore_pin_title" />
 
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edit_kbs_textinputlayout"
             style="@style/Widget.Signal.TextInputLayout"
@@ -62,7 +61,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:imeOptions="actionDone"
-                android:inputType="numberPassword"
                 tools:text="1234567890" />
         </com.google.android.material.textfield.TextInputLayout>
 

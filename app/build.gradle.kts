@@ -21,8 +21,8 @@ plugins {
 
 apply(from = "static-ips.gradle.kts")
 
-val canonicalVersionCode = 1565
-val canonicalVersionName = "7.50.1"
+val canonicalVersionCode = 1583
+val canonicalVersionName = "7.56.4"
 val currentHotfixVersion = 0
 val maxHotfixVersions = 100
 
@@ -253,7 +253,8 @@ android {
     buildConfigField("String", "STRIPE_BASE_URL", "\"https://api.stripe.com/v1\"")
     buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"pk_live_6cmGZopuTsV8novGgJJW9JpC00vLIgtQ1D\"")
     buildConfigField("boolean", "TRACING_ENABLED", "false")
-    buildConfigField("boolean", "MESSAGE_BACKUP_RESTORE_ENABLED", "false")
+    buildConfigField("boolean", "MESSAGE_BACKUP_RESTORE_ENABLED", "true")
+    buildConfigField("boolean", "LINK_DEVICE_UX_ENABLED", "true")
 
     ndk {
       abiFilters += listOf("arm64-v8a")
@@ -334,6 +335,7 @@ android {
       isMinifyEnabled = false
       matchingFallbacks += "debug"
       buildConfigField("String", "BUILD_VARIANT_TYPE", "\"Spinner\"")
+      buildConfigField("boolean", "LINK_DEVICE_UX_ENABLED", "true")
     }
 
     create("perf") {
@@ -518,6 +520,7 @@ dependencies {
   implementation(project(":device-transfer"))
   implementation(project(":image-editor"))
   implementation(project(":donations"))
+  implementation(project(":debuglogs-viewer"))
   implementation(project(":contacts"))
   implementation(project(":qr"))
   implementation(project(":sticky-header-grid"))
@@ -622,8 +625,7 @@ dependencies {
   implementation(libs.androidx.credentials)
   implementation(libs.androidx.credentials.compat)
 
-  "playImplementation"(project(":billing"))
-  "nightlyImplementation"(project(":billing"))
+  implementation(project(":billing"))
 
   "spinnerImplementation"(project(":spinner"))
 
@@ -654,6 +656,9 @@ dependencies {
   testImplementation(testFixtures(project(":libsignal-service")))
   testImplementation(testLibs.espresso.core)
   testImplementation(testLibs.kotlinx.coroutines.test)
+  testImplementation(libs.androidx.compose.ui.test.junit4)
+
+  "perfImplementation"(libs.androidx.compose.ui.test.manifest)
 
   androidTestImplementation(platform(libs.androidx.compose.bom))
   androidTestImplementation(libs.androidx.compose.ui.test.junit4)
@@ -752,13 +757,18 @@ fun getMapsKey(): String {
 }
 
 fun Project.languageList(): List<String> {
+  // In API 35, language codes for Hebrew and Indonesian now use the ISO 639-1 code ("he" and "id").
+  // However, the value resources still only support the outdated code ("iw" and "in") so we have
+  // to manually indicate that we support these languages.
+  val updatedLanguageCodes = listOf("he", "id")
+
   return fileTree("src/main/res") { include("**/strings.xml") }
     .map { stringFile -> stringFile.parentFile.name }
     .map { valuesFolderName -> valuesFolderName.replace("values-", "") }
     .filter { valuesFolderName -> valuesFolderName != "values" }
     .map { languageCode -> languageCode.replace("-r", "_") }
     .distinct()
-    .sorted() + "en"
+    .sorted() + updatedLanguageCodes + "en"
 }
 
 fun String.capitalize(): String {

@@ -5,13 +5,23 @@
 
 package org.thoughtcrime.securesms.jobs
 
+import android.app.Notification
+import android.app.PendingIntent
+import android.content.Intent
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import org.signal.core.util.PendingIntentFlags
 import org.signal.core.util.Stopwatch
 import org.signal.core.util.isNotNullOrBlank
 import org.signal.core.util.logging.Log
+import org.signal.core.util.logging.logW
+import org.signal.libsignal.messagebackup.BackupForwardSecrecyToken
+import org.signal.libsignal.net.SvrBStoreResponse
 import org.signal.protos.resumableuploads.ResumableUpload
+import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.ArchiveUploadProgress
-import org.thoughtcrime.securesms.backup.RestoreState
 import org.thoughtcrime.securesms.backup.v2.ArchiveMediaItemIterator
+import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgress
 import org.thoughtcrime.securesms.backup.v2.ArchiveValidator
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.ResumableMessagesBackupUploadSpec
@@ -22,6 +32,10 @@ import org.thoughtcrime.securesms.jobmanager.impl.BackupMessagesConstraint
 import org.thoughtcrime.securesms.jobs.protos.BackupMessagesJobData
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.isDecisionPending
+import org.thoughtcrime.securesms.logsubmit.SubmitDebugLogActivity
+import org.thoughtcrime.securesms.net.SignalNetwork
+import org.thoughtcrime.securesms.notifications.NotificationChannels
+import org.thoughtcrime.securesms.notifications.NotificationIds
 import org.thoughtcrime.securesms.providers.BlobProvider
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
@@ -29,6 +43,7 @@ import org.thoughtcrime.securesms.util.RemoteConfig
 import org.whispersystems.signalservice.api.NetworkResult
 import org.whispersystems.signalservice.api.messages.AttachmentTransferProgress
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachment
+import org.whispersystems.signalservice.api.svr.SvrBApi
 import org.whispersystems.signalservice.internal.push.AttachmentUploadForm
 import java.io.File
 import java.io.FileInputStream
@@ -65,13 +80,13 @@ class BackupMessagesJob private constructor(
           false
         }
 
-        SignalStore.backup.restoreState == RestoreState.PENDING -> {
-          Log.i(TAG, "Backup not allowed: a restore is pending.")
+        ArchiveRestoreProgress.state.activelyRestoring() -> {
+          Log.i(TAG, "Backup not allowed: a restore is in progress.")
           false
         }
 
-        SignalStore.backup.restoreState == RestoreState.RESTORING_DB -> {
-          Log.i(TAG, "Backup not allowed: a restore is in progress.")
+        SignalStore.account.isLinkedDevice -> {
+          Log.i(TAG, "Backup not allowed: linked device.")
           false
         }
 
@@ -140,20 +155,59 @@ class BackupMessagesJob private constructor(
 
     val stopwatch = Stopwatch("BackupMessagesJob")
 
-    SignalDatabase.attachments.createRemoteKeyForAttachmentsThatNeedArchiveUpload().takeIf { it > 0 }?.let { count -> Log.w(TAG, "Needed to create $count remote keys.") }
+    val auth = when (val result = BackupRepository.getSvrBAuth()) {
+      is NetworkResult.Success -> result.result
+      is NetworkResult.NetworkError -> return Result.retry(defaultBackoff()).logW(TAG, "Network error when getting SVRB auth.", result.getCause())
+      is NetworkResult.StatusCodeError -> return Result.retry(defaultBackoff()).logW(TAG, "Status code error when getting SVRB auth.", result.getCause())
+      is NetworkResult.ApplicationError -> throw result.throwable
+    }
+
+    val backupSecretData = SignalStore.backup.nextBackupSecretData ?: run {
+      Log.i(TAG, "First SVRB backup! Creating new backup chain.")
+      val secretData = SignalNetwork.svrB.createNewBackupChain(auth, SignalStore.backup.messageBackupKey)
+      SignalStore.backup.nextBackupSecretData = secretData
+      secretData
+    }
+
+    val svrBMetadata: SvrBStoreResponse = when (val result = SignalNetwork.svrB.store(auth, SignalStore.backup.messageBackupKey, backupSecretData)) {
+      is SvrBApi.StoreResult.Success -> result.data
+      is SvrBApi.StoreResult.NetworkError -> return Result.retry(result.retryAfter?.inWholeMilliseconds ?: defaultBackoff()).logW(TAG, "SVRB transient network error.", result.exception)
+      is SvrBApi.StoreResult.SvrError -> return Result.retry(defaultBackoff()).logW(TAG, "SVRB error.", result.throwable)
+      SvrBApi.StoreResult.InvalidDataError -> {
+        Log.w(TAG, "Invalid SVRB data on the server! Clearing backup secret data and retrying.")
+        SignalStore.backup.nextBackupSecretData = null
+        return Result.retry(defaultBackoff())
+      }
+      is SvrBApi.StoreResult.UnknownError -> return Result.fatalFailure(RuntimeException(result.throwable))
+    }
+
+    Log.i(TAG, "Successfully stored data on SVRB.")
+    stopwatch.split("svrb")
+
+    val createKeyResult = SignalDatabase.attachments.createRemoteKeyForAttachmentsThatNeedArchiveUpload()
+    if (createKeyResult.totalCount > 0) {
+      Log.w(TAG, "Needed to create remote keys. $createKeyResult")
+      if (createKeyResult.unexpectedKeyCreation) {
+        maybePostRemoteKeyMissingNotification()
+      }
+    }
     stopwatch.split("keygen")
+
+    SignalDatabase.attachments.clearIncrementalMacsForAttachmentsThatNeedArchiveUpload().takeIf { it > 0 }?.let { count -> Log.w(TAG, "Needed to clear $count incrementalMacs.") }
+    stopwatch.split("clear-incmac")
 
     if (isCanceled) {
       return Result.failure()
     }
 
-    val (tempBackupFile, currentTime) = when (val generateBackupFileResult = getOrCreateBackupFile(stopwatch)) {
+    val (tempBackupFile, currentTime) = when (val generateBackupFileResult = getOrCreateBackupFile(stopwatch, svrBMetadata.forwardSecrecyToken, svrBMetadata.metadata)) {
       is BackupFileResult.Success -> generateBackupFileResult
       BackupFileResult.Failure -> return Result.failure()
       BackupFileResult.Retry -> return Result.retry(defaultBackoff())
     }
 
     ArchiveUploadProgress.onMessageBackupCreated(tempBackupFile.length())
+    SignalStore.backup.lastBackupProtoVersion = BackupRepository.VERSION
 
     this.syncTime = currentTime
     this.dataFile = tempBackupFile.path
@@ -196,8 +250,16 @@ class BackupMessagesJob private constructor(
       override fun shouldCancel(): Boolean = isCanceled
     }
 
-    FileInputStream(tempBackupFile).use {
-      when (val result = BackupRepository.uploadBackupFile(backupSpec, it, tempBackupFile.length(), progressListener)) {
+    FileInputStream(tempBackupFile).use { fileStream ->
+      val uploadResult = SignalNetwork.archive.uploadBackupFile(
+        uploadForm = backupSpec.attachmentUploadForm,
+        resumableUploadUrl = backupSpec.resumableUri,
+        data = fileStream,
+        dataLength = tempBackupFile.length(),
+        progressListener = progressListener
+      )
+
+      when (uploadResult) {
         is NetworkResult.Success -> {
           Log.i(TAG, "Successfully uploaded backup file.")
           if (!SignalStore.backup.hasBackupBeenUploaded) {
@@ -209,7 +271,7 @@ class BackupMessagesJob private constructor(
         }
 
         is NetworkResult.NetworkError -> {
-          Log.i(TAG, "Network failure", result.getCause())
+          Log.i(TAG, "Network failure", uploadResult.getCause())
           return if (isCanceled) {
             Result.failure()
           } else {
@@ -218,14 +280,22 @@ class BackupMessagesJob private constructor(
         }
 
         is NetworkResult.StatusCodeError -> {
-          Log.i(TAG, "Status code failure", result.getCause())
+          Log.i(TAG, "Status code failure", uploadResult.getCause())
+          when (uploadResult.code) {
+            400 -> {
+              Log.w(TAG, "400 likely means bad resumable state. Resetting the upload spec before retrying.")
+              resumableMessagesBackupUploadSpec = null
+            }
+          }
           return Result.retry(defaultBackoff())
         }
 
-        is NetworkResult.ApplicationError -> throw result.throwable
+        is NetworkResult.ApplicationError -> throw uploadResult.throwable
       }
     }
     stopwatch.split("upload")
+
+    SignalStore.backup.nextBackupSecretData = svrBMetadata.nextBackupSecretData
 
     SignalStore.backup.lastBackupProtoSize = tempBackupFile.length()
     if (!tempBackupFile.delete()) {
@@ -248,6 +318,13 @@ class BackupMessagesJob private constructor(
       ArchiveUploadProgress.onMessageBackupFinishedEarly()
     }
 
+    if (SignalStore.backup.backsUpMedia && SignalDatabase.attachments.doAnyThumbnailsNeedArchiveUpload()) {
+      Log.i(TAG, "Enqueuing thumbnail backfill job.")
+      AppDependencies.jobManager.add(ArchiveThumbnailBackfillJob())
+    } else {
+      Log.i(TAG, "No thumbnails need to be uploaded: ${SignalStore.backup.backupTier}")
+    }
+
     BackupRepository.clearBackupFailure()
     SignalDatabase.backupMediaSnapshots.commitPendingRows()
 
@@ -260,7 +337,9 @@ class BackupMessagesJob private constructor(
   }
 
   private fun getOrCreateBackupFile(
-    stopwatch: Stopwatch
+    stopwatch: Stopwatch,
+    forwardSecrecyToken: BackupForwardSecrecyToken,
+    forwardSecrecyMetadata: ByteArray
   ): BackupFileResult {
     if (System.currentTimeMillis() > syncTime && syncTime > 0L && dataFile.isNotNullOrBlank()) {
       val file = File(dataFile)
@@ -279,8 +358,18 @@ class BackupMessagesJob private constructor(
     val outputStream = FileOutputStream(tempBackupFile)
     val backupKey = SignalStore.backup.messageBackupKey
     val currentTime = System.currentTimeMillis()
-    BackupRepository.export(outputStream = outputStream, messageBackupKey = backupKey, progressEmitter = ArchiveUploadProgress.ArchiveBackupProgressListener, append = { tempBackupFile.appendBytes(it) }, plaintext = false, cancellationSignal = { this.isCanceled }, currentTime = currentTime) {
-      writeMediaCursorToTemporaryTable(it, currentTime = currentTime, mediaBackupEnabled = SignalStore.backup.backsUpMedia)
+
+    BackupRepository.exportForSignalBackup(
+      outputStream = outputStream,
+      messageBackupKey = backupKey,
+      forwardSecrecyMetadata = forwardSecrecyMetadata,
+      forwardSecrecyToken = forwardSecrecyToken,
+      progressEmitter = ArchiveUploadProgress.ArchiveBackupProgressListener,
+      append = { tempBackupFile.appendBytes(it) },
+      cancellationSignal = { this.isCanceled },
+      currentTime = currentTime
+    ) {
+      writeMediaCursorToTemporaryTable(it, mediaBackupEnabled = SignalStore.backup.backsUpMedia)
     }
 
     if (isCanceled) {
@@ -289,7 +378,7 @@ class BackupMessagesJob private constructor(
 
     stopwatch.split("export")
 
-    when (val result = ArchiveValidator.validate(tempBackupFile, backupKey, forTransfer = false)) {
+    when (val result = ArchiveValidator.validateSignalBackup(tempBackupFile, backupKey, forwardSecrecyToken)) {
       ArchiveValidator.ValidationResult.Success -> {
         Log.d(TAG, "Successfully passed validation.")
       }
@@ -329,14 +418,29 @@ class BackupMessagesJob private constructor(
     )
   }
 
-  private fun writeMediaCursorToTemporaryTable(db: SignalDatabase, mediaBackupEnabled: Boolean, currentTime: Long) {
+  private fun writeMediaCursorToTemporaryTable(db: SignalDatabase, mediaBackupEnabled: Boolean) {
     if (mediaBackupEnabled) {
-      db.attachmentTable.getAttachmentsEligibleForArchiveUpload().use {
+      db.attachmentTable.getAttachmentsThatWillBeIncludedInArchive().use {
         SignalDatabase.backupMediaSnapshots.writePendingMediaObjects(
           mediaObjects = ArchiveMediaItemIterator(it).asSequence()
         )
       }
     }
+  }
+
+  private fun maybePostRemoteKeyMissingNotification() {
+    if (!RemoteConfig.internalUser || !SignalStore.backup.backsUpMedia) {
+      return
+    }
+
+    val notification: Notification = NotificationCompat.Builder(context, NotificationChannels.getInstance().FAILURES)
+      .setSmallIcon(R.drawable.ic_notification)
+      .setContentTitle("[Internal-only] Unexpected remote key missing!")
+      .setContentText("Tap to send a debug log")
+      .setContentIntent(PendingIntent.getActivity(context, 0, Intent(context, SubmitDebugLogActivity::class.java), PendingIntentFlags.mutable()))
+      .build()
+
+    NotificationManagerCompat.from(context).notify(NotificationIds.INTERNAL_ERROR, notification)
   }
 
   class Factory : Job.Factory<BackupMessagesJob> {
