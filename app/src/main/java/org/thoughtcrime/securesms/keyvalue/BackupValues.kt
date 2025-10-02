@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.keyvalue
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import okio.withLock
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.backup.DeletionState
@@ -81,6 +82,7 @@ class BackupValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val KEY_BACKUP_EXPIRED_AND_DOWNGRADED = "backup.expired.and.downgraded"
     private const val KEY_BACKUP_DELETION_STATE = "backup.deletion.state"
     private const val KEY_REMOTE_STORAGE_GARBAGE_COLLECTION_PENDING = "backup.remoteStorageGarbageCollectionPending"
+    private const val KEY_ARCHIVE_ATTACHMENT_RECONCILIATION_ATTEMPTS = "backup.archiveAttachmentReconciliationAttempts"
 
     private const val KEY_MEDIA_ROOT_BACKUP_KEY = "backup.mediaRootBackupKey"
 
@@ -116,7 +118,7 @@ class BackupValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   val deletionStateFlow: Flow<DeletionState> = deletionStateValue.toFlow()
 
-  var optimizeStorage: Boolean by booleanValue(KEY_OPTIMIZE_STORAGE, false).withPrecondition { RemoteConfig.internalUser || Environment.IS_STAGING }
+  var optimizeStorage: Boolean by booleanValue(KEY_OPTIMIZE_STORAGE, false).withPrecondition { RemoteConfig.internalUser || Environment.IS_STAGING || Environment.IS_INSTRUMENTATION }
   var backupWithCellular: Boolean
     get() = getBoolean(KEY_BACKUP_OVER_CELLULAR, false)
     set(value) {
@@ -140,7 +142,13 @@ class BackupValues(store: KeyValueStore) : SignalStoreValues(store) {
     set(value) {
       putLong(KEY_LAST_BACKUP_TIME, value)
       clearMessageBackupFailureSheetWatermark()
+      if (_lastBackupTimeFlow.isInitialized()) {
+        _lastBackupTimeFlow.value.tryEmit(value)
+      }
     }
+
+  private val _lastBackupTimeFlow: Lazy<MutableStateFlow<Long>> = lazy { MutableStateFlow(lastBackupTime) }
+  val lastBackupTimeFlow by lazy { _lastBackupTimeFlow.value }
 
   /** The version of the backup file we last successfully made. */
   var lastBackupProtoVersion: Long by longValue(KEY_LAST_BACKUP_PROTO_VERSION, -1)
@@ -386,8 +394,23 @@ class BackupValues(store: KeyValueStore) : SignalStoreValues(store) {
   var remoteStorageGarbageCollectionPending
     get() = store.getBoolean(KEY_REMOTE_STORAGE_GARBAGE_COLLECTION_PENDING, false)
     set(value) {
-      store.beginWrite().putBoolean(KEY_REMOTE_STORAGE_GARBAGE_COLLECTION_PENDING, value)
+      store.beginWrite()
+        .putBoolean(KEY_REMOTE_STORAGE_GARBAGE_COLLECTION_PENDING, value)
+        .apply()
       NoRemoteArchiveGarbageCollectionPendingConstraint.Observer.notifyListeners()
+    }
+
+  /**
+   * Tracks archive attachment reconciliation attempts to prevent infinite retries when we disagree with the server about available storage space.
+   */
+  var archiveAttachmentReconciliationAttempts: Int
+    get() {
+      return store.getInteger(KEY_ARCHIVE_ATTACHMENT_RECONCILIATION_ATTEMPTS, 0)
+    }
+    set(value) {
+      store.beginWrite()
+        .putInteger(KEY_ARCHIVE_ATTACHMENT_RECONCILIATION_ATTEMPTS, value)
+        .apply()
     }
 
   /**
@@ -409,6 +432,8 @@ class BackupValues(store: KeyValueStore) : SignalStoreValues(store) {
       .putBoolean(KEY_NOT_ENOUGH_REMOTE_STORAGE_SPACE, false)
       .putBoolean(KEY_NOT_ENOUGH_REMOTE_STORAGE_SPACE_DISPLAY_SHEET, false)
       .apply()
+
+    archiveAttachmentReconciliationAttempts = 0
   }
 
   /**

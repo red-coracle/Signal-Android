@@ -145,6 +145,9 @@ import org.thoughtcrime.securesms.database.helpers.migration.V287_FixInvalidArch
 import org.thoughtcrime.securesms.database.helpers.migration.V288_CopyStickerDataHashStartToEnd
 import org.thoughtcrime.securesms.database.helpers.migration.V289_AddQuoteTargetContentTypeColumn
 import org.thoughtcrime.securesms.database.helpers.migration.V290_AddArchiveThumbnailTransferStateColumn
+import org.thoughtcrime.securesms.database.helpers.migration.V291_NullOutRemoteKeyIfEmpty
+import org.thoughtcrime.securesms.database.helpers.migration.V292_AddPollTables
+import org.thoughtcrime.securesms.database.helpers.migration.V293_LastResortKeyTupleTableMigration
 import org.thoughtcrime.securesms.database.SQLiteDatabase as SignalSqliteDatabase
 
 /**
@@ -295,16 +298,23 @@ object SignalDatabaseMigrations {
     287 to V287_FixInvalidArchiveState,
     288 to V288_CopyStickerDataHashStartToEnd,
     289 to V289_AddQuoteTargetContentTypeColumn,
-    290 to V290_AddArchiveThumbnailTransferStateColumn
+    290 to V290_AddArchiveThumbnailTransferStateColumn,
+    291 to V291_NullOutRemoteKeyIfEmpty,
+    292 to V292_AddPollTables,
+    293 to V293_LastResortKeyTupleTableMigration
   )
 
-  const val DATABASE_VERSION = 290
+  const val DATABASE_VERSION = 293
 
   @JvmStatic
   fun migrate(context: Application, db: SignalSqliteDatabase, oldVersion: Int, newVersion: Int) {
     val initialForeignKeyState = db.areForeignKeyConstraintsEnabled()
 
-    val eligibleMigrations = migrations.filter { (version, _) -> version > oldVersion && version <= newVersion }
+    val eligibleMigrations = if (newVersion < 0) {
+      migrations.filter { (version, _) -> version > oldVersion }
+    } else {
+      migrations.filter { (version, _) -> version > oldVersion && version <= newVersion }
+    }
 
     for (migrationData in eligibleMigrations) {
       val (version, migration) = migrationData

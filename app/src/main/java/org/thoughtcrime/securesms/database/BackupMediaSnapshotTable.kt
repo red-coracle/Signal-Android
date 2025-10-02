@@ -10,9 +10,12 @@ import android.database.Cursor
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
 import org.signal.core.util.SqlUtil
+import org.signal.core.util.count
 import org.signal.core.util.delete
+import org.signal.core.util.forEach
 import org.signal.core.util.readToList
 import org.signal.core.util.readToSet
+import org.signal.core.util.readToSingleInt
 import org.signal.core.util.readToSingleLong
 import org.signal.core.util.requireBoolean
 import org.signal.core.util.requireInt
@@ -24,7 +27,6 @@ import org.signal.core.util.toInt
 import org.signal.core.util.update
 import org.signal.core.util.withinTransaction
 import org.thoughtcrime.securesms.backup.v2.ArchivedMediaObject
-import org.thoughtcrime.securesms.util.MediaUtil
 
 /**
  * When we delete attachments locally, we can't immediately delete them from the archive CDN. This is because there is still a backup that exists that
@@ -129,32 +131,43 @@ class BackupMediaSnapshotTable(context: Context, database: SignalDatabase) : Dat
   }
 
   /**
-   * Writes the set of media items that are slated to be referenced in the next backup, updating their pending sync time.
-   * Will insert multiple rows per object -- one for the main item, and one for the thumbnail.
+   * Writes a set of [MediaEntry] that are slated to be referenced in the next backup, updating their pending sync time.
    */
-  fun writePendingMediaObjects(mediaObjects: Sequence<ArchiveMediaItem>) {
-    mediaObjects
-      .chunked(SqlUtil.MAX_QUERY_ARGS)
-      .forEach { chunk ->
-        // Full attachment
-        writePendingMediaObjectsChunk(
-          chunk
-            .filterNot { MediaUtil.isViewOnceType(it.contentType) || MediaUtil.isLongTextType(it.contentType) }
-            .map { MediaEntry(it.mediaId, it.cdn, it.plaintextHash, it.remoteKey, isThumbnail = false) }
-        )
+  fun writePendingMediaEntries(entries: Collection<MediaEntry>) {
+    if (entries.isEmpty()) {
+      return
+    }
 
-        // Thumbnail
-        writePendingMediaObjectsChunk(
-          chunk
-            .filterNot { it.quote }
-            .filter { MediaUtil.isImageOrVideoType(it.contentType) }
-            .map { MediaEntry(it.thumbnailMediaId, it.cdn, it.plaintextHash, it.remoteKey, isThumbnail = true) }
-        )
-      }
+    val values = entries.map {
+      contentValuesOf(
+        MEDIA_ID to it.mediaId,
+        CDN to it.cdn,
+        PLAINTEXT_HASH to it.plaintextHash,
+        REMOTE_KEY to it.remoteKey,
+        IS_THUMBNAIL to it.isThumbnail.toInt(),
+        SNAPSHOT_VERSION to UNKNOWN_VERSION,
+        IS_PENDING to 1
+      )
+    }
+
+    SqlUtil.buildBulkInsert(TABLE_NAME, arrayOf(MEDIA_ID, CDN, PLAINTEXT_HASH, REMOTE_KEY, IS_THUMBNAIL, SNAPSHOT_VERSION, IS_PENDING), values).forEach { query ->
+      writableDatabase.execSQL(
+        query.where +
+          """
+        ON CONFLICT($MEDIA_ID) DO UPDATE SET
+          $CDN = excluded.$CDN,
+          $PLAINTEXT_HASH = excluded.$PLAINTEXT_HASH,
+          $REMOTE_KEY = excluded.$REMOTE_KEY,
+          $IS_THUMBNAIL = excluded.$IS_THUMBNAIL,
+          $IS_PENDING = excluded.$IS_PENDING
+        """,
+        query.whereArgs
+      )
+    }
   }
 
   /**
-   * Commits all pending entries (written via [writePendingMediaObjects]) to have a concrete [SNAPSHOT_VERSION]. The version will be 1 higher than the previous
+   * Commits all pending entries (written via [writePendingMediaEntries]) to have a concrete [SNAPSHOT_VERSION]. The version will be 1 higher than the previous
    * snapshot version.
    */
   fun commitPendingRows() {
@@ -214,6 +227,8 @@ class BackupMediaSnapshotTable(context: Context, database: SignalDatabase) : Dat
       return emptySet()
     }
 
+    val objectsByMediaId: MutableMap<String, ArchivedMediaObject> = objects.associateBy { it.mediaId }.toMutableMap()
+
     val queries: List<SqlUtil.Query> = SqlUtil.buildCollectionQuery(
       column = MEDIA_ID,
       values = objects.map { it.mediaId },
@@ -221,20 +236,45 @@ class BackupMediaSnapshotTable(context: Context, database: SignalDatabase) : Dat
       prefix = "$SNAPSHOT_VERSION = $MAX_VERSION AND "
     )
 
-    val foundObjects: MutableSet<String> = mutableSetOf()
-
     for (query in queries) {
-      foundObjects += readableDatabase
+      readableDatabase
         .select(MEDIA_ID, CDN)
         .from(TABLE_NAME)
         .where(query.where, query.whereArgs)
         .run()
-        .readToSet {
-          it.requireNonNullString(MEDIA_ID)
+        .forEach {
+          val mediaId = it.requireNonNullString(MEDIA_ID)
+          objectsByMediaId.remove(mediaId)
         }
     }
 
-    return objects.filterNot { foundObjects.contains(it.mediaId) }.toSet()
+    return objectsByMediaId.values.toSet()
+  }
+
+  fun getMediaEntriesForObjects(objects: List<ArchivedMediaObject>): Set<MediaEntry> {
+    if (objects.isEmpty()) {
+      return emptySet()
+    }
+
+    val queries: List<SqlUtil.Query> = SqlUtil.buildCollectionQuery(
+      column = MEDIA_ID,
+      values = objects.map { it.mediaId },
+      collectionOperator = SqlUtil.CollectionOperator.IN,
+      prefix = "$SNAPSHOT_VERSION = $MAX_VERSION AND "
+    )
+
+    val entries: MutableSet<MediaEntry> = mutableSetOf()
+
+    for (query in queries) {
+      entries += readableDatabase
+        .select(MEDIA_ID, CDN, PLAINTEXT_HASH, REMOTE_KEY, IS_THUMBNAIL)
+        .from("$TABLE_NAME JOIN ${AttachmentTable.TABLE_NAME}")
+        .where(query.where, query.whereArgs)
+        .run()
+        .readToList { MediaEntry.fromCursor(it) }
+    }
+
+    return entries.toSet()
   }
 
   /**
@@ -298,37 +338,22 @@ class BackupMediaSnapshotTable(context: Context, database: SignalDatabase) : Dat
       .run()
   }
 
-  private fun writePendingMediaObjectsChunk(chunk: List<MediaEntry>) {
-    if (chunk.isEmpty()) {
-      return
-    }
+  fun debugGetFullSizeAttachmentCountForMostRecentSnapshot(): Int {
+    return readableDatabase
+      .count()
+      .from(TABLE_NAME)
+      .where("$IS_THUMBNAIL = 0 AND $SNAPSHOT_VERSION = $MAX_VERSION")
+      .run()
+      .readToSingleInt()
+  }
 
-    val values = chunk.map {
-      contentValuesOf(
-        MEDIA_ID to it.mediaId,
-        CDN to it.cdn,
-        PLAINTEXT_HASH to it.plaintextHash,
-        REMOTE_KEY to it.remoteKey,
-        IS_THUMBNAIL to it.isThumbnail.toInt(),
-        SNAPSHOT_VERSION to UNKNOWN_VERSION,
-        IS_PENDING to 1
-      )
-    }
-
-    val query = SqlUtil.buildSingleBulkInsert(TABLE_NAME, arrayOf(MEDIA_ID, CDN, PLAINTEXT_HASH, REMOTE_KEY, IS_THUMBNAIL, SNAPSHOT_VERSION, IS_PENDING), values)
-
-    writableDatabase.execSQL(
-      query.where +
-        """
-        ON CONFLICT($MEDIA_ID) DO UPDATE SET
-          $CDN = excluded.$CDN,
-          $PLAINTEXT_HASH = excluded.$PLAINTEXT_HASH,
-          $REMOTE_KEY = excluded.$REMOTE_KEY,
-          $IS_THUMBNAIL = excluded.$IS_THUMBNAIL,
-          $IS_PENDING = excluded.$IS_PENDING
-        """,
-      query.whereArgs
-    )
+  fun debugGetThumbnailAttachmentCountForMostRecentSnapshot(): Int {
+    return readableDatabase
+      .count()
+      .from(TABLE_NAME)
+      .where("$IS_THUMBNAIL != 0 AND $SNAPSHOT_VERSION = $MAX_VERSION")
+      .run()
+      .readToSingleInt()
   }
 
   class ArchiveMediaItem(

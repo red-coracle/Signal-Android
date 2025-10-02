@@ -6,12 +6,13 @@
 package org.thoughtcrime.securesms.logsubmit
 
 import android.content.Context
+import com.google.android.gms.common.GoogleApiAvailability
 import kotlinx.coroutines.runBlocking
 import org.signal.donations.InAppPaymentType
 import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgress
+import org.thoughtcrime.securesms.backup.v2.ui.subscription.GooglePlayServicesAvailability
 import org.thoughtcrime.securesms.components.settings.app.subscription.DonationSerializationHelper.toFiatMoney
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
-import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
@@ -45,11 +46,13 @@ class LogSectionRemoteBackups : LogSection {
     output.append("\n -- Subscription State\n")
 
     val backupSubscriptionId = InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.BACKUP)
-    val hasGooglePlayBilling = runBlocking { AppDependencies.billingApi.isApiAvailable() }
+    val googlePlayBillingAccess = runBlocking { AppDependencies.billingApi.getApiAvailability() }
+    val googlePlayServicesAvailability = GooglePlayServicesAvailability.fromCode(GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context))
     val inAppPayment = SignalDatabase.inAppPayments.getLatestInAppPaymentByType(InAppPaymentType.RECURRING_BACKUP)
 
     output.append("Has backup subscription id: ${backupSubscriptionId != null}\n")
-    output.append("Has Google Play Billing:    $hasGooglePlayBilling\n\n")
+    output.append("Google Play Billing state:  $googlePlayBillingAccess\n")
+    output.append("Google Play Services state: $googlePlayServicesAvailability\n\n")
 
     if (inAppPayment != null) {
       output.append("IAP end of period (seconds):       ${inAppPayment.endOfPeriodSeconds}\n")
@@ -61,7 +64,7 @@ class LogSectionRemoteBackups : LogSection {
       output.append("IAP redemption stage (or null):    ${inAppPayment.data.redemption?.stage}\n")
       output.append("IAP error type (or null):          ${inAppPayment.data.error?.type}\n")
       output.append("IAP cancellation reason (or null): ${inAppPayment.data.cancellation?.reason}\n")
-      output.append("IAP price:                         ${inAppPayment.data.amount?.toFiatMoney()?.let { FiatMoneyUtil.format(context.resources, it)} ?: "Not available" }")
+      output.append("IAP price:                         ${inAppPayment.data.amount?.toFiatMoney()?.let { FiatMoneyUtil.format(context.resources, it)} ?: "Not available" }\n")
     } else {
       output.append("No in-app payment data available.\n")
     }
@@ -94,39 +97,9 @@ class LogSectionRemoteBackups : LogSection {
     }
 
     output.append("\n -- Attachment Stats\n")
-    output.append(SignalDatabase.attachments.debugGetAttachmentStats().toPrettyString())
+    output.append(SignalDatabase.attachments.debugGetAttachmentStats().prettyString())
 
     return output
-  }
-}
-
-private fun AttachmentTable.DebugAttachmentStats.toPrettyString(): String {
-  return buildString {
-    appendLine("Total attachment rows: $totalAttachmentRows")
-    appendLine("Total eligible for upload rows: $totalEligibleForUploadRows")
-    appendLine("Total unique media names eligible for upload: $totalUniqueMediaNamesEligibleForUpload")
-    appendLine("Total unique data files: $totalUniqueDataFiles")
-    appendLine("Total unique media names: $totalUniqueMediaNames")
-    appendLine("Media names with thumbnails count: $mediaNamesWithThumbnailsCount")
-    appendLine("Pending attachment upload bytes: $pendingAttachmentUploadBytes")
-    appendLine("Uploaded attachment bytes: $uploadedAttachmentBytes")
-    appendLine("Uploaded thumbnail bytes: $uploadedThumbnailBytes")
-    appendLine("Total upload count: $totalUploadCount")
-    appendLine("Total upload bytes: $totalUploadBytes")
-
-    if (archiveStatusMediaNameCounts.isNotEmpty()) {
-      appendLine("Archive status media name counts:")
-      archiveStatusMediaNameCounts.forEach { (state, count) ->
-        appendLine("  ${state.name}: $count")
-      }
-    }
-
-    if (archiveStatusMediaNameThumbnailCounts.isNotEmpty()) {
-      appendLine("Archive status media name thumbnail counts:")
-      archiveStatusMediaNameThumbnailCounts.forEach { (state, count) ->
-        appendLine("  ${state.name}: $count")
-      }
-    }
   }
 }
 

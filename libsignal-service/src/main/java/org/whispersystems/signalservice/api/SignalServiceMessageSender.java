@@ -185,7 +185,7 @@ public class SignalServiceMessageSender {
   private final Scheduler       scheduler;
   private final long            maxEnvelopeSize;
   private final BooleanSupplier useRestFallback;
-  private final UsePqRatchet usePqRatchet;
+  private final UsePqRatchet    usePqRatchet;
 
   public SignalServiceMessageSender(PushServiceSocket pushServiceSocket,
                                     SignalServiceDataStore store,
@@ -1229,6 +1229,32 @@ public class SignalServiceMessageSender {
       List<BodyRange> bodyRanges = new ArrayList<>(builder.bodyRanges);
       bodyRanges.addAll(message.getBodyRanges().get());
       builder.bodyRanges(bodyRanges);
+    }
+
+    if (message.getPollCreate().isPresent()) {
+      SignalServiceDataMessage.PollCreate pollCreate = message.getPollCreate().get();
+
+      builder.pollCreate(new DataMessage.PollCreate.Builder()
+                                                   .question(pollCreate.getQuestion())
+                                                   .allowMultiple(pollCreate.getAllowMultiple())
+                                                   .options(pollCreate.getOptions()).build());
+    }
+
+    if (message.getPollVote().isPresent()) {
+      SignalServiceDataMessage.PollVote pollVote = message.getPollVote().get();
+      builder.pollVote(new DataMessage.PollVote.Builder()
+                                               .targetSentTimestamp(pollVote.getTargetSentTimestamp())
+                                               .targetAuthorAciBinary(pollVote.getTargetAuthor().toByteString())
+                                               .voteCount(pollVote.getVoteCount())
+                                               .optionIndexes(pollVote.getOptionIndexes())
+                                               .build());
+    }
+
+    if (message.getPollTerminate().isPresent()) {
+      SignalServiceDataMessage.PollTerminate pollTerminate = message.getPollTerminate().get();
+      builder.pollTerminate(new DataMessage.PollTerminate.Builder()
+                                                         .targetSentTimestamp(pollTerminate.getTargetSentTimestamp())
+                                                         .build());
     }
 
     builder.timestamp(message.getTimestamp());
@@ -2813,6 +2839,7 @@ public class SignalServiceMessageSender {
     if (maxEnvelopeSize > 0 && size > maxEnvelopeSize) {
       throw new ContentTooLargeException(size);
     }
+
     return content;
   }
 
@@ -2822,6 +2849,7 @@ public class SignalServiceMessageSender {
     if (maxEnvelopeSize > 0 && size > maxEnvelopeSize) {
       throw new ContentTooLargeException(size);
     }
+
     return content;
   }
 

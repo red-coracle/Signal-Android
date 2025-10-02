@@ -398,7 +398,7 @@ class ChatItemArchiveExporter(
 
       if (record.latestRevisionId == null) {
         builder.revisions = revisionMap.remove(record.id)?.repairRevisions(builder) ?: emptyList()
-        val chatItem = builder.build().validateChatItem() ?: continue
+        val chatItem = builder.build().validateChatItem(exportState) ?: continue
         buffer += chatItem
       } else {
         var previousEdits = revisionMap[record.latestRevisionId]
@@ -549,7 +549,7 @@ private fun BackupMessageRecord.toBasicChatItemBuilder(selfRecipientId: Recipien
           dateReceived = dateReceived
         )
 
-        if (expiresInMs != null && outgoing?.sendStatus?.all { it.pending == null && it.failed == null } == true) {
+        if (expiresInMs != null && outgoing?.sendStatus?.all { it.pending == null && it.failed == null } == true && expireStartDate == null) {
           Log.w(TAG, ExportOddities.outgoingMessageWasSentButTimerNotStarted(record.dateSent))
           expireStartDate = record.dateReceived
         }
@@ -1041,7 +1041,9 @@ private fun BackupMessageRecord.getBodyText(attachments: List<DatabaseAttachment
   }
 
   if (longTextAttachment.uri == null || longTextAttachment.transferState != AttachmentTable.TRANSFER_PROGRESS_DONE) {
-    return StringUtil.trimToFit(this.body.emptyIfNull(), MAX_INLINED_BODY_SIZE_WITH_LONG_ATTACHMENT_POINTER) to longTextAttachment
+    Log.w(TAG, ExportOddities.undownloadedLongTextAttachment(this.dateSent))
+    val body = StringUtil.trimToFit(this.body.emptyIfNull(), MAX_INLINED_BODY_SIZE_WITH_LONG_ATTACHMENT_POINTER)
+    return body to longTextAttachment.takeUnless { body.isBlank() }
   }
 
   val longText = try {
@@ -1053,7 +1055,8 @@ private fun BackupMessageRecord.getBodyText(attachments: List<DatabaseAttachment
 
   if (longText == null) {
     Log.w(TAG, ExportOddities.unopenableLongTextAttachment(this.dateSent))
-    return StringUtil.trimToFit(this.body.emptyIfNull(), MAX_INLINED_BODY_SIZE_WITH_LONG_ATTACHMENT_POINTER) to longTextAttachment
+    val body = StringUtil.trimToFit(this.body.emptyIfNull(), MAX_INLINED_BODY_SIZE_WITH_LONG_ATTACHMENT_POINTER)
+    return body to longTextAttachment.takeUnless { body.isBlank() }
   }
 
   val trimmed = StringUtil.trimToFit(longText, MAX_INLINED_BODY_SIZE)
@@ -1376,7 +1379,7 @@ private fun List<GroupReceiptTable.GroupReceiptInfo>?.toRemoteSendStatus(message
             reason = SendStatus.Failed.FailureReason.NETWORK
           )
         }
-        MessageTypes.isFailedMessageType(messageRecord.type) -> {
+        it.status == GroupReceiptTable.STATUS_FAILED -> {
           statusBuilder.failed = SendStatus.Failed(
             reason = SendStatus.Failed.FailureReason.UNKNOWN
           )
@@ -1510,7 +1513,7 @@ private fun <T> ExecutorService.submitTyped(callable: Callable<T>): Future<T> {
   return this.submit(callable)
 }
 
-fun ChatItem.validateChatItem(): ChatItem? {
+private fun ChatItem.validateChatItem(exportState: ExportState): ChatItem? {
   if (this.standardMessage == null &&
     this.contactMessage == null &&
     this.stickerMessage == null &&
@@ -1524,10 +1527,24 @@ fun ChatItem.validateChatItem(): ChatItem? {
     Log.w(TAG, ExportSkips.emptyChatItem(this.dateSent))
     return null
   }
+
+  if (this.updateMessage != null && this.updateMessage.isOnlyForIndividualChats() && exportState.threadIdToRecipientId[this.chatId] !in exportState.contactRecipientIds) {
+    Log.w(TAG, ExportSkips.individualChatUpdateInWrongTypeOfChat(this.dateSent))
+    return null
+  }
+
   return this
 }
 
-fun List<ChatItem>.repairRevisions(current: ChatItem.Builder): List<ChatItem> {
+private fun ChatUpdateMessage.isOnlyForIndividualChats(): Boolean {
+  return this.simpleUpdate?.type == SimpleChatUpdate.Type.JOINED_SIGNAL ||
+    this.simpleUpdate?.type == SimpleChatUpdate.Type.END_SESSION ||
+    this.simpleUpdate?.type == SimpleChatUpdate.Type.CHAT_SESSION_REFRESH ||
+    this.simpleUpdate?.type == SimpleChatUpdate.Type.PAYMENT_ACTIVATION_REQUEST ||
+    this.simpleUpdate?.type == SimpleChatUpdate.Type.PAYMENTS_ACTIVATED
+}
+
+private fun List<ChatItem>.repairRevisions(current: ChatItem.Builder): List<ChatItem> {
   return if (current.standardMessage != null) {
     val filtered = this
       .filter { it.standardMessage != null }
