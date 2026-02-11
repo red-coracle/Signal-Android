@@ -60,6 +60,12 @@
     <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">Fraza e rikuperimit të pagesave të regjistruara</string>
     <string name="ApplicationPreferencesActivity_record_phrase">Regjistro frazën</string>
     <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">Përpara se të çaktivizoni PIN-in tuaj, ju duhet të regjistroni frazën e rikuperimit të pagesave tuaja, për t\'u siguruar që ju të mund t\'i rikuperoni llogarinë e pagesave.</string>
+    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_title">Krijo kod të ri rikthimi</string>
+    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_body">Duhet të krijosh dhe të regjistrosh një kod të ri rikthimi përpara se të çaktivizosh kodin PIN.</string>
+    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">Krijo kod</string>
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -307,8 +313,22 @@
     <string name="CameraXFragment_to_capture_videos">Për të regjistruar video me zë:</string>
     <!-- Dialog description that explains the steps needed to give Signal camera permissions -->
     <string name="CameraXFragment_to_scan_qr_codes">Për të skanuar kodet QR:</string>
+    <!-- Error message shown when we try to take a photo, but fail -->
+    <string name="CameraXFragment_photo_capture_failed">Fotoja nuk u shkrep. Të lutem, provo sërish.</string>
+    <!-- Error message shown when we try to take a photo, but fail when trying to process it (convert it into something the user can see). -->
+    <string name="CameraXFragment_photo_processing_failed">Përpunimi i fotos dështoi. Të lutem, provo sërish.</string>
+    <!-- Accessibility label for the switch camera button -->
+    <string name="CameraXFragment_switch_camera">Ndërro kamerën</string>
+    <!-- Accessibility label for flash button when flash is off -->
+    <string name="CameraXFragment_flash_off">Blici është fikur</string>
+    <!-- Accessibility label for flash button when flash is on -->
+    <string name="CameraXFragment_flash_on">Blici është i ndezur</string>
+    <!-- Accessibility label for flash button when flash is set to auto -->
+    <string name="CameraXFragment_flash_auto">Blici është automatik</string>
+    <!-- Accessibility label for the send button in media selection -->
+    <string name="CameraXFragment_send">Dërgoje</string>
 
-    <!-- CameraContacts -->
+<!-- CameraContacts -->
     <string name="CameraContacts_recent_contacts">Kontakte më të fundit</string>
     <string name="CameraContacts_signal_contacts">Kontaktet e Signal-it</string>
     <string name="CameraContacts_signal_groups">Grupet e Signal- it</string>
@@ -359,6 +379,11 @@
     <string name="CommunicationActions_this_is_not_a_valid_call_link">Kjo nuk është një lidhje e vlefshme telefonate. Sigurohu që e gjithë lidhja të jetë e paprekur dhe e saktë para se të përpiqesh t\'i bashkohesh.</string>
     <!-- Displayed in a snackbar when the user is already in a call -->
     <string name="CommunicationActions__you_are_already_in_a_call">Jeni tashmë në një thirrje</string>
+    <!-- Title on dialog when quick restore qr code is scanned in system camera -->
+    <string name="CommunicationActions__transfer_dialog_title">Të transferohet llogaria në një pajisje të re?</string>
+    <!-- Message on dialog when quick restore qr code is scanned in system camera -->
+    <string name="CommunicationActions__transfer_dialog_message">Për ta transferuar këtë llogari në një pajisje të re, kliko \"Vazhdo\" dhe skano përsëri kodin QR me kamerën e Signal. Sigurohu që të skanosh vetëm kodet QR që vijnë direkt nga Signal.</string>
+    <string name="CommunicationActions__dont_transfer">Mos transfero</string>
 
     <!-- ConfirmIdentityDialog -->
 
@@ -400,7 +425,7 @@
     <string name="ContactShareEditActivity_type_work">Pune</string>
     <string name="ContactShareEditActivity_type_missing">Tjetër</string>
     <string name="ContactShareEditActivity_invalid_contact">Kontakti i zgjedhur ishte i pavlefshëm</string>
-    <!-- Content descrption for name edit button on contact share edit activity -->
+    <!-- Content description for name edit button on contact share edit activity -->
     <string name="ContactShareEditActivity__edit_name">Ndrysho emrin</string>
     <!-- Content description for user avatar in edit activity -->
     <string name="ContactShareEditActivity__avatar">Avatar</string>
@@ -669,6 +694,22 @@
     <string name="ConversationFragment_group_names">Emrat e grupit</string>
     <!-- Snackbar toast message shown when a profile cannot be downloaded and to try again. -->
     <string name="ConversationFragment_photo_failed">Fotoja nuk u shkarkua. Provo sërish.</string>
+    <!-- Dialog for how to long to keep a messaged pinned for -->
+    <string name="ConversationFragment__keep_pinned">Mbaje të fiksuar për…</string>
+    <!-- Dialog option to keep message pin for 24 hours -->
+    <string name="ConversationFragment__24_hours">24 orë</string>
+    <!-- Dialog option to keep message pin for 7 days -->
+    <string name="ConversationFragment__7_days">7 ditë</string>
+    <!-- Dialog option to keep message pin for 30 days -->
+    <string name="ConversationFragment__30_days">30 ditë</string>
+    <!-- Dialog option to keep message pin forever -->
+    <string name="ConversationFragment__forever">Përgjithmonë</string>
+    <!-- Dialog title when replacing the oldest pin -->
+    <string name="ConversationFragment__replace_title">Të zëvendësohet mesazhi më i vjetër i fiksuar?</string>
+    <!-- Dialog body when replacing the oldest pin -->
+    <string name="ConversationFragment__replace_body">Mesazhi i fiksuar do të zëvendësojë atë më të vjetrin</string>
+    <!-- Dialog button when replacing the oldest pin -->
+    <string name="ConversationFragment__replace">Zëvendëso</string>
 
     <!-- Title of Safety Tips bottom sheet dialog -->
     <string name="SafetyTips_title">Këshilla sigurie</string>
@@ -913,7 +954,7 @@
     <string name="BackupsPreferenceFragment__backup_time">Ora e kopjeruajtjes</string>
     <string name="BackupsPreferenceFragment__verify_backup_passphrase">Verifikoni frazëkalim kopjeruajtjeje</string>
     <string name="BackupsPreferenceFragment__test_your_backup_passphrase">Testoni frazëkalimin tuaj për kopjeruajtjen dhe verifikoni që përputhet</string>
-    <string name="BackupsPreferenceFragment__turn_on">Aktivizoje</string>
+    <string name="BackupsPreferenceFragment__turn_on">Aktivizo kopjeruajtjet</string>
     <string name="BackupsPreferenceFragment__turn_off">Çaktivizoje</string>
     <string name="BackupsPreferenceFragment__to_restore_a_backup">"Që të riktheni një kopjeruajtje, instaloni një kopje të re të Signal-it. Hapni aplikacionin dhe prekni “Riktheni kopjeruajtje”, mandej lokalizoni një kartelë kopjeruajtjeje. %1$s"</string>
     <string name="BackupsPreferenceFragment__learn_more">Mësoni më shumë</string>
@@ -941,6 +982,11 @@
     <!-- DateUtils -->
     <string name="DateUtils_just_now">Tani</string>
     <string name="DateUtils_minutes_ago">%1$dm</string>
+    <!-- Content description when describing how many minutes ago something has happened -->
+    <plurals name="DateUtils_minutes_ago_content_description">
+        <item quantity="one">%1$d minutë</item>
+        <item quantity="other">%1$d minuta</item>
+    </plurals>
     <string name="DateUtils_today">Sot</string>
     <string name="DateUtils_yesterday">Dje</string>
     <!-- When scheduling a message, %1$s replaced with either today, tonight, or tomorrow. %2$s replaced with the time. e.g. Tonight at 9:00pm -->
@@ -1169,6 +1215,9 @@
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Ky version i Signal-it ka skaduar. Që të dërgoni dhe merrni mesazhe, përditësojeni që tani.</string>
     <string name="ExpiredBuildReminder_update_now">Përditësoje tani</string>
 
+    <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
+    <string name="DeprecatedSdkBanner_body">Signal nuk funksionon më në këtë pajisje. Për të përdorur sërish Signal, përditëso pajisjen në një version më të ri të Android ose kalo në një pajisje më të re.</string>
+
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Përditësoni Signal-in</string>
     <!-- Message body of notification telling users that this current version of Signal has expired. If pressed, we will direct them to the website APK or PlayStore page -->
@@ -1195,11 +1244,11 @@
     <string name="AddToGroupActivity_add_member">Dëshironi të shtoni anëtar?</string>
     <string name="AddToGroupActivity_add_s_to_s">Të shtohet \"%1$s\" te \"%2$s\"?</string>
     <string name="AddToGroupActivity_s_added_to_s">\"%1$s\" u shtua tek \"%2$s\".</string>
-    <string name="AddToGroupActivity_add_to_group">Shtoje në grupi</string>
     <string name="AddToGroupActivity_add_to_groups">Shtoni në grupe</string>
     <string name="AddToGroupActivity_this_person_cant_be_added_to_legacy_groups">Ky person s\\’mund të shtohet te grupe të dikurshëm.</string>
     <string name="AddToGroupActivity_add">Shto</string>
     <string name="AddToGroupActivity_add_to_a_group">Shtoje në një grup</string>
+    <string name="AddToGroupActivity_search">Kërko</string>
 
     <!-- ChooseNewAdminActivity -->
     <string name="ChooseNewAdminActivity_choose_new_admin">Zgjidhni administratorin e ri</string>
@@ -1385,11 +1434,16 @@
     <!-- AddMembersActivity -->
     <string name="AddMembersActivity__done">U bë</string>
     <string name="AddMembersActivity__this_person_cant_be_added_to_legacy_groups">Ky person nuk mund të shtohet në grupet e vjetra.</string>
-    <!-- Confirmation text when adding a member to a group. If one person is added, %1$s is their name. If multiple people are added, the total number is %3$d. %2$s is the name of the group -->
+
+    <!-- Confirmation text when adding one member to a group. %1$s is the member\'s name, %2$s is the group name. -->
+    <string name="AddMembersActivity__add_member_to_s">Të shtohet \"%1$s\" te \"%2$s\"?</string>
+
+    <!-- Confirmation text when adding members to a group. %1$d is the number of members added. %2$s is the name of the group. -->
     <plurals name="AddMembersActivity__add_d_members_to_s">
-        <item quantity="one">Shto \"%1$s\" te \"%2$s\"?</item>
-        <item quantity="other">Shto %3$d anëtarë te \"%2$s\"?</item>
+        <item quantity="one">Shto \"{2}\" te \"%2$s\"?</item>
+        <item quantity="other">Shto %1$d anëtarë te \"%2$s\"?</item>
     </plurals>
+
     <string name="AddMembersActivity__add">Shto</string>
     <string name="AddMembersActivity__add_members">Shtoni anëtarë</string>
 
@@ -1494,9 +1548,9 @@
     <!-- Text shown on restore screen as information on what will happen if you skip -->
     <string name="RemoteRestoreActivity__your_media_will_restore_in_the_background">Media do të rikthehet në sfond. Nëse zgjedh të mos e rikthesh tani, nuk do të jesh në gjendje ta rikthesh më vonë.</string>
     <!-- Dialog title -->
-    <string name="RestoreActivity__no_longer_registered_title">This device is no longer registered</string>
+    <string name="RestoreActivity__no_longer_registered_title">Pajisja nuk është më e regjistruar</string>
     <!-- Dialog message -->
-    <string name="RestoreActivity__no_longer_registered_message">This is likely because you registered your Signal account on a different device.</string>
+    <string name="RestoreActivity__no_longer_registered_message">Kjo ndoshta ka ndodhur pasi e ke regjistruar llogarinë e Signal në një pajisje tjetër.</string>
 
     <!-- GroupMentionSettingDialog -->
     <string name="GroupMentionSettingDialog_notify_me_for_mentions">Njoftomë për Përmendje</string>
@@ -1598,6 +1652,8 @@
     <string name="GroupJoinBottomSheetDialogFragment_unable_to_join_group_please_try_again_later">S\\’arrihet të bëhet pjesë e grupit. Ju lutemi, riprovoni më vonë</string>
     <string name="GroupJoinBottomSheetDialogFragment_encountered_a_network_error">U has një gabim rrjeti.</string>
     <string name="GroupJoinBottomSheetDialogFragment_this_group_link_is_not_active">Kjo lidhje grupi s\\’është aktive</string>
+    <!-- Toast message shown when trying to join a group by link but the group is full -->
+    <string name="GroupJoinBottomSheetDialogFragment_group_limit_reached">U arrit limiti i grupit, nuk mund t\'i bashkohesh grupit</string>
     <!-- Title shown when there was an known issue getting group information from a group link -->
     <string name="GroupJoinBottomSheetDialogFragment_cant_join_group">S’bëhet dot pjesë e grupit</string>
     <!-- Message shown when you try to get information for a group via link but an admin has removed you -->
@@ -2115,6 +2171,8 @@
     <string name="MessageRecord_unsupported_feature">%1$s ju dërgoi një mesazh që s’mund të përpunohet apo shfaqet, ngaqë përdor një veçori të re të Signal-it.</string>
     <!-- Update message shown when someone ends the poll. %1$s is the person who ended the poll and %2$s is the poll question. -->
     <string name="MessageRecord_ended_the_poll">%1$s e përfundoi sondazhin: \"%2$s\"</string>
+    <!-- Update message shown when you end the poll. %1$s is the poll question. -->
+    <string name="MessageRecord_you_ended_the_poll">Sondazhi u mbyll: \"%1$s\"</string>
 
     <!-- MessageRequestBottomView -->
     <string name="MessageRequestBottomView_accept">Pranoje</string>
@@ -2431,6 +2489,12 @@
     <!-- Dialog description that will explain the steps needed to give camera permissions -->
     <string name="WebRtcCallActivity__to_enable_video">Për të aktivizuar videon:</string>
 
+    <!-- MoveableLocalVideoRenderer -->
+    <!-- Content description for button to shrink local video from focused/full-screen mode -->
+    <string name="MoveableLocalVideoRenderer__shrink_local_video">Zvogëlo videon lokale</string>
+    <!-- Content description for button to expand local video to focused/full-screen mode -->
+    <string name="MoveableLocalVideoRenderer__expand_local_video">Zgjero videon lokale</string>
+
     <!-- WebRtcCallView -->
     <string name="WebRtcCallView__signal_call">Thirrje Signal</string>
     <string name="WebRtcCallView__signal_video_call">Thirrje Signal Me Video</string>
@@ -2648,6 +2712,16 @@
     <string name="CallParticipantView__cant_receive_audio_and_video_from_s">S\\’mund të merret audio dhe video prej %1$s</string>
     <string name="CallParticipantView__this_may_be_Because_they_have_not_verified_your_safety_number_change">Kjo mund të ndodhë sepse ata nuk e kanë verifikuar ndryshimin e numrit tënd të sigurisë, ka një problem me pajisjen e tyre ose të kanë bllokuar.</string>
 
+    <!-- SwitchCameraButton -->
+    <!-- Content description for the button that switches between front and back camera during a call -->
+    <string name="SwitchCameraButton__switch_camera_direction">Ndërro drejtimin e kamerës</string>
+
+    <!-- CallQualityDiagnosticsScreen -->
+    <!-- Title for the call quality diagnostics screen -->
+    <string name="CallQualityDiagnosticsScreen__diagnostic_information">Informacion diagnostikues</string>
+    <!-- Content description for the close/back navigation button -->
+    <string name="CallQualityDiagnosticsScreen__close">Mbylle</string>
+
     <!-- CallToastPopupWindow -->
     <string name="CallToastPopupWindow__swipe_to_view_screen_share">Fërkojeni që të shihni ndarje ekrani</string>
 
@@ -2691,7 +2765,8 @@
     <string name="RegistrationActivity_i_understand">E kuptoj</string>
     <string name="RegistrationActivity_play_services_error">Gabim nga Shërbime Play</string>
     <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Shërbimet Google Play po përditësohen ose janë përkohësisht jashtë funksionimi. Ju lutemi, riprovoni.</string>
-    <string name="RegistrationActivity_terms_and_privacy">Kushte &amp; Rregulla Privatësie</string>
+    <!-- Non-English translations should use "Signal is a nonprofit" instead, dropping the 501c3 reference. -->
+    <string name="RegistrationActivity_terms_and_privacy">Signal është një ent jofitimprurës\nKushtet dhe Politika e Privatësisë</string>
     <string name="RegistrationActivity_signal_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">Për t\\’ju ndihmuar të lidheni me shokët tuaj dhe dërgoni mesazhe, Signal-i lyp leje mbi kontaktet dhe median. Kontaktet tuaja ngarkohen duke përdorur pikasje private kontaktesh të Signal-it, që do të thotë se janë të fshehtëzuara skaj-më-skaj dhe kurrë të dukshme për shërbimin Signal.</string>
     <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">Për t\\’ju ndihmuar të lidheni me shokët tuaj, Signal-i lyp leje mbi kontaktet. Kontaktet tuaja ngarkohen duke përdorur pikasje private kontaktesh të Signal-it, që do të thotë se janë të fshehtëzuara skaj-më-skaj dhe kurrë të dukshme për shërbimin Signal.</string>
     <string name="RegistrationActivity_rate_limited_to_service">Keni bërë shumë përpjekje për të regjistruar këtë numër. Ju lutemi, riprovoni më vonë.</string>
@@ -2922,6 +2997,8 @@
     <string name="SubmitDebugLogActivity_success">Sukses!</string>
     <string name="SubmitDebugLogActivity_copy_this_url_and_add_it_to_your_issue">Kopjojeni këtë URL dhe shtojeni te njoftimi i problemit tuaj ose email-i për asistencën:\n\n<b>%1$s</b></string>
     <string name="SubmitDebugLogActivity_share">Ndajeni Me të Tjerë</string>
+    <!-- Displayed when entering activity in view-only mode -->
+    <string name="SubmitDebugLogActivity_close">Mbylle</string>
     <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online_for_contributors">Ky regjistër do të postohet publikisht në internet që ta shohin kontribuesit. Para se ta ngarkoni, mund ta shqyrtoni.</string>
     <!-- Banner message shown while submitting debug log -->
     <string name="SubmitDebugLogActivity_your_log_will_be_posted_online">Kur klikoni mbi Parashtroje, regjistri juaj do të postohet në internet për 30 ditë, te një URL unike, e pabotuar më parë. Mundeni ta Ruani lokalisht, së pari.</string>
@@ -3358,6 +3435,9 @@
     <!-- Label with hyphenation. Translation can use soft hyphen - Unicode U+00AD -->
     <string name="WebRtcCallScreen__answer_without_video">Përgjigjuni pa video</string>
 
+    <!-- CallScreen -->
+    <string name="CallScreen__change_camera_direction">Ndrysho drejtimin e kamerës</string>
+
     <!-- WebRtcAudioOutputToggle -->
     <!-- Label for a dialog asking the user to switch the audio output device during a call -->
     <string name="WebRtcAudioOutputToggle__audio_output">Zë në dalje</string>
@@ -3415,9 +3495,9 @@
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"\"%1$s\" nuk është përdorues i Signal Ju lutemi, kontrollo emrin e përdoruesit dhe riprovo."</string>
     <string name="ContactSelectionListFragment_you_do_not_need_to_add_yourself_to_the_group">S\\’ju duhet të shtoni veten te grupi</string>
     <string name="ContactSelectionListFragment_maximum_group_size_reached">U mbërrit në kufi madhësie grupesh</string>
-    <string name="ContactSelectionListFragment_signal_groups_can_have_a_maximum_of_d_members">Grupet Signal mund të keni një maksimum prej %1$d anëtarësh.</string>
+    <string name="ContactSelectionListFragment_signal_groups_can_have_a_maximum_of_s_members">Grupet Signal mund të keni një maksimum prej %1$s anëtarësh.</string>
     <string name="ContactSelectionListFragment_recommended_member_limit_reached">U mbërrit në kufi të rekomanduar anëtaarësh</string>
-    <string name="ContactSelectionListFragment_signal_groups_perform_best_with_d_members_or_fewer">Grupet Signal punimin më të mirë e kanë me %1$d ose më pak anëtarë. Shtimi i më shumë anëtarëve do të shkaktojë vonesa në dërgim dhe shkëmbim mesazhesh.</string>
+    <string name="ContactSelectionListFragment_signal_groups_perform_best_with_s_members_or_fewer">Grupet Signal punimin më të mirë e kanë me %1$s ose më pak anëtarë. Shtimi i më shumë anëtarëve do të shkaktojë vonesa në dërgim dhe shkëmbim mesazhesh.</string>
     <plurals name="ContactSelectionListFragment_d_members">
         <item quantity="one">%1$d anëtar</item>
         <item quantity="other">%1$d anëtarë</item>
@@ -3751,6 +3831,55 @@
     <string name="verify_display_fragment__loading">Po ngarkohet…</string>
     <string name="verify_display_fragment__mark_as_verified">Vëri shenjë si i verifikuar</string>
     <string name="verify_display_fragment__clear_verification">Spastroje verifikimin</string>
+    <!-- Header title for automatic key verification -->
+    <string name="verify_display_fragment__automatic">Verifikimi automatik i kodit</string>
+    <!-- Button text to verify automatically    -->
+    <string name="verify_display_fragment__verify_automatic">Verifiko automatikisht</string>
+    <!-- Loading text when verifying -->
+    <string name="verify_display_fragment__verifying">Kodimi po verifikohet…</string>
+    <!-- Success text shown when encryption is verified -->
+    <string name="verify_display_fragment__encryption_verified">Kodimi u verifikua</string>
+    <!-- Text shown when verification fails -->
+    <string name="verify_display_fragment__encryption_unavailable">Verifikimi automatik nuk disponohet</string>
+    <!-- Caption text explaining more about automatic verification   -->
+    <string name="verify_display_fragment__auto_verify_not_available">Verifikimi automatik nuk disponohet për të gjitha bisedat.</string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__link" translatable="false">https://support.signal.org/hc/articles/10223569377562</string> -->
+
+    <!-- Bottom sheet title when encryption is auto-verified -->
+    <string name="EncryptionVerifiedSheet__title_success">Kodimi u verifikua automatikisht për këtë bisedë</string>
+    <!-- Bottom sheet body when encryption is auto-verified -->
+    <string name="EncryptionVerifiedSheet__body_success">Për kontaktet me të cilat je lidhur me anë të numrit të telefonit, Signal mund të konfirmojë automatikisht nëse lidhja është e sigurt duke përdorur një proces të quajtur kod transparence. Për siguri të shtuar, verifiko manualisht kodimin nga skaji në skaj duke krahasuar numrat në ekranin e mëparshëm ose duke skanuar kodin në pajisjen e tyre.</string>
+    <!-- Bottom sheet title when encryption is no longer auto-verified -->
+    <string name="EncryptionVerifiedSheet__title_no_longer_unavailable">Verifikimi automatik nuk disponohet më për këtë bisedë</string>
+    <!-- Bottom sheet body when encryption is no longer auto-verified. Placeholder is the name of the person. -->
+    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Signal nuk mund ta verifikojë më automatikisht kodimin për këtë bisedë. Kjo për shkak se me gjasa%1$s ka ndryshuar numrin e telefonit. Verifiko manualisht kodimin nga skaji në skaj duke krahasuar numrat në ekranin e mëparshëm ose duke skanuar kodin në pajisje.</string>
+    <!-- Bottom sheet title when encryption cannot be auto-verified -->
+    <string name="EncryptionVerifiedSheet__title_unavailable">Verifikimi automatik nuk disponohet për këtë bisedë</string>
+    <!-- Bottom sheet body when encryption cannot be auto-verified -->
+    <string name="EncryptionVerifiedSheet__body_unavailable">Signal mund ta verifikojë automatikisht kodimin vetëm në bisedat ku je i lidhur me dikë nëpërmjet një numri telefoni. Nëse biseda ka filluar me një emër përdoruesi ose me një grup të përbashkët, verifiko kodimin nga skaji në skaj duke krahasuar numrat në ekranin e mëparshëm ose duke skanuar kodin në pajisje.</string>
+
+    <!-- Title for auto verification education sheet -->
+    <string name="VerifyAutomaticallyEducationSheet__title">Signal tani mund të verifikojë automatikisht kodimin e kodit</string>
+    <!-- Body for auto verification education sheet -->
+    <string name="VerifyAutomaticallyEducationSheet__body">Për kontaktet me të cilat je lidhur me anë të numrit të telefonit, Signal mund të konfirmojë automatikisht nëse lidhja është e sigurt duke përdorur një proces të quajtur kod transparence. Për siguri shtesë, mund t’i verifikosh lidhjet manualisht me kod QR ose numër.</string>
+    <!-- Button to learn more about automatic verification -->
+    <string name="VerifyAutomaticallyEducationSheet__learn_more">Mëso më shumë</string>
+    <!-- Button to go to verification page -->
+    <string name="VerifyAutomaticallyEducationSheet__verify">Verifiko</string>
+
+    <!-- Title for bottom sheet when self verification fails -->
+    <string name="SelfVerificationFailureSheet__title">Verifikimi automatik i kodit nuk është aktualisht i disponueshëm për pajisjen. Të dorëzohet regjistri i diagnostikimeve?</string>
+    <!-- Body for bottom sheet when self verification fails -->
+    <string name="SelfVerificationFailureSheet__body">Regjistrat e korrigjimit të gabimeve na ndihmojnë të diagnostikojmë dhe rregullojmë problemin dhe nuk përmbajnë informacion identifikues.</string>
+    <!-- Button to decline submitting logs -->
+    <string name="SelfVerificationFailureSheet__no_thanks">Jo, faleminderit</string>
+    <!-- Button to submit logs -->
+    <string name="SelfVerificationFailureSheet__submit">Parashtroje</string>
+    <!-- Email subject line when submitting logs following a verification failure -->
+    <string name="SelfVerificationFailureSheet__email_subject">Dështim i verifikimit automatik të kodit</string>
+  <!-- Removed by excludeNonTranslatables <string name="SelfVerificationFailureSheet__email_filter" translatable="false">AutomaticKeyVerificationFailure</string> -->
+    <!-- Link to learn more about debug logs -->
+    <string name="SelfVerificationFailureSheet__learn_more">Mëso më shumë</string>
 
     <!-- verity_scan_fragment -->
     <string name="verify_scan_fragment__scan_the_qr_code_on_your_contact">Skanoni kodin QR te pajisja e kontaktit tuaj.</string>
@@ -4125,6 +4254,12 @@
     <string name="preferences_normal">Normale</string>
     <!-- Preference summary for compact navigation bar size -->
     <string name="preferences_compact">Kompakt</string>
+    <!-- Dialog message body explaining that we have to restart the app in order to apply the user\'s new language setting.  -->
+    <string name="preferences_language_change_confirmation_message">Aplikacioni do të riniset për të zbatuar parametrat e reja të gjuhës.</string>
+    <!-- Preference title for automatic key verification -->
+    <string name="preferences_automatic_key_verification">Verifikimi automatik i kodit</string>
+    <!-- Preference summary for automatic key verification -->
+    <string name="preferences_automatic_key_verification_body">Kur aktivizohet, Signal do të përpiqet të verifikojë automatikisht kodimin e bisedave 1:1.</string>
 
 
     <string name="configurable_single_select__customize_option">Përshtatë një mundësi</string>
@@ -4429,6 +4564,10 @@
     <string name="conversation_selection__menu_payment_details">Detajet e pagesës</string>
     <!-- Button to end a poll -->
     <string name="conversation_selection__menu_end_poll">Përfundo sondazhin</string>
+    <!-- Button to pin a message -->
+    <string name="conversation_selection__menu_pin_message">Fiksoji</string>
+    <!-- Button to unpin a message -->
+    <string name="conversation_selection__menu_unpin_message">Çfiksoji</string>
 
     <!-- conversation_expiring_on -->
 
@@ -4688,8 +4827,6 @@
     <string name="ConversationListFragment_loading">Po ngarkohet…</string>
     <string name="CallNotificationBuilder_connecting">Po lidhet…</string>
     <string name="Permissions_permission_required">Lyp leje</string>
-    <string name="Permissions_continue">Vazhdo</string>
-    <string name="Permissions_not_now">Jo tani</string>
     <string name="SQLCipherMigrationHelper_migrating_signal_database">Po migrohet baza e të dhënave Signal</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">Frazëkalim kopjeruajtjesh</string>
     <string name="backup_enable_dialog__backups_will_be_saved_to_external_storage_and_encrypted_with_the_passphrase_below_you_must_have_this_passphrase_in_order_to_restore_a_backup">Kopjeruajtjet do të ruhen te depozitë e jashtme dhe fshehtëzohen me frazëkalimin më poshtë. Duhet të keni këtë frazëkalim, pa të mundeni të riktheni një kopjeruajtje.</string>
@@ -5181,10 +5318,14 @@
 
     <!-- CreateGroupActivity -->
     <string name="CreateGroupActivity__skip">Anashkaloje</string>
-    <plurals name="CreateGroupActivity__d_members">
-        <item quantity="one">%1$d anëtar</item>
-        <item quantity="other">%1$d anëtarë</item>
+
+    <!-- Create group screen title displayed when there is at least one group member selected. The placeholder is the total number of group members. -->
+    <plurals name="CreateGroupActivity__s_members">
+        <item quantity="one">%1$s anëtar</item>
+        <item quantity="other">%1$s anëtarë</item>
     </plurals>
+    <!-- Accessibility label for navigating to the next screen in the create group flow. -->
+    <string name="CreateGroupActivity__accessibility_next">Tjetër</string>
 
     <!-- ShareActivity -->
     <string name="ShareActivity__share">Ndajeni Me të Tjerë</string>
@@ -5213,7 +5354,7 @@
     <string name="ChatWallpaperFragment__wallpaper_preview_description">Paraparje sfondi</string>
     <string name="ChatWallpaperFragment__would_you_like_to_override_all_chat_colors">Dëshiron të anashkalosh të gjitha ngjyrat e sfondit të bisedës?</string>
     <string name="ChatWallpaperFragment__would_you_like_to_override_all_wallpapers">Do të donit të anashkalohen krejt ngjyrat sfondet?</string>
-    <string name="ChatWallpaperFragment__reset_default_colors">Riktheji ngjyrat parazgjedhje</string>
+    <string name="ChatWallpaperFragment__reset_default_colors">Rikthe ngjyrat e parazgjedhura</string>
     <string name="ChatWallpaperFragment__reset_all_colors">Riktheji te parazgjedhjet krejt ngjyrat</string>
     <string name="ChatWallpaperFragment__reset_default_wallpaper">Riktheje sfondin te parazgjedhja</string>
     <string name="ChatWallpaperFragment__reset_all_wallpapers">Rikthe te parazgjedhjet krejt sfondet</string>
@@ -5709,6 +5850,8 @@
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Kushte &amp; Rregulla Privatësie</string>
     <string name="HelpFragment__copyright_signal_messenger">Të drejta kopjimi Signal Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Licencuar sipas GNU AGPLv3</string>
+    <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="HelpSettingsFragment__signal_is_a_501c3">Signal është një ent jofitimprurës</string>
 
     <!-- DataAndStorageSettingsFragment -->
     <string name="DataAndStorageSettingsFragment__media_quality">Cilësi media</string>
@@ -5821,7 +5964,7 @@
     <!-- Button label with hyphenation. Translation can use soft hyphen - Unicode U+00AD -->
     <string name="ConversationSettingsFragment__call">Thirrje</string>
     <!-- Button label with hyphenation. Translation can use soft hyphen - Unicode U+00AD -->
-    <string name="ConversationSettingsFragment__mute">Hiqi zërin</string>
+    <string name="ConversationSettingsFragment__mute">Pa zë</string>
     <!-- Button label with hyphenation. Translation can use soft hyphen - Unicode U+00AD -->
     <string name="ConversationSettingsFragment__muted">Pa zë</string>
     <!-- Button label with hyphenation. Translation can use soft hyphen - Unicode U+00AD -->
@@ -5841,6 +5984,8 @@
     <string name="ConversationSettingsFragment__permissions">Leje</string>
     <string name="ConversationSettingsFragment__requests_and_invites">Kërkesa &amp; ftesa</string>
     <string name="ConversationSettingsFragment__group_link">Lidhje grupi</string>
+    <!-- Label for button that opens the group member label permissions screen. -->
+    <string name="ConversationSettingsFragment__group_member_label">Emërtimi i anëtarit</string>
     <!-- Option in conversation settings to add a user as a contact -->
     <string name="ConversationSettingsFragment__add_as_a_contact">Shtojeni si kontakt</string>
     <string name="ConversationSettingsFragment__unmute">Ktheja zërin</string>
@@ -5906,24 +6051,24 @@
     <string name="NewConversationActivity__s_has_been_blocked">%1$s është bllokuar</string>
     <!-- Snackbar message when blocking a contact has failed -->
     <string name="NewConversationActivity__block_failed">Bllokimi dështoi</string>
-    <!-- Dialog title when remove target contact is in system contacts -->
-    <string name="NewConversationActivity__unable_to_remove_s">%1$s nuk mund të hiqet</string>
-    <!-- Dialog message when remove target contact is in system contacts -->
-    <string name="NewConversationActivity__this_person_is_saved_to_your">Ky person është i ruajtur tek kontaktet në pajisjen tënde. Fshiji nga kontaktet e tua dhe provo përsëri.</string>
-    <!-- Dialog action to view contact when they can\'t be removed otherwise -->
-    <string name="NewConversationActivity__view_contact">Shiko kontaktin</string>
     <!-- Error message shown when looking up a person by phone number and that phone number is not associated with a signal account -->
-    <string name="NewConversationActivity__s_is_not_a_signal_user">%1$s nuk është përdorues i Signal</string>
-    <!-- Error message shown when we could not get a user from the username link -->
-    <string name="NewConversationActivity__">%1$s nuk është përdorues i Signal</string>
+    <string name="RecipientLookup_error__s_is_not_a_signal_user">%1$s nuk është përdorues i Signal</string>
+    <!-- Accessibility label for opening the screen specific dropdown menu. -->
+    <string name="NewConversationActivity__accessibility_open_top_bar_menu">Hap menunë</string>
     <!-- Error message shown in a dialog when trying to create a new group with non-signal users (e.g., unregistered or phone number only contacts) -->
-    <plurals name="CreateGroupActivity_not_signal_users">
+    <plurals name="RecipientLookup_error__not_signal_users">
         <item quantity="one">%1$s nuk është përdorues i Signal</item>
         <item quantity="other">%1$s nuk janë përdorues të Signal</item>
     </plurals>
 
-    <!-- Hint text that shows in the recipient search box when no text is entered yet. -->
-    <string name="ContactFilterView__search_name_or_number">Name, username or number</string>
+    <!-- Hint text that shows in the recipient search bar when no text is entered yet. -->
+    <string name="RecipientSearchBar__search_name_or_number">Emër, emër përdoruesi ose numër</string>
+    <!-- Accessibility label for the button to switch to the numeric keyboard type. -->
+    <string name="RecipientSearchBar_accessibility_switch_to_numeric_keyboard">Kalo në tastierën numerike</string>
+    <!-- Accessibility label for the button to switch to the alphanumeric keyboard type. -->
+    <string name="RecipientSearchBar_accessibility_switch_to_alphanumeric_keyboard">Kalo në tastierën alfanumerike</string>
+    <!-- Accessibility label for the button to clear the search filter. -->
+    <string name="RecipientSearchBar_accessibility_clear_search">Rikthe filtrin e kërkimit</string>
 
     <!-- VoiceNotePlayerView -->
     <string name="VoiceNotePlayerView__dot_s">· %1$s</string>
@@ -6091,13 +6236,12 @@
     <string name="BadgesOverviewFragment__failed_to_update_profile">S\\’u arrit të përditësohej profili</string>
 
 
-
     <string name="SelectFeaturedBadgeFragment__select_a_badge">Përzgjidh një distinktiv</string>
     <string name="SelectFeaturedBadgeFragment__you_must_select_a_badge">Duhet të përzgjedhësh një distinktiv</string>
     <string name="SelectFeaturedBadgeFragment__failed_to_update_profile">S\\’u arrit të përditësohej profili</string>
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
-    <string name="ViewBadgeBottomSheetDialogFragment__donate_now">Dhuro tani</string>
+    <string name="ViewBadgeBottomSheetDialogFragment__donate_now">Dhuro</string>
     <!-- Title of a page in the bottom sheet. Placeholder is a user\'s short-name -->
     <string name="ViewBadgeBottomSheetDialogFragment__s_supports_signal">%1$s mbështesin Signal</string>
     <!-- Description of a page in the bottom sheet of a monthly badge. Placeholder is a user\'s short-name -->
@@ -6125,13 +6269,15 @@
     <string name="Subscription__expires_s">Skadon më %1$s</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Sinjali është ndryshe.</string>
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Si një ent jofitimprurës i pavarur, Signal është i përkushtuar ndaj mesazheve dhe thirrjeve private. Pa reklama, pa gjurmues, pa mbikëqyrje. Dhuro sot për të mbështetur Signal.</string>
     <!-- First small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__private_messaging">Mesazhe private. Pa reklama, pa gjurmues, pa mbikëqyrje.</string>
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__private_messaging">No ads, no trackers, no surveillance. Donate today to support Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_supported_by">Signal mbështetet nga dhurimet, që do të thotë se privatësia është në qendër të gjithçkaje që bëjmë. Signal është ndërtuar për ty; jo për të dhënat e tua dhe jo për përfitim.</string>
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Merr distinktivin opsional në profil kur dhuron</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__if_you_can">Nëse mundesh, të lutem dhuro sot për ta mbajtur Signal argëtues, të besueshëm dhe të disponueshëm për të gjithë.</string>
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Privatësia jote është misioni ynë</string>
+    <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal është një ent jofitimprurës. Signal është një ent jofitimprurës.</string>
 
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Faleminderit për Përkrahjen tuaj!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
@@ -6157,7 +6303,8 @@
     <!-- Label for Donation Receipts button -->
     <string name="ManageDonationsFragment__donation_receipts">Faturat e dhurimit</string>
     <string name="ManageDonationsFragment__badges">Distinktivët</string>
-    <string name="ManageDonationsFragment__subscription_faq">FAQ për abonimin</string>
+    <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">Pyetje të shpeshta të dhuruesve</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">Rrugë të tjera për të dhuruar</string>
     <!-- Preference label to launch badge gifting -->
@@ -7160,11 +7307,11 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">Privatësia mbi fitimet</string>
+    <string name="DonateToSignalFragment__privacy_over_profit">Me krenari, enti jofitimprurës</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">Vazhdo</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">Mesazhe private, financuar nga ti. Pa reklama, pa gjurmim, pa kompromise. Dhuro tani për të mbështetur Signal.</string>
+    <string name="DonateToSignalFragment__private_messaging">Dhuro për të mbështetur mesazhet private. Mbaj Signal të pavarur dhe pa reklama.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
     <string name="DonateToSignalFragment__you_have_a_donation_pending">Ke një dhurim në pritje</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
@@ -7438,8 +7585,10 @@
     <string name="CallLogAdapter__outgoing">Dalëse</string>
     <!-- Displayed for missed calls -->
     <string name="CallLogAdapter__missed">E humbur</string>
-    <!-- Displayed for missed calls declined by notification profile -->
+    <!-- Displayed for one missed call declined by notification profile -->
     <string name="CallLogAdapter__missed_notification_profile">Të humbura edhe pse njoftimet janë aktive</string>
+    <!-- Displayed for multiple missed calls declined by notification profile -->
+    <string name="CallLogAdapter__missed_notification_profile_multiple">Të humbura edhe pse njoftimet janë aktive</string>
     <!-- Displayed on Group Call button if user is not in the call -->
     <string name="CallLogAdapter__join">Bashkohu</string>
     <!-- Displayed on Group Call button if user is in the call -->
@@ -7743,12 +7892,28 @@
 
     <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__title">Aktivizo \"Kopjeruajtjet e sigurta të Signal\"</string>
+    <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups. Special string for the beta period. -->
+    <string name="TurnOnSignalBackups__title_beta">Provo \"Kopjeruajtjet e sigurta të Signal\"</string>
     <!-- Body of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__body">Mos e humb as edhe një mesazh kur merr telefon të ri ose riinstalon Signal.</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will take the user to the flow to enable backups -->
     <string name="TurnOnSignalBackups__turn_on">Aktivizo</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will simply dismiss the megaphone -->
     <string name="TurnOnSignalBackups__not_now">Jo tani</string>
+    <!-- Text for a "toast" that pops up at the bottom of the user\'s screen after they respond "not now" to a prompt asking them to enable backups -->
+    <string name="TurnOnSignalBackups__toast_not_now">Kopjeruajtjet mund të aktivizohen te Parametrat</string>
+
+    <!-- Title of a megaphone shown to prompt the user to upgrade to the new local backups type -->
+    <string name="UseNewOnDeviceBackups__title">Përdor kopjeruajtjet e reja në pajisje</string>
+    <!-- Body of a megaphone shown to prompt the user to upgrade to the new local backups type -->
+    <string name="UseNewOnDeviceBackups__body">Kopjeruajtjet në pajisje tani ruhen më shpejt dhe përdorin më pak të dhëna.</string>
+    <!-- Button of a megaphone that will take the user to the upgrade flow -->
+    <string name="UseNewOnDeviceBackups__upgrade">Përmirësojeni</string>
+    <!-- Button of a megaphone that will snooze the reminder to upgrade to the new local backups type -->
+    <string name="UseNewOnDeviceBackups__not_now">Jo tani</string>
+
+    <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
+    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Për të rikthyer kopjeruajtjen, instalo kopjen e re të Signal. Hap aplikacionin dhe kliko \"Rikthe kopjeruajtjen\", pastaj gjej dosjen e kopjeruajtjeve."</string>
 
     <!-- Title of a megaphone shown to prompt the user to verify their recovery key -->
     <string name="VerifyBackupKey__title">Verifiko kodin e rikthimit</string>
@@ -7969,6 +8134,12 @@
     <!-- Backup redemption error sheet bullet point 2 -->
     <string name="BackupAlertBottomSheet__have_too_many_devices_using_the_same_subscription">Ke shumë pajisje që përdorin të njëjtin abonim.</string>
 
+    <!-- OnDeviceBackupsFragment -->
+    <!-- Snackbar message shown after successfully updating the on-device backups recovery key. -->
+    <string name="OnDeviceBackupsFragment__backup_key_updated">Kodi i kopjeruajtjes u përditësua</string>
+    <!-- Toast message shown after selecting a folder to store on-device backups. Placeholder is the selected folder. -->
+    <string name="OnDeviceBackupsFragment__directory_selected">Direktoria e zgjedhur: %1$s</string>
+
     <!-- BackupStatus -->
     <!-- Status title when user does not have enough free space to download their media. Placeholder is required disk space. -->
     <string name="BackupStatus__free_up_s_of_space_to_download_your_media">Liro %1$s hapësirë për të rikthyer median.</string>
@@ -7985,6 +8156,15 @@
     <!-- Status action label for resume restore from a paused state -->
     <string name="BackupStatus__resume">Rifillo</string>
 
+    <!-- Status subtitle for banner when we are creating a backup file -->
+    <string name="BackupStatus__status_creating_backup">Kopjeruajtja po krijohet…</string>
+    <!-- Status title for banner when user is actively uploading backup data -->
+    <string name="BackupStatus__uploading_backup">Kopjeruajtja po ngarkohet</string>
+    <!-- Status title for banner when user is temporarily unable to upload a backup -->
+    <string name="BackupStatus__upload_paused">Kopjeruajtja u ndërpre</string>
+    <!-- Status title for banner when user has finished creating a backup -->
+    <string name="BackupStatus__upload_complete">Kopjeruajtja përfundoi</string>
+
     <!-- Status subtitle for banner when restoring media pauses for Wi-Fi -->
     <string name="BackupStatus__status_waiting_for_wifi">Në pritje të Wi-Fi…</string>
     <!-- Status subtitle for banner when restoring media pauses for internet in general -->
@@ -7993,6 +8173,10 @@
     <string name="BackupStatus__status_device_has_low_battery">Pajisja ka pak bateri</string>
     <!-- Status subtitle for banner when restoring media. Placeholders are size already restored and total size to restore. e.g., 4.5MB of 100MB -->
     <string name="BackupStatus__status_size_of_size">%1$s nga %2$s</string>
+    <!-- Label for a context menu item that, when pressed, will hide a banner so it will no longer be shown. -->
+    <string name="BackupStatus__hide">Fshihe</string>
+    <!-- Label for a context menu item that, when pressed, will cancel the ongoing backup. -->
+    <string name="BackupStatus__cancel_upload">Anulo kopjeruajtjen</string>
 
     <!-- BackupStatusRow -->
     <!-- Content description for x icon at the end of the linear progress indicator -->
@@ -8021,6 +8205,12 @@
     <string name="BackupStatusRow__your_last_backup">Kopjeruajtja e fundit nuk mund të kryhej. Sigurohu që telefoni të jetë i lidhur me Wi-Fi dhe kliko \"Kopjeruaj tani\" për të provuar sërish.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
     <string name="BackupStatusRow__your_last_backup_latest_version">Kopjeruajtja e fundit nuk mund të kryhej. Sigurohu që je në versionin më të fundit të Signal dhe provo përsëri.</string>
+    <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
+    <string name="BackupStatusRow__backup_file_too_large">Numri i mesazheve që ke tejkalon limitin e hapësirës së ruajtjes. Fshi disa mesazhe dhe provo përsëri.</string>
+    <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
+    <string name="BackupStatusRow__not_backing_up_old_messages">Mesazhet e dërguara ose të marra para %1$s nuk po ruhen.</string>
+    <!-- Text displayed when we failed to create a backup because of low disk space. -->
+    <string name="BackupStatusRow__not_enough_disk_space">Kopjeruajtja nuk mund të përfundohej sepse ke pak hapësirë ruajtjeje. Liro hapësirë në pajisje dhe provo përsëri.</string>
     <!-- Text displayed in a row to learn more about why a backup failed -->
     <string name="BackupStatusRow__learn_more">Mëso më shumë</string>
 
@@ -8028,6 +8218,15 @@
     <string name="ResumeRestoreCellular_resume_using_cellular_title">Të rifillohet duke përdorur internetin e celularit?</string>
     <!-- Dialog message to prompt resuming media restore over cellular -->
     <string name="ResumeRestoreCellular_resume_using_cellular_message">Rikthimi i medias duke përdorur internetin e celularit mund të rezultojë në tarifa të të dhënave. Mund të lidhesh me një rrjet Wi-Fi për të rifilluar automatikisht.</string>
+
+    <!-- Title of a dialog box prompting to confirm whether the user truly wants to cancel their backup. -->
+    <string name="CancelBackupDialog_title">Të anulohet kopjeruajtja?</string>
+    <!-- Body of a dialog box prompting to confirm whether the user truly wants to cancel their backup. -->
+    <string name="CancelBackupDialog_body">Anulimi i kopjeruajtjes nuk do ta fshijë atë. Mund ta rifillosh kopjeruajtjen në çdo kohë te parametrat e kopjeruajtjeve.</string>
+    <!-- Button on a dialog box that confirming backup cancellation. When pressed, this button will confirm canceling the currently-running backup (future backups are unaffected). -->
+    <string name="CancelBackupDialog_cancel_action">Anulo kopjeruajtjen</string>
+    <!-- Button on a dialog box that confirming backup cancellation. When pressed, this button will continue the backup rather than cancel it. -->
+    <string name="CancelBackupDialog_continue_action">Vazhdo kopjeruajtjen</string>
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
@@ -8373,6 +8572,37 @@
     <!-- Button label to open storage management screen -->
     <string name="RemoteBackupsSettingsFragment__manage_storage">Administroni depozitim</string>
 
+    <!-- ReadyToTransferBottomSheet -->
+    <!-- Title for a bottom sheet letting people know that they can transfer their back to their new device  -->
+    <string name="RemoteBackupsSettingsFragment__ready_to_transfer">Gati për transferim</string>
+    <!-- Body for bottom sheet telling the user to scan a QR code to continue transferring their backup to a new device -->
+    <string name="RemoteBackupsSettingsFragment__use_this_device_to_scan_qr">Përdor këtë pajisje për të skanuar kodin QR në pajisjen ku dëshiron të transferosh</string>
+    <!-- Button label to open QR scanner to scan a device and transfer a backup -->
+    <string name="RemoteBackupsSettingsFragment__scan_qr_code">Skanoni kodin QR</string>
+
+    <!-- OnDeviceBackupsImprovementsScreen -->
+    <!-- Title displayed at the top of the screen explaining on-device backup improvements -->
+    <string name="OnDeviceBackupsImprovementsScreen__improvements_to_on_device_backups">Përmirësime të kopjeruajtjeve në pajisje</string>
+    <!-- Subtitle describing that the backup will be upgraded to a new format with a new recovery key -->
+    <string name="OnDeviceBackupsImprovementsScreen__your_on_device_backup_will_be_upgraded">Kopjeruajtja në pajisje do të përditësohet në një format të ri duke përdorur kodin e rikthimit</string>
+    <!-- Feature description explaining backups are faster and use less data -->
+    <string name="OnDeviceBackupsImprovementsScreen__backups_now_save_faster">Kopjeruajtjet tani ruhen më shpejt dhe përdorin më pak të dhëna</string>
+    <!-- Feature description explaining backups will be saved as a folder with many files -->
+    <string name="OnDeviceBackupsImprovementsScreen__your_backup_will_be_saved_as_a_folder">Kopjeruajtja do të ruhet si një dosje me shumë skedarë</string>
+    <!-- Feature description explaining backups remain end-to-end encrypted -->
+    <string name="OnDeviceBackupsImprovementsScreen__all_backups_remain_end_to_end_encrypted">Të gjitha kopjeruajtjet mbeten të koduara nga skaji në skaj</string>
+    <!-- Button text to continue to the next step -->
+    <string name="OnDeviceBackupsImprovementsScreen__continue">Vazhdo</string>
+
+    <!-- OnDeviceBackupsSettingsScreen -->
+    <!-- Card text prompting user to update to a new recovery key for faster backups -->
+    <string name="OnDeviceBackupsSettingsScreen__update_to_a_new_recovery_key">Përditësohu me një kod të ri rikthimi për ruajtje më të shpejtë të kopjeruajtjeve</string>
+    <!-- Button text to update to a new recovery key -->
+    <string name="OnDeviceBackupsSettingsScreen__update">Përditësoje</string>
+
+    <!-- UnifiedOnDeviceBackupsSettingsScreen -->
+    <string name="UnifiedOnDeviceBackupsSettingsScreen__view_backup_key">Shiko kodin e kopjeruajtjes</string>
+
     <!-- DownloadYourBackupTodayDialog -->
     <!-- Dialog title -->
     <string name="DownloadYourBackupTodayDialog__download_your_backup_today">Shkarko kopjeruajtjet sot</string>
@@ -8426,18 +8656,42 @@
     <!-- MessageBackupsKeyEducationScreen -->
     <!-- Screen headline -->
     <string name="MessageBackupsKeyEducationScreen__your_backup_key">Kodi i rikthimit</string>
+    <!-- Screen headline shown when upgrading on-device backups to a new recovery key. -->
+    <string name="MessageBackupsKeyEducationScreen__your_new_recovery_key">Kodi i ri i rikthimit</string>
+    <!-- Screen headline shown when the user already has an on-device recovery key set. -->
+    <string name="MessageBackupsKeyEducationScreen__your_recovery_key">Kodi i rikthimit</string>
     <!-- Screen body part 1 -->
-    <string name="MessageBackupsKeyEducationScreen__your_backup_key_is_a">Kodi i rikthimit është 64-shifror dhe të lejon ta rikthesh kopjeruajtjen kur riinstalon Signal.</string>
+    <string name="MessageBackupsKeyEducationScreen__your_backup_key_is_a">Kodi i rikthimit është një kod me 64 karaktere që do të të duhet për të rikthyer kopjeruajtjen.</string>
     <!-- Screen body part 2 -->
-    <string name="MessageBackupsKeyEducationScreen__if_you_forget_your_key">Nëse harron kodin, nuk do të jesh në gjendje të rikthesh kopjeruajtjen. Signal nuk mund të të ndihmojë të rikuperosh kopjeruajtjen.</string>
+    <string name="MessageBackupsKeyEducationScreen__store_your_recovery">Ruaj kodin e rikthimit në një vend të sigurt, si p.sh. në një menaxher fjalëkalimesh të sigurt dhe mos e ndaj me askënd.</string>
+    <!-- Screen body part 3 -->
+    <string name="MessageBackupsKeyEducationScreen__if_you_lose_it">Nëse e humb, nuk do të jesh në gjendje të rikthesh mesazhet.</string>
+    <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 1). -->
+    <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description">Your recovery key is a 64-digit code that lets you restore all backup types.</string>
+    <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
+    <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">Ky kod do të zëvendësojë kodin për kopjeruajtjet në pajisje.</string>
+    <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Your backup key is a 64-digit code that lets you restore your backups when you re-install Signal.</string>
+    <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">Ky kod është i njëjtë me kodin e kopjeruajtjes në pajisjen tënde.</string>
+    <!-- Label shown above a list of actions that the recovery key can be used for. -->
+    <string name="MessageBackupsKeyEducationScreen__use_this_key_to">Përdor këtë kod për të:</string>
+    <!-- Row label indicating that the recovery key can be used to restore an on-device backup. -->
+    <string name="MessageBackupsKeyEducationScreen__restore_on_device_backup">Rikthyer kopjeruajtjet në pajisje</string>
+    <!-- Row label indicating that the recovery key can be used to restore a Signal Secure Backup. -->
+    <string name="MessageBackupsKeyEducationScreen__restore_a_signal_secure_backup">Rikthe \"Kopjeruajtjet e sigurta të Signal\"</string>
+    <!-- Row label indicating that the recovery key can be used to restore a Signal Secure Backup. -->
+    <string name="MessageBackupsKeyEducationScreen__restore_your_signal_secure_backup">Rikthyer \"Kopjeruajtjet e sigurta të Signal\"</string>
     <!-- Action button label -->
-    <string name="MessageBackupsKeyEducationScreen__next">Tjetër</string>
+    <string name="MessageBackupsKeyEducationScreen__view_recovery_key">Shiko kodin e rikthimit</string>
 
     <!-- MessageBackupsKeyRecordScreen -->
     <!-- Screen headline -->
     <string name="MessageBackupsKeyRecordScreen__record_your_backup_key">Regjistro kodin e rikthimit</string>
     <!-- Screen subhead -->
     <string name="MessageBackupsKeyRecordScreen__this_key_is_required_to_recover">Ky kod kërkohet për të rikuperuar llogarinë dhe të dhënat e tua. Ruaje kodin në një vend të sigurt. Nëse e humb, nuk do të mund të rikuperosh llogarinë.</string>
+    <!-- Screen subhead shown when the recovery key is shared between Signal Secure Backups and on-device backups. -->
+    <string name="MessageBackupsKeyRecordScreen__this_key_is_the_same_as_your_on_device_backup_key">Ky kod është i njëjtë me kodin e kopjeruajtjes në pajisjen tënde. Ky kod kërkohet për të rikthyer llogarinë dhe të dhënat.</string>
     <!-- Copy to clipboard button label -->
     <string name="MessageBackupsKeyRecordScreen__copy_to_clipboard">Kopjoje në të papastër</string>
     <!-- Label for the button to save a recovery key to the device password manager. -->
@@ -8482,6 +8736,12 @@
     <string name="MessageBackupsKeyRecordScreen__create_a_new_backup_key">Krijo kod të ri rikthimi</string>
     <!-- Bottom Sheet body for creating a new AEP key -->
     <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">Krijimi i kodit të ri është i nevojshëm vetëm nëse dikush tjetër e di kodin tënd. Do të duhet ta ngarkosh përsëri kopjeruajtjen, duke përfshirë median. Nëse po përdor \"Optimizo hapësirën e ruajtjes\", do të duhet të shkarkosh më parë mediat e ngarkuara.</string>
+    <!-- Dialog title shown when user attempts to exit backup setup before completion -->
+    <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">Të dilet nga konfigurimi i kopjeruajtjes?</string>
+    <!-- Dialog body warning user that backup setup is incomplete -->
+    <string name="MessageBackupsKeyRecordScreen__you_have_not_finished_setting_up_backups">Konfigurimi i kopjeruajtjeve nuk ka përfunduar dhe nuk është krijuar asnjë kopjeruajtje. Kopjeruajtjet aktivizohen te parametrat.</string>
+    <!-- Dialog confirmation button to exit backup setup -->
+    <string name="MessageBackupsKeyRecordScreen__exit_backup_setup_confirm">Dil nga konfigurimi i kopjeruajtjes</string>
 
     <!-- BackupKeyDisplayFragment -->
     <!-- Dialog title when exiting before confirming new key -->
@@ -8509,7 +8769,7 @@
     <!-- Verify your key title -->
     <string name="VerifyBackupPinScreen__enter_your_backup_key">Vendos kodin e rikthimit</string>
     <!-- Verify your key subtitle -->
-    <string name="VerifyBackupPinScreen__enter_the_backup_key_that_you_recorded">Vendos kodin 64-shifror që regjistrove kur aktivizove kopjeruajtjet.</string>
+    <string name="VerifyBackupPinScreen__enter_the_backup_key_that_you_recorded">Vendos kodin me 64 karaktere që regjistrove kur aktivizove kopjeruajtjet.</string>
     <!-- Button text when you forget your recovery key -->
     <string name="VerifyBackupPinScreen__forgot_key">Ke harruar kodin?</string>
 
@@ -8611,7 +8871,7 @@
     <!-- Dialog title shown as a warning when skipping restore during registration -->
     <string name="SelectRestoreMethodFragment__skip_restore_title">Të kapërcehet rikthimi?</string>
     <!-- Dialog message shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_warning">If you skip restore now you will not be able to restore later. If you re-enable backups after skipping restore, your current backup will be replaced with your new messaging history.</string>
+    <string name="SelectRestoreMethodFragment__skip_restore_warning">Nëse e kapërcen rikthimin tani, nuk do të jesh në gjendje ta rikthesh më vonë. Nëse i riaktivizon kopjeruajtjet pasi ke kapërcyer rikthimin, kopjeruajtja aktuale do të zëvendësohet me historikun e ri të mesazheve.</string>
     <!-- Dialog confirm text shown as a warning when skipping restore during registration -->
     <string name="SelectRestoreMethodFragment__skip_restore">Kapërce rikthimin</string>
 
@@ -8655,9 +8915,9 @@
     <!-- Dialog message shown during registration and trying to restore a remote backup -->
     <string name="EnterBackupKey_backup_key_you_entered_is_correct_but_no_backup">Kodi i rikuperimit që vendose është i saktë, por nuk ka kopjeruajtje të lidhur me të. Nëse e ke ende telefonin e vjetër, sigurohu që kopjeruajtjet të jenë aktive dhe të jetë kryer një kopjeruajtje e pastaj provo përsëri.</string>
     <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_incorrect_or_backups_not_enabled">You may have entered your recovery key incorrectly, or you have not completed at least one backup on your old device.\n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups, and confirm that your old device has completed a backup.</string>
+    <string name="EnterBackupKey_backup_key_incorrect_or_backups_not_enabled">Mund të kesh vendosur gabim kodin e rikthimit ose nuk ke përfunduar të paktën një kopjeruajtje në pajisjen e vjetër.\n\nSigurohu që po regjistrohesh me të njëjtin numër telefoni dhe kod rikthimi që ke ruajtur kur aktivizove \"Kopjeruajtjet e sigurta\" dhe konfirmo që të kesh përfunduar kopjeruajtje në pajisjen e vjetër.</string>
     <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_check_rate_limited">You have run out of recovery key attempts. For your security, the number of attempts you can make is limited. Wait one hour and try again.</string>
+    <string name="EnterBackupKey_backup_key_check_rate_limited">Të kanë mbaruar përpjekjet për kodin e rikthimit. Për sigurinë tënde, numri i përpjekjeve që mund të bësh është i kufizuar. Prit një orë dhe provo përsëri.</string>
     <!-- Dialog button shown during registration and trying to restore a remote backup to instead skip said backup process -->
     <string name="EnterBackupKey_skip_restore">Kapërce rikthimin</string>
     <!-- Dialog title text when encountering backup restore network error -->
@@ -8722,6 +8982,19 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">Vazhdo transferimin e llogarisë në pajisjen tjetër.</string>
 
+    <!-- Prepare Device screen title for quick restore flow -->
+    <string name="PrepareDevice_title">Duke përgatitur pajisjen</string>
+    <!-- Prepare Device screen body text explaining backup recommendation -->
+    <string name="PrepareDevice_body">Krijo një kopjeruajtje tani para transferimit. Mund të kesh marrë mesazhe që nuk janë ruajtur ende.</string>
+    <!-- Prepare Device screen last backup text format, %1$s is the date and %2$s is the time -->
+    <string name="PrepareDevice_last_backup">Kopjeruajtja jote e fundit është bërë më %1$s në %2$s.</string>
+    <!-- Prepare Device screen back up now button -->
+    <string name="PrepareDevice_back_up_now">Kopjeruaje Tani</string>
+    <!-- Prepare Device screen skip and continue button -->
+    <string name="PrepareDevice_skip_and_continue">Kapërce dhe vazhdo</string>
+    <!-- A string describing the last time the user\'s backup was made. The placeholder represents a date-time. An example would be "Your last backup was made on July 18, 2025 at 9:00am." -->
+    <string name="PrepareDevice_last_backup_description">Kopjeruajtja e fundit është bërë më %1$s. </string>
+
     <!-- Restore Complete bottom sheet dialog title -->
     <string name="RestoreCompleteBottomSheet_restore_complete">Përfundo në pajisjen tjetër</string>
     <!-- Restore Complete bottom sheet dialog message -->
@@ -8746,6 +9019,16 @@
     <!-- No backup to Restore tonal cta to skip restore -->
     <string name="NoBackupToRestore_skip_restore">Kapërce rikthimin</string>
 
+    <!-- Dialog title when the recovery key change limit is reached -->
+    <string name="MessageBackupsKeyRecordScreen__limit_reached_title">U arrit limiti i kodit të rikthimit</string>
+    <!-- Dialog body when the recovery key change limit is reached -->
+    <string name="MessageBackupsKeyRecordScreen__limit_reached_body">Kodi i ri i rikthimit u krijua me sukses, por për të parandaluar abuzimin, numri i kodeve të rinj që mund të krijosh është i kufizuar. Kodin e ri të rikthimit mund ta krijosh pas 7 ditësh. Ruaj kodin e rikthimit në një vend të sigurt.</string>
+    <!-- Dialog title when the recovery key change limit is exhausted and you cannot create a new key -->
+    <string name="MessageBackupsKeyRecordScreen__limit_exceeded_title">Nuk mund të krijosh kod të ri</string>
+    <!-- Dialog body when the recovery key change limit is exhausted and you cannot create a new key. Placeholder is number of days remaining until they can create a new key. -->
+    <string name="MessageBackupsKeyRecordScreen__limit_exceeded_body">Të kanë mbaruar mundësitë për të krijuar kod të ri. Kodin e ri të rikthimit mund ta krijosh pas 7 ditësh. Nëse beson se dikush mund të ketë qasje në kopjeruajtjen tënde, mund të zgjedhësh opsionin Çaktivizo dhe fshij kopjeruajtjen\".</string>
+    <!-- Button to acknowledge and dismiss dialog   -->
+    <string name="MessageBackupsKeyRecordScreen__ok">OK</string>
     <!-- Accessibility label for close search button in MainToolbar -->
     <string name="MainToolbar__close_search_content_description">Mbyll kërkimin</string>
     <!-- Accessibility label for clear search query in MainToolbar -->
@@ -8807,12 +9090,16 @@
     <string name="Poll__poll_question">Sondazh: %1$s</string>
     <!-- Notification message sent when a poll ends. %1$s is the creator. %2$s is the question of the poll -->
     <string name="Poll__poll_end">%1$s e përfundoi sondazhin: \"%2$s\"</string>
+    <!-- Thread body message when a poll ends. %1$s is the question of the poll -->
+    <string name="Poll__you_poll_end">Sondazhi u mbyll: \"%1$s\"</string>
     <!-- Notification message sent when someone votes in the poll. %1$s is the voter. %2$s is the question of the poll -->
     <string name="Poll__poll_voted">%1$s votoi në sondazh: \"%2$s\"</string>
     <!-- Option in settings to configure notifications for polls -->
     <string name="Poll__poll">Sondazhet</string>
-    <!-- Title of screen that shows the poll results of a poll -->
+    <!-- Title of screen that shows the poll results of a poll after it has ended-->
     <string name="Poll__poll_results">Rezultatet e sondazhit</string>
+    <!-- Title of screen that shows the poll details of a poll -->
+    <string name="Poll__poll_details">Detajet e sondazhit</string>
     <!-- Header text displaying the question of the poll -->
     <string name="Poll__question">Pyetje</string>
     <!-- Text displaying how many votes, %1$d, an option has gotten -->
@@ -8820,10 +9107,22 @@
         <item quantity="one">%1$d votë</item>
         <item quantity="other">%1$d vota</item>
     </plurals>
+    <!-- Content description to describe the icon that is shown next to the winning option when the poll ends -->
+    <string name="Poll__poll_winner">Fitues</string>
     <!-- Text that when pressed will end the poll   -->
     <string name="Poll__end_poll">Përfundo sondazhin</string>
     <!-- Button that once pressed will show all of the voters for a poll -->
     <string name="Poll__see_all">Shihi të gjitha</string>
+    <!-- Dialog title when a poll fails to end -->
+    <string name="Poll__couldnt_end_poll">Sondazhi nuk mund të përfundohej</string>
+    <!-- Dialog body when a poll fails to end and to try again -->
+    <string name="Poll__check_connection">Kontrollo lidhjen e internetit dhe riprovo.</string>
+    <!-- Dialog title when you go to end a poll -->
+    <string name="Poll__end_poll_title">Të përfundohet sondazhi?</string>
+    <!-- Dialog body when you go to end a poll -->
+    <string name="Poll__end_poll_body">Anëtarët e kësaj bisede nuk do të jenë më në gjendje të votojnë në këtë sondazh.</string>
+    <!-- Body used in dialog when we are waiting for network -->
+    <string name="Poll__waiting_for_network">Në pritje të internetit…</string>
     <!-- Header when creating a new poll -->
     <string name="CreatePollFragment__new_poll">Sondazh i ri</string>
     <!-- Section text to enter in a question for a poll  -->
@@ -8844,6 +9143,163 @@
     <string name="CreatePollFragment__add_option">Shto të paktën 2 opsione</string>
     <!-- Snackbar text to add a question before creating a poll -->
     <string name="CreatePollFragment__add_question">Shto një pyetje</string>
+
+    <!-- Bottom sheet title telling users to scan a qr code -->
+    <string name="QuickRestoreInfoDialog__scan_qr_code">Skanoni kodin QR</string>
+    <!-- Bottom sheet description telling users how to scan a qr code -->
+    <string name="QuickRestoreInfoDialog__use_this_device_to_scan_qr_code">Përdor këtë pajisje për të skanuar kodin QR në pajisjen ku dëshiron të transferosh</string>
+    <!-- Confirmation button to dismiss bottom sheet dialog -->
+    <string name="QuickRestoreInfoDialog__okay">OK</string>
+
+    <!-- CallQualityIssue -->
+    <!-- Label for general audio issue category -->
+    <string name="CallQualityIssue__audio_issue">Probleme me audion</string>
+    <!-- Label for general video issue category -->
+    <string name="CallQualityIssue__video_issue">Probleme me videon</string>
+    <!-- Label for call dropped issue -->
+    <string name="CallQualityIssue__call_droppped">Thirrja u ndërpre</string>
+    <!-- Label for other/custom issues not covered by predefined categories -->
+    <string name="CallQualityIssue__something_else">Diçka tjetër</string>
+    <!-- Label for audio stuttering/choppy audio issue -->
+    <string name="CallQualityIssue__audio_stuttering">Belbëzim në audio</string>
+    <!-- Label for audio cutting out/dropping issue -->
+    <string name="CallQualityIssue__audio_cut_out">Ndërprerje audioje</string>
+    <!-- Label for echo heard by the user -->
+    <string name="CallQualityIssue__i_heard_echo">Dëgjova jehonë</string>
+    <!-- Label for echo heard by other call participants -->
+    <string name="CallQualityIssue__others_heard_echo">Të tjerët dëgjuan jehonë</string>
+    <!-- Label for poor video quality issue -->
+    <string name="CallQualityIssue__poor_video_quality">Cilësi e dobët e videos</string>
+    <!-- Label for low video resolution issue -->
+    <string name="CallQualityIssue__low_resolution">Rezolucion i ulët</string>
+    <!-- Label for camera malfunction issue -->
+    <string name="CallQualityIssue__camera_did_not_work">Kamera nuk funksionoi</string>
+
+    <!-- CallQualitySomethingElseScreen -->
+    <!-- Title for the "Something else" call quality issue screen -->
+    <string name="CallQualitySomethingElseScreen__title">Përshkruaj problemin</string>
+    <!-- Label for text field where user describes their call quality issue -->
+    <string name="CallQualitySomethingElseScreen__describe_your_issue">Përshkruaj problemin</string>
+    <!-- Privacy notice explaining that issue details will be kept private and used to improve Signal calls -->
+    <string name="CallQualitySomethingElseScreen__privacy_notice">Të lutem, përfshi çdo detaj që lidhet me çështjen. Çdo gjë që ndan këtu do të mbahet private dhe do të përdoret vetëm për të ndihmuar në përmirësimin e thirrjeve në Signal.</string>
+    <!-- Button to save the call quality issue description -->
+    <string name="CallQualitySomethingElseScreen__save">Ruaj</string>
+    <!-- Content description for the back navigation button -->
+    <string name="CallQualitySomethingElseScreen__back">Mbrapsht</string>
+
+    <!-- CallQualitySheet -->
+    <!-- Title asking user how their call was -->
+    <string name="CallQualitySheet__how_was_your_call">Si shkoi telefonata?</string>
+    <!-- Subtitle explaining that feedback helps improve Signal and no PII is stored -->
+    <string name="CallQualitySheet__how_was_your_call_subtitle">Kjo na ndihmon të përmirësojmë thirrjet në Signal. Nuk do të ruhen informacione personale të identifikueshme.</string>
+    <!-- Button label indicating the call had issues -->
+    <string name="CallQualitySheet__had_issues">Kishte probleme</string>
+    <!-- Button label indicating the call was great -->
+    <string name="CallQualitySheet__great">Shkëlqyeshëm</string>
+    <!-- Title asking what issues the user experienced -->
+    <string name="CallQualitySheet__what_issues_did_you_have">Çfarë problemesh pate?</string>
+    <!-- Instruction to select all applicable issues -->
+    <string name="CallQualitySheet__select_all_that_apply">Përzgjidh të gjitha që vlejnë</string>
+    <!-- Placeholder text for describing a custom issue -->
+    <string name="CallQualitySheet__describe_your_issue">Përshkruaj problemin</string>
+    <!-- Button to continue to the next step -->
+    <string name="CallQualitySheet__continue">Vazhdo</string>
+    <!-- Title asking user to help improve Signal -->
+    <string name="CallQualitySheet__help_us_improve">Na ndihmo të përmirësohemi</string>
+    <!-- First part of description explaining diagnostics help improve call quality -->
+    <string name="CallQualitySheet__help_us_improve_description_prefix">Dorëzimi do të ndajë reagimet e tua së bashku me</string>
+    <!-- Clickable text to launch diagnostic fragment -->
+    <string name="CallQualitySheet__diagnostic_information_about_your_call">informacion diagnostikues rreth thirrjes</string>
+    <!-- End of description explaining diagnostics help improve call quality -->
+    <string name="CallQualitySheet__help_us_improve_description_suffix">Mund të ndash opsionalisht një regjistër diagnostikimesh për të na ndihmuar të përmirësojmë cilësinë e thirrjeve.</string>
+    <!-- Text explaining the debug log -->
+    <string name="CallQualitySheet__information_shared_with_us">Informacioni i ndarë me ne përmban të dhëna të një niveli të ulët për aplikacionin dhe nuk përfshin përmbajtjen e thirrjeve.</string>
+    <!-- Link text to view debug log -->
+    <string name="CallQualitySheet__view_debug_log">Shiko regjistrin e diagnostikimeve</string>
+    <!-- Toggle label for sharing debug log -->
+    <string name="CallQualitySheet__share_debug_log">Ndaj regjistrin e diagnostikimit</string>
+    <!-- Privacy notice explaining what debug logs contain and why they are helpful -->
+    <string name="CallQualitySheet__debug_log_privacy_notice">Regjistrat e diagnostikimit përmbajnë informacione të nivelit të ulët të aplikacionit dhe nuk zbulojnë asnjë nga përmbajtjet e mesazheve.</string>
+    <!-- Button to submit the call quality feedback -->
+    <string name="CallQualitySheet__submit">Parashtroje</string>
+    <!-- Displayed as a snackbar after submitting feedback -->
+    <string name="CallQualitySheet__thanks_for_your_feedback">Faleminderit për përshtypjet!</string>
+    <!-- Content description for the thumbs down button indicating user had issues with the call -->
+    <string name="CallQualitySheet__had_issues_content_description">Pata probleme me thirrjen</string>
+    <!-- Content description for the thumbs up button indicating the call was great -->
+    <string name="CallQualitySheet__great_content_description">Thirrja ishte e shkëlqyer</string>
+    <!-- Dialog body shown when feedback submission fails due to network issues -->
+    <string name="CallQualitySheet__your_feedback_failed_to_send">Komentet nuk u dërguan.</string>
+    <!-- Dialog button to retry sending feedback after a failure -->
+    <string name="CallQualitySheet__try_again">Provo sërish</string>
+
+    <!-- Message body when someone pins a message where %1$s is the name of the person -->
+    <string name="PinnedMessage__s_pinned_a_message">%1$s ka fiksuar një mesazh</string>
+    <!-- Message body when you pin a message -->
+    <string name="PinnedMessage__you_pinned_a_message">Ke fiksuar një mesazh</string>
+    <!-- Button body to go to the pinned message -->
+    <string name="PinnedMessage__go_to_message">Shko te mesazhi</string>
+    <!-- Toast shown when a pinned message is not found -->
+    <string name="PinnedMessage__not_found">Mesazhi nuk u gjet</string>
+    <!-- Content description for the pin icon -->
+    <string name="PinnedMessage__pinned">E fiksuar</string>
+    <!-- Caption shown when the pinned message is a photo -->
+    <string name="PinnedMessage__photo">Foto</string>
+    <!-- Caption shown when the pinned message is a video -->
+    <string name="PinnedMessage__video">Video</string>
+    <!-- Caption shown when the pinned message is a sticker -->
+    <string name="PinnedMessage__sticker">Ngjitës</string>
+    <!-- Caption shown when the pinned message is a voice message  -->
+    <string name="PinnedMessage__voice">Mesazh zanor</string>
+    <!-- Caption shown when the pinned message is a gif -->
+    <string name="PinnedMessage__gif">GIF</string>
+    <!-- Caption shown when the pinned message is a view once media -->
+    <string name="PinnedMessage__view_once">Media për t\\’u parë vetëm një herë</string>
+    <!-- Context menu option to unpin the message -->
+    <string name="PinnedMessage__unpin_message">Çfiksoji</string>
+    <!-- Context menu option to view all the message -->
+    <string name="PinnedMessage__view_all_messages">Shiko të gjitha mesazhet</string>
+    <!-- Text to unpin all messages -->
+    <string name="PinnedMessage__unpin_all_messages">Hiq të gjitha mesazhet e fiksuara</string>
+    <!-- Title of bottom sheet when pinning a disappearing message -->
+    <string name="PinnedMessage__disappearing_message_title">Duke fiksuar mesazhet që zhduken</string>
+    <!-- Body of bottom sheet when pinning a disappearing message -->
+    <string name="PinnedMessage__disappearing_message_body">\"Mesazhet që zhduken\" të fiksuara do të hiqen kur të skadojë koha e tyre dhe mesazhi fshihet nga biseda.</string>
+    <!-- Confirmation button for bottom sheet -->
+    <string name="PinnedMessage__got_it">E kuptova</string>
+    <!-- Content description of disappearing timer icon -->
+    <string name="PinnedMessage__disappearing_message_content_description">Mesazhe që zhduken</string>
+    <!-- Title of bottom sheet -->
+    <string name="PinnedMessage__pinned_messages">Mesazhe të fiksuara</string>
+    <!-- Context menu option to unpin message -->
+    <string name="PinnedMessage__unpin">Çfiksoji</string>
+    <!-- Title of dialog to unpin all messages -->
+    <string name="PinnedMessage__unpin_title">Të hiqen të gjitha mesazhet e fiksuara?</string>
+    <!-- Body of dialog to unpin all messages -->
+    <string name="PinnedMessage__unpin_body">Mesazhet e fiksuara do të hiqen për të gjithë anëtarët.</string>
+    <!-- Dialog title when failing to pin a message -->
+    <string name="PinnedMessage__couldnt_pin">Mesazhi i fiksuar nuk mund të hiqej</string>
+    <!-- Dialog title when failing to unpin a message -->
+    <string name="PinnedMessage__couldnt_unpin">Mesazhi i fiksuar nuk mund të hiqej</string>
+    <!-- Dialog title when failing to unpin all messages -->
+    <string name="PinnedMessage__couldnt_unpin_all">Mesazhet e fiksuara nuk mund të hiqeshin</string>
+    <!-- Dialog body when failing to pin a message -->
+    <string name="PinnedMessage__check_connection">Kontrollo lidhjen e internetit dhe riprovo.</string>
+
+    <!-- Group member label screen title. -->
+    <string name="GroupMemberLabel__title">Emërtimi i anëtarit</string>
+    <!-- Group member label text field placeholder. -->
+    <string name="GroupMemberLabel__label_text_placeholder">Shto rolin</string>
+    <!-- Group member label preview section header. -->
+    <string name="GroupMemberLabel__preview_section_header">Paraparje</string>
+    <!-- Group member label save button label. -->
+    <string name="GroupMemberLabel__save">Ruaj</string>
+    <!-- Accessibility label for the button to open the group member label emoji picker. -->
+    <string name="GroupMemberLabel__accessibility_select_emoji">Zgjidh figurën</string>
+    <!-- Accessibility label for the group member label close screen button. -->
+    <string name="GroupMemberLabel__accessibility_close_screen">Mbyll ekranin</string>
+    <!-- Accessibility label for the group member label text field clear button. -->
+    <string name="GroupMemberLabel__accessibility_clear_label">Pastro emërtimin</string>
 
     <!-- EOF -->
 </resources>

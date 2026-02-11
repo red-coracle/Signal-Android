@@ -8,6 +8,9 @@ import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
 import okio.ByteString
 import org.intellij.lang.annotations.Language
+import org.signal.core.models.ServiceId
+import org.signal.core.models.ServiceId.ACI
+import org.signal.core.models.ServiceId.PNI
 import org.signal.core.util.SqlUtil
 import org.signal.core.util.SqlUtil.appendArg
 import org.signal.core.util.SqlUtil.buildArgs
@@ -18,6 +21,7 @@ import org.signal.core.util.exists
 import org.signal.core.util.isAbsent
 import org.signal.core.util.logging.Log
 import org.signal.core.util.optionalString
+import org.signal.core.util.orNull
 import org.signal.core.util.readToList
 import org.signal.core.util.readToMap
 import org.signal.core.util.readToSingleInt
@@ -38,9 +42,9 @@ import org.signal.libsignal.zkgroup.groups.GroupMasterKey
 import org.signal.libsignal.zkgroup.groups.GroupSecretParams
 import org.signal.libsignal.zkgroup.groupsend.GroupSendEndorsement
 import org.signal.libsignal.zkgroup.groupsend.GroupSendFullToken
-import org.signal.storageservice.protos.groups.Member
-import org.signal.storageservice.protos.groups.local.DecryptedGroup
-import org.signal.storageservice.protos.groups.local.DecryptedPendingMember
+import org.signal.storageservice.storage.protos.groups.Member
+import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
+import org.signal.storageservice.storage.protos.groups.local.DecryptedPendingMember
 import org.thoughtcrime.securesms.contacts.paged.ContactSearchSortOrder
 import org.thoughtcrime.securesms.contacts.paged.collections.ContactSearchIterator
 import org.thoughtcrime.securesms.crypto.SenderKeyUtil
@@ -51,6 +55,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.BadGroupIdException
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.GroupId.Push
+import org.thoughtcrime.securesms.groups.memberlabel.MemberLabel
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor
 import org.thoughtcrime.securesms.jobs.RequestGroupV2InfoJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -67,9 +72,6 @@ import org.whispersystems.signalservice.api.groupsv2.toAciListWithUnknowns
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachmentPointer
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachmentRemoteId
 import org.whispersystems.signalservice.api.push.DistributionId
-import org.whispersystems.signalservice.api.push.ServiceId
-import org.whispersystems.signalservice.api.push.ServiceId.ACI
-import org.whispersystems.signalservice.api.push.ServiceId.PNI
 import java.io.Closeable
 import java.security.SecureRandom
 import java.time.Instant
@@ -880,6 +882,8 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
 
     val groupRecipient = recipients.getOrInsertFromGroupId(groupId)
     Recipient.live(groupRecipient).refresh()
+
+    notifyConversationListListeners()
   }
 
   fun remove(groupId: GroupId, source: RecipientId) {
@@ -1268,6 +1272,17 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
         .filterNotNull()
         .sortedBy { it.toString() }
         .toList()
+    }
+
+    /**
+     * Gets the member label for a specific member in the group, or null if the member is not found.
+     */
+    fun memberLabel(aci: ACI): MemberLabel? {
+      return decryptedGroup
+        .members
+        .findMemberByAci(aci)
+        .orNull()
+        ?.let { member -> MemberLabel(member.labelEmoji, member.labelString) }
     }
   }
 

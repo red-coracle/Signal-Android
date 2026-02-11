@@ -22,8 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.signal.core.util.DimensionUnit;
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.util.ThemeUtil;
-import org.thoughtcrime.securesms.util.ViewUtil;
+import org.signal.core.ui.util.ThemeUtil;
 
 import java.util.Objects;
 
@@ -38,7 +37,7 @@ public class RationaleDialog {
 
     for (int i = 0; i < drawables.length; i++) {
       Drawable drawable = Objects.requireNonNull(ContextCompat.getDrawable(context, drawables[i]));
-      DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.signal_colorOnPrimaryContainer));
+      DrawableCompat.setTint(drawable, ContextCompat.getColor(context, org.signal.core.ui.R.color.signal_colorOnPrimaryContainer));
 
       ImageView imageView = new ImageView(context);
       imageView.setImageDrawable(drawable);
@@ -54,7 +53,7 @@ public class RationaleDialog {
         plus.setTextColor(Color.WHITE);
 
         LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(ViewUtil.dpToPx(context, 20), 0, ViewUtil.dpToPx(context, 20), 0);
+        layoutParams.setMargins((int) DimensionUnit.DP.toPixels(20f), 0, (int) DimensionUnit.DP.toPixels(20f), 0);
 
         plus.setLayoutParams(layoutParams);
         header.addView(plus);
@@ -91,7 +90,7 @@ public class RationaleDialog {
         plus.setTextColor(Color.WHITE);
 
         LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(ViewUtil.dpToPx(context, 20), 0, ViewUtil.dpToPx(context, 20), 0);
+        layoutParams.setMargins((int) DimensionUnit.DP.toPixels(20f), 0, (int) DimensionUnit.DP.toPixels(20f), 0);
 
         plus.setLayoutParams(layoutParams);
         header.addView(plus);

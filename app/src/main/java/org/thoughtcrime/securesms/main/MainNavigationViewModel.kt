@@ -9,8 +9,12 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import io.reactivex.rxjava3.core.Observable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -19,42 +23,69 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.rx3.asObservable
+import org.thoughtcrime.securesms.calls.log.CallLogRow
 import org.thoughtcrime.securesms.components.settings.app.notifications.profiles.NotificationProfilesRepository
+import org.thoughtcrime.securesms.components.snackbars.SnackbarStateConsumerRegistry
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.megaphone.Megaphone
 import org.thoughtcrime.securesms.megaphone.Megaphones
 import org.thoughtcrime.securesms.notifications.profiles.NotificationProfile
 import org.thoughtcrime.securesms.stories.Stories
+import org.thoughtcrime.securesms.util.delegate
 import org.thoughtcrime.securesms.window.AppScaffoldNavigator
-import org.thoughtcrime.securesms.window.WindowSizeClass
+import java.util.Optional
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class MainNavigationViewModel(
+  private val savedStateHandle: SavedStateHandle,
   initialListLocation: MainNavigationListLocation = MainNavigationListLocation.CHATS
 ) : ViewModel(), MainNavigationRouter {
+
+  companion object {
+    private const val LOCK_PANE_TO_SECONDARY = "lock_pane_to_secondary"
+  }
+
+  class Factory(
+    private val initialListLocation: MainNavigationListLocation = MainNavigationListLocation.CHATS
+  ) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+      val savedStateHandle = extras.createSavedStateHandle()
+      @Suppress("UNCHECKED_CAST")
+      return MainNavigationViewModel(savedStateHandle, initialListLocation) as T
+    }
+  }
+
   private val megaphoneRepository = AppDependencies.megaphoneRepository
 
   private var navigator: AppScaffoldNavigator<Any>? = null
   private var navigatorScope: CoroutineScope? = null
   private var goToLegacyDetailLocation: ((MainNavigationDetailLocation) -> Unit)? = null
 
-  /**
-   * The latest detail location that has been requested, for consumption by other components.
-   */
   private val internalDetailLocation = MutableSharedFlow<MainNavigationDetailLocation>()
   val detailLocation: SharedFlow<MainNavigationDetailLocation> = internalDetailLocation
-  val detailLocationObservable: Observable<MainNavigationDetailLocation> = internalDetailLocation.asObservable()
+
+  private val internalIsFullScreenPane = MutableStateFlow(false)
+  val isFullScreenPane: StateFlow<Boolean> = internalIsFullScreenPane
+
+  private val internalActiveChatThreadId = MutableStateFlow(-1L)
+  val observableActiveChatThreadId: Observable<Long> = internalActiveChatThreadId.combine(isFullScreenPane) { id, expanded ->
+    if (expanded) -1L else id
+  }.asObservable()
+
+  private val internalActiveCallId = MutableStateFlow<CallLogRow.Id?>(null)
+  val observableActiveCallId: Observable<Optional<out CallLogRow.Id>> = internalActiveCallId.map { Optional.ofNullable(it) }.combine(isFullScreenPane) { id, expanded ->
+    if (expanded) Optional.ofNullable(null) else id
+  }.asObservable()
 
   private val internalMegaphone = MutableStateFlow(Megaphone.NONE)
   val megaphone: StateFlow<Megaphone> = internalMegaphone
-
-  private val internalSnackbar = MutableStateFlow<SnackbarState?>(null)
-  val snackbar: StateFlow<SnackbarState?> = internalSnackbar
 
   private val internalNavigationEvents = MutableSharedFlow<NavigationEvent>()
   val navigationEvents: Flow<NavigationEvent> = internalNavigationEvents
@@ -68,11 +99,14 @@ class MainNavigationViewModel(
    * This is Rx because these are still accessed from Java.
    */
   private val internalTabClickEvents: MutableSharedFlow<MainNavigationListLocation> = MutableSharedFlow()
-  val tabClickEvents: Observable<MainNavigationListLocation> = internalTabClickEvents.asObservable()
+  val tabClickEventsObservable: Observable<MainNavigationListLocation> = internalTabClickEvents.asObservable()
 
   private var earlyNavigationListLocationRequested: MainNavigationListLocation? = null
   var earlyNavigationDetailLocationRequested: MainNavigationDetailLocation? = null
     private set
+
+  private val internalPaneFocusRequests = MutableSharedFlow<ThreePaneScaffoldRole?>()
+  val paneFocusRequests: SharedFlow<ThreePaneScaffoldRole?> = internalPaneFocusRequests
 
   private var earlyFocusedPaneRequested: ThreePaneScaffoldRole? = null
 
@@ -81,7 +115,9 @@ class MainNavigationViewModel(
    * where the user can change configurations (such as opening a foldable) and we will restore state and errantly
    * take them back into a PRIMARY pane. This boolean helps avoid these cases.
    */
-  private var lockPaneToSecondary = false
+  private var lockPaneToSecondary: Boolean by savedStateHandle.delegate(LOCK_PANE_TO_SECONDARY, false)
+
+  val snackbarRegistry = SnackbarStateConsumerRegistry()
 
   init {
     performStoreUpdate(MainNavigationRepository.getNumberOfUnreadMessages()) { unreadChats, state ->
@@ -99,6 +135,24 @@ class MainNavigationViewModel(
     performStoreUpdate(MainNavigationRepository.getHasFailedOutgoingStories()) { hasFailedStories, state ->
       state.copy(storyFailure = hasFailedStories)
     }
+
+    viewModelScope.launch {
+      internalDetailLocation.collect { location ->
+        when (location) {
+          is MainNavigationDetailLocation.Chats.Conversation -> {
+            internalActiveChatThreadId.update { location.conversationArgs.threadId }
+          }
+          is MainNavigationDetailLocation.Calls -> {
+            internalActiveCallId.update { location.controllerKey }
+          }
+          else -> Unit
+        }
+      }
+    }
+  }
+
+  fun onPaneAnchorChanged(isFullScreenPane: Boolean) {
+    internalIsFullScreenPane.update { isFullScreenPane }
   }
 
   /**
@@ -148,6 +202,10 @@ class MainNavigationViewModel(
     navigatorScope?.launch {
       navigator?.navigateTo(roleToGoTo)
     }
+
+    viewModelScope.launch {
+      internalPaneFocusRequests.emit(roleToGoTo)
+    }
   }
 
   /**
@@ -159,11 +217,6 @@ class MainNavigationViewModel(
    */
   override fun goTo(location: MainNavigationDetailLocation) {
     lockPaneToSecondary = false
-
-    if (!WindowSizeClass.isLargeScreenSupportEnabled()) {
-      goToLegacyDetailLocation?.invoke(location)
-      return
-    }
 
     if (navigator == null) {
       earlyNavigationDetailLocationRequested = location
@@ -198,10 +251,6 @@ class MainNavigationViewModel(
     megaphoneRepository.getNextMegaphone { next ->
       internalMegaphone.update { next ?: Megaphone.NONE }
     }
-  }
-
-  fun setSnackbar(snackbarState: SnackbarState?) {
-    internalSnackbar.update { snackbarState }
   }
 
   fun onMegaphoneSnoozed(event: Megaphones.Event) {
@@ -246,6 +295,7 @@ class MainNavigationViewModel(
     viewModelScope.launch {
       val currentTab = internalMainNavigationState.value.currentListLocation
       if (currentTab == destination) {
+        internalPaneFocusRequests.emit(ThreePaneScaffoldRole.Secondary)
         internalTabClickEvents.emit(destination)
       } else {
         setFocusedPane(ThreePaneScaffoldRole.Secondary)

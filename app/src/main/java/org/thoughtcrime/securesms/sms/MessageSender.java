@@ -37,7 +37,6 @@ import org.thoughtcrime.securesms.database.AttachmentTable;
 import org.thoughtcrime.securesms.database.MessageTable;
 import org.thoughtcrime.securesms.database.MessageTable.InsertResult;
 import org.thoughtcrime.securesms.database.NoSuchMessageException;
-import org.thoughtcrime.securesms.database.PollTables;
 import org.thoughtcrime.securesms.database.RecipientTable;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.ThreadTable;
@@ -60,10 +59,9 @@ import org.thoughtcrime.securesms.jobs.PushGroupSendJob;
 import org.thoughtcrime.securesms.jobs.ReactionSendJob;
 import org.thoughtcrime.securesms.jobs.RemoteDeleteSendJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.thoughtcrime.securesms.mediasend.Media;
+import org.signal.core.models.media.Media;
 import org.thoughtcrime.securesms.mms.MmsException;
 import org.thoughtcrime.securesms.mms.OutgoingMessage;
-import org.thoughtcrime.securesms.mms.QuoteModel;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
@@ -80,6 +78,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -266,11 +265,10 @@ public class MessageSender {
       long         messageId         = insertResult.getMessageId();
 
       if (!recipient.isPushV2Group()) {
-        Log.w(TAG, "Can only send polls to groups.");
-        return threadId;
+        SignalLocalMetrics.IndividualMessageSend.onInsertedIntoDatabase(messageId, metricId);
+      } else {
+        SignalLocalMetrics.GroupMessageSend.onInsertedIntoDatabase(messageId, metricId);
       }
-
-      SignalLocalMetrics.GroupMessageSend.onInsertedIntoDatabase(messageId, metricId);
 
       sendMessageInternal(context, recipient, sendType, messageId, insertResult.getQuoteAttachmentId(), Collections.emptyList());
       onMessageSent();

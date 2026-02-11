@@ -1,7 +1,9 @@
 package org.signal.util
 
 import okio.ByteString.Companion.toByteString
+import org.signal.core.models.ServiceId
 import org.signal.core.util.Base64
+import org.signal.core.util.toByteArray
 import org.signal.libsignal.metadata.certificate.CertificateValidator
 import org.signal.libsignal.metadata.certificate.SenderCertificate
 import org.signal.libsignal.metadata.certificate.ServerCertificate
@@ -25,7 +27,6 @@ import org.whispersystems.signalservice.api.crypto.SignalGroupSessionBuilder
 import org.whispersystems.signalservice.api.crypto.SignalServiceCipher
 import org.whispersystems.signalservice.api.crypto.UnidentifiedAccess
 import org.whispersystems.signalservice.api.push.DistributionId
-import org.whispersystems.signalservice.api.push.ServiceId.ACI
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import org.whispersystems.signalservice.internal.push.Content
 import org.whispersystems.signalservice.internal.push.DataMessage
@@ -49,7 +50,7 @@ class SignalClient {
 
   private val lock = TestSessionLock()
 
-  private val aci: ACI = ACI.from(UUID.randomUUID())
+  private val aci: ServiceId.ACI = ServiceId.ACI.from(UUID.randomUUID())
 
   private val store: SignalServiceAccountDataStore = InMemorySignalServiceAccountDataStore()
 
@@ -98,6 +99,7 @@ class SignalClient {
     )
 
     val encryptedContent: ByteArray = Base64.decode(outgoingPushMessage.content)
+    val serviceGuid = UUID.randomUUID()
 
     return Envelope(
       sourceServiceId = aci.toString(),
@@ -105,10 +107,13 @@ class SignalClient {
       destinationServiceId = to.aci.toString(),
       timestamp = sentTimestamp,
       serverTimestamp = sentTimestamp,
-      serverGuid = UUID.randomUUID().toString(),
+      serverGuid = serviceGuid.toString(),
       type = Envelope.Type.fromValue(outgoingPushMessage.type),
       urgent = true,
-      content = encryptedContent.toByteString()
+      content = encryptedContent.toByteString(),
+      sourceServiceIdBinary = aci.toByteString(),
+      destinationServiceIdBinary = to.aci.toByteString(),
+      serverGuidBinary = serviceGuid.toByteArray().toByteString()
     )
   }
 
@@ -129,6 +134,7 @@ class SignalClient {
     )
 
     val encryptedContent: ByteArray = Base64.decode(outgoingPushMessage.content)
+    val serverGuid = UUID.randomUUID()
 
     return Envelope(
       sourceServiceId = aci.toString(),
@@ -136,10 +142,13 @@ class SignalClient {
       destinationServiceId = to.aci.toString(),
       timestamp = sentTimestamp,
       serverTimestamp = sentTimestamp,
-      serverGuid = UUID.randomUUID().toString(),
+      serverGuid = serverGuid.toString(),
       type = Envelope.Type.fromValue(outgoingPushMessage.type),
       urgent = true,
-      content = encryptedContent.toByteString()
+      content = encryptedContent.toByteString(),
+      sourceServiceIdBinary = aci.toByteString(),
+      destinationServiceIdBinary = to.aci.toByteString(),
+      serverGuidBinary = serverGuid.toByteArray().toByteString()
     )
   }
 

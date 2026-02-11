@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -16,7 +15,6 @@ import android.view.WindowManager;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -28,9 +26,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.util.BottomSheetUtil;
-import org.thoughtcrime.securesms.util.LRUCache;
-import org.thoughtcrime.securesms.util.ServiceUtil;
+import org.signal.core.ui.BottomSheetUtil;
+import org.signal.core.util.LRUCache;
 
 import java.lang.ref.WeakReference;
 import java.security.SecureRandom;
@@ -50,10 +47,6 @@ public class Permissions {
 
   public static PermissionsBuilder with(@NonNull Fragment fragment) {
     return new PermissionsBuilder(new FragmentPermissionObject(fragment));
-  }
-
-  public static boolean isRuntimePermissionsRequired() {
-    return Build.VERSION.SDK_INT >= 23;
   }
 
   public static class PermissionsBuilder {
@@ -205,8 +198,8 @@ public class Permissions {
       MaterialAlertDialogBuilder builder = (rationaleDialogMessage != null)
                                          ? RationaleDialog.createFor(permissionObject.getContext(), rationaleDialogMessage, rationalDialogHeader)
                                          : RationaleDialog.createFor(permissionObject.getContext(), rationaleDialogTitle, rationaleDialogDetails, rationalDialogHeader);
-      builder.setPositiveButton(R.string.Permissions_continue, (dialog, which) -> executePermissionsRequest(request))
-             .setNegativeButton(R.string.Permissions_not_now, (dialog, which) -> executeNoPermissionsRequest(request))
+      builder.setPositiveButton(org.signal.core.ui.R.string.Permissions_continue, (dialog, which) -> executePermissionsRequest(request))
+             .setNegativeButton(org.signal.core.ui.R.string.Permissions_not_now, (dialog, which) -> executeNoPermissionsRequest(request))
              .setBackgroundInsetTop(0)
              .setBackgroundInsetBottom(0)
              .setCancelable(rationaleDialogCancelable);
@@ -277,14 +270,12 @@ public class Permissions {
   }
 
   public static boolean hasAny(@NonNull Context context, String... permissions) {
-    return !isRuntimePermissionsRequired() ||
-        Stream.of(permissions).anyMatch(permission -> ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
+    return Stream.of(permissions).anyMatch(permission -> ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
 
   }
 
   public static boolean hasAll(@NonNull Context context, String... permissions) {
-    return !isRuntimePermissionsRequired() ||
-        Stream.of(permissions).allMatch(permission -> ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
+    return Stream.of(permissions).allMatch(permission -> ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
 
   }
 
@@ -333,7 +324,7 @@ public class Permissions {
     abstract void requestPermissions(int requestCode, String... permissions);
 
     int getWindowWidth() {
-      WindowManager  windowManager = ServiceUtil.getWindowManager(getContext());
+      WindowManager  windowManager = ContextCompat.getSystemService(getContext(), WindowManager.class);
       Display        display       = windowManager.getDefaultDisplay();
       DisplayMetrics metrics       = new DisplayMetrics();
       display.getMetrics(metrics);
@@ -435,7 +426,7 @@ public class Permissions {
             .setTitle(R.string.Permissions_permission_required)
             .setMessage(message)
             .setCancelable(false)
-            .setPositiveButton(R.string.Permissions_continue, (dialog, which) -> context.startActivity(getApplicationSettingsIntent(context)))
+            .setPositiveButton(org.signal.core.ui.R.string.Permissions_continue, (dialog, which) -> context.startActivity(getApplicationSettingsIntent(context)))
             .setNegativeButton(android.R.string.cancel, null)
             .setOnDismissListener(d -> {
               if (onDialogDismissed != null) {

@@ -15,7 +15,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,17 +38,18 @@ import com.bumptech.glide.request.RequestOptions;
 import org.signal.core.util.concurrent.ListenableFuture;
 import org.signal.core.util.concurrent.SettableFuture;
 import org.signal.core.util.logging.Log;
+import org.signal.blurhash.BlurHash;
+import org.signal.core.ui.view.Stub;
+import org.signal.glide.decryptableuri.DecryptableUri;
 import org.signal.glide.load.SignalDownsampleStrategy;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment;
-import org.thoughtcrime.securesms.blurhash.BlurHash;
 import org.thoughtcrime.securesms.components.transfercontrols.TransferControlView;
 import org.thoughtcrime.securesms.database.AttachmentTable;
 import org.thoughtcrime.securesms.glide.targets.GlideBitmapListeningTarget;
 import org.thoughtcrime.securesms.glide.targets.GlideDrawableListeningTarget;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.thoughtcrime.securesms.mms.DecryptableUri;
 import org.thoughtcrime.securesms.mms.ImageSlide;
 import org.thoughtcrime.securesms.mms.PartAuthority;
 import org.thoughtcrime.securesms.mms.Slide;
@@ -60,7 +60,6 @@ import org.thoughtcrime.securesms.stories.StoryTextPostModel;
 import org.thoughtcrime.securesms.util.AttachmentUtil;
 import org.thoughtcrime.securesms.util.MediaUtil;
 import org.thoughtcrime.securesms.util.Util;
-import org.thoughtcrime.securesms.util.views.Stub;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -403,7 +402,7 @@ public class ThumbnailView extends FrameLayout {
     }
 
     if (hasSameContents(this.slide, slide)) {
-      Log.i(TAG, "Not re-loading slide " + slide.asAttachment().getUri());
+      Log.i(TAG, "Not re-loading slide " + slide.asAttachment().getDisplayUri());
       return new SettableFuture<>(false);
     }
 
@@ -604,9 +603,7 @@ public class ThumbnailView extends FrameLayout {
                                                               .downsample(SignalDownsampleStrategy.CENTER_OUTSIDE_NO_UPSCALE)
                                                               .transition(withCrossFade()));
 
-    boolean doNotShowMissingThumbnailImage = Build.VERSION.SDK_INT < 23;
-
-    if (slide.isInProgress() || doNotShowMissingThumbnailImage) {
+    if (slide.isInProgress()) {
       return requestBuilder;
     } else {
       return requestBuilder.apply(RequestOptions.errorOf(R.drawable.missing_thumbnail));

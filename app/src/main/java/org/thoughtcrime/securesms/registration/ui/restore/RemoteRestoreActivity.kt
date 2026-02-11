@@ -37,13 +37,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -64,8 +63,7 @@ import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dialogs
 import org.signal.core.ui.compose.Previews
-import org.signal.core.ui.compose.theme.SignalTheme
-import org.signal.core.util.AppUtil
+import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.util.ThreadUtil
 import org.signal.core.util.bytes
 import org.thoughtcrime.securesms.BaseActivity
@@ -79,6 +77,7 @@ import org.thoughtcrime.securesms.components.contactsupport.ContactSupportCallba
 import org.thoughtcrime.securesms.components.contactsupport.ContactSupportDialog
 import org.thoughtcrime.securesms.components.contactsupport.ContactSupportViewModel
 import org.thoughtcrime.securesms.components.contactsupport.SendSupportEmailEffect
+import org.thoughtcrime.securesms.compose.SignalTheme
 import org.thoughtcrime.securesms.conversation.v2.registerForLifecycle
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.registration.ui.shared.RegistrationScreen
@@ -228,7 +227,8 @@ class RemoteRestoreActivity : BaseActivity() {
                 }
               },
               onDismiss = { showSkipRestoreWarning = false },
-              confirmColor = MaterialTheme.colorScheme.error
+              confirmColor = MaterialTheme.colorScheme.error,
+              properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
             )
           }
         }
@@ -248,7 +248,11 @@ class RemoteRestoreActivity : BaseActivity() {
       .setTitle(R.string.RestoreActivity__no_longer_registered_title)
       .setMessage(R.string.RestoreActivity__no_longer_registered_message)
       .setCancelable(false)
-      .setPositiveButton(android.R.string.ok) { _, _ -> AppUtil.clearData(this) }
+      .setPositiveButton(android.R.string.ok) { _, _ ->
+        viewModel.skipRestore()
+        startActivity(MainActivity.clearTop(this))
+        supportFinishAfterTransition()
+      }
       .show()
   }
 
@@ -347,7 +351,7 @@ private fun BackupAvailableContent(
         )
       } else {
         Icon(
-          imageVector = ImageVector.vectorResource(id = R.drawable.symbol_backup_24),
+          imageVector = SignalIcons.Backup.imageVector,
           contentDescription = null,
           tint = MaterialTheme.colorScheme.primary,
           modifier = Modifier
@@ -679,7 +683,8 @@ fun TierRestoreFailedDialog(
       negative = stringResource(android.R.string.cancel),
       onPositive = onRetryRestore,
       onNeutral = onContactSupport,
-      onNegative = onCancel
+      onNegative = onCancel,
+      properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
     )
   } else {
     Dialogs.SimpleAlertDialog(

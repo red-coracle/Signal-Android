@@ -36,6 +36,7 @@ import androidx.fragment.app.activityViewModels
 import org.signal.core.ui.compose.BottomSheets
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Previews
+import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.util.getParcelableArrayListCompat
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
@@ -207,7 +208,7 @@ private fun AddToChatFolderSheetContent(
         ) {
           Image(
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
-            imageVector = ImageVector.vectorResource(id = R.drawable.symbol_plus_24),
+            imageVector = SignalIcons.Plus.imageVector,
             contentDescription = null,
             modifier = Modifier
               .size(40.dp)
@@ -251,7 +252,7 @@ private fun isThreadListAlreadyAdded(folder: ChatFolderRecord, threadIds: List<L
 @DayNightPreviews
 @Composable
 private fun AddToChatFolderSheetContentPreview() {
-  Previews.BottomSheetPreview {
+  Previews.BottomSheetContentPreview {
     AddToChatFolderSheetContent(
       folders = listOf(ChatFolderRecord(name = "Friends"), ChatFolderRecord(name = "Work")),
       threadIds = listOf(1),

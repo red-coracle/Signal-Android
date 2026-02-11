@@ -60,6 +60,12 @@
     <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">പേയ്മെന്റുകൾ വീണ്ടെടുക്കൽ വാക്യം രേഖപ്പെടുത്തുക</string>
     <string name="ApplicationPreferencesActivity_record_phrase">വാക്യം രേഖപ്പെടുത്തുക</string>
     <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">നിങ്ങളുടെ PIN പ്രവർത്തനരഹിതമാക്കുന്നതിന് മുമ്പ്, നിങ്ങളുടെ പേയ്മെന്റ് അക്കൗണ്ട് വീണ്ടെടുക്കാൻ കഴിയുമെന്ന് ഉറപ്പാക്കുന്നതിന് നിങ്ങളുടെ പേയ്മെന്റുകൾ വീണ്ടെടുക്കൽ വാക്യം നിങ്ങൾ റെക്കോർഡ് ചെയ്യണം.</string>
+    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_title">ഒരു പുതിയ വീണ്ടെടുക്കൽ കീ സൃഷ്ടിക്കുക</string>
+    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_body">നിങ്ങളുടെ PIN പ്രവർത്തനരഹിതമാക്കുന്നതിന് മുമ്പ് ഒരു പുതിയ വീണ്ടെടുക്കൽ കീ സൃഷ്ടിച്ച് റെക്കോർഡ് ചെയ്യണം.</string>
+    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">കീ സൃഷ്ടിക്കുക</string>
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -307,8 +313,22 @@
     <string name="CameraXFragment_to_capture_videos">ശബ്ദത്തോടെ വീഡിയോകൾ എടുക്കാൻ:</string>
     <!-- Dialog description that explains the steps needed to give Signal camera permissions -->
     <string name="CameraXFragment_to_scan_qr_codes">QR കോഡുകൾ സ്കാൻ ചെയ്യാൻ:</string>
+    <!-- Error message shown when we try to take a photo, but fail -->
+    <string name="CameraXFragment_photo_capture_failed">ഫോട്ടോ എടുക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Error message shown when we try to take a photo, but fail when trying to process it (convert it into something the user can see). -->
+    <string name="CameraXFragment_photo_processing_failed">ഫോട്ടോ പ്രോസസ്സ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു. വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Accessibility label for the switch camera button -->
+    <string name="CameraXFragment_switch_camera">ക്യാമറ മാറുക</string>
+    <!-- Accessibility label for flash button when flash is off -->
+    <string name="CameraXFragment_flash_off">ഫ്ലാഷ് ഓഫാണ്</string>
+    <!-- Accessibility label for flash button when flash is on -->
+    <string name="CameraXFragment_flash_on">ഫ്ലാഷ് ഓണാണ്</string>
+    <!-- Accessibility label for flash button when flash is set to auto -->
+    <string name="CameraXFragment_flash_auto">ഫ്ലാഷ് ഓട്ടോ</string>
+    <!-- Accessibility label for the send button in media selection -->
+    <string name="CameraXFragment_send">അയയ്‌ക്കുക</string>
 
-    <!-- CameraContacts -->
+<!-- CameraContacts -->
     <string name="CameraContacts_recent_contacts">സമീപകാല കോൺടാക്റ്റുകൾ</string>
     <string name="CameraContacts_signal_contacts">Signal കോൺടാക്റ്റുകൾ</string>
     <string name="CameraContacts_signal_groups">Signal ഗ്രൂപ്പുകൾ</string>
@@ -359,6 +379,11 @@
     <string name="CommunicationActions_this_is_not_a_valid_call_link">ഇത് സാധുതയുള്ളൊരു കോൾ ലിങ്കല്ല. ചേരാൻ ശ്രമിക്കുന്നതിന് മുമ്പ് മുഴുവൻ ലിങ്കും ശരിയാണെന്ന് ഉറപ്പ് വരുത്തുക.</string>
     <!-- Displayed in a snackbar when the user is already in a call -->
     <string name="CommunicationActions__you_are_already_in_a_call">നിങ്ങൾ ഇതിനകം ഒരു കോളിൽ ഉണ്ട്</string>
+    <!-- Title on dialog when quick restore qr code is scanned in system camera -->
+    <string name="CommunicationActions__transfer_dialog_title">അക്കൗണ്ട് പുതിയ ഉപകരണത്തിലേക്ക് മാറ്റണോ?</string>
+    <!-- Message on dialog when quick restore qr code is scanned in system camera -->
+    <string name="CommunicationActions__transfer_dialog_message">ഈ അക്കൗണ്ട് പുതിയൊരു ഉപകരണത്തിലേക്ക് മാറ്റാൻ, \"തുടരുക\" ടാപ്പ് ചെയ്‌ത് Signal ക്യാമറ ഉപയോഗിച്ച് വീണ്ടും QR കോഡ് സ്‌കാൻ ചെയ്യുക. Signal-ൽ നിന്ന് നേരിട്ട് വരുന്ന QR കോഡുകൾ മാത്രം സ്കാൻ ചെയ്യാൻ ശ്രദ്ധിക്കുക.</string>
+    <string name="CommunicationActions__dont_transfer">കൈമാറരുത്</string>
 
     <!-- ConfirmIdentityDialog -->
 
@@ -400,7 +425,7 @@
     <string name="ContactShareEditActivity_type_work">ജോലി</string>
     <string name="ContactShareEditActivity_type_missing">മറ്റുള്ളവ</string>
     <string name="ContactShareEditActivity_invalid_contact">തിരഞ്ഞെടുത്ത കോൺടാക്റ്റ് അസാധുവായിരുന്നു</string>
-    <!-- Content descrption for name edit button on contact share edit activity -->
+    <!-- Content description for name edit button on contact share edit activity -->
     <string name="ContactShareEditActivity__edit_name">പേര് എഡിറ്റ് ചെയ്യുക</string>
     <!-- Content description for user avatar in edit activity -->
     <string name="ContactShareEditActivity__avatar">അവതാർ</string>
@@ -669,6 +694,22 @@
     <string name="ConversationFragment_group_names">ഗ്രൂപ്പ് നാമങ്ങൾ</string>
     <!-- Snackbar toast message shown when a profile cannot be downloaded and to try again. -->
     <string name="ConversationFragment_photo_failed">ഫോട്ടോ ഡൗൺലോഡ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Dialog for how to long to keep a messaged pinned for -->
+    <string name="ConversationFragment__keep_pinned">ഇത്രയും നേരം പിൻ ചെയ്‌ത് സൂക്ഷിക്കുക…</string>
+    <!-- Dialog option to keep message pin for 24 hours -->
+    <string name="ConversationFragment__24_hours">24 മണിക്കൂർ</string>
+    <!-- Dialog option to keep message pin for 7 days -->
+    <string name="ConversationFragment__7_days">7 ദിവസം</string>
+    <!-- Dialog option to keep message pin for 30 days -->
+    <string name="ConversationFragment__30_days">30 ദിവസം</string>
+    <!-- Dialog option to keep message pin forever -->
+    <string name="ConversationFragment__forever">എന്നേക്കും</string>
+    <!-- Dialog title when replacing the oldest pin -->
+    <string name="ConversationFragment__replace_title">പിൻ ചെയ്തിരിക്കുന്ന ഏറ്റവും പഴയത് മാറ്റണോ?</string>
+    <!-- Dialog body when replacing the oldest pin -->
+    <string name="ConversationFragment__replace_body">പിൻ ചെയ്യുന്ന സന്ദേശം ഏറ്റവും പഴയ സന്ദേശത്തിന് പകരമാകും</string>
+    <!-- Dialog button when replacing the oldest pin -->
+    <string name="ConversationFragment__replace">മാറ്റി പകരം മറ്റൊന്ന് വയ്ക്കുക</string>
 
     <!-- Title of Safety Tips bottom sheet dialog -->
     <string name="SafetyTips_title">സുരക്ഷാ നുറുങ്ങുകൾ</string>
@@ -913,7 +954,7 @@
     <string name="BackupsPreferenceFragment__backup_time">ബാക്കപ്പ് സമയം</string>
     <string name="BackupsPreferenceFragment__verify_backup_passphrase">ബാക്കപ്പിന്റെ രഹസ്യവാചകം ഉറപ്പാക്കുക</string>
     <string name="BackupsPreferenceFragment__test_your_backup_passphrase">നിങ്ങളുടെ ബാക്കപ്പ് രഹസ്യവാക്യം പരിശോധിച്ച് അത് പൊരുത്തപ്പെടുന്നുണ്ടോയെന്ന് പരിശോധിക്കുക</string>
-    <string name="BackupsPreferenceFragment__turn_on">ഓൺ ചെയ്യുക</string>
+    <string name="BackupsPreferenceFragment__turn_on">ബാക്കപ്പുകൾ ഓണാക്കുക</string>
     <string name="BackupsPreferenceFragment__turn_off">ഓഫ് ആക്കുക</string>
     <string name="BackupsPreferenceFragment__to_restore_a_backup">"ഒരു ബാക്കപ്പ് റീസ്റ്റോര്‍ ചെയ്യാന്‍, Signal-ന്റെ ഒരു പുതിയ പകർപ്പ് ഇൻസ്റ്റാൾ ചെയ്യുക. അപ്ലിക്കേഷൻ തുറന്ന് \"റിസ്റ്റോർ ചെയ്യുക\" ടാപ്പുചെയ്യുക, തുടർന്ന് ഒരു ബാക്കപ്പ് ഫയൽ കണ്ടെത്തുക. %1$s"</string>
     <string name="BackupsPreferenceFragment__learn_more">കൂടുതൽ അറിയുക</string>
@@ -941,6 +982,11 @@
     <!-- DateUtils -->
     <string name="DateUtils_just_now">ഇപ്പോൾ</string>
     <string name="DateUtils_minutes_ago">%1$dm</string>
+    <!-- Content description when describing how many minutes ago something has happened -->
+    <plurals name="DateUtils_minutes_ago_content_description">
+        <item quantity="one">%1$d മിനിറ്റ്</item>
+        <item quantity="other">%1$d മിനിറ്റ്</item>
+    </plurals>
     <string name="DateUtils_today">ഇന്ന്</string>
     <string name="DateUtils_yesterday">ഇന്നലെ</string>
     <!-- When scheduling a message, %1$s replaced with either today, tonight, or tomorrow. %2$s replaced with the time. e.g. Tonight at 9:00pm -->
@@ -1169,6 +1215,9 @@
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Signal-ന്റെ ഈ പതിപ്പ് കാലഹരണപ്പെട്ടു. സന്ദേശങ്ങൾ അയയ്‌ക്കുന്നതിനും സ്വീകരിക്കുന്നതിനും ഇപ്പോൾ തന്നെ പുതുക്കുക.</string>
     <string name="ExpiredBuildReminder_update_now">ഇപ്പോൾ അപ്ഡേറ്റ് ചെയ്യുക</string>
 
+    <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
+    <string name="DeprecatedSdkBanner_body">ഈ ഉപകരണത്തിൽ Signal ഇനി മുതൽ പ്രവർത്തിക്കുന്നതല്ല. Signal വീണ്ടും ഉപയോഗിക്കുന്നതിന്, നിങ്ങളുടെ ഉപകരണം Android-ന്റെ പുതിയ പതിപ്പിലേക്ക് അപ്‌ഡേറ്റ് ചെയ്യുക അല്ലെങ്കിൽ ഒരു പുതിയ ഉപകരണത്തിലേക്ക് മാറുക.</string>
+
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Signal അപ്ഡേറ്റ് ചെയ്യുക</string>
     <!-- Message body of notification telling users that this current version of Signal has expired. If pressed, we will direct them to the website APK or PlayStore page -->
@@ -1195,11 +1244,11 @@
     <string name="AddToGroupActivity_add_member">അംഗത്തെ ചേർക്കണോ?</string>
     <string name="AddToGroupActivity_add_s_to_s">\"%1$s\"-നെ \"%2$s\"-ലേക്ക് ചേർക്കുക?</string>
     <string name="AddToGroupActivity_s_added_to_s">\"%1$s\"-നെ \"%2$s\"-ലേക്ക് ചേർത്തു.</string>
-    <string name="AddToGroupActivity_add_to_group">ഗ്രൂപ്പിലേക്ക് ചേർക്കുക</string>
     <string name="AddToGroupActivity_add_to_groups">ഗ്രൂപ്പുകളിലേക്ക് ചേർക്കുക</string>
     <string name="AddToGroupActivity_this_person_cant_be_added_to_legacy_groups">ഈ വ്യക്തിയെ ലെഗസി ഗ്രൂപ്പുകളിൽ ചേർക്കാൻ കഴിയില്ല.</string>
     <string name="AddToGroupActivity_add">ചേർക്കുക</string>
     <string name="AddToGroupActivity_add_to_a_group">ഒരു ഗ്രൂപ്പിലേക്ക് ചേർക്കൂ</string>
+    <string name="AddToGroupActivity_search">തിരയൽ</string>
 
     <!-- ChooseNewAdminActivity -->
     <string name="ChooseNewAdminActivity_choose_new_admin">പുതിയ അഡ്മിനെ തിരെഞ്ഞെടുക്കുക</string>
@@ -1385,11 +1434,16 @@
     <!-- AddMembersActivity -->
     <string name="AddMembersActivity__done">ചെയ്‌തു</string>
     <string name="AddMembersActivity__this_person_cant_be_added_to_legacy_groups">ഈ വ്യക്തിയെ ലെഗസി ഗ്രൂപ്പുകളിൽ ചേർക്കാൻ കഴിയില്ല.</string>
-    <!-- Confirmation text when adding a member to a group. If one person is added, %1$s is their name. If multiple people are added, the total number is %3$d. %2$s is the name of the group -->
+
+    <!-- Confirmation text when adding one member to a group. %1$s is the member\'s name, %2$s is the group name. -->
+    <string name="AddMembersActivity__add_member_to_s">\"%1$s\"-നെ \"%2$s\"-ലേക്ക് ചേർക്കണോ?</string>
+
+    <!-- Confirmation text when adding members to a group. %1$d is the number of members added. %2$s is the name of the group. -->
     <plurals name="AddMembersActivity__add_d_members_to_s">
-        <item quantity="one">\"%2$s\" ലേക്ക് \"%1$s\" എന്നയാളെ ചേർക്കണോ?</item>
-        <item quantity="other">\"%2$s\" -ലേക്ക് %3$d അംഗങ്ങളെ ചേർക്കണോ?</item>
+        <item quantity="one">\"%2$s\" ലേക്ക് \"{2}\" എന്നയാളെ ചേർക്കണോ?</item>
+        <item quantity="other">\"%2$s\" -ലേക്ക് %1$d അംഗങ്ങളെ ചേർക്കണോ?</item>
     </plurals>
+
     <string name="AddMembersActivity__add">ചേർക്കുക</string>
     <string name="AddMembersActivity__add_members">അംഗങ്ങളെ ചേർക്കുക</string>
 
@@ -1494,9 +1548,9 @@
     <!-- Text shown on restore screen as information on what will happen if you skip -->
     <string name="RemoteRestoreActivity__your_media_will_restore_in_the_background">നിങ്ങളുടെ മീഡിയ പശ്ചാത്തലത്തിൽ പുനഃസ്ഥാപിക്കും. ഇപ്പോൾ പുനഃസ്ഥാപിക്കേണ്ടതില്ലെന്ന് നിങ്ങൾ തിരഞ്ഞെടുക്കുകയാണെങ്കിൽ, പിന്നീട് നിങ്ങൾക്ക് പുനഃസ്ഥാപിക്കാനാകില്ല.</string>
     <!-- Dialog title -->
-    <string name="RestoreActivity__no_longer_registered_title">This device is no longer registered</string>
+    <string name="RestoreActivity__no_longer_registered_title">ഈ ഉപകരണം ഇപ്പോൾ രജിസ്റ്റർ ചെയ്തിട്ടില്ല</string>
     <!-- Dialog message -->
-    <string name="RestoreActivity__no_longer_registered_message">This is likely because you registered your Signal account on a different device.</string>
+    <string name="RestoreActivity__no_longer_registered_message">നിങ്ങളുടെ Signal അക്കൗണ്ട് മറ്റൊരു ഉപകരണത്തിൽ രജിസ്റ്റർ ചെയ്തതിനാലാകാം ഇത്.</string>
 
     <!-- GroupMentionSettingDialog -->
     <string name="GroupMentionSettingDialog_notify_me_for_mentions">സൂചനകൾ എന്നെ അറിയിക്കുക</string>
@@ -1598,6 +1652,8 @@
     <string name="GroupJoinBottomSheetDialogFragment_unable_to_join_group_please_try_again_later">ഗ്രൂപ്പിൽ ചേരാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക</string>
     <string name="GroupJoinBottomSheetDialogFragment_encountered_a_network_error">ഒരു നെറ്റ്‌വർക്ക് പിശക് നേരിട്ടു.</string>
     <string name="GroupJoinBottomSheetDialogFragment_this_group_link_is_not_active">ഈ ഗ്രൂപ്പ് ലിങ്ക് സജീവമല്ല</string>
+    <!-- Toast message shown when trying to join a group by link but the group is full -->
+    <string name="GroupJoinBottomSheetDialogFragment_group_limit_reached">ഗ്രൂപ്പ് പരിധിയിൽ എത്തി, ഗ്രൂപ്പിൽ ചേരാനാകുന്നില്ല</string>
     <!-- Title shown when there was an known issue getting group information from a group link -->
     <string name="GroupJoinBottomSheetDialogFragment_cant_join_group">ഗ്രൂപ്പിൽ ചേരാനാവില്ല</string>
     <!-- Message shown when you try to get information for a group via link but an admin has removed you -->
@@ -2115,6 +2171,8 @@
     <string name="MessageRecord_unsupported_feature">പുതിയ Signal ഫീച്ചർ ഉപയോഗിക്കുന്നതിനാൽ പ്രോസസ്സ് ചെയ്യാൻ കഴിയാത്തതോ പ്രദർശിപ്പിക്കാൻ കഴിയാത്തതോ ആയ ഒരു സന്ദേശം %1$s നിങ്ങൾക്ക് അയച്ചു.</string>
     <!-- Update message shown when someone ends the poll. %1$s is the person who ended the poll and %2$s is the poll question. -->
     <string name="MessageRecord_ended_the_poll">%1$s പോൾ അവസാനിപ്പിച്ചു: \"%2$s\"</string>
+    <!-- Update message shown when you end the poll. %1$s is the poll question. -->
+    <string name="MessageRecord_you_ended_the_poll">നിങ്ങൾ പോൾ അവസാനിപ്പിച്ചു: \"%1$s\"</string>
 
     <!-- MessageRequestBottomView -->
     <string name="MessageRequestBottomView_accept">സ്വീകരിക്കുക</string>
@@ -2431,6 +2489,12 @@
     <!-- Dialog description that will explain the steps needed to give camera permissions -->
     <string name="WebRtcCallActivity__to_enable_video">നിങ്ങളുടെ വീഡിയോ പ്രവർത്തനക്ഷമമാക്കാൻ:</string>
 
+    <!-- MoveableLocalVideoRenderer -->
+    <!-- Content description for button to shrink local video from focused/full-screen mode -->
+    <string name="MoveableLocalVideoRenderer__shrink_local_video">ലോക്കൽ വീഡിയോ ചുരുക്കുക</string>
+    <!-- Content description for button to expand local video to focused/full-screen mode -->
+    <string name="MoveableLocalVideoRenderer__expand_local_video">ലോക്കൽ വീഡിയോ വികസിപ്പിക്കുക</string>
+
     <!-- WebRtcCallView -->
     <string name="WebRtcCallView__signal_call">Signal കോൾ</string>
     <string name="WebRtcCallView__signal_video_call">Signal വീഡിയോ കോൾ</string>
@@ -2648,6 +2712,16 @@
     <string name="CallParticipantView__cant_receive_audio_and_video_from_s">%1$s നിന്ന് ഓഡിയോയും വീഡിയോയും സ്വീകരിക്കാൻ കഴിയുന്നില്ല </string>
     <string name="CallParticipantView__this_may_be_Because_they_have_not_verified_your_safety_number_change">നിങ്ങളുടെ സുരക്ഷാ നമ്പർ മാറ്റം അവർ സ്ഥിരീകരിക്കാത്തതിനാലോ അവരുടെ ഉപകരണത്തിൽ ഒരു പ്രശ്നമുണ്ടായതിനാലോ അവർ നിങ്ങളെ തടഞ്ഞതിനാലോ ആയിരിക്കാം ഇത്.</string>
 
+    <!-- SwitchCameraButton -->
+    <!-- Content description for the button that switches between front and back camera during a call -->
+    <string name="SwitchCameraButton__switch_camera_direction">ക്യാമറ ദിശ മാറ്റുക</string>
+
+    <!-- CallQualityDiagnosticsScreen -->
+    <!-- Title for the call quality diagnostics screen -->
+    <string name="CallQualityDiagnosticsScreen__diagnostic_information">പ്രശ്നനിർണ്ണയ വിവരങ്ങൾ</string>
+    <!-- Content description for the close/back navigation button -->
+    <string name="CallQualityDiagnosticsScreen__close">അടയ്ക്കുക</string>
+
     <!-- CallToastPopupWindow -->
     <string name="CallToastPopupWindow__swipe_to_view_screen_share">സ്ക്രീൻ ഷെയർ കാണാൻ സ്വൈപ്പ് ചെയ്യുക</string>
 
@@ -2691,7 +2765,8 @@
     <string name="RegistrationActivity_i_understand">എനിക്ക് മനസിലായി</string>
     <string name="RegistrationActivity_play_services_error">Play Services പിശക്</string>
     <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services അപ്‌ഡേറ്റുചെയ്യുന്നു അല്ലെങ്കിൽ താൽക്കാലികമായി ലഭ്യമല്ല. ദയവായി വീണ്ടും ശ്രമിക്കുക.</string>
-    <string name="RegistrationActivity_terms_and_privacy">നിബന്ധനകളും സ്വകാര്യതാ നയവും</string>
+    <!-- Non-English translations should use "Signal is a nonprofit" instead, dropping the 501c3 reference. -->
+    <string name="RegistrationActivity_terms_and_privacy">Signal ഒരു ലാഭേച്ഛയില്ലാത്ത സ്ഥാപനമാണ്\n നിബന്ധനകളും സ്വകാര്യതാ നയവും</string>
     <string name="RegistrationActivity_signal_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">സുഹൃത്തുക്കളുമായി ബന്ധപ്പെടാനും സന്ദേശങ്ങള്‍ അയക്കാനും നിങ്ങളെ സഹായിക്കുന്നതിന് Signal-ന് കോൺ‌ടാക്റ്റുകൾ, മീഡിയ അനുമതികൾ ആവശ്യമാണ്. Signal-ന്റെ സ്വകാര്യ കോൺടാക്റ്റ് കണ്ടെത്തൽ ഉപയോഗിച്ചാണ് നിങ്ങളുടെ കോൺ‌ടാക്റ്റുകൾ അപ്‌ലോഡ് ചെയ്‌തിരിക്കുന്നത്, അതിനർത്ഥം അവ ആദ്യാവസാന എൻക്രിപ്റ്റ് ചെയ്‌തതും Signal സേവനത്തിന് ഒരിക്കലും ദൃശ്യമാകാത്തതുമാണ്.</string>
     <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">സുഹൃത്തുക്കളുമായി ബന്ധപ്പെടാൻ നിങ്ങളെ സഹായിക്കുന്നതിന് Signal-ന് കോൺ‌ടാക്റ്റുകൾ അനുമതി ആവശ്യമാണ്. Signal-ന്റെ സ്വകാര്യ കോൺടാക്റ്റ് കണ്ടെത്തൽ ഉപയോഗിച്ചാണ് നിങ്ങളുടെ കോൺ‌ടാക്റ്റുകൾ അപ്‌ലോഡ് ചെയ്‌തിരിക്കുന്നത്, അതിനർത്ഥം അവ ആദ്യാവസാന എൻക്രിപ്റ്റ് ചെയ്‌തതും Signal സേവനത്തിന് ഒരിക്കലും ദൃശ്യമാകാത്തതുമാണ്.</string>
     <string name="RegistrationActivity_rate_limited_to_service">ഈ നമ്പർ രജിസ്റ്റർ ചെയ്യുന്നതിന് നിങ്ങൾ വളരെയധികം ശ്രമങ്ങൾ നടത്തി. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
@@ -2922,6 +2997,8 @@
     <string name="SubmitDebugLogActivity_success">വിജയകരം!</string>
     <string name="SubmitDebugLogActivity_copy_this_url_and_add_it_to_your_issue">ഈ URL പകർത്തി നിങ്ങളുടെ പ്രശ്ന റിപ്പോർട്ടിലേക്കോ പിന്തുണാ ഇമെയിലിലേക്കോ ചേർക്കുക:\n\n<b>%1$s</b></string>
     <string name="SubmitDebugLogActivity_share">പങ്കിടുക</string>
+    <!-- Displayed when entering activity in view-only mode -->
+    <string name="SubmitDebugLogActivity_close">അടയ്ക്കുക</string>
     <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online_for_contributors">സംഭാവന നൽകുന്നവർക്ക് കാണുന്നതിന് ഈ ലോഗ് പരസ്യമായി ഓൺലൈനിൽ പോസ്റ്റുചെയ്യും. അപ്‌ലോഡ് ചെയ്യുന്നതിന് മുമ്പ് നിങ്ങൾക്ക് ഇത് പരിശോധിക്കാവുന്നതാണ്.</string>
     <!-- Banner message shown while submitting debug log -->
     <string name="SubmitDebugLogActivity_your_log_will_be_posted_online">സമർപ്പിക്കുക എന്നതിൽ നിങ്ങൾ ക്ലിക്ക് ചെയ്യുമ്പോൾ, നിങ്ങളുടെ ലോഗ് 30 ദിവസത്തേക്ക് തനതും പ്രസിദ്ധീകരിക്കാത്തതുമായ ഒരു URL-ൽ ഓൺലൈനിൽ പോസ്റ്റ് ചെയ്യും. നിങ്ങൾ അത് ആദ്യം പ്രാദേശികമായി സംരക്ഷിക്കേണ്ടതാണ്.</string>
@@ -3358,6 +3435,9 @@
     <!-- Label with hyphenation. Translation can use soft hyphen - Unicode U+00AD -->
     <string name="WebRtcCallScreen__answer_without_video">വീഡിയോ ഇല്ലാതെ ഉത്തരം നൽകുക</string>
 
+    <!-- CallScreen -->
+    <string name="CallScreen__change_camera_direction">ക്യാമറ ദിശ മാറ്റുക</string>
+
     <!-- WebRtcAudioOutputToggle -->
     <!-- Label for a dialog asking the user to switch the audio output device during a call -->
     <string name="WebRtcAudioOutputToggle__audio_output">ഓഡിയോ ഔട്ട്പുട്ട്</string>
@@ -3415,9 +3495,9 @@
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"\"%1$s\" ഒരു Signal ഉപയോക്താവല്ല. ഉപയോക്തൃനാമം പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക."</string>
     <string name="ContactSelectionListFragment_you_do_not_need_to_add_yourself_to_the_group">നിങ്ങൾ സ്വയം ഗ്രൂപ്പിലേക്ക് ചേർക്കേണ്ടതില്ല</string>
     <string name="ContactSelectionListFragment_maximum_group_size_reached">പരമാവധി ഗ്രൂപ്പ് വലുപ്പം എത്തി</string>
-    <string name="ContactSelectionListFragment_signal_groups_can_have_a_maximum_of_d_members">Signal ഗ്രൂപ്പുകൾക്ക് പരമാവധി %1$d അംഗങ്ങൾ വരെ ആകാം</string>
+    <string name="ContactSelectionListFragment_signal_groups_can_have_a_maximum_of_s_members">Signal ഗ്രൂപ്പുകൾക്ക് പരമാവധി %1$s അംഗങ്ങൾ വരെ ആകാം.</string>
     <string name="ContactSelectionListFragment_recommended_member_limit_reached">ശുപാർശ ചെയ്യുന്ന അംഗ പരിധി എത്തി</string>
-    <string name="ContactSelectionListFragment_signal_groups_perform_best_with_d_members_or_fewer">Signal ഗ്രൂപ്പുകൾ %1$d അംഗങ്ങളോ അതിൽ കുറവോ ഉപയോഗിച്ച് മികച്ച രീതിയിൽ പ്രവർത്തിക്കുന്നു. കൂടുതൽ അംഗങ്ങളെ ചേർക്കുന്നത് സന്ദേശങ്ങൾ അയയ്‌ക്കുന്നതിനും സ്വീകരിക്കുന്നതിനും കാലതാമസമുണ്ടാക്കും.</string>
+    <string name="ContactSelectionListFragment_signal_groups_perform_best_with_s_members_or_fewer">Signal ഗ്രൂപ്പുകൾ %1$s അംഗങ്ങളോ അതിൽ കുറവോ ഉപയോഗിച്ച് മികച്ച രീതിയിൽ പ്രവർത്തിക്കുന്നു. കൂടുതൽ അംഗങ്ങളെ ചേർക്കുന്നത് സന്ദേശങ്ങൾ അയയ്‌ക്കുന്നതിനും സ്വീകരിക്കുന്നതിനും കാലതാമസമുണ്ടാക്കും.</string>
     <plurals name="ContactSelectionListFragment_d_members">
         <item quantity="one">%1$d അംഗം</item>
         <item quantity="other">%1$d അംഗങ്ങൾ</item>
@@ -3751,6 +3831,55 @@
     <string name="verify_display_fragment__loading">ലഭ്യമാക്കുന്നു</string>
     <string name="verify_display_fragment__mark_as_verified">പരിശോധിച്ചതായി അടയാളപ്പെടുത്തുക</string>
     <string name="verify_display_fragment__clear_verification">പരിശോധന പൂർത്തിയാക്കുക</string>
+    <!-- Header title for automatic key verification -->
+    <string name="verify_display_fragment__automatic">ഓട്ടോമാറ്റിക്ക് കീ പരിശോധന</string>
+    <!-- Button text to verify automatically    -->
+    <string name="verify_display_fragment__verify_automatic">ഓട്ടോമാറ്റിക്കായി പരിശോധിച്ചുറപ്പിക്കുക</string>
+    <!-- Loading text when verifying -->
+    <string name="verify_display_fragment__verifying">എൻക്രിപ്ഷൻ പരിശോധിച്ചുറപ്പിക്കുന്നു…</string>
+    <!-- Success text shown when encryption is verified -->
+    <string name="verify_display_fragment__encryption_verified">എൻക്രിപ്ഷൻ പരിശോധിച്ചുറപ്പിച്ചു</string>
+    <!-- Text shown when verification fails -->
+    <string name="verify_display_fragment__encryption_unavailable">സ്വയമേവയുള്ള പരിശോധിച്ചുറപ്പിക്കല്‍ ലഭ്യമല്ല</string>
+    <!-- Caption text explaining more about automatic verification   -->
+    <string name="verify_display_fragment__auto_verify_not_available">എല്ലാ ചാറ്റുകൾക്കും സ്വയമേവയുള്ള പരിശോധിച്ചുറപ്പിക്കല്‍ ലഭ്യമല്ല.</string>
+  <!-- Removed by excludeNonTranslatables <string name="verify_display_fragment__link" translatable="false">https://support.signal.org/hc/articles/10223569377562</string> -->
+
+    <!-- Bottom sheet title when encryption is auto-verified -->
+    <string name="EncryptionVerifiedSheet__title_success">ഈ ചാറ്റിനായി എൻക്രിപ്ഷൻ സ്വയമേവ പരിശോധിച്ചുറപ്പിച്ചു</string>
+    <!-- Bottom sheet body when encryption is auto-verified -->
+    <string name="EncryptionVerifiedSheet__body_success">ഫോൺ നമ്പർ വഴി നിങ്ങൾ കണക്റ്റുചെയ്‌തിരിക്കുന്ന കോൺടാക്‌റ്റുകൾക്ക്, കീ ട്രാൻസ്പരൻസി എന്ന പ്രക്രിയ ഉപയോഗിച്ച് കണക്ഷൻ സുരക്ഷിതമാണോ എന്ന് Signal-ന് ഓട്ടോമാറ്റിക്കായി സ്ഥിരീകരിക്കാൻ കഴിയും. അധിക സുരക്ഷയ്ക്കായി, മുമ്പത്തെ സ്ക്രീനിലെ നമ്പറുകൾ താരതമ്യം ചെയ്തുകൊണ്ടോ അവരുടെ ഉപകരണത്തിലെ കോഡ് സ്കാൻ ചെയ്തുകൊണ്ടോ എൻഡ്-ടു-എൻഡ് എൻക്രിപ്ഷൻ നേരിട്ട് പരിശോധിച്ചുറപ്പിക്കുക.</string>
+    <!-- Bottom sheet title when encryption is no longer auto-verified -->
+    <string name="EncryptionVerifiedSheet__title_no_longer_unavailable">ഈ ചാറ്റിന് ഇനി സ്വയമേവയുള്ള പരിശോധിച്ചുറപ്പിക്കല്‍ ലഭ്യമല്ല</string>
+    <!-- Bottom sheet body when encryption is no longer auto-verified. Placeholder is the name of the person. -->
+    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">ഈ ചാറ്റിനുള്ള എൻക്രിപ്ഷൻ ഇനി Signal-ന് ഓട്ടോമാറ്റിക്കായി പരിശോധിച്ചുറപ്പിക്കാൻ കഴിയില്ല. ഇത് %1$s അവരുടെ ഫോൺ നമ്പർ മാറ്റിയതിനാലാകാം. മുമ്പത്തെ സ്ക്രീനിലെ നമ്പറുകൾ താരതമ്യം ചെയ്തുകൊണ്ടോ അവരുടെ ഉപകരണത്തിലെ കോഡ് സ്കാൻ ചെയ്തുകൊണ്ടോ എൻഡ്-ടു-എൻഡ് എൻക്രിപ്ഷൻ നേരിട്ട് പരിശോധിച്ചുറപ്പിക്കുക.</string>
+    <!-- Bottom sheet title when encryption cannot be auto-verified -->
+    <string name="EncryptionVerifiedSheet__title_unavailable">ഈ ചാറ്റിന് സ്വയമേവയുള്ള പരിശോധിച്ചുറപ്പിക്കല്‍ ലഭ്യമല്ല</string>
+    <!-- Bottom sheet body when encryption cannot be auto-verified -->
+    <string name="EncryptionVerifiedSheet__body_unavailable">ഒരു ഫോൺ നമ്പർ വഴി നിങ്ങൾ ഒരാളുമായി ബന്ധപ്പെട്ടിരിക്കുന്ന ചാറ്റുകളിലെ എൻക്രിപ്ഷൻ മാത്രമേ Signal-ന് ഓട്ടോമാറ്റിക്കായി പരിശോധിച്ചുറപ്പിക്കാൻ കഴിയൂ. ഒരു ഉപയോക്തൃനാമം അല്ലെങ്കിൽ പൊതുവായ ഒരു ഗ്രൂപ്പ് ഉപയോഗിച്ചാണ് ചാറ്റ് ആരംഭിച്ചതെങ്കിൽ, മുമ്പത്തെ സ്ക്രീനിലെ നമ്പറുകൾ താരതമ്യം ചെയ്തുകൊണ്ടോ അവരുടെ ഉപകരണത്തിലെ കോഡ് സ്കാൻ ചെയ്തുകൊണ്ടോ എൻഡ്-ടു-എൻഡ് എൻക്രിപ്ഷൻ പരിശോധിച്ചുറപ്പിക്കുക.</string>
+
+    <!-- Title for auto verification education sheet -->
+    <string name="VerifyAutomaticallyEducationSheet__title">Signal-ന് ഇപ്പോൾ കീ എൻക്രിപ്ഷൻ സ്വയമേവ പരിശോധിച്ചുറപ്പിക്കാന്‍ കഴിയും</string>
+    <!-- Body for auto verification education sheet -->
+    <string name="VerifyAutomaticallyEducationSheet__body">ഫോൺ നമ്പർ വഴി നിങ്ങൾ കണക്റ്റുചെയ്‌തിരിക്കുന്ന കോൺടാക്‌റ്റുകൾക്ക്, കീ ട്രാൻസ്പരൻസി എന്ന പ്രക്രിയ ഉപയോഗിച്ച് കണക്ഷൻ സുരക്ഷിതമാണോ എന്ന് Signal-ന് ഓട്ടോമാറ്റിക്കായി സ്ഥിരീകരിക്കാൻ കഴിയും. അധിക സുരക്ഷയ്ക്കായി, ഒരു QR കോഡോ നമ്പറോ ഉപയോഗിച്ച് നിങ്ങൾക്ക് ഇപ്പോഴും കണക്ഷനുകൾ നേരിട്ട് പരിശോധിച്ചുറപ്പിക്കാന്‍ കഴിയും.</string>
+    <!-- Button to learn more about automatic verification -->
+    <string name="VerifyAutomaticallyEducationSheet__learn_more">കൂടുതലറിയുക</string>
+    <!-- Button to go to verification page -->
+    <string name="VerifyAutomaticallyEducationSheet__verify">പരിശോധിച്ചുറപ്പിക്കുക</string>
+
+    <!-- Title for bottom sheet when self verification fails -->
+    <string name="SelfVerificationFailureSheet__title">നിങ്ങളുടെ ഉപകരണത്തിന് നിലവിൽ ഓട്ടോമാറ്റിക് കീ വെരിഫിക്കേഷൻ ലഭ്യമല്ല. ഡീബഗ് ലോഗ് സമർപ്പിക്കണോ?</string>
+    <!-- Body for bottom sheet when self verification fails -->
+    <string name="SelfVerificationFailureSheet__body">പ്രശ്‌നം നിർണ്ണയിക്കാനും പരിഹരിക്കാനും ഡീബഗ് ലോഗുകൾ ഞങ്ങളെ സഹായിക്കുന്നു, അവയിൽ തിരിച്ചറിയാനാകുന്ന വിവരങ്ങൾ ഉൾപ്പെടുന്നുമില്ല.</string>
+    <!-- Button to decline submitting logs -->
+    <string name="SelfVerificationFailureSheet__no_thanks">വേണ്ട</string>
+    <!-- Button to submit logs -->
+    <string name="SelfVerificationFailureSheet__submit">സമർപ്പിക്കുക</string>
+    <!-- Email subject line when submitting logs following a verification failure -->
+    <string name="SelfVerificationFailureSheet__email_subject">ഓട്ടോമാറ്റിക് കീ വെരിഫിക്കേഷൻ പരാജയം</string>
+  <!-- Removed by excludeNonTranslatables <string name="SelfVerificationFailureSheet__email_filter" translatable="false">AutomaticKeyVerificationFailure</string> -->
+    <!-- Link to learn more about debug logs -->
+    <string name="SelfVerificationFailureSheet__learn_more">കൂടുതലറിയുക</string>
 
     <!-- verity_scan_fragment -->
     <string name="verify_scan_fragment__scan_the_qr_code_on_your_contact">നിങ്ങളുടെ കോൺടാക്ടിൻ്റെ ഡിവൈസിലുള്ള QR കോഡ് സ്കാൻ ചെയ്യുക.</string>
@@ -4125,6 +4254,12 @@
     <string name="preferences_normal">സാധാരണം</string>
     <!-- Preference summary for compact navigation bar size -->
     <string name="preferences_compact">കോമ്പാക്റ്റ്</string>
+    <!-- Dialog message body explaining that we have to restart the app in order to apply the user\'s new language setting.  -->
+    <string name="preferences_language_change_confirmation_message">പുതിയ ഭാഷാ ക്രമീകരണം ബാധകമാക്കാൻ ആപ്പ് പുനരാരംഭിക്കപ്പെടും.</string>
+    <!-- Preference title for automatic key verification -->
+    <string name="preferences_automatic_key_verification">ഓട്ടോമാറ്റിക്ക് കീ വെരിഫിക്കേഷൻ</string>
+    <!-- Preference summary for automatic key verification -->
+    <string name="preferences_automatic_key_verification_body">പ്രവർത്തനക്ഷമമാക്കുമ്പോൾ, 1:1 ചാറ്റുകളുടെ എൻക്രിപ്ഷൻ ഓട്ടോമാറ്റിയ്ക്കായി പരിശോധിച്ചുറപ്പിക്കാന്‍ Signal ശ്രമിക്കും.</string>
 
 
     <string name="configurable_single_select__customize_option">ഓപ്ഷൻ ഇച്ഛാനുസൃതമാക്കുക</string>
@@ -4429,6 +4564,10 @@
     <string name="conversation_selection__menu_payment_details">പേയ്മെന്റ് വിശദാംശങ്ങൾ</string>
     <!-- Button to end a poll -->
     <string name="conversation_selection__menu_end_poll">പോൾ അവസാനിപ്പിക്കുക</string>
+    <!-- Button to pin a message -->
+    <string name="conversation_selection__menu_pin_message">പിൻ ചെയ്യുക</string>
+    <!-- Button to unpin a message -->
+    <string name="conversation_selection__menu_unpin_message">അൺപിൻ ചെയ്യുക</string>
 
     <!-- conversation_expiring_on -->
 
@@ -4688,8 +4827,6 @@
     <string name="ConversationListFragment_loading">ലഭ്യമാക്കുന്നു…</string>
     <string name="CallNotificationBuilder_connecting">ബന്ധിപ്പിക്കുന്നു…</string>
     <string name="Permissions_permission_required">അനുമതി ആവശ്യമാണ്</string>
-    <string name="Permissions_continue">തുടരുക</string>
-    <string name="Permissions_not_now">ഇപ്പോൾ വേണ്ട</string>
     <string name="SQLCipherMigrationHelper_migrating_signal_database">Signal ഡാറ്റാബേസ് മൈഗ്രേറ്റുചെയ്യുന്നു</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">പാസ്‌ഫ്രേസ് ബാക്കപ്പ് ചെയ്യുക</string>
     <string name="backup_enable_dialog__backups_will_be_saved_to_external_storage_and_encrypted_with_the_passphrase_below_you_must_have_this_passphrase_in_order_to_restore_a_backup">ബാക്കപ്പുകൾ ബാഹ്യ സ്റ്റോറേജിലെക് സംരക്ഷിക്കുകയും ചുവടെയുള്ള പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച് എൻ‌ക്രിപ്റ്റ് ചെയ്യുകയും ചെയ്യും. ഒരു ബാക്കപ്പ് പുന റിസ്റ്റോർ ചെയ്യാൻ നിങ്ങൾക്ക് ഈ പാസ്‌ഫ്രേസ് ഉണ്ടായിരിക്കണം.</string>
@@ -5181,10 +5318,14 @@
 
     <!-- CreateGroupActivity -->
     <string name="CreateGroupActivity__skip">ഒഴിവാക്കുക</string>
-    <plurals name="CreateGroupActivity__d_members">
-        <item quantity="one">%1$d അംഗം</item>
-        <item quantity="other">%1$d അംഗങ്ങൾ</item>
+
+    <!-- Create group screen title displayed when there is at least one group member selected. The placeholder is the total number of group members. -->
+    <plurals name="CreateGroupActivity__s_members">
+        <item quantity="one">%1$s അംഗം</item>
+        <item quantity="other">%1$s അംഗങ്ങൾ</item>
     </plurals>
+    <!-- Accessibility label for navigating to the next screen in the create group flow. -->
+    <string name="CreateGroupActivity__accessibility_next">അടുത്തത്</string>
 
     <!-- ShareActivity -->
     <string name="ShareActivity__share">പങ്കിടുക</string>
@@ -5213,7 +5354,7 @@
     <string name="ChatWallpaperFragment__wallpaper_preview_description">വാള്‍പേപ്പറിന്റെ പ്രിവ്യൂ</string>
     <string name="ChatWallpaperFragment__would_you_like_to_override_all_chat_colors">എല്ലാ ചാറ്റ് നിറങ്ങളും അസാധുവാക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?</string>
     <string name="ChatWallpaperFragment__would_you_like_to_override_all_wallpapers">എല്ലാ വാള്‍പേപ്പറുകള്‍ അസാധുവാക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?</string>
-    <string name="ChatWallpaperFragment__reset_default_colors">സഹജമായ നിറങ്ങൾ പുന:സജ്ജമാക്കുക</string>
+    <string name="ChatWallpaperFragment__reset_default_colors">ഡിഫോൾട്ട് നിറം പുനഃക്രമീകരിക്കുക</string>
     <string name="ChatWallpaperFragment__reset_all_colors">എല്ലാ നിറങ്ങളും പുന:സജ്ജമാക്കുക</string>
     <string name="ChatWallpaperFragment__reset_default_wallpaper">ഡിഫോൾട്ട് വാള്‍പേപ്പര്‍ പുന:സജ്ജമാക്കുക</string>
     <string name="ChatWallpaperFragment__reset_all_wallpapers">വാള്‍പേപ്പറുകള്‍ എല്ലാം പുനഃക്രമീകരിക്കുക</string>
@@ -5709,6 +5850,8 @@
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">നിബന്ധനകളും സ്വകാര്യതാ നയവും</string>
     <string name="HelpFragment__copyright_signal_messenger">പകർപ്പവകാശ Signal സന്ദേശകന്‍</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3-യ്ക്ക് കീഴിൽ ലൈസൻസ് ചെയ്‌തത്</string>
+    <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="HelpSettingsFragment__signal_is_a_501c3">Signal ഒരു ലാഭേച്ഛയില്ലാത്ത സ്ഥാപനമാണ്</string>
 
     <!-- DataAndStorageSettingsFragment -->
     <string name="DataAndStorageSettingsFragment__media_quality">മീഡിയ നിലവാരം</string>
@@ -5821,7 +5964,7 @@
     <!-- Button label with hyphenation. Translation can use soft hyphen - Unicode U+00AD -->
     <string name="ConversationSettingsFragment__call">കോൾ ചെയ്യുക</string>
     <!-- Button label with hyphenation. Translation can use soft hyphen - Unicode U+00AD -->
-    <string name="ConversationSettingsFragment__mute">മ്യൂട്ട് ചെയ്യുക</string>
+    <string name="ConversationSettingsFragment__mute">മ്യൂട്ട്</string>
     <!-- Button label with hyphenation. Translation can use soft hyphen - Unicode U+00AD -->
     <string name="ConversationSettingsFragment__muted">മ്യൂട്ട് ചെയ്തു</string>
     <!-- Button label with hyphenation. Translation can use soft hyphen - Unicode U+00AD -->
@@ -5841,6 +5984,8 @@
     <string name="ConversationSettingsFragment__permissions">അനുമതികൾ</string>
     <string name="ConversationSettingsFragment__requests_and_invites">അഭ്യർത്ഥനകൾ &amp; ക്ഷണങ്ങൾ</string>
     <string name="ConversationSettingsFragment__group_link">ഗ്രൂപ്പിന്റെ ലിങ്ക്</string>
+    <!-- Label for button that opens the group member label permissions screen. -->
+    <string name="ConversationSettingsFragment__group_member_label">മെമ്പര്‍ ലേബൽ</string>
     <!-- Option in conversation settings to add a user as a contact -->
     <string name="ConversationSettingsFragment__add_as_a_contact">ഒരു കോൺടാക്റ്റായി ചേർക്കുക</string>
     <string name="ConversationSettingsFragment__unmute">അൺമ്യൂട്ട് ചെയ്യുക</string>
@@ -5906,24 +6051,24 @@
     <string name="NewConversationActivity__s_has_been_blocked">%1$s എന്നയാളെ ബ്ലോക്ക് ചെയ്തു</string>
     <!-- Snackbar message when blocking a contact has failed -->
     <string name="NewConversationActivity__block_failed">തടയൽ പരാജയപ്പെട്ടു</string>
-    <!-- Dialog title when remove target contact is in system contacts -->
-    <string name="NewConversationActivity__unable_to_remove_s">%1$s എന്നയാളെ നീക്കം ചെയ്യാനായില്ല</string>
-    <!-- Dialog message when remove target contact is in system contacts -->
-    <string name="NewConversationActivity__this_person_is_saved_to_your">ഈ വ്യക്തിയെ നിങ്ങളുടെ ഉപകരണത്തിലെ കോൺടാക്റ്റുകളിലേക്ക് സംരക്ഷിച്ചു. നിങ്ങളുടെ കോൺടാക്റ്റുകളിൽ നിന്ന് അവ ഇല്ലാതാക്കിയ ശേഷം വീണ്ടും ശ്രമിക്കുക.</string>
-    <!-- Dialog action to view contact when they can\'t be removed otherwise -->
-    <string name="NewConversationActivity__view_contact">കോൺടാക്റ്റ് കാണുക</string>
     <!-- Error message shown when looking up a person by phone number and that phone number is not associated with a signal account -->
-    <string name="NewConversationActivity__s_is_not_a_signal_user">%1$s ഒരു Signal ഉപയോക്താവല്ല</string>
-    <!-- Error message shown when we could not get a user from the username link -->
-    <string name="NewConversationActivity__">%1$s ഒരു Signal ഉപയോക്താവല്ല</string>
+    <string name="RecipientLookup_error__s_is_not_a_signal_user">%1$s ഒരു Signal ഉപയോക്താവല്ല</string>
+    <!-- Accessibility label for opening the screen specific dropdown menu. -->
+    <string name="NewConversationActivity__accessibility_open_top_bar_menu">മെനു തുറക്കുക</string>
     <!-- Error message shown in a dialog when trying to create a new group with non-signal users (e.g., unregistered or phone number only contacts) -->
-    <plurals name="CreateGroupActivity_not_signal_users">
+    <plurals name="RecipientLookup_error__not_signal_users">
         <item quantity="one">%1$s ഒരു Signal ഉപയോക്താവല്ല</item>
         <item quantity="other">%1$s Signal ഉപയോക്താക്കളല്ല</item>
     </plurals>
 
-    <!-- Hint text that shows in the recipient search box when no text is entered yet. -->
-    <string name="ContactFilterView__search_name_or_number">Name, username or number</string>
+    <!-- Hint text that shows in the recipient search bar when no text is entered yet. -->
+    <string name="RecipientSearchBar__search_name_or_number">പേര്, ഉപയോക്തൃനാമം അല്ലെങ്കിൽ നമ്പർ</string>
+    <!-- Accessibility label for the button to switch to the numeric keyboard type. -->
+    <string name="RecipientSearchBar_accessibility_switch_to_numeric_keyboard">ന്യൂമെറിക് കീബോർഡിലേക്ക് മാറുക</string>
+    <!-- Accessibility label for the button to switch to the alphanumeric keyboard type. -->
+    <string name="RecipientSearchBar_accessibility_switch_to_alphanumeric_keyboard">ആൽഫാന്യൂമെറിക് കീബോർഡിലേക്ക് മാറുക</string>
+    <!-- Accessibility label for the button to clear the search filter. -->
+    <string name="RecipientSearchBar_accessibility_clear_search">തിരയൽ ഫിൽട്ടർ പുനഃക്രമീകരിക്കുക</string>
 
     <!-- VoiceNotePlayerView -->
     <string name="VoiceNotePlayerView__dot_s">. %1$s</string>
@@ -6091,13 +6236,12 @@
     <string name="BadgesOverviewFragment__failed_to_update_profile">പ്രൊഫൈൽ അപ്‌ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു</string>
 
 
-
     <string name="SelectFeaturedBadgeFragment__select_a_badge">ഒരു ബാഡ്‌ജ് തിരഞ്ഞെടുക്കുക</string>
     <string name="SelectFeaturedBadgeFragment__you_must_select_a_badge">നിങ്ങൾ ഒരു ബാഡ്‌ജ് തിരഞ്ഞെടുക്കണം</string>
     <string name="SelectFeaturedBadgeFragment__failed_to_update_profile">പ്രൊഫൈൽ അപ്‌ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു</string>
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
-    <string name="ViewBadgeBottomSheetDialogFragment__donate_now">ഇപ്പോൾ സംഭാവന ചെയ്യുക</string>
+    <string name="ViewBadgeBottomSheetDialogFragment__donate_now">സംഭാവന നൽകുക</string>
     <!-- Title of a page in the bottom sheet. Placeholder is a user\'s short-name -->
     <string name="ViewBadgeBottomSheetDialogFragment__s_supports_signal">%1$s Signal-നെ പിന്തുണയ്‌ക്കുന്നു</string>
     <!-- Description of a page in the bottom sheet of a monthly badge. Placeholder is a user\'s short-name -->
@@ -6125,13 +6269,15 @@
     <string name="Subscription__expires_s">കാലഹരണപ്പെടുന്നത് %1$s</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Signal വ്യത്യസ്‌തമാണ്.</string>
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">ഒരു സ്വതന്ത്ര ലാഭേച്ഛയില്ലാത്ത സ്ഥാപനം എന്ന നിലയിൽ, Signal സ്വകാര്യ സന്ദേശമയയ്ക്കലിനും കോളുകൾക്കും പ്രതിജ്ഞാബദ്ധമാണ്. പരസ്യങ്ങളില്ല, ട്രാക്കറുകളില്ല, നിരീക്ഷണമില്ല. Signal-നെ പിന്തുണയ്ക്കാൻ ഇന്ന് തന്നെ സംഭാവന നൽകൂ.</string>
     <!-- First small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__private_messaging">സ്വകാര്യ സന്ദേശമയയ്‌ക്കൽ. പരസ്യങ്ങളില്ല, ട്രാക്കറുകളില്ല, നിരീക്ഷണമില്ല.</string>
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__private_messaging">No ads, no trackers, no surveillance. Donate today to support Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_supported_by">സംഭാവനകളിലൂടെയാണ് Signal പ്രവർത്തിക്കുന്നത്, അതായത് ഞങ്ങൾ ചെയ്യുന്നതിലെല്ലാം നിങ്ങളുടെ സ്വകാര്യതയ്‌ക്കാണ് പ്രാധാന്യം. Signal നിങ്ങൾക്ക് വേണ്ടിയാണ് നിർമ്മിച്ചിരിക്കുന്നത്; ലാഭത്തിന് വേണ്ടിയോ നിങ്ങളുടെ ഡാറ്റയ്‌ക്ക് വേണ്ടിയോ അല്ല.</string>
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">നിങ്ങൾ സംഭാവന നൽകുമ്പോൾ നിങ്ങളുടെ പ്രൊഫൈലിൽ ഒരു ഓപ്ഷണൽ ബാഡ്ജ് നേടുക</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__if_you_can">Signal രസകരവും ആശ്രയിക്കാവുന്നതും എല്ലാവർക്കും ലഭ്യമാകുന്നതുമായി നിലനിർത്താൻ, നിങ്ങൾക്ക് കഴിയുമെങ്കിൽ ഇന്ന് തന്നെ സംഭാവന നൽകൂ.</string>
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">നിങ്ങളുടെ സ്വകാര്യതയാണ് ഞങ്ങളുടെ ദൗത്യം</string>
+    <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal ഒരു ലാഭേച്ഛയില്ലാത്ത സ്ഥാപനമാണ്. Signal ഒരു ലാഭേച്ഛയില്ലാത്ത സ്ഥാപനമാണ്.</string>
 
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">നിങ്ങളുടെ പിന്തുണയ്ക്ക് നന്ദി!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
@@ -6157,7 +6303,8 @@
     <!-- Label for Donation Receipts button -->
     <string name="ManageDonationsFragment__donation_receipts">സംഭാവനാ രസീതുകൾ</string>
     <string name="ManageDonationsFragment__badges">ബാഡ്‌ജുകള്‍</string>
-    <string name="ManageDonationsFragment__subscription_faq">സബ്‍സ്ക്രിപ്ഷൻ FAQ</string>
+    <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">ദാതാവിന്റെ പതിവ് ചോദ്യങ്ങൾ</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">സംഭാവന നൽകാനുള്ള മറ്റ് മാർഗ്ഗങ്ങൾ</string>
     <!-- Preference label to launch badge gifting -->
@@ -7160,11 +7307,11 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">ലാഭത്തേക്കാൾ മുഖ്യം സ്വകാര്യത</string>
+    <string name="DonateToSignalFragment__privacy_over_profit">അഭിമാനത്തോടെ, ലാഭേച്ഛയില്ലാതെ</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">തുടരുക</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">സ്വകാര്യ സന്ദേശമയയ്‌ക്കൽ, നിങ്ങളുടെ ധനസഹായത്തിൽ. പരസ്യങ്ങളില്ല, ട്രാക്കിംഗില്ല, വിട്ടുവീഴ്‌ചയില്ല. Signal-നെ പിന്തുണയ്ക്കാൻ ഇപ്പോൾ സംഭാവന നൽകൂ.</string>
+    <string name="DonateToSignalFragment__private_messaging">സ്വകാര്യ സന്ദേശമയയ്ക്കലിനെ പിന്തുണയ്ക്കാൻ സംഭാവന നൽകുക. Signal-നെ സ്വതന്ത്രമായും പരസ്യരഹിതമായും നിലനിർത്തുക.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
     <string name="DonateToSignalFragment__you_have_a_donation_pending">നിങ്ങൾക്ക് തീർപ്പാക്കാത്ത ഒരു സംഭാവനയുണ്ട്</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
@@ -7438,8 +7585,10 @@
     <string name="CallLogAdapter__outgoing">ഔട്ട്ഗോയിംഗ്</string>
     <!-- Displayed for missed calls -->
     <string name="CallLogAdapter__missed">മിസ്‌ഡ്</string>
-    <!-- Displayed for missed calls declined by notification profile -->
+    <!-- Displayed for one missed call declined by notification profile -->
     <string name="CallLogAdapter__missed_notification_profile">അറിയിപ്പ് പ്രൊഫൈൽ ഓണായിരിക്കുമ്പോൾ മിസ്സ് ആയി</string>
+    <!-- Displayed for multiple missed calls declined by notification profile -->
+    <string name="CallLogAdapter__missed_notification_profile_multiple">അറിയിപ്പ് പ്രൊഫൈൽ ഓണായിരിക്കുമ്പോൾ മിസ്സ് ആയി</string>
     <!-- Displayed on Group Call button if user is not in the call -->
     <string name="CallLogAdapter__join">ചേരുക</string>
     <!-- Displayed on Group Call button if user is in the call -->
@@ -7743,12 +7892,28 @@
 
     <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__title">Signal സുരക്ഷിത ബാക്കപ്പുകൾ ഓണാക്കുക</string>
+    <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups. Special string for the beta period. -->
+    <string name="TurnOnSignalBackups__title_beta">Signal സുരക്ഷിത ബാക്കപ്പുകൾ പരീക്ഷിക്കുക</string>
     <!-- Body of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__body">നിങ്ങൾക്ക് ഒരു പുതിയ ഫോൺ ലഭിക്കുമ്പോഴോ Signal വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്യുമ്പോഴോ ഒരിക്കലും ഒരു സന്ദേശം നഷ്‌ടപ്പെടുത്തരുത്.</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will take the user to the flow to enable backups -->
     <string name="TurnOnSignalBackups__turn_on">ഓൺ ചെയ്യുക</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will simply dismiss the megaphone -->
     <string name="TurnOnSignalBackups__not_now">ഇപ്പോൾ വേണ്ട</string>
+    <!-- Text for a "toast" that pops up at the bottom of the user\'s screen after they respond "not now" to a prompt asking them to enable backups -->
+    <string name="TurnOnSignalBackups__toast_not_now">\"ക്രമീകരണങ്ങൾ\" എന്നതിൽ നിങ്ങൾക്ക് ബാക്കപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കാം</string>
+
+    <!-- Title of a megaphone shown to prompt the user to upgrade to the new local backups type -->
+    <string name="UseNewOnDeviceBackups__title">ഉപകരണത്തിലെ പുതിയ ബാക്കപ്പുകൾ ഉപയോഗിക്കുക</string>
+    <!-- Body of a megaphone shown to prompt the user to upgrade to the new local backups type -->
+    <string name="UseNewOnDeviceBackups__body">ഉപകരണത്തിലെ ബാക്കപ്പുകൾ ഇപ്പോൾ വേഗത്തിൽ സംരക്ഷിക്കുകയും കുറച്ച് ഡാറ്റ മാത്രം ഉപയോഗിക്കുകയും ചെയ്യുന്നു.</string>
+    <!-- Button of a megaphone that will take the user to the upgrade flow -->
+    <string name="UseNewOnDeviceBackups__upgrade">അപ്‌ഗ്രേഡ് ചെയ്യുക</string>
+    <!-- Button of a megaphone that will snooze the reminder to upgrade to the new local backups type -->
+    <string name="UseNewOnDeviceBackups__not_now">ഇപ്പോൾ വേണ്ട</string>
+
+    <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
+    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"ഒരു ബാക്കപ്പ് പുനഃസ്ഥാപിക്കാൻ, Signal-ന്റെ ഒരു പുതിയ പകർപ്പ് ഇൻസ്റ്റാൾ ചെയ്യുക. ആപ്പ് തുറന്ന് ബാക്കപ്പ് പുനഃസ്ഥാപിക്കുക ടാപ്പ് ചെയ്യുക, തുടർന്ന് ഒരു ബാക്കപ്പ് ഫയൽ കണ്ടെത്തുക."</string>
 
     <!-- Title of a megaphone shown to prompt the user to verify their recovery key -->
     <string name="VerifyBackupKey__title">നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ പരിശോധിച്ചുറപ്പിക്കുക</string>
@@ -7969,6 +8134,12 @@
     <!-- Backup redemption error sheet bullet point 2 -->
     <string name="BackupAlertBottomSheet__have_too_many_devices_using_the_same_subscription">ഒരേ സബ്സ്ക്രിപ്ഷൻ ഉപയോഗിക്കുന്ന നിരവധി ഉപകരണങ്ങൾ ഉണ്ട്.</string>
 
+    <!-- OnDeviceBackupsFragment -->
+    <!-- Snackbar message shown after successfully updating the on-device backups recovery key. -->
+    <string name="OnDeviceBackupsFragment__backup_key_updated">ബാക്കപ്പ് കീ അപ്ഡേറ്റ് ചെയ്തു</string>
+    <!-- Toast message shown after selecting a folder to store on-device backups. Placeholder is the selected folder. -->
+    <string name="OnDeviceBackupsFragment__directory_selected">തിരഞ്ഞെടുത്ത ഡയറക്ടറി: %1$s</string>
+
     <!-- BackupStatus -->
     <!-- Status title when user does not have enough free space to download their media. Placeholder is required disk space. -->
     <string name="BackupStatus__free_up_s_of_space_to_download_your_media">നിങ്ങളുടെ മീഡിയ പുനഃസ്ഥാപിക്കാൻ %1$s ഇടം സൃഷ്‌ടിക്കുക.</string>
@@ -7985,6 +8156,15 @@
     <!-- Status action label for resume restore from a paused state -->
     <string name="BackupStatus__resume">പുനരാരംഭിക്കുക</string>
 
+    <!-- Status subtitle for banner when we are creating a backup file -->
+    <string name="BackupStatus__status_creating_backup">ബാക്കപ്പ് സൃഷ്ടിക്കുന്നു…</string>
+    <!-- Status title for banner when user is actively uploading backup data -->
+    <string name="BackupStatus__uploading_backup">ബാക്കപ്പ് അപ്‌ലോഡ് ചെയ്യുന്നു</string>
+    <!-- Status title for banner when user is temporarily unable to upload a backup -->
+    <string name="BackupStatus__upload_paused">ബാക്കപ്പ് താൽക്കാലികമായി നിർത്തി</string>
+    <!-- Status title for banner when user has finished creating a backup -->
+    <string name="BackupStatus__upload_complete">ബാക്കപ്പ് പൂർത്തിയായി</string>
+
     <!-- Status subtitle for banner when restoring media pauses for Wi-Fi -->
     <string name="BackupStatus__status_waiting_for_wifi">Wi-Fi-യ്‌ക്കായി കാത്തിരിക്കുന്നു…</string>
     <!-- Status subtitle for banner when restoring media pauses for internet in general -->
@@ -7993,6 +8173,10 @@
     <string name="BackupStatus__status_device_has_low_battery">ഉപകരണത്തിലെ ബാറ്ററി കുറവാണ്</string>
     <!-- Status subtitle for banner when restoring media. Placeholders are size already restored and total size to restore. e.g., 4.5MB of 100MB -->
     <string name="BackupStatus__status_size_of_size">%2$s ൽ %1$s</string>
+    <!-- Label for a context menu item that, when pressed, will hide a banner so it will no longer be shown. -->
+    <string name="BackupStatus__hide">മറയ്ക്കുക</string>
+    <!-- Label for a context menu item that, when pressed, will cancel the ongoing backup. -->
+    <string name="BackupStatus__cancel_upload">ബാക്കപ്പ് റദ്ദാക്കുക</string>
 
     <!-- BackupStatusRow -->
     <!-- Content description for x icon at the end of the linear progress indicator -->
@@ -8021,6 +8205,12 @@
     <string name="BackupStatusRow__your_last_backup">നിങ്ങളുടെ അവസാന ബാക്കപ്പ് പൂർത്തിയാക്കാനായില്ല. നിങ്ങളുടെ ഫോൺ Wi-Fi-യിലേക്ക് കണക്‌റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പുവരുത്തി വീണ്ടും ശ്രമിക്കാൻ \"ഇപ്പോൾ ബാക്കപ്പ് ചെയ്യുക\" ടാപ്പ് ചെയ്യുക.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
     <string name="BackupStatusRow__your_last_backup_latest_version">നിങ്ങളുടെ അവസാന ബാക്കപ്പ് പൂർത്തിയാക്കാനായില്ല. Signal-ന്റെ ഏറ്റവും പുതിയ പതിപ്പാണ് നിങ്ങൾ ഉപയോഗിക്കുന്നതെന്ന് ഉറപ്പാക്കിയതിന് ശേഷം വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
+    <string name="BackupStatusRow__backup_file_too_large">നിങ്ങളുടെ കൈവശമുള്ള സന്ദേശങ്ങളുടെ എണ്ണം സംഭരണ പരിധി കവിയുന്നു. ചില സന്ദേശങ്ങൾ ഇല്ലാതാക്കി വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
+    <string name="BackupStatusRow__not_backing_up_old_messages">%1$s-ന് മുമ്പ് അയച്ചതോ സ്വീകരിച്ചതോ ആയ സന്ദേശങ്ങളുടെ ബാക്കപ്പ് എടുക്കുന്നില്ല.</string>
+    <!-- Text displayed when we failed to create a backup because of low disk space. -->
+    <string name="BackupStatusRow__not_enough_disk_space">സ്റ്റോറേജ് സ്‌പെയ്‌സ് കുറവായതിനാൽ നിങ്ങളുടെ ബാക്കപ്പ് പൂർത്തിയാക്കാൻ കഴിഞ്ഞില്ല. നിങ്ങളുടെ ഉപകരണത്തിൽ സ്‌പെയ്‌സ് സൃഷ്ടിച്ച് വീണ്ടും ശ്രമിക്കുക.</string>
     <!-- Text displayed in a row to learn more about why a backup failed -->
     <string name="BackupStatusRow__learn_more">കൂടുതലറിയുക</string>
 
@@ -8028,6 +8218,15 @@
     <string name="ResumeRestoreCellular_resume_using_cellular_title">സെല്ലുലാർ ഡാറ്റ ഉപയോഗിച്ച് പുനരാരംഭിക്കണോ?</string>
     <!-- Dialog message to prompt resuming media restore over cellular -->
     <string name="ResumeRestoreCellular_resume_using_cellular_message">സെല്ലുലാർ ഡാറ്റ ഉപയോഗിച്ച് നിങ്ങളുടെ മീഡിയ പുനഃസ്ഥാപിക്കുന്നത് ഡാറ്റ നിരക്കുകൾക്ക് കാരണമായേക്കാം. സ്വയമേവ പുനരാരംഭിക്കുന്നതിന് നിങ്ങൾക്ക് ഒരു Wi-Fi നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റുചെയ്യാനാകും.</string>
+
+    <!-- Title of a dialog box prompting to confirm whether the user truly wants to cancel their backup. -->
+    <string name="CancelBackupDialog_title">ബാക്കപ്പ് റദ്ദാക്കണോ?</string>
+    <!-- Body of a dialog box prompting to confirm whether the user truly wants to cancel their backup. -->
+    <string name="CancelBackupDialog_body">ബാക്കപ്പ് റദ്ദാക്കുന്നത് നിങ്ങളുടെ ബാക്കപ്പ് ഇല്ലാതാക്കില്ല. ബാക്കപ്പ് ക്രമീകരണങ്ങളിൽ നിന്ന് എപ്പോൾ വേണമെങ്കിലും നിങ്ങൾക്ക് ബാക്കപ്പ് പുനരാരംഭിക്കാം.</string>
+    <!-- Button on a dialog box that confirming backup cancellation. When pressed, this button will confirm canceling the currently-running backup (future backups are unaffected). -->
+    <string name="CancelBackupDialog_cancel_action">ബാക്കപ്പ് റദ്ദാക്കുക</string>
+    <!-- Button on a dialog box that confirming backup cancellation. When pressed, this button will continue the backup rather than cancel it. -->
+    <string name="CancelBackupDialog_continue_action">ബാക്കപ്പ് തുടരുക</string>
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
@@ -8373,6 +8572,37 @@
     <!-- Button label to open storage management screen -->
     <string name="RemoteBackupsSettingsFragment__manage_storage">സ്റ്റോറേജ് ക്രമീകരിക്കുക</string>
 
+    <!-- ReadyToTransferBottomSheet -->
+    <!-- Title for a bottom sheet letting people know that they can transfer their back to their new device  -->
+    <string name="RemoteBackupsSettingsFragment__ready_to_transfer">കൈമാറാൻ തയ്യാറാണ്</string>
+    <!-- Body for bottom sheet telling the user to scan a QR code to continue transferring their backup to a new device -->
+    <string name="RemoteBackupsSettingsFragment__use_this_device_to_scan_qr">നിങ്ങൾ കൈമാറാൻ ആഗ്രഹിക്കുന്ന ഉപകരണത്തിലെ QR കോഡ് സ്കാൻ ചെയ്യാൻ ഈ ഉപകരണം ഉപയോഗിക്കുക</string>
+    <!-- Button label to open QR scanner to scan a device and transfer a backup -->
+    <string name="RemoteBackupsSettingsFragment__scan_qr_code">QR കോഡ് സ്‌കാൻ ചെയ്യുക</string>
+
+    <!-- OnDeviceBackupsImprovementsScreen -->
+    <!-- Title displayed at the top of the screen explaining on-device backup improvements -->
+    <string name="OnDeviceBackupsImprovementsScreen__improvements_to_on_device_backups">ഉപകരണത്തിലെ ബാക്കപ്പുകളിലെ മെച്ചപ്പെടുത്തലുകൾ</string>
+    <!-- Subtitle describing that the backup will be upgraded to a new format with a new recovery key -->
+    <string name="OnDeviceBackupsImprovementsScreen__your_on_device_backup_will_be_upgraded">നിങ്ങളുടെ ഉപകരണത്തിലെ ബാക്കപ്പ് ഒരു പുതിയ വീണ്ടെടുക്കൽ കീ ഉപയോഗിച്ച് പുതിയ ഫോർമാറ്റിലേക്ക് അപ്‌ഗ്രേഡ് ചെയ്യപ്പെടും</string>
+    <!-- Feature description explaining backups are faster and use less data -->
+    <string name="OnDeviceBackupsImprovementsScreen__backups_now_save_faster">ബാക്കപ്പുകൾ ഇപ്പോൾ വേഗത്തിൽ സംരക്ഷിക്കുകയും കുറച്ച് ഡാറ്റ മാത്രം ഉപയോഗിക്കുകയും ചെയ്യുന്നു</string>
+    <!-- Feature description explaining backups will be saved as a folder with many files -->
+    <string name="OnDeviceBackupsImprovementsScreen__your_backup_will_be_saved_as_a_folder">നിങ്ങളുടെ ബാക്കപ്പ് നിരവധി ഫയലുകളുള്ള ഒരു ഫോൾഡറായി സംരക്ഷിക്കപ്പെടും</string>
+    <!-- Feature description explaining backups remain end-to-end encrypted -->
+    <string name="OnDeviceBackupsImprovementsScreen__all_backups_remain_end_to_end_encrypted">എല്ലാ ബാക്കപ്പുകളും എൻഡ്-ടു-എൻഡ് എൻക്രിപ്റ്റ് ചെയ്ത നിലയിൽ തുടരും</string>
+    <!-- Button text to continue to the next step -->
+    <string name="OnDeviceBackupsImprovementsScreen__continue">തുടരുക</string>
+
+    <!-- OnDeviceBackupsSettingsScreen -->
+    <!-- Card text prompting user to update to a new recovery key for faster backups -->
+    <string name="OnDeviceBackupsSettingsScreen__update_to_a_new_recovery_key">വേഗത്തിലുള്ള ബാക്കപ്പ് സേവുകൾക്കായി ഒരു പുതിയ വീണ്ടെടുക്കൽ കീയിലേക്ക് അപ്‌ഡേറ്റ് ചെയ്യുക</string>
+    <!-- Button text to update to a new recovery key -->
+    <string name="OnDeviceBackupsSettingsScreen__update">അപ്‌ഡേറ്റ് ചെയ്യുക</string>
+
+    <!-- UnifiedOnDeviceBackupsSettingsScreen -->
+    <string name="UnifiedOnDeviceBackupsSettingsScreen__view_backup_key">ബാക്കപ്പ് കീ കാണുക</string>
+
     <!-- DownloadYourBackupTodayDialog -->
     <!-- Dialog title -->
     <string name="DownloadYourBackupTodayDialog__download_your_backup_today">ഇന്ന് തന്നെ നിങ്ങളുടെ ബാക്കപ്പ് ഡൗൺലോഡ് ചെയ്യൂ</string>
@@ -8425,19 +8655,43 @@
 
     <!-- MessageBackupsKeyEducationScreen -->
     <!-- Screen headline -->
-    <string name="MessageBackupsKeyEducationScreen__your_backup_key">നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ</string>
+    <string name="MessageBackupsKeyEducationScreen__your_backup_key">വീണ്ടെടുക്കൽ കീ</string>
+    <!-- Screen headline shown when upgrading on-device backups to a new recovery key. -->
+    <string name="MessageBackupsKeyEducationScreen__your_new_recovery_key">നിങ്ങളുടെ പുതിയ വീണ്ടെടുക്കൽ കീ</string>
+    <!-- Screen headline shown when the user already has an on-device recovery key set. -->
+    <string name="MessageBackupsKeyEducationScreen__your_recovery_key">നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ</string>
     <!-- Screen body part 1 -->
-    <string name="MessageBackupsKeyEducationScreen__your_backup_key_is_a">നിങ്ങൾ Signal വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്യുമ്പോൾ ബാക്കപ്പ് പുനഃസ്ഥാപിക്കാൻ നിങ്ങളെ അനുവദിക്കുന്ന 64 അക്ക പ്രതീക കോഡാണ് നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ.</string>
+    <string name="MessageBackupsKeyEducationScreen__your_backup_key_is_a">നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ 64 പ്രതീകങ്ങളുള്ള ഒരു കോഡാണ്, നിങ്ങളുടെ ബാക്കപ്പ് പുനഃസ്ഥാപിക്കുന്നതിന് അത് ആവശ്യമാണ്.</string>
     <!-- Screen body part 2 -->
-    <string name="MessageBackupsKeyEducationScreen__if_you_forget_your_key">നിങ്ങളുടെ കീ മറന്നുപോയാല്‍, നിങ്ങളുടെ ബാക്കപ്പ് പുനഃസ്ഥാപിക്കാൻ നിങ്ങൾക്ക് കഴിയില്ല. നിങ്ങളുടെ ബാക്കപ്പ് വീണ്ടെടുക്കാൻ Signal-ന് നിങ്ങളെ സഹായിക്കാനാകില്ല.</string>
+    <string name="MessageBackupsKeyEducationScreen__store_your_recovery">നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ ഒരു സുരക്ഷിത പാസ്‌വേഡ് മാനേജർ പോലെ സുരക്ഷിതമായ എവിടെയെങ്കിലും സൂക്ഷിക്കുക, അത് ആരുമായും പങ്കിടരുത്.</string>
+    <!-- Screen body part 3 -->
+    <string name="MessageBackupsKeyEducationScreen__if_you_lose_it">അത് നഷ്ടപ്പെട്ടാൽ, നിങ്ങളുടെ സന്ദേശങ്ങൾ വീണ്ടെടുക്കാൻ കഴിയില്ല.</string>
+    <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 1). -->
+    <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description">Your recovery key is a 64-digit code that lets you restore all backup types.</string>
+    <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
+    <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">നിങ്ങളുടെ ഉപകരണത്തിലെ ബാക്കപ്പിനുള്ള കീ മാറി അതിന്പകരം ഈ കീ വരും.</string>
+    <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Your backup key is a 64-digit code that lets you restore your backups when you re-install Signal.</string>
+    <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">ഈ കീ നിങ്ങളുടെ ഉപകരണത്തിലെ ബാക്കപ്പ് കീയ്ക്ക് സമാനമാണ്.</string>
+    <!-- Label shown above a list of actions that the recovery key can be used for. -->
+    <string name="MessageBackupsKeyEducationScreen__use_this_key_to">ഈ കീ ഉപയോഗിച്ച് ഇവ ചെയ്യുക:</string>
+    <!-- Row label indicating that the recovery key can be used to restore an on-device backup. -->
+    <string name="MessageBackupsKeyEducationScreen__restore_on_device_backup">നിങ്ങളുടെ ഉപകരണത്തിലെ ബാക്കപ്പ് പുനഃസ്ഥാപിക്കുക</string>
+    <!-- Row label indicating that the recovery key can be used to restore a Signal Secure Backup. -->
+    <string name="MessageBackupsKeyEducationScreen__restore_a_signal_secure_backup">ഒരു Signal സുരക്ഷിത ബാക്കപ്പ് പുനഃസ്ഥാപിക്കുക</string>
+    <!-- Row label indicating that the recovery key can be used to restore a Signal Secure Backup. -->
+    <string name="MessageBackupsKeyEducationScreen__restore_your_signal_secure_backup">നിങ്ങളുടെ Signal സുരക്ഷിത ബാക്കപ്പ് പുനഃസ്ഥാപിക്കുക</string>
     <!-- Action button label -->
-    <string name="MessageBackupsKeyEducationScreen__next">അടുത്തത്</string>
+    <string name="MessageBackupsKeyEducationScreen__view_recovery_key">വീണ്ടെടുക്കൽ കീ കാണുക</string>
 
     <!-- MessageBackupsKeyRecordScreen -->
     <!-- Screen headline -->
     <string name="MessageBackupsKeyRecordScreen__record_your_backup_key">നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ രേഖപ്പെടുത്തുക</string>
     <!-- Screen subhead -->
     <string name="MessageBackupsKeyRecordScreen__this_key_is_required_to_recover">നിങ്ങളുടെ അക്കൗണ്ടും ഡാറ്റയും വീണ്ടെടുക്കാൻ ഈ കീ ആവശ്യമാണ്. ഈ കീ സുരക്ഷിതമായ ഒരിടത്ത് സൂക്ഷിക്കുക. നിങ്ങൾക്കത് നഷ്‌ടപ്പെടുകയാണെങ്കിൽ, നിങ്ങളുടെ അക്കൗണ്ട് വീണ്ടെടുക്കാൻ നിങ്ങൾക്ക് കഴിയില്ല.</string>
+    <!-- Screen subhead shown when the recovery key is shared between Signal Secure Backups and on-device backups. -->
+    <string name="MessageBackupsKeyRecordScreen__this_key_is_the_same_as_your_on_device_backup_key">ഈ കീ നിങ്ങളുടെ ഉപകരണത്തിലെ ബാക്കപ്പ് കീയ്ക്ക് സമാനമാണ്. നിങ്ങളുടെ അക്കൗണ്ടും ഡാറ്റയും വീണ്ടെടുക്കാൻ ഇത് ആവശ്യമാണ്.</string>
     <!-- Copy to clipboard button label -->
     <string name="MessageBackupsKeyRecordScreen__copy_to_clipboard">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തൂ</string>
     <!-- Label for the button to save a recovery key to the device password manager. -->
@@ -8482,6 +8736,12 @@
     <string name="MessageBackupsKeyRecordScreen__create_a_new_backup_key">ഒരു പുതിയ വീണ്ടെടുക്കൽ കീ സൃഷ്ടിക്കുക</string>
     <!-- Bottom Sheet body for creating a new AEP key -->
     <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">മറ്റൊരാൾക്ക് നിങ്ങളുടെ കീ അറിയാമെങ്കിൽ മാത്രമേ പുതിയൊരു കീ സൃഷ്ടിക്കേണ്ടതുള്ളൂ. മീഡിയ ഉൾപ്പെടെ നിങ്ങളുടെ ബാക്കപ്പ് വീണ്ടും അപ്‌ലോഡ് ചെയ്യേണ്ടിവരും. നിങ്ങൾ \"സംഭരണം ഒപ്റ്റിമൈസ് ചെയ്യുക\" ഉപയോഗിക്കുകയാണെങ്കിൽ ആദ്യം ഓഫ്‌ലോഡ് ചെയ്ത മീഡിയ ഡൗൺലോഡ് ചെയ്യേണ്ടിവരും.</string>
+    <!-- Dialog title shown when user attempts to exit backup setup before completion -->
+    <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">ബാക്കപ്പ് സജ്ജീകരണത്തിൽ നിന്ന് പുറത്തുകടക്കണോ?</string>
+    <!-- Dialog body warning user that backup setup is incomplete -->
+    <string name="MessageBackupsKeyRecordScreen__you_have_not_finished_setting_up_backups">നിങ്ങൾ ബാക്കപ്പുകൾ സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കിയിട്ടില്ല, ഒരു ബാക്കപ്പും സൃഷ്ടിച്ചിട്ടില്ല. നിങ്ങൾക്ക് ക്രമീകരണങ്ങളിൽ ബാക്കപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കാം.</string>
+    <!-- Dialog confirmation button to exit backup setup -->
+    <string name="MessageBackupsKeyRecordScreen__exit_backup_setup_confirm">ബാക്കപ്പ് സജ്ജീകരണത്തിൽ നിന്ന് പുറത്തുകടക്കുക</string>
 
     <!-- BackupKeyDisplayFragment -->
     <!-- Dialog title when exiting before confirming new key -->
@@ -8509,7 +8769,7 @@
     <!-- Verify your key title -->
     <string name="VerifyBackupPinScreen__enter_your_backup_key">നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ നൽകുക</string>
     <!-- Verify your key subtitle -->
-    <string name="VerifyBackupPinScreen__enter_the_backup_key_that_you_recorded">ബാക്കപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കിയപ്പോൾ നിങ്ങൾ റെക്കോർഡ് ചെയ്ത 64 അക്ക കോഡ് നൽകുക.</string>
+    <string name="VerifyBackupPinScreen__enter_the_backup_key_that_you_recorded">ബാക്കപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കിയപ്പോൾ നിങ്ങൾ രേഖപ്പെടുത്തിയ 64 പ്രതീകങ്ങളുള്ള കോഡ് നൽകുക.</string>
     <!-- Button text when you forget your recovery key -->
     <string name="VerifyBackupPinScreen__forgot_key">കീ മറന്നോ?</string>
 
@@ -8611,7 +8871,7 @@
     <!-- Dialog title shown as a warning when skipping restore during registration -->
     <string name="SelectRestoreMethodFragment__skip_restore_title">പുനഃസ്ഥാപിക്കൽ ഒഴിവാക്കണോ?</string>
     <!-- Dialog message shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_warning">If you skip restore now you will not be able to restore later. If you re-enable backups after skipping restore, your current backup will be replaced with your new messaging history.</string>
+    <string name="SelectRestoreMethodFragment__skip_restore_warning">ഇപ്പോൾ പുനഃസ്ഥാപിക്കൽ ഒഴിവാക്കിയാൽ പിന്നീട് പുനഃസ്ഥാപിക്കാൻ കഴിയില്ല. പുനഃസ്ഥാപിക്കൽ ഒഴിവാക്കിയതിന് ശേഷം നിങ്ങൾ ബാക്കപ്പുകൾ വീണ്ടും പ്രവർത്തനക്ഷമമാക്കുകയാണെങ്കിൽ, നിങ്ങളുടെ നിലവിലെ ബാക്കപ്പ് പുതിയ സന്ദേശമയയ്ക്കൽ ചരിത്രം ഉപയോഗിച്ച് മാറ്റിസ്ഥാപിക്കപ്പെടും.</string>
     <!-- Dialog confirm text shown as a warning when skipping restore during registration -->
     <string name="SelectRestoreMethodFragment__skip_restore">പുനഃസ്ഥാപിക്കൽ ഒഴിവാക്കുക</string>
 
@@ -8655,9 +8915,9 @@
     <!-- Dialog message shown during registration and trying to restore a remote backup -->
     <string name="EnterBackupKey_backup_key_you_entered_is_correct_but_no_backup">നിങ്ങൾ നൽകിയ വീണ്ടെടുക്കൽ കീ ശരിയാണ്, പക്ഷേ അതുമായി ബന്ധപ്പെട്ട ഒരു ബാക്കപ്പും ഇല്ല. പഴയ ഫോൺ ഇപ്പോഴും നിങ്ങളുടെ കയ്യിലുണ്ടെങ്കിൽ, ബാക്കപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കിയിട്ടുണ്ടെന്നും ബാക്കപ്പ് പൂർത്തിയായിട്ടുണ്ടെന്നും ഉറപ്പാക്കി വീണ്ടും ശ്രമിക്കുക.</string>
     <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_incorrect_or_backups_not_enabled">You may have entered your recovery key incorrectly, or you have not completed at least one backup on your old device.\n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups, and confirm that your old device has completed a backup.</string>
+    <string name="EnterBackupKey_backup_key_incorrect_or_backups_not_enabled">നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ തെറ്റായി നൽകിയിരിക്കാം, അല്ലെങ്കിൽ നിങ്ങളുടെ പഴയ ഉപകരണത്തിൽ കുറഞ്ഞത് ഒരു ബാക്കപ്പ് പോലും പൂർത്തിയാക്കിയിട്ടില്ലായിരിക്കാം.\n\nSignal സുരക്ഷിത ബാക്കപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കുമ്പോൾ നിങ്ങൾ സേവ് ചെയ്ത അതേ ഫോൺ നമ്പറും വീണ്ടെടുക്കൽ കീയും ഉപയോഗിച്ചാണ് രജിസ്റ്റർ ചെയ്യുന്നതെന്ന് ഉറപ്പാക്കുക, കൂടാതെ നിങ്ങളുടെ പഴയ ഉപകരണം ഒരു ബാക്കപ്പ് പൂർത്തിയാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</string>
     <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_check_rate_limited">You have run out of recovery key attempts. For your security, the number of attempts you can make is limited. Wait one hour and try again.</string>
+    <string name="EnterBackupKey_backup_key_check_rate_limited">നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ ശ്രമങ്ങൾ കഴിഞ്ഞു. നിങ്ങളുടെ സുരക്ഷയ്ക്കായി, നിങ്ങൾക്ക് ചെയ്യാൻ കഴിയുന്ന ശ്രമങ്ങളുടെ എണ്ണം പരിമിതമാണ്. ഒരു മണിക്കൂർ കാത്തിരുന്ന് വീണ്ടും ശ്രമിക്കുക.</string>
     <!-- Dialog button shown during registration and trying to restore a remote backup to instead skip said backup process -->
     <string name="EnterBackupKey_skip_restore">പുനഃസ്ഥാപിക്കൽ ഒഴിവാക്കുക</string>
     <!-- Dialog title text when encountering backup restore network error -->
@@ -8722,6 +8982,19 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">നിങ്ങളുടെ മറ്റേ ഉപകരണത്തിൽ അക്കൗണ്ട് കൈമാറുന്നത് തുടരുക.</string>
 
+    <!-- Prepare Device screen title for quick restore flow -->
+    <string name="PrepareDevice_title">നിങ്ങളുടെ ഉപകരണം തയ്യാറാക്കുന്നു</string>
+    <!-- Prepare Device screen body text explaining backup recommendation -->
+    <string name="PrepareDevice_body">കൈമാറുന്നതിന് മുമ്പ് ഇപ്പോൾ ബാക്കപ്പ് ചെയ്യുക. ഇതുവരെ ബാക്കപ്പ് ചെയ്യാത്ത സന്ദേശങ്ങൾ നിങ്ങൾക്ക് ലഭിച്ചിട്ടുണ്ടാകാം.</string>
+    <!-- Prepare Device screen last backup text format, %1$s is the date and %2$s is the time -->
+    <string name="PrepareDevice_last_backup">നിങ്ങളുടെ അവസാന ബാക്കപ്പ് %1$s, %2$s -ന് ചെയ്തു.</string>
+    <!-- Prepare Device screen back up now button -->
+    <string name="PrepareDevice_back_up_now">ഇപ്പോൾ ബാക്കപ്പ് ചെയ്യുക</string>
+    <!-- Prepare Device screen skip and continue button -->
+    <string name="PrepareDevice_skip_and_continue">ഒഴിവാക്കി തുടരുക</string>
+    <!-- A string describing the last time the user\'s backup was made. The placeholder represents a date-time. An example would be "Your last backup was made on July 18, 2025 at 9:00am." -->
+    <string name="PrepareDevice_last_backup_description">നിങ്ങളുടെ അവസാന ബാക്കപ്പ് %1$s -ന് ചെയ്തു. </string>
+
     <!-- Restore Complete bottom sheet dialog title -->
     <string name="RestoreCompleteBottomSheet_restore_complete">നിങ്ങളുടെ മറ്റേ ഉപകരണത്തിൽ പൂർത്തിയാക്കുക</string>
     <!-- Restore Complete bottom sheet dialog message -->
@@ -8746,6 +9019,16 @@
     <!-- No backup to Restore tonal cta to skip restore -->
     <string name="NoBackupToRestore_skip_restore">പുനഃസ്ഥാപിക്കൽ ഒഴിവാക്കുക</string>
 
+    <!-- Dialog title when the recovery key change limit is reached -->
+    <string name="MessageBackupsKeyRecordScreen__limit_reached_title">വീണ്ടെടുക്കൽ കീ പരിധിയിലെത്തി</string>
+    <!-- Dialog body when the recovery key change limit is reached -->
+    <string name="MessageBackupsKeyRecordScreen__limit_reached_body">നിങ്ങൾ ഒരു പുതിയ വീണ്ടെടുക്കൽ കീ വിജയകരമായി സൃഷ്ടിച്ചു, പക്ഷേ ദുരുപയോഗം തടയുന്നതിന് നിങ്ങൾക്ക് സൃഷ്ടിക്കാൻ കഴിയുന്ന പുതിയ കീകളുടെ എണ്ണം പരിമിതമാണ്. നിങ്ങൾക്ക് 7 ദിവസത്തേക്ക് മറ്റൊരു കീ സൃഷ്ടിക്കാൻ കഴിയില്ല. നിങ്ങളുടെ വീണ്ടെടുക്കൽ കീ എവിടെയെങ്കിലും സുരക്ഷിതമായി സൂക്ഷിക്കുക.</string>
+    <!-- Dialog title when the recovery key change limit is exhausted and you cannot create a new key -->
+    <string name="MessageBackupsKeyRecordScreen__limit_exceeded_title">പുതിയ കീ സൃഷ്ടിക്കാൻ കഴിയില്ല</string>
+    <!-- Dialog body when the recovery key change limit is exhausted and you cannot create a new key. Placeholder is number of days remaining until they can create a new key. -->
+    <string name="MessageBackupsKeyRecordScreen__limit_exceeded_body">നിങ്ങൾക്ക് സൃഷ്ടിക്കാൻ കഴിയുന്ന പുതിയ കീകളുടെ എണ്ണം തീർന്നു. 7 ദിവസത്തിനുള്ളിൽ നിങ്ങൾക്ക് ഒരു പുതിയ വീണ്ടെടുക്കൽ കീ സൃഷ്ടിക്കാൻ കഴിയും. നിങ്ങളുടെ ബാക്കപ്പ് ആക്‌സസ് ചെയ്യാൻ ആർക്കെങ്കിലും കഴിയുമെന്ന് നിങ്ങൾ വിശ്വസിക്കുന്നുവെങ്കിൽ, \"ബാക്കപ്പ് ഓഫാക്കി ഇല്ലാതാക്കുക\" തിരഞ്ഞെടുക്കാം.</string>
+    <!-- Button to acknowledge and dismiss dialog   -->
+    <string name="MessageBackupsKeyRecordScreen__ok">ശരി</string>
     <!-- Accessibility label for close search button in MainToolbar -->
     <string name="MainToolbar__close_search_content_description">തിരയൽ അടയ്ക്കുക</string>
     <!-- Accessibility label for clear search query in MainToolbar -->
@@ -8807,12 +9090,16 @@
     <string name="Poll__poll_question">പോൾ: %1$s</string>
     <!-- Notification message sent when a poll ends. %1$s is the creator. %2$s is the question of the poll -->
     <string name="Poll__poll_end">%1$s പോൾ അവസാനിപ്പിച്ചു: \"%2$s\"</string>
+    <!-- Thread body message when a poll ends. %1$s is the question of the poll -->
+    <string name="Poll__you_poll_end">നിങ്ങൾ പോൾ അവസാനിപ്പിച്ചു: \"%1$s\"</string>
     <!-- Notification message sent when someone votes in the poll. %1$s is the voter. %2$s is the question of the poll -->
     <string name="Poll__poll_voted">%1$s വോട്ടെടുപ്പിൽ വോട്ട് ചെയ്തു: \"%2$s\"</string>
     <!-- Option in settings to configure notifications for polls -->
     <string name="Poll__poll">പോളുകൾ</string>
-    <!-- Title of screen that shows the poll results of a poll -->
+    <!-- Title of screen that shows the poll results of a poll after it has ended-->
     <string name="Poll__poll_results">പോൾ ഫലങ്ങൾ</string>
+    <!-- Title of screen that shows the poll details of a poll -->
+    <string name="Poll__poll_details">പോൾ വിശദാംശങ്ങൾ</string>
     <!-- Header text displaying the question of the poll -->
     <string name="Poll__question">ചോദ്യം</string>
     <!-- Text displaying how many votes, %1$d, an option has gotten -->
@@ -8820,10 +9107,22 @@
         <item quantity="one">%1$d വോട്ട്</item>
         <item quantity="other">%1$d വോട്ടുകൾ</item>
     </plurals>
+    <!-- Content description to describe the icon that is shown next to the winning option when the poll ends -->
+    <string name="Poll__poll_winner">വിജയി</string>
     <!-- Text that when pressed will end the poll   -->
     <string name="Poll__end_poll">പോൾ അവസാനിപ്പിക്കുക</string>
     <!-- Button that once pressed will show all of the voters for a poll -->
     <string name="Poll__see_all">എല്ലാം കാണുക</string>
+    <!-- Dialog title when a poll fails to end -->
+    <string name="Poll__couldnt_end_poll">പോൾ അവസാനിപ്പിക്കാൻ കഴിഞ്ഞില്ല</string>
+    <!-- Dialog body when a poll fails to end and to try again -->
+    <string name="Poll__check_connection">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Dialog title when you go to end a poll -->
+    <string name="Poll__end_poll_title">പോൾ അവസാനിപ്പിക്കണോ?</string>
+    <!-- Dialog body when you go to end a poll -->
+    <string name="Poll__end_poll_body">ഈ ചാറ്റിലെ അംഗങ്ങൾക്ക് ഇനി ഈ വോട്ടെടുപ്പിൽ പോൾ ചെയ്യാൻ കഴിയില്ല.</string>
+    <!-- Body used in dialog when we are waiting for network -->
+    <string name="Poll__waiting_for_network">നെറ്റ്‌വർക്കിനായി കാത്തിരിക്കുന്നു…</string>
     <!-- Header when creating a new poll -->
     <string name="CreatePollFragment__new_poll">പുതിയ പോൾ</string>
     <!-- Section text to enter in a question for a poll  -->
@@ -8844,6 +9143,163 @@
     <string name="CreatePollFragment__add_option">കുറഞ്ഞത് 2 ഓപ്ഷനുകളെങ്കിലും ചേർക്കുക</string>
     <!-- Snackbar text to add a question before creating a poll -->
     <string name="CreatePollFragment__add_question">ഒരു ചോദ്യം ചേർക്കുക</string>
+
+    <!-- Bottom sheet title telling users to scan a qr code -->
+    <string name="QuickRestoreInfoDialog__scan_qr_code">QR കോഡ് സ്‌കാൻ ചെയ്യുക</string>
+    <!-- Bottom sheet description telling users how to scan a qr code -->
+    <string name="QuickRestoreInfoDialog__use_this_device_to_scan_qr_code">നിങ്ങൾ കൈമാറാൻ ആഗ്രഹിക്കുന്ന ഉപകരണത്തിലെ QR കോഡ് സ്കാൻ ചെയ്യാൻ ഈ ഉപകരണം ഉപയോഗിക്കുക</string>
+    <!-- Confirmation button to dismiss bottom sheet dialog -->
+    <string name="QuickRestoreInfoDialog__okay">ശരി</string>
+
+    <!-- CallQualityIssue -->
+    <!-- Label for general audio issue category -->
+    <string name="CallQualityIssue__audio_issue">ഓഡിയോ പ്രശ്നം</string>
+    <!-- Label for general video issue category -->
+    <string name="CallQualityIssue__video_issue">വീഡിയോ പ്രശ്നം</string>
+    <!-- Label for call dropped issue -->
+    <string name="CallQualityIssue__call_droppped">കോൾ ഡ്രോപ്പ് ചെയ്‌തു</string>
+    <!-- Label for other/custom issues not covered by predefined categories -->
+    <string name="CallQualityIssue__something_else">വേറെ എന്തെങ്കിലും</string>
+    <!-- Label for audio stuttering/choppy audio issue -->
+    <string name="CallQualityIssue__audio_stuttering">ഓഡിയോ ഇടർച്ച</string>
+    <!-- Label for audio cutting out/dropping issue -->
+    <string name="CallQualityIssue__audio_cut_out">ഓഡിയോ കട്ട് ഔട്ട്</string>
+    <!-- Label for echo heard by the user -->
+    <string name="CallQualityIssue__i_heard_echo">ഞാൻ എക്കോ കേട്ടു</string>
+    <!-- Label for echo heard by other call participants -->
+    <string name="CallQualityIssue__others_heard_echo">മറ്റുള്ളവർ എക്കോ കേട്ടു</string>
+    <!-- Label for poor video quality issue -->
+    <string name="CallQualityIssue__poor_video_quality">മോശം വീഡിയോ നിലവാരം</string>
+    <!-- Label for low video resolution issue -->
+    <string name="CallQualityIssue__low_resolution">കുറഞ്ഞ റെസല്യൂഷൻ</string>
+    <!-- Label for camera malfunction issue -->
+    <string name="CallQualityIssue__camera_did_not_work">ക്യാമറ പ്രവർത്തിച്ചില്ല</string>
+
+    <!-- CallQualitySomethingElseScreen -->
+    <!-- Title for the "Something else" call quality issue screen -->
+    <string name="CallQualitySomethingElseScreen__title">പ്രശ്നം വിവരിക്കുക</string>
+    <!-- Label for text field where user describes their call quality issue -->
+    <string name="CallQualitySomethingElseScreen__describe_your_issue">നിങ്ങളുടെ പ്രശ്നം വിവരിക്കുക</string>
+    <!-- Privacy notice explaining that issue details will be kept private and used to improve Signal calls -->
+    <string name="CallQualitySomethingElseScreen__privacy_notice">പ്രശ്നവുമായി ബന്ധപ്പെട്ട എന്തെങ്കിലും വിശദാംശങ്ങൾ ഉൾപ്പെടുത്തുക. നിങ്ങൾ ഇവിടെ പങ്കിടുന്ന എന്തും സ്വകാര്യമായി സൂക്ഷിക്കും, Signal-ലെ കോളുകൾ മെച്ചപ്പെടുത്താൻ മാത്രമേ അത് ഉപയോഗിക്കൂ.</string>
+    <!-- Button to save the call quality issue description -->
+    <string name="CallQualitySomethingElseScreen__save">സംരക്ഷിക്കൂ</string>
+    <!-- Content description for the back navigation button -->
+    <string name="CallQualitySomethingElseScreen__back">തിരികെ പോകുക</string>
+
+    <!-- CallQualitySheet -->
+    <!-- Title asking user how their call was -->
+    <string name="CallQualitySheet__how_was_your_call">നിങ്ങളുടെ കോൾ എങ്ങനെയുണ്ടായിരുന്നു?</string>
+    <!-- Subtitle explaining that feedback helps improve Signal and no PII is stored -->
+    <string name="CallQualitySheet__how_was_your_call_subtitle">ഇത് Signal-ലെ കോളുകൾ മെച്ചപ്പെടുത്താൻ ഞങ്ങളെ സഹായിക്കുന്നു. വ്യക്തിപരമായി തിരിച്ചറിയാൻ കഴിയുന്ന വിവരങ്ങളൊന്നും സൂക്ഷിക്കില്ല.</string>
+    <!-- Button label indicating the call had issues -->
+    <string name="CallQualitySheet__had_issues">പ്രശ്നങ്ങൾ ഉണ്ടായിരുന്നു</string>
+    <!-- Button label indicating the call was great -->
+    <string name="CallQualitySheet__great">കൊള്ളാം</string>
+    <!-- Title asking what issues the user experienced -->
+    <string name="CallQualitySheet__what_issues_did_you_have">നിങ്ങൾക്ക് എന്തൊക്കെ പ്രശ്‌നങ്ങളാണ് ഉണ്ടായിരുന്നത്?</string>
+    <!-- Instruction to select all applicable issues -->
+    <string name="CallQualitySheet__select_all_that_apply">ബാധകമായതെല്ലാം തിരഞ്ഞെടുക്കുക</string>
+    <!-- Placeholder text for describing a custom issue -->
+    <string name="CallQualitySheet__describe_your_issue">നിങ്ങളുടെ പ്രശ്നം വിവരിക്കുക</string>
+    <!-- Button to continue to the next step -->
+    <string name="CallQualitySheet__continue">തുടരുക</string>
+    <!-- Title asking user to help improve Signal -->
+    <string name="CallQualitySheet__help_us_improve">മെച്ചപ്പെടുത്താൻ ഞങ്ങളെ സഹായിക്കൂ</string>
+    <!-- First part of description explaining diagnostics help improve call quality -->
+    <string name="CallQualitySheet__help_us_improve_description_prefix">സമർപ്പിക്കുന്നതിലൂടെ നിങ്ങളുടെ ഫീഡ്‌ബാക്ക് ഇതോടൊപ്പം പങ്കിടും</string>
+    <!-- Clickable text to launch diagnostic fragment -->
+    <string name="CallQualitySheet__diagnostic_information_about_your_call">നിങ്ങളുടെ കോളിനെക്കുറിച്ചുള്ള പ്രശ്നനിർണ്ണയ വിവരങ്ങൾ</string>
+    <!-- End of description explaining diagnostics help improve call quality -->
+    <string name="CallQualitySheet__help_us_improve_description_suffix">കോൾ നിലവാരം മെച്ചപ്പെടുത്താൻ ഞങ്ങളെ സഹായിക്കുന്നതിന് നിങ്ങൾക്ക് ഒരു ഡീബഗ് ലോഗ് ഓപ്ഷണലായി പങ്കിടാവുന്നതാണ്.</string>
+    <!-- Text explaining the debug log -->
+    <string name="CallQualitySheet__information_shared_with_us">ഞങ്ങളുമായി പങ്കിട്ട വിവരങ്ങളിൽ താഴ്ന്ന നിലയിലുള്ള ആപ്പ് വിവരങ്ങൾ അടങ്ങിയിരിക്കുന്നു, നിങ്ങളുടെ കോളുകളുടെ ഉള്ളടക്കങ്ങൾ അതിൽ ഉൾപ്പെടുന്നില്ല.</string>
+    <!-- Link text to view debug log -->
+    <string name="CallQualitySheet__view_debug_log">ഡീബഗ് ലോഗ് കാണുക</string>
+    <!-- Toggle label for sharing debug log -->
+    <string name="CallQualitySheet__share_debug_log">ഡീബഗ് ലോഗ് പങ്കിടുക</string>
+    <!-- Privacy notice explaining what debug logs contain and why they are helpful -->
+    <string name="CallQualitySheet__debug_log_privacy_notice">ഡീബഗ് ലോഗുകളിൽ താഴ്ന്ന നിലയിലുള്ള ആപ്പ് വിവരങ്ങൾ അടങ്ങിയിരിക്കുന്നു, നിങ്ങളുടെ സന്ദേശ ഉള്ളടക്കങ്ങളൊന്നും അവ വെളിപ്പെടുത്തുന്നില്ല.</string>
+    <!-- Button to submit the call quality feedback -->
+    <string name="CallQualitySheet__submit">സമർപ്പിക്കുക</string>
+    <!-- Displayed as a snackbar after submitting feedback -->
+    <string name="CallQualitySheet__thanks_for_your_feedback">നിങ്ങളുടെ പ്രതികരണത്തിന് നന്ദി!</string>
+    <!-- Content description for the thumbs down button indicating user had issues with the call -->
+    <string name="CallQualitySheet__had_issues_content_description">കോളിൽ എനിക്ക് പ്രശ്‌നങ്ങളുണ്ടായിരുന്നു</string>
+    <!-- Content description for the thumbs up button indicating the call was great -->
+    <string name="CallQualitySheet__great_content_description">കോൾ മികച്ചതായിരുന്നു</string>
+    <!-- Dialog body shown when feedback submission fails due to network issues -->
+    <string name="CallQualitySheet__your_feedback_failed_to_send">നിങ്ങളുടെ ഫീഡ്‌ബാക്ക് അയയ്ക്കുന്നതിൽ പരാജയപ്പെട്ടു.</string>
+    <!-- Dialog button to retry sending feedback after a failure -->
+    <string name="CallQualitySheet__try_again">വീണ്ടും ശ്രമിക്കുക</string>
+
+    <!-- Message body when someone pins a message where %1$s is the name of the person -->
+    <string name="PinnedMessage__s_pinned_a_message">%1$s ഒരു സന്ദേശം പിൻ ചെയ്തു</string>
+    <!-- Message body when you pin a message -->
+    <string name="PinnedMessage__you_pinned_a_message">നിങ്ങൾ ഒരു സന്ദേശം പിൻ ചെയ്തു</string>
+    <!-- Button body to go to the pinned message -->
+    <string name="PinnedMessage__go_to_message">സന്ദേശത്തിലേക്ക് പോകുക</string>
+    <!-- Toast shown when a pinned message is not found -->
+    <string name="PinnedMessage__not_found">സന്ദേശം കണ്ടെത്തിയില്ല</string>
+    <!-- Content description for the pin icon -->
+    <string name="PinnedMessage__pinned">പിൻ ചെയ്‌തവ</string>
+    <!-- Caption shown when the pinned message is a photo -->
+    <string name="PinnedMessage__photo">ഫോട്ടോ</string>
+    <!-- Caption shown when the pinned message is a video -->
+    <string name="PinnedMessage__video">വീഡിയോ</string>
+    <!-- Caption shown when the pinned message is a sticker -->
+    <string name="PinnedMessage__sticker">സ്റ്റിക്കർ</string>
+    <!-- Caption shown when the pinned message is a voice message  -->
+    <string name="PinnedMessage__voice">ശബ്ദ സന്ദേശം</string>
+    <!-- Caption shown when the pinned message is a gif -->
+    <string name="PinnedMessage__gif">GIF</string>
+    <!-- Caption shown when the pinned message is a view once media -->
+    <string name="PinnedMessage__view_once">ഒരു തവണ-ദൃശ്യമാകുന്ന മീഡിയ</string>
+    <!-- Context menu option to unpin the message -->
+    <string name="PinnedMessage__unpin_message">അൺപിൻ ചെയ്യുക</string>
+    <!-- Context menu option to view all the message -->
+    <string name="PinnedMessage__view_all_messages">എല്ലാ സന്ദേശങ്ങളും കാണുക</string>
+    <!-- Text to unpin all messages -->
+    <string name="PinnedMessage__unpin_all_messages">എല്ലാ സന്ദേശങ്ങളും അൺപിൻ ചെയ്യുക</string>
+    <!-- Title of bottom sheet when pinning a disappearing message -->
+    <string name="PinnedMessage__disappearing_message_title">അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങൾ പിൻ ചെയ്യുന്നു</string>
+    <!-- Body of bottom sheet when pinning a disappearing message -->
+    <string name="PinnedMessage__disappearing_message_body">അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങളുടെ ടൈമർ കാലഹരണപ്പെടുകയും ചാറ്റിൽ നിന്ന് സന്ദേശം നീക്കം ചെയ്യുകയും ചെയ്യുമ്പോൾ അവ അൺപിൻ ചെയ്യപ്പെടും.</string>
+    <!-- Confirmation button for bottom sheet -->
+    <string name="PinnedMessage__got_it">മനസ്സിലായി</string>
+    <!-- Content description of disappearing timer icon -->
+    <string name="PinnedMessage__disappearing_message_content_description">അപ്രത്യക്ഷമാകുന്ന സന്ദേശം</string>
+    <!-- Title of bottom sheet -->
+    <string name="PinnedMessage__pinned_messages">പിൻ ചെയ്ത സന്ദേശങ്ങൾ</string>
+    <!-- Context menu option to unpin message -->
+    <string name="PinnedMessage__unpin">അൺപിൻ ചെയ്യുക</string>
+    <!-- Title of dialog to unpin all messages -->
+    <string name="PinnedMessage__unpin_title">എല്ലാ സന്ദേശങ്ങളും അൺപിൻ ചെയ്യണോ?</string>
+    <!-- Body of dialog to unpin all messages -->
+    <string name="PinnedMessage__unpin_body">എല്ലാ അംഗങ്ങൾക്കുമായി സന്ദേശങ്ങൾ അൺപിൻ ചെയ്യപ്പെടും.</string>
+    <!-- Dialog title when failing to pin a message -->
+    <string name="PinnedMessage__couldnt_pin">സന്ദേശം പിൻ ചെയ്യാനായില്ല</string>
+    <!-- Dialog title when failing to unpin a message -->
+    <string name="PinnedMessage__couldnt_unpin">സന്ദേശം അൺപിൻ ചെയ്യാനായില്ല</string>
+    <!-- Dialog title when failing to unpin all messages -->
+    <string name="PinnedMessage__couldnt_unpin_all">സന്ദേശങ്ങൾ അൺപിൻ ചെയ്യാനായില്ല</string>
+    <!-- Dialog body when failing to pin a message -->
+    <string name="PinnedMessage__check_connection">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക.</string>
+
+    <!-- Group member label screen title. -->
+    <string name="GroupMemberLabel__title">മെമ്പര്‍ ലേബൽ</string>
+    <!-- Group member label text field placeholder. -->
+    <string name="GroupMemberLabel__label_text_placeholder">നിങ്ങളുടെ റോൾ ചേർക്കുക</string>
+    <!-- Group member label preview section header. -->
+    <string name="GroupMemberLabel__preview_section_header">പ്രിവ്യൂ</string>
+    <!-- Group member label save button label. -->
+    <string name="GroupMemberLabel__save">സംരക്ഷിക്കൂ</string>
+    <!-- Accessibility label for the button to open the group member label emoji picker. -->
+    <string name="GroupMemberLabel__accessibility_select_emoji">ഇമോജി തിരഞ്ഞെടുക്കുക</string>
+    <!-- Accessibility label for the group member label close screen button. -->
+    <string name="GroupMemberLabel__accessibility_close_screen">സ്ക്രീൻ അടയ്ക്കുക</string>
+    <!-- Accessibility label for the group member label text field clear button. -->
+    <string name="GroupMemberLabel__accessibility_clear_label">ലേബൽ മായ്‌ക്കുക</string>
 
     <!-- EOF -->
 </resources>

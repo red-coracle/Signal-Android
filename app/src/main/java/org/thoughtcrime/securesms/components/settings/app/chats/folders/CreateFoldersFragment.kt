@@ -55,6 +55,7 @@ import org.signal.core.ui.compose.Dialogs
 import org.signal.core.ui.compose.Dividers
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.Scaffolds
+import org.signal.core.ui.compose.SignalIcons
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.avatar.AvatarImage
 import org.thoughtcrime.securesms.compose.ComposeFragment
@@ -118,7 +119,7 @@ class CreateFoldersFragment : ComposeFragment() {
           requireActivity().onNavigateUp()
         }
       },
-      navigationIcon = ImageVector.vectorResource(id = R.drawable.symbol_arrow_start_24),
+      navigationIcon = SignalIcons.ArrowStart.imageVector,
       navigationContentDescription = stringResource(id = R.string.Material3SearchToolbar__close)
     ) { contentPadding: PaddingValues ->
       CreateFolderScreen(
@@ -358,9 +359,7 @@ fun CreateFolderScreen(
         }
       }
 
-      if (hasChanges) {
-        item { Spacer(modifier = Modifier.height(60.dp)) }
-      }
+      item { Spacer(modifier = Modifier.height(60.dp)) }
     }
 
     Buttons.MediumTonal(
@@ -402,6 +401,7 @@ fun CreateFolderScreen(
 private fun ShowUnreadSection(state: ChatFoldersSettingsState, onToggleShowUnread: (Boolean) -> Unit) {
   Row(
     modifier = Modifier
+      .clickable { onToggleShowUnread(!state.currentFolder.folderRecord.showUnread) }
       .padding(horizontal = 24.dp)
       .defaultMinSize(minHeight = 92.dp),
     verticalAlignment = Alignment.CenterVertically
@@ -429,6 +429,7 @@ private fun ShowMutedSection(state: ChatFoldersSettingsState, onToggleShowMuted:
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier
+      .clickable { onToggleShowMuted(!state.currentFolder.folderRecord.showMutedChats) }
       .padding(horizontal = 24.dp)
       .defaultMinSize(minHeight = 56.dp)
   ) {

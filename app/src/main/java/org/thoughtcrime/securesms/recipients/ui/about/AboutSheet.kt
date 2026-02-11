@@ -41,7 +41,8 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.TextViewCompat
 import org.signal.core.ui.compose.BottomSheets
 import org.signal.core.ui.compose.DayNightPreviews
-import org.signal.core.ui.compose.theme.SignalTheme
+import org.signal.core.ui.compose.Previews
+import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.util.getParcelableCompat
 import org.signal.core.util.isNotNullOrBlank
 import org.thoughtcrime.securesms.AvatarPreviewActivity
@@ -57,6 +58,7 @@ import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.stories.settings.my.SignalConnectionsBottomSheetDialogFragment
 import org.thoughtcrime.securesms.util.SignalE164Util
 import org.thoughtcrime.securesms.util.viewModel
+import org.signal.core.ui.R as CoreUiR
 
 /**
  * Displays all relevant context you know for a given user on the sheet.
@@ -220,13 +222,13 @@ private fun Content(
       val textColor = LocalContentColor.current
 
       AboutRow(
-        startIcon = ImageVector.vectorResource(R.drawable.symbol_edit_24),
+        startIcon = SignalIcons.Edit.imageVector,
         text = {
           Row {
             AndroidView(factory = ::EmojiTextView) {
               it.text = model.about
 
-              TextViewCompat.setTextAppearance(it, R.style.Signal_Text_BodyLarge)
+              TextViewCompat.setTextAppearance(it, CoreUiR.style.Signal_Text_BodyLarge)
 
               it.setTextColor(textColor.toArgb())
             }
@@ -289,7 +291,7 @@ private fun Content(
 
     if (model.formattedE164.isNotNullOrBlank()) {
       AboutRow(
-        startIcon = ImageVector.vectorResource(R.drawable.symbol_phone_24),
+        startIcon = SignalIcons.Phone.imageVector,
         text = model.formattedE164,
         modifier = Modifier.fillMaxWidth()
       )
@@ -407,7 +409,7 @@ private fun AboutRow(
 @Preview(name = "Dark Theme", group = "content", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ContentPreviewDefault() {
-  SignalTheme {
+  Previews.Preview {
     Surface {
       Content(
         model = AboutModel(
@@ -437,7 +439,7 @@ private fun ContentPreviewDefault() {
 @Preview(name = "Dark Theme", group = "content", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ContentPreviewWithUserSetDisplayName() {
-  SignalTheme {
+  Previews.Preview {
     Surface {
       Content(
         model = AboutModel(
@@ -467,7 +469,7 @@ private fun ContentPreviewWithUserSetDisplayName() {
 @Preview(name = "Dark Theme", group = "content", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ContentPreviewForSelf() {
-  SignalTheme {
+  Previews.Preview {
     Surface {
       Content(
         model = AboutModel(
@@ -497,7 +499,7 @@ private fun ContentPreviewForSelf() {
 @Preview(name = "Dark Theme", group = "content", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ContentPreviewInContactsNotProfileSharing() {
-  SignalTheme {
+  Previews.Preview {
     Surface {
       Content(
         model = AboutModel(
@@ -527,7 +529,7 @@ private fun ContentPreviewInContactsNotProfileSharing() {
 @Preview(name = "Dark Theme", group = "content", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ContentPreviewGroupsInCommonNoE164() {
-  SignalTheme {
+  Previews.Preview {
     Surface {
       Content(
         model = AboutModel(
@@ -557,7 +559,7 @@ private fun ContentPreviewGroupsInCommonNoE164() {
 @Preview(name = "Dark Theme", group = "content", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ContentPreviewNotAConnection() {
-  SignalTheme {
+  Previews.Preview {
     Surface {
       Content(
         model = AboutModel(
@@ -586,7 +588,7 @@ private fun ContentPreviewNotAConnection() {
 @DayNightPreviews
 @Composable
 private fun ContentPreviewNotAConnectionNoGroups() {
-  SignalTheme {
+  Previews.Preview {
     Surface {
       Content(
         model = AboutModel(
@@ -616,7 +618,7 @@ private fun ContentPreviewNotAConnectionNoGroups() {
 @Preview(name = "Dark Theme", group = "about row", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun AboutRowPreview() {
-  SignalTheme {
+  Previews.Preview {
     Surface {
       AboutRow(
         startIcon = ImageVector.vectorResource(R.drawable.symbol_person_24),

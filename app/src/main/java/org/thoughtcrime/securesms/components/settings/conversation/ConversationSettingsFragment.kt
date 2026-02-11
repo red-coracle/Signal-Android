@@ -66,7 +66,6 @@ import org.thoughtcrime.securesms.components.settings.conversation.preferences.L
 import org.thoughtcrime.securesms.components.settings.conversation.preferences.RecipientPreference
 import org.thoughtcrime.securesms.components.settings.conversation.preferences.SharedMediaPreference
 import org.thoughtcrime.securesms.components.settings.conversation.preferences.Utils.formatMutedUntil
-import org.thoughtcrime.securesms.contacts.ContactSelectionDisplayMode
 import org.thoughtcrime.securesms.conversation.ConversationIntents
 import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.groups.GroupId
@@ -101,6 +100,7 @@ import org.thoughtcrime.securesms.util.ContextUtil
 import org.thoughtcrime.securesms.util.DateUtils
 import org.thoughtcrime.securesms.util.ExpirationUtil
 import org.thoughtcrime.securesms.util.Material3OnScrollHelper
+import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.ViewUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
@@ -108,6 +108,7 @@ import org.thoughtcrime.securesms.util.views.SimpleProgressDialog
 import org.thoughtcrime.securesms.verify.VerifyIdentityActivity
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaperActivity
 import java.util.Locale
+import org.signal.core.ui.R as CoreUiR
 
 private const val REQUEST_CODE_VIEW_CONTACT = 1
 private const val REQUEST_CODE_ADD_CONTACT = 2
@@ -222,8 +223,8 @@ class ConversationSettingsFragment : DSLSettingsFragment(
   override fun getMaterial3OnScrollHelper(toolbar: Toolbar?): Material3OnScrollHelper {
     return object : Material3OnScrollHelper(activity = requireActivity(), views = listOf(toolbar!!), lifecycleOwner = viewLifecycleOwner) {
       override val inactiveColorSet = ColorSet(
-        toolbarColorRes = R.color.signal_colorBackground_0,
-        statusBarColorRes = R.color.signal_colorBackground
+        toolbarColorRes = CoreUiR.color.signal_colorBackground_0,
+        statusBarColorRes = CoreUiR.color.signal_colorBackground
       )
     }
   }
@@ -430,7 +431,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
               Permissions.with(this@ConversationSettingsFragment)
                 .request(Manifest.permission.CAMERA)
                 .ifNecessary()
-                .withRationaleDialog(getString(R.string.CameraXFragment_allow_access_camera), getString(R.string.CameraXFragment_to_capture_photos_and_video_allow_camera), R.drawable.symbol_camera_24)
+                .withRationaleDialog(getString(R.string.CameraXFragment_allow_access_camera), getString(R.string.CameraXFragment_to_capture_photos_and_video_allow_camera), CoreUiR.drawable.symbol_camera_24)
                 .withPermanentDenialDialog(getString(R.string.CameraXFragment_signal_needs_camera_access_capture_photos), null, R.string.CameraXFragment_allow_access_camera, R.string.CameraXFragment_to_capture_photos_videos, getParentFragmentManager())
                 .onAllGranted { addToGroupStoryDelegate.addToStory(state.recipient.id) }
                 .onAnyDenied { Toast.makeText(requireContext(), R.string.CameraXFragment_signal_needs_camera_access_capture_photos, Toast.LENGTH_LONG).show() }
@@ -540,7 +541,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
       if (state.recipient.isIndividual && !state.recipient.isSelf) {
         clickPref(
           title = DSLSettingsText.from(R.string.NicknameActivity__nickname),
-          icon = DSLSettingsIcon.from(R.drawable.symbol_edit_24),
+          icon = DSLSettingsIcon.from(CoreUiR.drawable.symbol_edit_24),
           onClick = {
             nicknameLauncher.launch(
               NicknameActivity.Args(
@@ -805,6 +806,18 @@ class ConversationSettingsFragment : DSLSettingsFragment(
             }
           )
 
+          if (RemoteConfig.sendMemberLabels) {
+            clickPref(
+              title = DSLSettingsText.from(R.string.ConversationSettingsFragment__group_member_label),
+              icon = DSLSettingsIcon.from(R.drawable.symbol_tag_24),
+              isEnabled = !state.isDeprecatedOrUnregistered,
+              onClick = {
+                val action = ConversationSettingsFragmentDirections.actionConversationSettingsFragmentToMemberLabelFragment(groupState.groupId)
+                navController.safeNavigate(action)
+              }
+            )
+          }
+
           clickPref(
             title = DSLSettingsText.from(R.string.ConversationSettingsFragment__requests_and_invites),
             icon = DSLSettingsIcon.from(R.drawable.ic_update_group_add_16),
@@ -945,7 +958,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
   }
 
   private fun handleAddToAGroup(addToAGroup: ConversationSettingsEvent.AddToAGroup) {
-    startActivity(AddToGroupsActivity.newIntent(requireContext(), addToAGroup.recipientId, addToAGroup.groupMembership))
+    startActivity(AddToGroupsActivity.createIntent(requireContext(), addToAGroup.recipientId, addToAGroup.groupMembership))
   }
 
   @Suppress("DEPRECATION")
@@ -953,12 +966,7 @@ class ConversationSettingsFragment : DSLSettingsFragment(
     startActivityForResult(
       AddMembersActivity.createIntent(
         requireContext(),
-        addMembersToGroup.groupId,
-        ContactSelectionDisplayMode.FLAG_PUSH,
-        addMembersToGroup.selectionWarning,
-        addMembersToGroup.selectionLimit,
-        addMembersToGroup.isAnnouncementGroup,
-        addMembersToGroup.groupMembersWithoutSelf
+        addMembersToGroup
       ),
       REQUEST_CODE_ADD_MEMBERS_TO_GROUP
     )

@@ -10,7 +10,9 @@ import androidx.core.content.contentValuesOf
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.json.JSONObject
 import org.jsoup.helper.StringUtil
+import org.signal.core.models.ServiceId
 import org.signal.core.util.CursorUtil
+import org.signal.core.util.LRUCache
 import org.signal.core.util.SqlUtil
 import org.signal.core.util.Stopwatch
 import org.signal.core.util.delete
@@ -68,11 +70,9 @@ import org.thoughtcrime.securesms.storage.StorageSyncHelper
 import org.thoughtcrime.securesms.util.ConversationUtil
 import org.thoughtcrime.securesms.util.JsonUtils
 import org.thoughtcrime.securesms.util.JsonUtils.SaneJSONObject
-import org.thoughtcrime.securesms.util.LRUCache
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.isPoll
 import org.thoughtcrime.securesms.util.isScheduled
-import org.whispersystems.signalservice.api.push.ServiceId
 import org.whispersystems.signalservice.api.storage.SignalAccountRecord
 import org.whispersystems.signalservice.api.storage.SignalContactRecord
 import org.whispersystems.signalservice.api.storage.SignalGroupV1Record
@@ -1582,20 +1582,20 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
   }
 
   fun applyStorageSyncUpdate(recipientId: RecipientId, record: SignalContactRecord) {
-    applyStorageSyncUpdate(recipientId, record.proto.archived, record.proto.markedUnread)
+    applyStorageSyncUpdate(recipientId, record.proto.archived, record.proto.markedUnread, isGroup = false)
   }
 
   fun applyStorageSyncUpdate(recipientId: RecipientId, record: SignalGroupV1Record) {
-    applyStorageSyncUpdate(recipientId, record.proto.archived, record.proto.markedUnread)
+    applyStorageSyncUpdate(recipientId, record.proto.archived, record.proto.markedUnread, isGroup = true)
   }
 
   fun applyStorageSyncUpdate(recipientId: RecipientId, record: SignalGroupV2Record) {
-    applyStorageSyncUpdate(recipientId, record.proto.archived, record.proto.markedUnread)
+    applyStorageSyncUpdate(recipientId, record.proto.archived, record.proto.markedUnread, isGroup = true)
   }
 
   fun applyStorageSyncUpdate(recipientId: RecipientId, record: SignalAccountRecord) {
     writableDatabase.withinTransaction { db ->
-      applyStorageSyncUpdate(recipientId, record.proto.noteToSelfArchived, record.proto.noteToSelfMarkedUnread)
+      applyStorageSyncUpdate(recipientId, record.proto.noteToSelfArchived, record.proto.noteToSelfMarkedUnread, isGroup = false)
 
       db.updateAll(TABLE_NAME)
         .values(PINNED_ORDER to null)
@@ -1605,7 +1605,7 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
 
       for (pinned: AccountRecord.PinnedConversation in record.proto.pinnedConversations) {
         val pinnedRecipient: Recipient? = if (pinned.contact != null) {
-          if (ServiceId.parseOrNull(pinned.contact!!.serviceId) != null) {
+          if (ServiceId.parseOrNull(pinned.contact!!.serviceId, pinned.contact!!.serviceIdBinary) != null) {
             Recipient.externalPush(pinned.contact!!.toSignalServiceAddress())
           } else {
             Log.w(TAG, "Failed to parse serviceId!")
@@ -1631,6 +1631,8 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
         }
 
         if (pinnedRecipient != null) {
+          getOrCreateThreadIdFor(pinnedRecipient)
+
           db.update(TABLE_NAME)
             .values(PINNED_ORDER to pinnedPosition, ACTIVE to 1)
             .where("$RECIPIENT_ID = ?", pinnedRecipient.id)
@@ -1644,11 +1646,11 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
     notifyConversationListListeners()
   }
 
-  private fun applyStorageSyncUpdate(recipientId: RecipientId, archived: Boolean, forcedUnread: Boolean) {
+  private fun applyStorageSyncUpdate(recipientId: RecipientId, archived: Boolean, forcedUnread: Boolean, isGroup: Boolean) {
     val values = ContentValues()
     values.put(ARCHIVED, if (archived) 1 else 0)
 
-    val threadId: Long? = getThreadIdFor(recipientId)
+    val threadId: Long? = if (archived) getOrCreateThreadIdFor(recipientId, isGroup) else getThreadIdFor(recipientId)
 
     if (forcedUnread) {
       values.put(READ, ReadStatus.FORCED_UNREAD.serialize())

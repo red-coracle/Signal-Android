@@ -8,6 +8,7 @@ package org.thoughtcrime.securesms.main
 import android.app.Activity
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -18,7 +19,7 @@ import org.thoughtcrime.securesms.megaphone.Megaphone
 import org.thoughtcrime.securesms.megaphone.MegaphoneActionController
 import org.thoughtcrime.securesms.megaphone.MegaphoneComponent
 import org.thoughtcrime.securesms.megaphone.Megaphones
-import org.thoughtcrime.securesms.window.WindowSizeClass
+import org.thoughtcrime.securesms.window.isHeightCompact
 
 data class MainMegaphoneState(
   val megaphone: Megaphone = Megaphone.NONE,
@@ -44,9 +45,9 @@ fun MainMegaphoneContainer(
   controller: MegaphoneActionController,
   onMegaphoneVisible: (Megaphone) -> Unit
 ) {
-  val windowSizeClass = WindowSizeClass.rememberWindowSizeClass()
+  val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
   val visible = remember(windowSizeClass, state) {
-    !(state.megaphone == Megaphone.NONE || state.mainToolbarMode != MainToolbarMode.FULL || windowSizeClass == WindowSizeClass.COMPACT_LANDSCAPE)
+    !(state.megaphone == Megaphone.NONE || state.mainToolbarMode != MainToolbarMode.FULL || windowSizeClass.isHeightCompact)
   }
 
   AnimatedVisibility(visible = visible) {
@@ -57,7 +58,7 @@ fun MainMegaphoneContainer(
   }
 
   LaunchedEffect(state, windowSizeClass) {
-    if (state.megaphone == Megaphone.NONE || state.mainToolbarMode == MainToolbarMode.BASIC || windowSizeClass == WindowSizeClass.COMPACT_LANDSCAPE) {
+    if (state.megaphone == Megaphone.NONE || state.mainToolbarMode == MainToolbarMode.BASIC || windowSizeClass.isHeightCompact) {
       return@LaunchedEffect
     }
 

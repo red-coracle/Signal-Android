@@ -786,7 +786,7 @@ object RemoteConfig {
 
   /** A comma-separated list of manufacturers that should *not* use CameraX.  */
   val cameraXModelBlocklist: String by remoteString(
-    key = "android.cameraXModelBlockList",
+    key = "android.cameraXModelBlockList.2",
     defaultValue = "",
     hotSwappable = true
   )
@@ -1115,26 +1115,11 @@ object RemoteConfig {
   )
 
   @JvmStatic
-  @get:JvmName("newCallUi")
-  val newCallUi: Boolean by remoteBoolean(
-    key = "android.newCallUi",
-    defaultValue = false,
-    hotSwappable = false
-  )
-
-  @JvmStatic
   @get:JvmName("useHevcEncoder")
   val useHevcEncoder: Boolean by remoteBoolean(
     key = "android.useHevcEncoder",
     defaultValue = false,
     hotSwappable = false
-  )
-
-  /** Whether to allow different WindowSizeClasses to be used to determine screen layout */
-  val largeScreenUi: Boolean by remoteBoolean(
-    key = "android.largeScreenUI",
-    hotSwappable = false,
-    defaultValue = false
   )
 
   @JvmStatic
@@ -1173,20 +1158,95 @@ object RemoteConfig {
     hotSwappable = true
   )
 
+  /** Whether or not to send over binary service ids (alongside string service ids). */
   @JvmStatic
-  @get:JvmName("polls")
-  val polls: Boolean by remoteBoolean(
-    key = "android.polls",
+  @get:JvmName("useBinaryId")
+  val useBinaryId: Boolean by remoteBoolean(
+    key = "android.useBinaryServiceId",
+    defaultValue = Environment.IS_STAGING,
+    hotSwappable = false
+  )
+
+  @JvmStatic
+  @get:JvmName("backupsBetaMegaphone")
+  val backupsBetaMegaphone: Boolean by remoteBoolean(
+    key = "android.backupsBetaMegaphone.2",
     defaultValue = false,
     hotSwappable = true
   )
 
   @JvmStatic
-  @get:JvmName("receivePolls")
-  val receivePolls: Boolean by remoteBoolean(
-    key = "android.receivePolls",
+  @get:JvmName("pinLimit")
+  val pinLimit: Int by remoteInt(
+    key = "global.pinnedMessageLimit",
+    defaultValue = 3,
+    hotSwappable = true
+  )
+
+  @JvmStatic
+  @get:JvmName("receivePinnedMessages")
+  val receivePinnedMessages: Boolean by remoteBoolean(
+    key = "android.receivePinnedMessages.2",
     defaultValue = false,
     hotSwappable = true
   )
+
+  @JvmStatic
+  @get:JvmName("sendPinnedMessages")
+  val sendPinnedMessages: Boolean by remoteBoolean(
+    key = "android.sendPinnedMessages.2",
+    defaultValue = false,
+    hotSwappable = true
+  )
+
+  @JvmStatic
+  @get:JvmName("callQualitySurvey")
+  val callQualitySurvey: Boolean by remoteBoolean(
+    key = "android.callQualitySurvey.4",
+    defaultValue = false,
+    hotSwappable = true
+  )
+
+  @JvmStatic
+  @get:JvmName("callQualitySurveyPPM")
+  val callQualitySurveyPPM: String by remoteString(
+    key = "android.callQualitySurveyPPM",
+    defaultValue = "*:10000",
+    hotSwappable = true
+  )
+
+  /**
+   * Whether or not to allow 1:1 polls and a higher character limit for questions
+   */
+  @JvmStatic
+  @get:JvmName("pollsV2")
+  val pollsV2: Boolean by remoteBoolean(
+    key = "android.pollsV2",
+    defaultValue = false,
+    hotSwappable = true
+  )
+
+  /**
+   * Whether or not the new UX for unified local backups is enabled
+   */
+  @JvmStatic
+  @get:JvmName("unifiedLocalBackups")
+  val unifiedLocalBackups: Boolean by remoteBoolean(
+    key = "android.unifiedLocalBackups",
+    defaultValue = false,
+    hotSwappable = true
+  )
+
+  /**
+   * Whether to enable modifying group member labels.
+   */
+  @JvmStatic
+  @get:JvmName("sendMemberLabels")
+  val sendMemberLabels: Boolean by remoteBoolean(
+    key = "android.sendMemberLabels",
+    defaultValue = false,
+    hotSwappable = true
+  )
+
   // endregion
 }

@@ -6,10 +6,10 @@
 package org.thoughtcrime.securesms.conversation.v2.items
 
 import android.widget.Space
+import org.signal.core.ui.view.Stub
 import org.thoughtcrime.securesms.components.QuoteView
 import org.thoughtcrime.securesms.databinding.V2ConversationItemMediaIncomingBinding
 import org.thoughtcrime.securesms.databinding.V2ConversationItemMediaOutgoingBinding
-import org.thoughtcrime.securesms.util.views.Stub
 
 /**
  * Pass-through interface for bridging incoming and outgoing media message views.
@@ -43,7 +43,8 @@ fun V2ConversationItemMediaIncomingBinding.bridge(): V2ConversationItemMediaBind
     footerBackground = conversationItemFooterBackground,
     alert = null,
     footerSpace = null,
-    isIncoming = true
+    isIncoming = true,
+    footerPinned = conversationItemFooterPinned
   )
 
   return V2ConversationItemMediaBindingBridge(
@@ -73,7 +74,8 @@ fun V2ConversationItemMediaOutgoingBinding.bridge(): V2ConversationItemMediaBind
     footerBackground = conversationItemFooterBackground,
     alert = conversationItemAlert,
     footerSpace = footerEndPad,
-    isIncoming = false
+    isIncoming = false,
+    footerPinned = conversationItemFooterPinned
   )
 
   return V2ConversationItemMediaBindingBridge(

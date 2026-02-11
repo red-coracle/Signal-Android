@@ -44,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -63,13 +62,13 @@ import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dividers
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.Rows
+import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.Snackbars
 import org.signal.core.ui.compose.TextFields.TextField
 import org.signal.core.util.Base64
 import org.signal.core.util.Hex
 import org.signal.core.util.getLength
 import org.thoughtcrime.securesms.MainActivity
-import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.ui.BackupAlert
 import org.thoughtcrime.securesms.backup.v2.ui.BackupAlertBottomSheet
@@ -82,7 +81,9 @@ import org.thoughtcrime.securesms.jobs.ArchiveAttachmentReconciliationJob
 import org.thoughtcrime.securesms.jobs.ArchiveThumbnailBackfillJob
 import org.thoughtcrime.securesms.jobs.BackupRestoreMediaJob
 import org.thoughtcrime.securesms.jobs.LocalBackupJob
+import org.thoughtcrime.securesms.keyvalue.BackupValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.registration.ui.restore.local.InternalNewLocalRestoreActivity
 import org.thoughtcrime.securesms.util.Util
 
 class InternalBackupPlaygroundFragment : ComposeFragment() {
@@ -191,15 +192,15 @@ class InternalBackupPlaygroundFragment : ComposeFragment() {
 
             savePlaintextCopyLauncher.launch(intent)
           },
-          onExportNewStyleLocalBackupClicked = { LocalBackupJob.enqueueArchive() },
+          onExportNewStyleLocalBackupClicked = { LocalBackupJob.enqueueArchive(false) },
           onWipeDataAndRestoreFromRemoteClicked = {
             MaterialAlertDialogBuilder(context)
               .setTitle("Are you sure?")
               .setMessage("This will delete all of your chats! Make sure you've finished a backup first, we don't check for you. Only do this on a test device!")
               .setPositiveButton("Wipe and restore") { _, _ ->
-                Toast.makeText(this@InternalBackupPlaygroundFragment.requireContext(), "Restoring backup...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Restoring backup...", Toast.LENGTH_SHORT).show()
                 viewModel.wipeAllDataAndRestoreFromRemote {
-                  startActivity(MainActivity.clearTop(this@InternalBackupPlaygroundFragment.requireActivity()))
+                  context.startActivity(MainActivity.clearTop(context))
                 }
               }
               .show()
@@ -228,7 +229,9 @@ class InternalBackupPlaygroundFragment : ComposeFragment() {
             MaterialAlertDialogBuilder(context)
               .setTitle("Are you sure?")
               .setMessage("After you choose a file to import, this will delete all of your chats, then restore them from the file! Only do this on a test device!")
-              .setPositiveButton("Wipe and restore") { _, _ -> viewModel.import(SignalStore.settings.signalBackupDirectory!!) }
+              .setPositiveButton("Wipe and restore") { _, _ ->
+                startActivity(InternalNewLocalRestoreActivity.getIntent(context, finish = false))
+              }
               .show()
           },
           onDeleteRemoteBackup = {
@@ -304,7 +307,7 @@ fun Tabs(
           navigationIcon = {
             IconButton(onClick = onBack) {
               Icon(
-                painter = painterResource(R.drawable.symbol_arrow_start_24),
+                painter = SignalIcons.ArrowStart.painter,
                 tint = MaterialTheme.colorScheme.onSurface,
                 contentDescription = null
               )
@@ -561,10 +564,10 @@ fun Screen(
       )
 
       Rows.TextRow(
-        text = "Mark backup failure",
+        text = "Mark backup validation failure",
         label = "This will display the error sheet when returning to the chats list.",
         onClick = {
-          BackupRepository.markBackupFailure()
+          BackupRepository.markBackupCreationFailed(BackupValues.BackupCreationError.VALIDATION)
         }
       )
 

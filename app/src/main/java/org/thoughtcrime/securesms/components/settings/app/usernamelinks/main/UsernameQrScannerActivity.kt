@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.LifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -38,12 +37,12 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import org.signal.core.ui.compose.Dialogs
-import org.signal.core.ui.compose.theme.SignalTheme
+import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.getParcelableExtraCompat
+import org.signal.core.util.permissions.PermissionCompat
 import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.components.settings.app.usernamelinks.main.UsernameQrScannerActivity.Contract
-import org.thoughtcrime.securesms.permissions.PermissionCompat
+import org.thoughtcrime.securesms.compose.SignalTheme
 import org.thoughtcrime.securesms.permissions.Permissions
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
@@ -167,7 +166,7 @@ fun Content(
             onClick = onBackNavigationPressed
           ) {
             Icon(
-              painter = painterResource(R.drawable.symbol_x_24),
+              painter = SignalIcons.X.painter,
               contentDescription = stringResource(android.R.string.cancel)
             )
           }

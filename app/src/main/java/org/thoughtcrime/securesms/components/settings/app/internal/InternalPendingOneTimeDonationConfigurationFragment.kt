@@ -21,16 +21,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import org.signal.core.ui.compose.Buttons
+import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.Rows
 import org.signal.core.ui.compose.Scaffolds
-import org.signal.core.ui.compose.theme.SignalTheme
-import org.thoughtcrime.securesms.R
+import org.signal.core.ui.compose.SignalIcons
 import org.thoughtcrime.securesms.components.settings.app.internal.donor.DonationErrorValueCodeSelector
 import org.thoughtcrime.securesms.components.settings.app.internal.donor.DonationErrorValueTypeSelector
 import org.thoughtcrime.securesms.compose.ComposeFragment
@@ -80,7 +78,7 @@ class InternalPendingOneTimeDonationConfigurationFragment : ComposeFragment() {
 @Preview
 @Composable
 private fun ContentPreview() {
-  SignalTheme {
+  Previews.Preview {
     Surface {
       Content(
         state = PendingOneTimeDonation.Builder().error(DonationErrorValue()).build(),
@@ -110,7 +108,7 @@ private fun Content(
 ) {
   Scaffolds.Settings(
     title = "One-time donation state",
-    navigationIcon = ImageVector.vectorResource(id = R.drawable.symbol_arrow_start_24),
+    navigationIcon = SignalIcons.ArrowStart.imageVector,
     navigationContentDescription = null,
     onNavigationClick = onNavigationClick
   ) {

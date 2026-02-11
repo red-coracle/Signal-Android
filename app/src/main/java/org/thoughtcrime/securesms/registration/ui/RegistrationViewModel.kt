@@ -23,6 +23,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.signal.core.models.AccountEntropyPool
+import org.signal.core.models.MasterKey
+import org.signal.core.models.backup.MessageBackupKey
 import org.signal.core.util.Base64
 import org.signal.core.util.isNotNullOrBlank
 import org.signal.core.util.logging.Log
@@ -30,6 +33,7 @@ import org.signal.libsignal.protocol.IdentityKey
 import org.signal.libsignal.protocol.IdentityKeyPair
 import org.signal.libsignal.protocol.ecc.ECPrivateKey
 import org.signal.libsignal.zkgroup.profiles.ProfileKey
+import org.signal.registration.proto.RegistrationProvisionMessage
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.RestoreTimestampResult
 import org.thoughtcrime.securesms.database.model.databaseprotos.LinkedDeviceInfo
@@ -82,11 +86,8 @@ import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.Util
 import org.thoughtcrime.securesms.util.dualsim.MccMncProducer
-import org.whispersystems.signalservice.api.AccountEntropyPool
 import org.whispersystems.signalservice.api.NetworkResult
 import org.whispersystems.signalservice.api.SvrNoDataException
-import org.whispersystems.signalservice.api.backup.MessageBackupKey
-import org.whispersystems.signalservice.api.kbs.MasterKey
 import org.whispersystems.signalservice.api.messages.multidevice.RequestMessage
 import org.whispersystems.signalservice.api.messages.multidevice.SignalServiceSyncMessage
 import org.whispersystems.signalservice.api.svr.Svr3Credentials
@@ -95,6 +96,7 @@ import org.whispersystems.signalservice.internal.push.AuthCredentials
 import org.whispersystems.signalservice.internal.push.ProvisionMessage
 import org.whispersystems.signalservice.internal.push.SyncMessage
 import java.io.IOException
+import java.net.ProtocolException
 import java.nio.charset.StandardCharsets
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.max
@@ -149,6 +151,8 @@ class RegistrationViewModel : ViewModel() {
         it.copy(nationalNumber = value)
       }
     }
+
+  var registrationProvisioningMessage: RegistrationProvisionMessage? = null
 
   @SuppressLint("MissingPermission")
   fun maybePrefillE164(context: Context) {
@@ -240,8 +244,20 @@ class RegistrationViewModel : ViewModel() {
   }
 
   fun togglePinKeyboardType() {
-    store.update { previousState ->
-      previousState.copy(pinKeyboardType = previousState.pinKeyboardType.other)
+    store.update {
+      it.copy(pinKeyboardType = it.pinKeyboardType.other)
+    }
+  }
+
+  fun clearPreviousRegistrationState() {
+    store.update {
+      it.copy(
+        sessionId = null,
+        captchaToken = null,
+        challengesRequested = emptyList(),
+        challengeInProgress = false,
+        fcmToken = null
+      )
     }
   }
 
@@ -677,6 +693,14 @@ class RegistrationViewModel : ViewModel() {
           Log.w(TAG, "SVR has no data for these credentials. Aborting skip SMS flow.", noData)
           updateSvrTriesRemaining(0)
           setUserSkippedReRegisterFlow(true)
+        } catch (ioe: IOException) {
+          if (ioe.cause is ProtocolException) {
+            Log.w(TAG, "Network error attempting to communicate with SVR, likely web socket http protocol exception. Skipping re-reg", ioe)
+            setUserSkippedReRegisterFlow(true)
+          } else {
+            Log.w(TAG, "Network error attempting to communicate with SVR.", ioe)
+            handleGenericError(ioe)
+          }
         }
       }
       return
@@ -911,6 +935,10 @@ class RegistrationViewModel : ViewModel() {
       SignalStore.registration.restoreDecisionState = RestoreDecisionState.NewAccount
     }
 
+    if (remoteResult.reRegistration) {
+      SignalStore.backup.backupSecretRestoreRequired = true
+    }
+
     if (reglockEnabled || SignalStore.account.restoredAccountEntropyPool) {
       SignalStore.onboarding.clearAll()
 
@@ -959,8 +987,8 @@ class RegistrationViewModel : ViewModel() {
     SignalStore.registration.restoreDecisionState = RestoreDecisionState.Start
   }
 
-  fun intendToRestore(hasOldDevice: Boolean, fromRemote: Boolean? = null) {
-    SignalStore.registration.restoreDecisionState = RestoreDecisionState.intendToRestore(hasOldDevice, fromRemote)
+  fun intendToRestore(hasOldDevice: Boolean, fromRemote: Boolean? = null, fromLocalV2: Boolean? = null) {
+    SignalStore.registration.restoreDecisionState = RestoreDecisionState.intendToRestore(hasOldDevice, fromRemote, fromLocalV2)
   }
 
   fun skipRestore() {

@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -46,6 +45,7 @@ import org.signal.core.ui.compose.Dividers
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.Rows
 import org.signal.core.ui.compose.Scaffolds
+import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.Texts
 import org.signal.core.util.money.FiatMoney
 import org.thoughtcrime.securesms.R
@@ -58,6 +58,7 @@ import org.thoughtcrime.securesms.compose.ComposeFragment
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.payments.FiatMoneyUtil
 import org.thoughtcrime.securesms.util.DateUtils
+import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import java.math.BigDecimal
 import java.util.Currency
@@ -103,7 +104,14 @@ class BackupsSettingsFragment : ComposeFragment() {
           }
         }
       },
-      onOnDeviceBackupsRowClick = { findNavController().safeNavigate(R.id.action_backupsSettingsFragment_to_backupsPreferenceFragment) },
+      onOnDeviceBackupsRowClick = {
+        if (SignalStore.backup.newLocalBackupsEnabled || RemoteConfig.unifiedLocalBackups && !SignalStore.settings.isBackupEnabled) {
+          findNavController().safeNavigate(R.id.action_backupsSettingsFragment_to_localBackupsFragment)
+        } else {
+          findNavController().safeNavigate(R.id.action_backupsSettingsFragment_to_backupsPreferenceFragment)
+        }
+      },
+      onNewOnDeviceBackupsRowClick = { findNavController().safeNavigate(R.id.action_backupsSettingsFragment_to_internalLocalBackupFragment) },
       onBackupTierInternalOverrideChanged = { viewModel.onBackupTierInternalOverrideChanged(it) }
     )
   }
@@ -115,11 +123,12 @@ private fun BackupsSettingsContent(
   onNavigationClick: () -> Unit = {},
   onBackupsRowClick: () -> Unit = {},
   onOnDeviceBackupsRowClick: () -> Unit = {},
+  onNewOnDeviceBackupsRowClick: () -> Unit = {},
   onBackupTierInternalOverrideChanged: (MessageBackupTier?) -> Unit = {}
 ) {
   Scaffolds.Settings(
     title = stringResource(R.string.preferences_chats__backups),
-    navigationIcon = ImageVector.vectorResource(R.drawable.symbol_arrow_start_24),
+    navigationIcon = SignalIcons.ArrowStart.imageVector,
     onNavigationClick = onNavigationClick
   ) { paddingValues ->
     LazyColumn(
@@ -127,7 +136,7 @@ private fun BackupsSettingsContent(
     ) {
       if (backupsSettingsState.showBackupTierInternalOverride) {
         item {
-          Column(modifier = Modifier.padding(horizontal = dimensionResource(id = org.signal.core.ui.R.dimen.gutter))) {
+          Column(modifier = Modifier.padding(horizontal = dimensionResource(id = CoreUiR.dimen.gutter))) {
             Text(
               text = "ALPHA ONLY",
               style = MaterialTheme.typography.titleMedium
@@ -228,9 +237,20 @@ private fun BackupsSettingsContent(
       item {
         Rows.TextRow(
           text = stringResource(R.string.RemoteBackupsSettingsFragment__on_device_backups),
+          icon = ImageVector.vectorResource(R.drawable.symbol_device_phone_24),
           label = stringResource(R.string.RemoteBackupsSettingsFragment__save_your_backups_to),
           onClick = onOnDeviceBackupsRowClick
         )
+      }
+
+      if (backupsSettingsState.showNewLocalBackup) {
+        item {
+          Rows.TextRow(
+            text = "INTERNAL ONLY - New Local Backup",
+            label = "Use new local backup format",
+            onClick = onNewOnDeviceBackupsRowClick
+          )
+        }
       }
     }
   }
@@ -258,7 +278,7 @@ private fun NeverEnabledBackupsRow(
           .align(Alignment.Top)
       ) {
         Icon(
-          painter = painterResource(R.drawable.symbol_backup_24),
+          painter = SignalIcons.Backup.painter,
           contentDescription = null
         )
       }
@@ -326,7 +346,7 @@ private fun InactiveBackupsRow(
     },
     icon = {
       Icon(
-        imageVector = ImageVector.vectorResource(R.drawable.symbol_backup_24),
+        imageVector = SignalIcons.Backup.imageVector,
         contentDescription = stringResource(R.string.preferences_chats__backups),
         tint = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier
@@ -350,7 +370,7 @@ private fun NotFoundBackupRow(
           .align(Alignment.Top)
       ) {
         Icon(
-          painter = painterResource(R.drawable.symbol_backup_24),
+          painter = SignalIcons.Backup.painter,
           contentDescription = null
         )
       }
@@ -436,7 +456,7 @@ private fun LocalStoreBackupRow(
           .align(Alignment.Top)
       ) {
         Icon(
-          painter = painterResource(R.drawable.symbol_backup_24),
+          painter = SignalIcons.Backup.painter,
           contentDescription = null
         )
       }
@@ -481,7 +501,7 @@ private fun ActiveBackupsRow(
           .align(Alignment.Top)
       ) {
         Icon(
-          painter = painterResource(R.drawable.symbol_backup_24),
+          painter = SignalIcons.Backup.painter,
           contentDescription = null
         )
       }

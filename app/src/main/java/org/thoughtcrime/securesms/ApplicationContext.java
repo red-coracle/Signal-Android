@@ -30,6 +30,7 @@ import com.google.android.gms.security.ProviderInstaller;
 import org.conscrypt.ConscryptSignal;
 import org.greenrobot.eventbus.EventBus;
 import org.signal.aesgcmprovider.AesGcmProvider;
+import org.signal.core.util.DiskUtil;
 import org.signal.core.util.MemoryTracker;
 import org.signal.core.util.concurrent.AnrDetector;
 import org.signal.core.util.concurrent.SignalExecutors;
@@ -59,6 +60,7 @@ import org.thoughtcrime.securesms.jobs.AccountConsistencyWorkerJob;
 import org.thoughtcrime.securesms.jobs.BackupRefreshJob;
 import org.thoughtcrime.securesms.jobs.BackupSubscriptionCheckJob;
 import org.thoughtcrime.securesms.jobs.BuildExpirationConfirmationJob;
+import org.thoughtcrime.securesms.jobs.CheckKeyTransparencyJob;
 import org.thoughtcrime.securesms.jobs.CheckServiceReachabilityJob;
 import org.thoughtcrime.securesms.jobs.DownloadLatestEmojiDataJob;
 import org.thoughtcrime.securesms.jobs.EmojiSearchIndexDownloadJob;
@@ -228,7 +230,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
               .addPostRender(LinkedDeviceInactiveCheckJob::enqueueIfNecessary)
               .addPostRender(() -> ActiveCallManager.clearNotifications(this))
               .addPostRender(RestoreOptimizedMediaJob::enqueueIfNecessary)
-              .addPostRender(RetryPendingSendsJob::enqueueForAll)
+              .addPostRender(() -> AppDependencies.getPinnedMessageManager().scheduleIfNecessary())
               .execute();
 
     Log.d(TAG, "onCreate() took " + (System.currentTimeMillis() - startTime) + " ms");
@@ -260,6 +262,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
       checkFreeDiskSpace();
       MemoryTracker.start();
       BackupSubscriptionCheckJob.enqueueIfAble();
+      CheckKeyTransparencyJob.enqueueIfNecessary(true);
       AppDependencies.getAuthWebSocket().registerKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE);
       AppDependencies.getUnauthWebSocket().registerKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE);
 
@@ -299,7 +302,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
   }
 
   public void checkFreeDiskSpace() {
-    long availableBytes = BackupRepository.INSTANCE.getFreeStorageSpace().getBytes();
+    long availableBytes = DiskUtil.getAvailableSpace(getApplicationContext()).getBytes();
     SignalStore.backup().setSpaceAvailableOnDiskBytes(availableBytes);
   }
 
@@ -490,7 +493,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
   }
 
   private void ensureProfileUploaded() {
-    if (SignalStore.account().isRegistered() && !SignalStore.registration().hasUploadedProfile() && !Recipient.self().getProfileName().isEmpty()) {
+    if (SignalStore.account().isRegistered() && !SignalStore.registration().hasUploadedProfile() && !Recipient.self().getProfileName().isEmpty() && SignalStore.account().isPrimaryDevice()) {
       Log.w(TAG, "User has a profile, but has not uploaded one. Uploading now.");
       AppDependencies.getJobManager().add(new ProfileUploadJob());
     }

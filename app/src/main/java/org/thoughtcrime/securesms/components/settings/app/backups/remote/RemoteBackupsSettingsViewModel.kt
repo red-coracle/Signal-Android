@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.withContext
 import org.signal.core.util.bytes
+import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
 import org.signal.core.util.mebiBytes
 import org.signal.core.util.throttleLatest
@@ -34,6 +35,7 @@ import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgress
 import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgressState.RestoreStatus
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
+import org.thoughtcrime.securesms.backup.v2.ui.subscription.BackupUpgradeAvailabilityChecker
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsType
 import org.thoughtcrime.securesms.components.settings.app.backups.BackupState
 import org.thoughtcrime.securesms.components.settings.app.backups.BackupStateObserver
@@ -74,9 +76,10 @@ class RemoteBackupsSettingsViewModel : ViewModel() {
       lastBackupTimestamp = SignalStore.backup.lastBackupTime,
       canBackUpUsingCellular = SignalStore.backup.backupWithCellular,
       canRestoreUsingCellular = SignalStore.backup.restoreWithCellular,
+      internalUser = RemoteConfig.internalUser,
       includeDebuglog = SignalStore.internal.includeDebuglogInBackup.takeIf { RemoteConfig.internalUser },
-      showBackupCreateFailedError = BackupRepository.shouldDisplayBackupFailedSettingsRow(),
-      showBackupCreateCouldNotCompleteError = BackupRepository.shouldDisplayCouldNotCompleteBackupSettingsRow()
+      backupCreationError = SignalStore.backup.backupCreationError,
+      lastMessageCutoffTime = SignalStore.backup.lastUsedMessageCutoffTime
     )
   )
 
@@ -86,7 +89,11 @@ class RemoteBackupsSettingsViewModel : ViewModel() {
   val state: StateFlow<RemoteBackupsSettingsState> = _state
   val restoreState: StateFlow<BackupRestoreState> = _restoreState
 
+  private var forQuickRestore = false
+
   init {
+    ArchiveUploadProgress.triggerUpdate()
+
     viewModelScope.launch(Dispatchers.IO) {
       val isBillingApiAvailable = AppDependencies.billingApi.getApiAvailability().isSuccess
       if (isBillingApiAvailable) {
@@ -98,6 +105,12 @@ class RemoteBackupsSettingsViewModel : ViewModel() {
         _state.update {
           it.copy(isPaidTierPricingAvailable = paidType is NetworkResult.Success)
         }
+      }
+    }
+
+    viewModelScope.launch {
+      _state.update {
+        it.copy(isGooglePlayServicesAvailable = BackupUpgradeAvailabilityChecker.isUpgradeAvailable(AppDependencies.application))
       }
     }
 
@@ -162,6 +175,10 @@ class RemoteBackupsSettingsViewModel : ViewModel() {
         .collect { current ->
           if (previous != null && previous != current.state && current.state == ArchiveUploadProgressState.State.None) {
             Log.d(TAG, "Refreshing state after archive upload.")
+            if (forQuickRestore) {
+              Log.d(TAG, "Backup completed with the forQuickRestore flag on. Refreshing state.")
+              _state.value = _state.value.copy(dialog = RemoteBackupsSettingsState.Dialog.READY_TO_TRANSFER)
+            }
             refreshState(null)
           }
           previous = current.state
@@ -225,6 +242,22 @@ class RemoteBackupsSettingsViewModel : ViewModel() {
     _state.update { it.copy(snackbar = snackbar) }
   }
 
+  fun getKeyRotationLimit() {
+    viewModelScope.launch(SignalDispatchers.IO) {
+      val result = BackupRepository.getKeyRotationLimit()
+      val canRotateKey = if (result is NetworkResult.Success) {
+        result.result.hasPermitsRemaining!!
+      } else {
+        Log.w(TAG, "Error while getting rotation limit: $result. Default to allowing key rotations.")
+        true
+      }
+
+      if (!canRotateKey) {
+        requestDialog(RemoteBackupsSettingsState.Dialog.KEY_ROTATION_LIMIT_REACHED)
+      }
+    }
+  }
+
   fun refresh() {
     viewModelScope.launch(Dispatchers.IO) {
       val id = SignalDatabase.inAppPayments.getLatestInAppPaymentByType(InAppPaymentType.RECURRING_BACKUP)?.id
@@ -249,8 +282,9 @@ class RemoteBackupsSettingsViewModel : ViewModel() {
     }
   }
 
-  fun onBackupNowClick() {
+  fun onBackupNowClick(forQuickRestore: Boolean) {
     BackupMessagesJob.enqueue()
+    this.forQuickRestore = forQuickRestore
   }
 
   fun cancelUpload() {
@@ -325,8 +359,8 @@ class RemoteBackupsSettingsViewModel : ViewModel() {
         canRestoreUsingCellular = SignalStore.backup.restoreWithCellular,
         isOutOfStorageSpace = BackupRepository.shouldDisplayOutOfRemoteStorageSpaceUx(),
         hasRedemptionError = lastPurchase?.data?.error?.data_ == "409",
-        showBackupCreateFailedError = BackupRepository.shouldDisplayBackupFailedSettingsRow(),
-        showBackupCreateCouldNotCompleteError = BackupRepository.shouldDisplayCouldNotCompleteBackupSettingsRow()
+        backupCreationError = SignalStore.backup.backupCreationError,
+        lastMessageCutoffTime = SignalStore.backup.lastUsedMessageCutoffTime
       )
     }
   }

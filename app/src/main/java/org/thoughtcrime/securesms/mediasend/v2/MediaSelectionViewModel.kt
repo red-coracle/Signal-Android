@@ -22,6 +22,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import io.reactivex.rxjava3.subjects.Subject
+import org.signal.core.models.media.Media
 import org.signal.core.util.BreakIteratorCompat
 import org.signal.core.util.getParcelableArrayListCompat
 import org.signal.core.util.getParcelableCompat
@@ -30,7 +31,6 @@ import org.thoughtcrime.securesms.components.mention.MentionAnnotation
 import org.thoughtcrime.securesms.contacts.paged.ContactSearchKey
 import org.thoughtcrime.securesms.conversation.MessageSendType
 import org.thoughtcrime.securesms.conversation.MessageStyler
-import org.thoughtcrime.securesms.mediasend.Media
 import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.v2.review.AddMessageCharacterCount
 import org.thoughtcrime.securesms.mediasend.v2.videos.VideoTrimData
@@ -198,10 +198,18 @@ class MediaSelectionViewModel(
                     video.uri to VideoTrimData(true, duration, 0, maxDuration)
                   }
                 }
+
+              val updatedCameraFirstCapture = if (it.cameraFirstCapture != null) {
+                filterResult.filteredMedia.find { filtered -> filtered.uri == it.cameraFirstCapture.uri }
+              } else {
+                null
+              }
+
               it.copy(
                 selectedMedia = filterResult.filteredMedia,
                 focusedMedia = it.focusedMedia ?: filterResult.filteredMedia.first(),
-                editorStateMap = it.editorStateMap + initializedVideoEditorStates
+                editorStateMap = it.editorStateMap + initializedVideoEditorStates,
+                cameraFirstCapture = updatedCameraFirstCapture ?: it.cameraFirstCapture
               )
             }
 
@@ -275,10 +283,12 @@ class MediaSelectionViewModel(
   fun removeMedia(media: Set<Media>) {
     val snapshot = store.state
     val newMediaList = snapshot.selectedMedia - media
-    val oldFocusIndex = snapshot.selectedMedia.indexOf(media.first())
     val newFocus = when {
       newMediaList.isEmpty() -> null
-      media == snapshot.focusedMedia -> newMediaList[Util.clamp(oldFocusIndex, 0, newMediaList.size - 1)]
+      snapshot.focusedMedia in media -> {
+        val oldFocusIndex = snapshot.selectedMedia.indexOf(snapshot.focusedMedia)
+        newMediaList[Util.clamp(oldFocusIndex, 0, newMediaList.size - 1)]
+      }
       else -> snapshot.focusedMedia
     }
 
@@ -287,7 +297,7 @@ class MediaSelectionViewModel(
         selectedMedia = newMediaList,
         focusedMedia = newFocus,
         editorStateMap = it.editorStateMap - media.map { it.uri },
-        cameraFirstCapture = if (media == it.cameraFirstCapture) null else it.cameraFirstCapture
+        cameraFirstCapture = if (it.cameraFirstCapture in media) null else it.cameraFirstCapture
       )
     }
 

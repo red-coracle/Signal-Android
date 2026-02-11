@@ -8,10 +8,11 @@ package org.thoughtcrime.securesms.components.compose
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.thoughtcrime.securesms.window.WindowSizeClass
+import androidx.window.core.layout.WindowSizeClass
 
 /**
  * Displays the screen title for split-pane UIs on tablets and foldable devices.
@@ -21,7 +22,7 @@ fun ScreenTitlePane(
   title: String,
   modifier: Modifier = Modifier
 ) {
-  val windowSizeClass = WindowSizeClass.rememberWindowSizeClass()
+  val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
   Text(
     text = title,
@@ -29,9 +30,8 @@ fun ScreenTitlePane(
     color = MaterialTheme.colorScheme.onSurface,
     modifier = modifier
       .padding(
-        start = if (windowSizeClass.isExtended()) 80.dp else 20.dp,
+        start = if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) 80.dp else 20.dp,
         end = 20.dp,
-        top = 12.dp,
         bottom = 12.dp
       )
   )

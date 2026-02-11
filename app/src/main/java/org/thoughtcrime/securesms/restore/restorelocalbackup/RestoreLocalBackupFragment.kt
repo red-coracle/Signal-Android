@@ -96,7 +96,7 @@ class RestoreLocalBackupFragment : LoggingFragment(R.layout.fragment_restore_loc
 
     if (sharedViewModel.getBackupFileUri() == null) {
       Log.i(TAG, "No backup URI found, must navigate back to choose one.")
-      findNavController().navigateUp()
+      findNavController().navigate(RestoreLocalBackupFragmentDirections.goDirectlyToChooseLocalBackup())
       return
     }
 
@@ -303,7 +303,9 @@ class RestoreLocalBackupFragment : LoggingFragment(R.layout.fragment_restore_loc
     }
 
     if (backupTimestamp > 0) {
-      binding.backupCreatedText.text = getString(R.string.RegistrationActivity_backup_timestamp_s, DateUtils.getExtendedRelativeTimeSpanString(requireContext(), Locale.getDefault(), backupTimestamp))
+      val (date, dateContentDesc) = DateUtils.getExtendedRelativeTimeSpanString(requireContext(), Locale.getDefault(), backupTimestamp)
+      binding.backupCreatedText.text = getString(R.string.RegistrationActivity_backup_timestamp_s, date)
+      binding.backupCreatedText.contentDescription = getString(R.string.RegistrationActivity_backup_timestamp_s, dateContentDesc)
     }
   }
 

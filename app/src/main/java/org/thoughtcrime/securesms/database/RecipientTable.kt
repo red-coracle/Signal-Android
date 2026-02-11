@@ -9,6 +9,9 @@ import android.text.TextUtils
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
 import okio.ByteString.Companion.toByteString
+import org.signal.core.models.ServiceId
+import org.signal.core.models.ServiceId.ACI
+import org.signal.core.models.ServiceId.PNI
 import org.signal.core.util.Base64
 import org.signal.core.util.Bitmask
 import org.signal.core.util.CursorUtil
@@ -44,7 +47,7 @@ import org.signal.libsignal.protocol.InvalidKeyException
 import org.signal.libsignal.zkgroup.groups.GroupMasterKey
 import org.signal.libsignal.zkgroup.profiles.ExpiringProfileKeyCredential
 import org.signal.libsignal.zkgroup.profiles.ProfileKey
-import org.signal.storageservice.protos.groups.local.DecryptedGroup
+import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
 import org.thoughtcrime.securesms.badges.Badges.toDatabaseBadge
 import org.thoughtcrime.securesms.badges.models.Badge
 import org.thoughtcrime.securesms.color.MaterialColor
@@ -104,9 +107,6 @@ import org.thoughtcrime.securesms.wallpaper.ChatWallpaper
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaperFactory
 import org.thoughtcrime.securesms.wallpaper.WallpaperStorage
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfile
-import org.whispersystems.signalservice.api.push.ServiceId
-import org.whispersystems.signalservice.api.push.ServiceId.ACI
-import org.whispersystems.signalservice.api.push.ServiceId.PNI
 import org.whispersystems.signalservice.api.storage.SignalAccountRecord
 import org.whispersystems.signalservice.api.storage.SignalContactRecord
 import org.whispersystems.signalservice.api.storage.SignalGroupV1Record
@@ -199,6 +199,7 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
     const val SORT_NAME = "sort_name"
     const val IDENTITY_STATUS = "identity_status"
     const val IDENTITY_KEY = "identity_key"
+    const val KEY_TRANSPARENCY_DATA = "key_transparency_data"
 
     @JvmField
     val CREATE_TABLE =
@@ -267,7 +268,8 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
         $NICKNAME_FAMILY_NAME TEXT DEFAULT NULL,
         $NICKNAME_JOINED_NAME TEXT DEFAULT NULL,
         $NOTE TEXT DEFAULT NULL,
-        $MESSAGE_EXPIRATION_TIME_VERSION INTEGER DEFAULT 1 NOT NULL
+        $MESSAGE_EXPIRATION_TIME_VERSION INTEGER DEFAULT 1 NOT NULL,
+        $KEY_TRANSPARENCY_DATA BLOB DEFAULT NULL
       )
       """
 
@@ -331,7 +333,8 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
       PHONE_NUMBER_SHARING,
       NICKNAME_GIVEN_NAME,
       NICKNAME_FAMILY_NAME,
-      NOTE
+      NOTE,
+      KEY_TRANSPARENCY_DATA
     )
 
     private val ID_PROJECTION = arrayOf(ID)
@@ -869,7 +872,7 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
     val recipientId: RecipientId
     if (id < 0) {
       Log.w(TAG, "[applyStorageSyncContactInsert] Failed to insert. Possibly merging.")
-      recipientId = getAndPossiblyMerge(aci = ACI.parseOrNull(insert.proto.aci), pni = PNI.parseOrNull(insert.proto.pni), e164 = insert.proto.e164.nullIfBlank(), pniVerified = insert.proto.pniSignatureVerified)
+      recipientId = getAndPossiblyMerge(aci = ACI.parseOrNull(insert.proto.aci, insert.proto.aciBinary), pni = PNI.parseOrNull(insert.proto.pni, insert.proto.pniBinary), e164 = insert.proto.e164.nullIfBlank(), pniVerified = insert.proto.pniSignatureVerified)
       resolvePotentialUsernameConflicts(values.getAsString(USERNAME), recipientId)
 
       db.update(TABLE_NAME, values, ID_WHERE, SqlUtil.buildArgs(recipientId))
@@ -917,7 +920,7 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
       var recipientId = getByColumn(STORAGE_SERVICE_ID, Base64.encodeWithPadding(update.old.id.raw)).get()
 
       Log.w(TAG, "[applyStorageSyncContactUpdate] Found user $recipientId. Possibly merging.")
-      recipientId = getAndPossiblyMerge(aci = ACI.parseOrNull(update.new.proto.aci), pni = PNI.parseOrNull(update.new.proto.pni), e164 = update.new.proto.e164.nullIfBlank(), pniVerified = update.new.proto.pniSignatureVerified)
+      recipientId = getAndPossiblyMerge(aci = ACI.parseOrNull(update.new.proto.aci, update.new.proto.aciBinary), pni = PNI.parseOrNull(update.new.proto.pni, update.new.proto.pniBinary), e164 = update.new.proto.e164.nullIfBlank(), pniVerified = update.new.proto.pniSignatureVerified)
 
       Log.w(TAG, "[applyStorageSyncContactUpdate] Merged into $recipientId")
       resolvePotentialUsernameConflicts(values.getAsString(USERNAME), recipientId)
@@ -943,7 +946,7 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
       val oldIdentityRecord = identityStore.getIdentityRecord(recipientId)
       if (update.new.proto.identityKey.isNotEmpty() && update.new.proto.signalAci != null) {
         val identityKey = IdentityKey(update.new.proto.identityKey.toByteArray(), 0)
-        identities.updateIdentityAfterSync(update.new.proto.aci, recipientId, identityKey, StorageSyncModels.remoteToLocalIdentityStatus(update.new.proto.identityState))
+        identities.updateIdentityAfterSync(update.new.proto.signalAci!!.toString(), recipientId, identityKey, StorageSyncModels.remoteToLocalIdentityStatus(update.new.proto.identityState))
       }
 
       val newIdentityRecord = identityStore.getIdentityRecord(recipientId)
@@ -1220,7 +1223,7 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
     val out: MutableMap<RecipientId, StorageId> = HashMap()
 
     readableDatabase
-      .select(ID, STORAGE_SERVICE_ID, TYPE)
+      .select(ID, STORAGE_SERVICE_ID, TYPE, ACI_COLUMN, PNI_COLUMN)
       .from(TABLE_NAME)
       .where(
         """
@@ -1251,7 +1254,15 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
           val key = Base64.decodeOrThrow(encodedKey)
 
           when (recipientType) {
-            RecipientType.INDIVIDUAL -> out[id] = StorageId.forContact(key)
+            RecipientType.INDIVIDUAL -> {
+              val aci = ACI.parseOrNull(cursor.requireString(ACI_COLUMN))
+              val pni = PNI.parseOrNull(cursor.requireString(PNI_COLUMN))
+              if (aci == null && pni == null) {
+                Log.w(TAG, "All identifiers are null! Skipping. Before parsing, ACI: ${cursor.requireString(ACI_COLUMN) != null}, PNI: ${cursor.requireString(PNI_COLUMN) != null}")
+              } else {
+                out[id] = StorageId.forContact(key)
+              }
+            }
             RecipientType.GV1 -> out[id] = StorageId.forGroupV1(key)
             RecipientType.DISTRIBUTION_LIST -> out[id] = StorageId.forStoryDistributionList(key)
             RecipientType.CALL_LINK -> out[id] = StorageId.forCallLink(key)
@@ -1263,8 +1274,16 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
     for (id in groups.getAllGroupV2Ids()) {
       val recipient = Recipient.externalGroupExact(id)
       val recipientId = recipient.id
-      val existing: RecipientRecord = getRecordForSync(recipientId) ?: throw AssertionError()
-      val key = existing.storageId ?: throw AssertionError()
+      var existing: RecipientRecord = getRecordForSync(recipientId) ?: throw AssertionError("Failed to find recipient record!")
+      var key = existing.storageId
+
+      if (key == null) {
+        Log.w(TAG, "Needed to repair storageId for $recipientId (group $id)")
+        rotateStorageId(existing.id)
+        existing = getRecordForSync(recipientId) ?: throw AssertionError("Failed to find recipient record for second fetch!")
+        key = existing.storageId ?: throw AssertionError("StorageId not present immediately after setting it!")
+      }
+
       out[recipientId] = StorageId.forGroupV2(key)
     }
 
@@ -2215,6 +2234,7 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
         .values(NEEDS_PNI_SIGNATURE to 0)
         .run()
 
+      clearSelfKeyTransparencyData()
       SignalDatabase.pendingPniSignatureMessages.deleteAll()
 
       db.setTransactionSuccessful()
@@ -2241,6 +2261,10 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
           Log.i(TAG, "Username was previously thought to be owned by " + existingUsername.get() + ". Clearing their username.")
           setUsername(existingUsername.get(), null)
         }
+      }
+
+      if (id == Recipient.self().id) {
+        clearSelfKeyTransparencyData()
       }
 
       if (update(id, contentValuesOf(USERNAME to username))) {
@@ -2388,6 +2412,16 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
       Log.i(TAG, "[WithSplit] Newly marked $id as unregistered.")
       markNeedsSync(id)
       AppDependencies.databaseObserver.notifyRecipientChanged(id)
+    }
+
+    if (record.e164 == null) {
+      Log.w(TAG, "[WithSplit] Missing e164! Not adding the PNI/E164 record.")
+      return
+    }
+
+    if (!SignalE164Util.isPotentialE164(record.e164)) {
+      Log.w(TAG, "[WithSplit] Invalid e164! Not adding the PNI/E164 record.")
+      return
     }
 
     val splitId = getAndPossiblyMerge(null, record.pni, record.e164)
@@ -3998,6 +4032,41 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
       .where(ID_WHERE, id)
       .run()
       .readToSingleLong(0L)
+  }
+
+  fun getKeyTransparencyData(aci: ACI): ByteArray? {
+    return readableDatabase
+      .select(KEY_TRANSPARENCY_DATA)
+      .from(TABLE_NAME)
+      .where("$ACI_COLUMN = ?", aci.toString())
+      .run()
+      .readToSingleObject { cursor ->
+        cursor.requireBlob(KEY_TRANSPARENCY_DATA)
+      }
+  }
+
+  fun setKeyTransparencyData(aci: ACI, data: ByteArray?) {
+    writableDatabase
+      .update(TABLE_NAME)
+      .values(KEY_TRANSPARENCY_DATA to data)
+      .where("$ACI_COLUMN = ?", aci.toString())
+      .run()
+  }
+
+  fun clearAllKeyTransparencyData() {
+    writableDatabase
+      .update(TABLE_NAME)
+      .values(KEY_TRANSPARENCY_DATA to null)
+      .where("$KEY_TRANSPARENCY_DATA IS NOT NULL")
+      .run()
+  }
+
+  fun clearSelfKeyTransparencyData() {
+    writableDatabase
+      .update(TABLE_NAME)
+      .values(KEY_TRANSPARENCY_DATA to null)
+      .where("$ACI_COLUMN = ?", Recipient.self().requireAci().toString())
+      .run()
   }
 
   /**

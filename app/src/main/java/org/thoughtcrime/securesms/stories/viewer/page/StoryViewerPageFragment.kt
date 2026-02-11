@@ -31,8 +31,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.text.util.LinkifyCompat
-import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.animation.PathInterpolatorCompat
+import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -47,6 +47,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.launch
+import org.signal.core.ui.BottomSheetUtil
 import org.signal.core.util.DimensionUnit
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.dp
@@ -90,7 +91,6 @@ import org.thoughtcrime.securesms.stories.viewer.reply.reaction.OnReactionSentVi
 import org.thoughtcrime.securesms.stories.viewer.reply.tabs.StoryViewsAndRepliesDialogFragment
 import org.thoughtcrime.securesms.stories.viewer.views.StoryViewsBottomSheetDialogFragment
 import org.thoughtcrime.securesms.util.AvatarUtil
-import org.thoughtcrime.securesms.util.BottomSheetUtil
 import org.thoughtcrime.securesms.util.DateUtils
 import org.thoughtcrime.securesms.util.Debouncer
 import org.thoughtcrime.securesms.util.LinkUtil
@@ -107,6 +107,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import org.signal.core.ui.R as CoreUiR
 
 class StoryViewerPageFragment :
   Fragment(R.layout.stories_viewer_fragment_page),
@@ -251,7 +252,18 @@ class StoryViewerPageFragment :
       viewModel::goToPreviousPost
     )
 
-    val gestureDetector = GestureDetectorCompat(
+    val parentListener = GestureDetector(
+      requireContext(),
+      ParentGestureListener(
+        singleTapHandler = singleTapHandler
+      )
+    )
+
+    storyPageContainer.setOnTouchListener { v, event ->
+      parentListener.onTouchEvent(event)
+    }
+
+    val gestureDetector = GestureDetector(
       requireContext(),
       StoryGestureListener(
         cardWrapper,
@@ -968,12 +980,14 @@ class StoryViewerPageFragment :
     caption.text = displayBody
     caption.setMaxLength(SMALL_CAPTION_TEXT_MAX_LENGTH)
 
-    if (displayBody.length <= SMALL_CAPTION_TEXT_MAX_LENGTH) {
-      caption.setOnClickListener(null)
-      caption.isClickable = false
-    } else {
-      caption.setOnClickListener {
-        onShowCaptionOverlay(caption, largeCaption, largeCaptionOverlay)
+    caption.doOnNextLayout {
+      if (displayBody.length <= SMALL_CAPTION_TEXT_MAX_LENGTH && caption.lineCount <= SMALL_CAPTION_TEXT_MAX_LINES) {
+        caption.setOnClickListener(null)
+        caption.isClickable = false
+      } else {
+        caption.setOnClickListener {
+          onShowCaptionOverlay(caption, largeCaption, largeCaptionOverlay)
+        }
       }
     }
   }
@@ -1045,9 +1059,10 @@ class StoryViewerPageFragment :
   }
 
   private fun presentDate(date: TextView, storyPost: StoryPost) {
-    val formattedDate = DateUtils.getBriefRelativeTimeSpanString(requireContext(), Locale.getDefault(), storyPost.dateInMilliseconds)
+    val (formattedDate, formattedDateContentDesc) = DateUtils.getBriefRelativeTimeSpanString(requireContext(), Locale.getDefault(), storyPost.dateInMilliseconds)
     if (date.text != formattedDate) {
       date.text = formattedDate
+      date.contentDescription = formattedDateContentDesc
     }
   }
 
@@ -1083,7 +1098,7 @@ class StoryViewerPageFragment :
 
     sendingBar.visible = false
     viewsAndReplies.isEnabled = true
-    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.signal_colorOnSurface))
+    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_colorOnSurface))
 
     when (replyState) {
       StoryViewerPageState.ReplyState.SENDING -> presentSendingBottomBar()
@@ -1101,7 +1116,7 @@ class StoryViewerPageFragment :
           indicatorSize = 18.dp
           indicatorInset = 2.dp
           trackColor = ContextCompat.getColor(requireContext(), R.color.transparent_white_40)
-          indicatorColors = intArrayOf(ContextCompat.getColor(requireContext(), R.color.signal_dark_colorNeutralInverse))
+          indicatorColors = intArrayOf(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_dark_colorNeutralInverse))
           trackThickness = 2.dp
         }
       ).apply {
@@ -1122,14 +1137,14 @@ class StoryViewerPageFragment :
 
   private fun presentPartialSendBottomBar() {
     viewsAndReplies.setIconResource(R.drawable.symbol_error_circle_24)
-    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.signal_light_colorError))
+    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_light_colorError))
     viewsAndReplies.iconSize = 20.dp
     viewsAndReplies.setText(R.string.StoryViewerPageFragment__partially_sent)
   }
 
   private fun presentSendFailureBottomBar() {
     viewsAndReplies.setIconResource(R.drawable.symbol_error_circle_24)
-    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.signal_light_colorError))
+    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_light_colorError))
     viewsAndReplies.iconSize = 20.dp
     viewsAndReplies.setText(R.string.StoryViewerPageFragment__send_failed)
   }
@@ -1299,6 +1314,7 @@ class StoryViewerPageFragment :
     private val DEFAULT_DURATION = TimeUnit.SECONDS.toMillis(5)
     private val ONBOARDING_DURATION = TimeUnit.SECONDS.toMillis(10)
     private const val SMALL_CAPTION_TEXT_MAX_LENGTH = 280
+    private const val SMALL_CAPTION_TEXT_MAX_LINES = 5
     private const val CAPTION_LINK_PATTERN = Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS
 
     private const val ARGS = "args"
@@ -1356,6 +1372,19 @@ class StoryViewerPageFragment :
           sharedViewModel.setIsChildScrolling(false)
         }
       })
+    }
+  }
+
+  private class ParentGestureListener(
+    private val singleTapHandler: SingleTapHandler
+  ) : GestureDetector.SimpleOnGestureListener() {
+    override fun onDown(e: MotionEvent): Boolean {
+      return true
+    }
+
+    override fun onSingleTapUp(e: MotionEvent): Boolean {
+      singleTapHandler.onActionUp(e)
+      return true
     }
   }
 
@@ -1472,6 +1501,8 @@ class StoryViewerPageFragment :
   override fun onRecipientBottomSheetDismissed() {
     viewModel.setIsDisplayingRecipientBottomSheet(false)
   }
+
+  override fun onMessageClicked() = Unit
 
   interface Callback {
     fun onGoToPreviousStory(recipientId: RecipientId)

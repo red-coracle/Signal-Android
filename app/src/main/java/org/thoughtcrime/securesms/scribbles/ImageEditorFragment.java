@@ -45,7 +45,7 @@ import org.signal.imageeditor.core.model.EditorModel;
 import org.signal.imageeditor.core.renderers.BezierDrawingRenderer;
 import org.signal.imageeditor.core.renderers.FaceBlurRenderer;
 import org.signal.imageeditor.core.renderers.MultiLineTextRenderer;
-import org.signal.libsignal.protocol.util.Pair;
+import org.signal.imageeditor.core.renderers.UriGlideRenderer;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.animation.ResizeAnimation;
 import org.thoughtcrime.securesms.attachments.AttachmentSaver;
@@ -75,6 +75,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import kotlin.Pair;
 
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -127,7 +129,7 @@ public final class ImageEditorFragment extends Fragment implements ImageEditorHu
       this(new Bundle());
     }
 
-    void writeModel(@NonNull EditorModel model) {
+    public void writeModel(@NonNull EditorModel model) {
       byte[] bytes = ParcelUtil.serialize(model);
       bundle.putByteArray("MODEL", bytes);
     }
@@ -270,7 +272,7 @@ public final class ImageEditorFragment extends Fragment implements ImageEditorHu
       restoredModel = null;
     }
 
-    @ColorInt int blackoutColor = ContextCompat.getColor(requireContext(), R.color.signal_colorBackground);
+    @ColorInt int blackoutColor = ContextCompat.getColor(requireContext(), org.signal.core.ui.R.color.signal_colorBackground);
     if (editorModel == null) {
       switch (mode) {
         case AVATAR_EDIT:
@@ -579,8 +581,8 @@ public final class ImageEditorFragment extends Fragment implements ImageEditorHu
     Matrix inverseCropPosition = model.getInverseCropPosition();
 
     if (cachedFaceDetection != null) {
-      if (cachedFaceDetection.first().equals(getUri()) && cachedFaceDetection.second().position.equals(inverseCropPosition)) {
-        renderFaceBlurs(cachedFaceDetection.second());
+      if (cachedFaceDetection.getFirst().equals(getUri()) && cachedFaceDetection.getSecond().position.equals(inverseCropPosition)) {
+        renderFaceBlurs(cachedFaceDetection.getSecond());
         imageEditorHud.showBlurToast();
         return;
       } else {

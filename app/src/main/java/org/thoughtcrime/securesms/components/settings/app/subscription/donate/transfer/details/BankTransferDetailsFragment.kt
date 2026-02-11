@@ -31,10 +31,8 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -50,9 +48,10 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.DayNightPreviews
+import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.Scaffolds
+import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.Texts
-import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.util.getParcelableCompat
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.TemporaryScreenshotSecurity
@@ -187,7 +186,7 @@ class BankTransferDetailsFragment : ComposeFragment(), InAppPaymentCheckoutDeleg
 @DayNightPreviews
 @Composable
 private fun BankTransferDetailsContentPreview() {
-  SignalTheme {
+  Previews.Preview {
     BankTransferDetailsContent(
       state = BankTransferDetailsState(
         name = "Miles Morales",
@@ -222,7 +221,7 @@ private fun BankTransferDetailsContent(
   Scaffolds.Settings(
     title = "Bank transfer",
     onNavigationClick = onNavigationClick,
-    navigationIcon = ImageVector.vectorResource(id = R.drawable.symbol_arrow_start_24)
+    navigationIcon = SignalIcons.ArrowStart.imageVector
   ) {
     Column(
       horizontalAlignment = CenterHorizontally,

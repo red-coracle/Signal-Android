@@ -131,10 +131,15 @@ public final class Megaphones {
       put(Event.PNP_LAUNCH, shouldShowPnpLaunchMegaphone() ? ALWAYS : NEVER);
       put(Event.TURN_ON_SIGNAL_BACKUPS, shouldShowTurnOnBackupsMegaphone(context) ? new RecurringSchedule(TimeUnit.DAYS.toMillis(30), TimeUnit.DAYS.toMillis(90)) : NEVER);
       put(Event.VERIFY_BACKUP_KEY, new VerifyBackupKeyReminderSchedule());
+      put(Event.USE_NEW_ON_DEVICE_BACKUPS, shouldShowUseNewOnDeviceBackupsMegaphone() ? ALWAYS : NEVER);
     }};
   }
 
   private static boolean shouldShowLinkedDeviceInactiveMegaphone() {
+    if (SignalStore.account().isLinkedDevice()) {
+      return false;
+    }
+
     LeastActiveLinkedDevice device = SignalStore.misc().getLeastActiveLinkedDevice();
     if (device == null) {
       return false;
@@ -180,6 +185,8 @@ public final class Megaphones {
         return buildTurnOnSignalBackupsMegaphone();
       case VERIFY_BACKUP_KEY:
         return buildVerifyBackupKeyMegaphone();
+      case USE_NEW_ON_DEVICE_BACKUPS:
+        return buildUseNewOnDeviceBackupsMegaphone();
       default:
         throw new IllegalArgumentException("Event not handled!");
     }
@@ -450,7 +457,7 @@ public final class Megaphones {
   public static @NonNull Megaphone buildTurnOnSignalBackupsMegaphone() {
     return new Megaphone.Builder(Event.TURN_ON_SIGNAL_BACKUPS, Megaphone.Style.BASIC)
         .setImage(R.drawable.backups_megaphone_image)
-        .setTitle(R.string.TurnOnSignalBackups__title)
+        .setTitle(R.string.TurnOnSignalBackups__title_beta)
         .setBody(R.string.TurnOnSignalBackups__body)
         .setActionButton(R.string.TurnOnSignalBackups__turn_on, (megaphone, controller) -> {
           Intent intent = AppSettingsActivity.remoteBackups(controller.getMegaphoneActivity());
@@ -459,6 +466,7 @@ public final class Megaphones {
           controller.onMegaphoneSnooze(Event.TURN_ON_SIGNAL_BACKUPS);
         })
         .setSecondaryButton(R.string.TurnOnSignalBackups__not_now, (megaphone, controller) -> {
+          controller.onMegaphoneToastRequested(controller.getMegaphoneActivity().getString(R.string.TurnOnSignalBackups__toast_not_now));
           controller.onMegaphoneSnooze(Event.TURN_ON_SIGNAL_BACKUPS);
         })
         .build();
@@ -486,12 +494,29 @@ public final class Megaphones {
     return builder.build();
   }
 
+  public static @NonNull Megaphone buildUseNewOnDeviceBackupsMegaphone() {
+    return new Megaphone.Builder(Event.USE_NEW_ON_DEVICE_BACKUPS, Megaphone.Style.BASIC)
+        .setImage(R.drawable.backups_megaphone_image)
+        .setTitle(R.string.UseNewOnDeviceBackups__title)
+        .setBody(R.string.UseNewOnDeviceBackups__body)
+        .setActionButton(R.string.UseNewOnDeviceBackups__upgrade, (megaphone, controller) -> {
+          Intent intent = AppSettingsActivity.upgradeLocalBackups(controller.getMegaphoneActivity());
+
+          controller.onMegaphoneNavigationRequested(intent);
+          controller.onMegaphoneSnooze(Event.USE_NEW_ON_DEVICE_BACKUPS);
+        })
+        .setSecondaryButton(R.string.UseNewOnDeviceBackups__not_now, (megaphone, controller) -> {
+          controller.onMegaphoneSnooze(Event.USE_NEW_ON_DEVICE_BACKUPS);
+        })
+        .build();
+  }
+
   private static boolean shouldShowOnboardingMegaphone(@NonNull Context context) {
-    return SignalStore.onboarding().hasOnboarding(context);
+    return SignalStore.account().isPrimaryDevice() && SignalStore.onboarding().hasOnboarding(context);
   }
 
   private static boolean shouldShowNewLinkedDeviceMegaphone() {
-    return SignalStore.misc().getNewLinkedDeviceId() > 0 && !NotificationChannels.getInstance().areNotificationsEnabled();
+    return SignalStore.account().isPrimaryDevice() && SignalStore.misc().getNewLinkedDeviceId() > 0 && !NotificationChannels.getInstance().areNotificationsEnabled();
   }
 
   private static boolean shouldShowTurnOffCircumventionMegaphone() {
@@ -542,7 +567,8 @@ public final class Megaphones {
     long                           phoneNumberDiscoveryDisabledAt = SignalStore.phoneNumberPrivacy().getPhoneNumberDiscoverabilityModeTimestamp();
     PhoneNumberDiscoverabilityMode listingMode                    = SignalStore.phoneNumberPrivacy().getPhoneNumberDiscoverabilityMode();
 
-    return !hasUsername &&
+    return SignalStore.account().isPrimaryDevice() &&
+           !hasUsername &&
            listingMode == PhoneNumberDiscoverabilityMode.NOT_DISCOVERABLE &&
            !hasCompleted &&
            phoneNumberDiscoveryDisabledAt > 0 &&
@@ -550,11 +576,11 @@ public final class Megaphones {
   }
 
   private static boolean shouldShowPnpLaunchMegaphone() {
-    return TextUtils.isEmpty(SignalStore.account().getUsername()) && !SignalStore.uiHints().hasCompletedUsernameOnboarding();
+    return SignalStore.account().isPrimaryDevice() && TextUtils.isEmpty(SignalStore.account().getUsername()) && !SignalStore.uiHints().hasCompletedUsernameOnboarding();
   }
 
   private static boolean shouldShowTurnOnBackupsMegaphone(@NonNull Context context) {
-    if (!Environment.IS_STAGING) {
+    if (!RemoteConfig.backupsBetaMegaphone()) {
       return false;
     }
 
@@ -562,11 +588,15 @@ public final class Megaphones {
       return false;
     }
 
-    if (!SignalStore.account().isRegistered() || TextSecurePreferences.isUnauthorizedReceived(context)) {
+    if (!SignalStore.account().isRegistered() || TextSecurePreferences.isUnauthorizedReceived(context) || SignalStore.account().isLinkedDevice()) {
       return false;
     }
 
     return VersionTracker.getDaysSinceFirstInstalled(context) > 7;
+  }
+
+  private static boolean shouldShowUseNewOnDeviceBackupsMegaphone() {
+    return RemoteConfig.unifiedLocalBackups() && SignalStore.settings().isBackupEnabled();
   }
 
   private static boolean shouldShowGrantFullScreenIntentPermission(@NonNull Context context) {
@@ -581,7 +611,8 @@ public final class Megaphones {
   }
 
   private static boolean shouldShowBackupSchedulePermissionMegaphone(@NonNull Context context) {
-    return Build.VERSION.SDK_INT >= 31 && SignalStore.settings().isBackupEnabled() && !ServiceUtil.getAlarmManager(context).canScheduleExactAlarms();
+    boolean backupsEnabled = SignalStore.settings().isBackupEnabled() || SignalStore.backup().getAreBackupsEnabled();
+    return SignalStore.account().isPrimaryDevice() && Build.VERSION.SDK_INT >= 31 && backupsEnabled && !ServiceUtil.getAlarmManager(context).canScheduleExactAlarms();
   }
 
   /**
@@ -620,7 +651,8 @@ public final class Megaphones {
     GRANT_FULL_SCREEN_INTENT("grant_full_screen_intent"),
     NEW_LINKED_DEVICE("new_linked_device"),
     TURN_ON_SIGNAL_BACKUPS("turn_on_signal_backups"),
-    VERIFY_BACKUP_KEY("verify_backup_key");
+    VERIFY_BACKUP_KEY("verify_backup_key"),
+    USE_NEW_ON_DEVICE_BACKUPS("use_new_on_device_backups");
 
     private final String key;
 

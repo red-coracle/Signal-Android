@@ -27,6 +27,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.signal.core.ui.BottomSheetUtil
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.getParcelableArrayListCompat
 import org.signal.core.util.getParcelableCompat
@@ -57,7 +58,6 @@ import org.thoughtcrime.securesms.stories.Stories.getHeaderAction
 import org.thoughtcrime.securesms.stories.settings.create.CreateStoryFlowDialogFragment
 import org.thoughtcrime.securesms.stories.settings.create.CreateStoryWithViewersFragment
 import org.thoughtcrime.securesms.stories.settings.privacy.ChooseInitialMyStoryMembershipBottomSheetDialogFragment
-import org.thoughtcrime.securesms.util.BottomSheetUtil
 import org.thoughtcrime.securesms.util.FullscreenHelper
 import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.ViewUtil
@@ -228,13 +228,15 @@ class MultiselectForwardFragment :
     disposables += contactSearchMediator
       .getErrorEvents()
       .subscribe {
-        val message: Int = when (it) {
+        val toastMessage: Int? = when (it) {
           ContactSearchError.CONTACT_NOT_SELECTABLE -> R.string.MultiselectForwardFragment__only_admins_can_send_messages_to_this_group
-          ContactSearchError.RECOMMENDED_LIMIT_REACHED -> R.string.ContactSelectionListFragment_recommended_member_limit_reached
           ContactSearchError.HARD_LIMIT_REACHED -> R.string.MultiselectForwardFragment__you_cant_select_more_chats
+          ContactSearchError.RECOMMENDED_LIMIT_REACHED -> null
         }
 
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        toastMessage?.let { message ->
+          Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
       }
 
     viewModel.state.observe(viewLifecycleOwner) {

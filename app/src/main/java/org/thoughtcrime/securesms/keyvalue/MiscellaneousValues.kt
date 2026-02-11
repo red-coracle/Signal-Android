@@ -42,6 +42,11 @@ class MiscellaneousValues internal constructor(store: KeyValueStore) : SignalSto
     private const val NEW_LINKED_DEVICE_ID = "misc.new_linked_device_id"
     private const val NEW_LINKED_DEVICE_CREATED_TIME = "misc.new_linked_device_created_time"
     private const val STARTED_QUOTE_THUMBNAIL_MIGRATION = "misc.started_quote_thumbnail_migration"
+    private const val PREFERRED_MAIN_ACTIVITY_ANCHOR_INDEX = "misc.preferred_main_activity_anchor_index"
+    private const val LAST_KEY_TRANSPARENCY_TIME = "misc.last_key_transparency_time"
+    private const val HAS_KEY_TRANSPARENCY_FAILURE = "misc.has_key_transparency_failure"
+    private const val HAS_SEEN_KEY_TRANSPARENCY_FAILURE = "misc.has_seen_key_transparency_failure"
+    private const val CAMERA_FACING_FRONT = "misc.camera_facing_front"
   }
 
   public override fun onFirstEverAppLaunch() {
@@ -94,6 +99,8 @@ class MiscellaneousValues internal constructor(store: KeyValueStore) : SignalSto
   var hasEverHadAnAvatar by booleanValue(HAS_EVER_HAD_AN_AVATAR, false)
 
   val isChangeNumberLocked: Boolean by booleanValue(CHANGE_NUMBER_LOCK, false)
+
+  var preferredMainActivityAnchorIndex: Int by integerValue(PREFERRED_MAIN_ACTIVITY_ANCHOR_INDEX, -1)
 
   fun lockChangeNumber() {
     putBoolean(CHANGE_NUMBER_LOCK, true)
@@ -288,4 +295,24 @@ class MiscellaneousValues internal constructor(store: KeyValueStore) : SignalSto
    */
   @get:JvmName("startedQuoteThumbnailMigration")
   var startedQuoteThumbnailMigration: Boolean by booleanValue(STARTED_QUOTE_THUMBNAIL_MIGRATION, false)
+
+  /**
+   * The last time we ran key transparency against ourself
+   */
+  var lastKeyTransparencyTime: Long by longValue(LAST_KEY_TRANSPARENCY_TIME, 0)
+
+  /**
+   * Whether you are unable to run key transparency on yourself
+   */
+  var hasKeyTransparencyFailure: Boolean by booleanValue(HAS_KEY_TRANSPARENCY_FAILURE, false)
+
+  /**
+   * Whether you have seen the dialog on key transparency failure
+   */
+  var hasSeenKeyTransparencyFailure: Boolean by booleanValue(HAS_SEEN_KEY_TRANSPARENCY_FAILURE, false)
+
+  /**
+   * Whether or not the preferred camera direction is front-facing.
+   */
+  var isCameraFacingFront: Boolean by booleanValue(CAMERA_FACING_FRONT, true)
 }
